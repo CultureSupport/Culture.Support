@@ -1,1 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>YouTube Live Camera Feed</title>
+    <style>
+        body {
+            background-color: #1a1a1a;
+            color: white;
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+        }
+        h1 {
+            text-align: center;
+            color: #ff0000;
+        }
+        .video-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(450px, 1fr));
+            gap: 20px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        .video-container {
+            position: relative;
+            padding-bottom: 56.25%; /* 16:9 Aspect Ratio */
+            height: 0;
+            overflow: hidden;
+            border: 2px solid #333;
+            border-radius: 8px;
+        }
+        .video-container iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+        .video-title {
+            margin-top: 8px;
+            font-size: 0.9em;
+            text-align: center;
+            color: #ccc;
+        }
+    </style>
+</head>
+<body>
 
+    <h1>Global Live Camera Network</h1>
+
+    <div class="video-grid">
+        <div>
+            <div class="video-container">
+                <iframe src="https://www.youtube.com/embed/3LXQWU67Ufk" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+            </div>
+            <div class="video-title">Venice Beach, LA - Teleport.camera</div>
+        </div>
+
+        <div>
+            <div class="video-container">
+                <iframe src="https://www.youtube.com/embed/HpZAez2oYsA" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+            </div>
+            <div class="video-title">Ponte delle Guglie, Venice - Hotel Leone</div>
+        </div>
+
+        <div>
+            <div class="video-container">
+                <iframe src="https://www.youtube.com/embed/EFum1rGUdkk" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+            </div>
+            <div class="video-title">Global Top Webcams - SkylineWebcams</div>
+        </div>
+
+        <div>
+            <div class="video-container">
+                <iframe src="https://www.youtube.com/embed/pMhXWpyUhsk" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+            </div>
+            <div class="video-title">Clifton 4th Beach, Cape Town - SA Webcams</div>
+        </div>
+
+        <div>
+            <div class="video-container">
+                <iframe src="https://www.youtube.com/embed/loHbMM9JfCs" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+            </div>
+            <div class="video-title">Mambo Beach, Curaçao - LionsDive Resort</div>
+        </div>
+    </div>
+
+</body>
+</html>
