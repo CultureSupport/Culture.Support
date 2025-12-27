@@ -1,1 +1,400 @@
-<iframe width="560" height="315" src="https://www.youtube.com/embed/qHW8srS0ylo?si=_dQ2JItIiPe5pVKX" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>K-HACK // NEURAL TERMINAL</title>
+    <style>
+        :root {
+            --bg-color: #010402;
+            --panel-bg: rgba(2, 8, 4, 0.95);
+            --kali-green: #00ff41;
+            --kali-cyan: #00d2ff;
+            --kali-red: #ff3e3e;
+            --text-main: #00ff41;
+            --border-glow: 0 0 10px rgba(0, 255, 65, 0.3);
+        }
+
+        body, html {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            background-color: var(--bg-color);
+            font-family: 'Fira Code', 'Courier New', monospace;
+            color: var(--text-main);
+        }
+
+        canvas {
+            display: block;
+            filter: contrast(1.2) brightness(1.1);
+        }
+
+        /* Kali Scanlines & CRT Flicker */
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.15) 50%),
+                        linear-gradient(90deg, rgba(255, 0, 0, 0.03), rgba(0, 255, 0, 0.01), rgba(0, 0, 255, 0.03));
+            background-size: 100% 3px, 3px 100%;
+            pointer-events: none;
+            z-index: 100;
+            opacity: 0.6;
+        }
+
+        /* Top Status Bar */
+        #top-bar {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 30px;
+            background: #000;
+            border-bottom: 1px solid var(--kali-green);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 15px;
+            font-size: 0.7rem;
+            box-sizing: border-box;
+            z-index: 20;
+            box-shadow: var(--border-glow);
+        }
+
+        /* Hacking Footer Panel */
+        #hacker-panel {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 180px;
+            background: var(--panel-bg);
+            border-top: 2px solid var(--kali-green);
+            display: grid;
+            grid-template-columns: 320px 1fr 320px;
+            padding: 10px;
+            box-sizing: border-box;
+            z-index: 20;
+            box-shadow: 0 -5px 20px rgba(0, 255, 65, 0.1);
+        }
+
+        .terminal-block {
+            border: 1px solid rgba(0, 255, 65, 0.2);
+            padding: 10px;
+            overflow: hidden;
+            background: rgba(0, 20, 0, 0.3);
+            position: relative;
+        }
+
+        .block-label {
+            position: absolute;
+            top: 0;
+            right: 5px;
+            font-size: 0.5rem;
+            color: rgba(0, 255, 65, 0.5);
+            text-transform: uppercase;
+        }
+
+        /* Assembly Stream */
+        #assembly-log {
+            font-size: 0.7rem;
+            line-height: 1.2;
+            color: var(--kali-cyan);
+            overflow-y: hidden;
+        }
+
+        .asm-instr { color: #fff; font-weight: bold; }
+        .asm-addr { color: var(--kali-green); opacity: 0.7; margin-right: 8px;}
+
+        /* AI Hack Progress */
+        .hacking-stats {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            justify-content: center;
+        }
+
+        .stat-row {
+            font-size: 0.75rem;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .progress-container {
+            width: 100%;
+            height: 8px;
+            background: #111;
+            border: 1px solid var(--kali-green);
+            margin-top: 4px;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: var(--kali-green);
+            width: 0%;
+            transition: width 0.3s;
+            box-shadow: 0 0 10px var(--kali-green);
+        }
+
+        .blink { animation: blink-anim 0.8s steps(2, start) infinite; }
+        @keyframes blink-anim { to { visibility: hidden; } }
+
+        .glitch-text {
+            color: var(--kali-red);
+            font-weight: bold;
+            text-shadow: 2px 0 var(--kali-cyan);
+        }
+    </style>
+</head>
+<body>
+
+    <div class="overlay"></div>
+
+    <div id="top-bar">
+        <div><span class="blink">root@kali-singularity:~#</span> <span id="current-op">initializing exploit...</span></div>
+        <div id="sys-clock">00:00:00</div>
+    </div>
+
+    <div id="hacker-panel">
+        <!-- Assembly / Shellcode Stream -->
+        <div class="terminal-block" id="assembly-log">
+            <div class="block-label">Buffer Stream [ASM/X86]</div>
+            <!-- Dynamic content -->
+        </div>
+
+        <!-- Central Hacking Dashboard -->
+        <div class="terminal-block" style="border-left:none; border-right:none; display: flex; flex-direction: column; justify-content: space-between;">
+            <div class="block-label">Neural Net AI Override</div>
+            <div id="main-terminal" style="font-size: 0.8rem; overflow: hidden;">
+                <div style="color: var(--kali-red)">[!] ALERT: Event Horizon Breach Detected</div>
+                <div style="color: var(--kali-green)">[+] Bypassing Singularity Encryption... SUCCESS</div>
+                <div style="color: #fff">> injecting_shellcode_v2.bin...</div>
+            </div>
+            <div style="font-size: 1.2rem; font-weight: bold; text-align: center; border: 1px dashed var(--kali-green); padding: 5px;">
+                VOID PENETRATION: <span id="total-pct">00.0</span>%
+            </div>
+        </div>
+
+        <!-- System Stats -->
+        <div class="terminal-block hacking-stats">
+            <div class="block-label">Payload Delivery</div>
+            <div class="stat-row">
+                <span>MEM_EXPLOIT</span>
+                <span id="mem-val">0x0000</span>
+            </div>
+            <div class="progress-container"><div class="progress-fill" id="pb-1" style="width: 45%"></div></div>
+            
+            <div class="stat-row" style="margin-top: 10px;">
+                <span>GRAV_BYPASS</span>
+                <span id="grav-val">0.00%</span>
+            </div>
+            <div class="progress-container"><div class="progress-fill" id="pb-2" style="width: 78%; background: var(--kali-cyan); box-shadow: 0 0 10px var(--kali-cyan);"></div></div>
+        </div>
+    </div>
+
+    <canvas id="canvas"></canvas>
+
+    <script>
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+        const asmLog = document.getElementById('assembly-log');
+        const mainTerm = document.getElementById('main-terminal');
+        const totalPct = document.getElementById('total-pct');
+        const clock = document.getElementById('sys-clock');
+        
+        let width, height, centerX, centerY;
+        let particles = [];
+        let debris = [];
+        const BLACK_HOLE_RADIUS = 55;
+        const KALI_BLUE = '#00d2ff';
+        const KALI_GREEN = '#00ff41';
+
+        function resize() {
+            width = window.innerWidth;
+            height = window.innerHeight;
+            canvas.width = width;
+            canvas.height = height;
+            centerX = width / 2;
+            centerY = (height - 180) / 2 + 20;
+        }
+
+        window.addEventListener('resize', resize);
+        resize();
+
+        class Particle {
+            constructor(isDebris = false) {
+                this.reset(isDebris);
+            }
+
+            reset(isDebris) {
+                this.isDebris = isDebris;
+                this.angle = Math.random() * Math.PI * 2;
+                this.distance = Math.random() * (width > height ? width : height) + 100;
+                this.speed = isDebris ? (0.5 + Math.random() * 2) : (1.5 + Math.random() * 2.5);
+                this.size = isDebris ? (Math.random() * 3 + 1) : (Math.random() * 1.5 + 0.1);
+                this.rotationSpeed = (Math.random() - 0.5) * 0.03;
+                
+                // Kali Hack Palette: Cyan, Green, and occasional Red "glitch"
+                const rand = Math.random();
+                if (rand > 0.8) this.color = KALI_GREEN;
+                else if (rand > 0.2) this.color = KALI_BLUE;
+                else this.color = '#ff3e3e';
+                
+                this.opacity = 1;
+            }
+
+            update() {
+                const pull = 300 / (this.distance + 1);
+                this.distance -= (this.speed + pull);
+                this.angle += this.rotationSpeed + (4 / (this.distance + 15));
+
+                if (this.distance < BLACK_HOLE_RADIUS + 40) {
+                    this.opacity -= 0.05;
+                }
+
+                if (this.distance < BLACK_HOLE_RADIUS || this.opacity <= 0) {
+                    this.reset(this.isDebris);
+                    return true;
+                }
+                return false;
+            }
+
+            draw() {
+                const x = centerX + Math.cos(this.angle) * this.distance;
+                const y = centerY + Math.sin(this.angle) * this.distance;
+
+                ctx.globalAlpha = this.opacity;
+                ctx.fillStyle = this.color;
+                ctx.beginPath();
+                ctx.arc(x, y, this.size, 0, Math.PI * 2);
+                ctx.fill();
+                
+                // Sharp digital streaks
+                if (this.distance < 500) {
+                    ctx.beginPath();
+                    ctx.moveTo(x, y);
+                    const tailX = centerX + Math.cos(this.angle - 0.02) * (this.distance + 6);
+                    const tailY = centerY + Math.sin(this.angle - 0.02) * (this.distance + 6);
+                    ctx.lineTo(tailX, tailY);
+                    ctx.strokeStyle = this.color;
+                    ctx.lineWidth = 0.5;
+                    ctx.stroke();
+                }
+            }
+        }
+
+        // Initialize
+        for (let i = 0; i < 500; i++) particles.push(new Particle(false));
+        for (let i = 0; i < 100; i++) debris.push(new Particle(true));
+
+        function drawBlackHole() {
+            // Dark Core
+            ctx.globalAlpha = 1;
+            ctx.beginPath();
+            ctx.arc(centerX, centerY, BLACK_HOLE_RADIUS, 0, Math.PI * 2);
+            ctx.fillStyle = '#000';
+            ctx.shadowBlur = 40;
+            ctx.shadowColor = KALI_GREEN;
+            ctx.fill();
+            ctx.shadowBlur = 0;
+
+            // Scanning Ring
+            ctx.strokeStyle = KALI_GREEN;
+            ctx.lineWidth = 1;
+            ctx.beginPath();
+            ctx.arc(centerX, centerY, BLACK_HOLE_RADIUS + 5 + Math.sin(Date.now() * 0.005) * 3, 0, Math.PI * 2);
+            ctx.stroke();
+
+            // Glitchy Accretion disk
+            ctx.beginPath();
+            ctx.ellipse(centerX, centerY, 300, 40, 0.4, 0, Math.PI * 2);
+            const g = ctx.createRadialGradient(centerX, centerY, 50, centerX, centerY, 300);
+            g.addColorStop(0, 'rgba(0, 255, 65, 0.2)');
+            g.addColorStop(1, 'rgba(0, 0, 0, 0)');
+            ctx.fillStyle = g;
+            ctx.fill();
+        }
+
+        // Assembly Generation
+        const asmInstructions = ["MOV", "PUSH", "XOR", "INT", "JMP", "CALL", "NOP", "LEA", "SUB", "ADD"];
+        const registers = ["eax", "ebx", "ecx", "edx", "esp", "ebp", "edi", "esi"];
+        
+        function updateAsm() {
+            const addr = "0x" + Math.floor(Math.random() * 0xFFFFFF).toString(16).toUpperCase();
+            const inst = asmInstructions[Math.floor(Math.random() * asmInstructions.length)];
+            const reg1 = registers[Math.floor(Math.random() * registers.length)];
+            const reg2 = registers[Math.floor(Math.random() * registers.length)];
+            
+            const line = document.createElement('div');
+            line.innerHTML = `<span class="asm-addr">${addr}</span> <span class="asm-instr">${inst}</span> ${reg1}, ${reg2}`;
+            asmLog.appendChild(line);
+            if (asmLog.childNodes.length > 12) asmLog.removeChild(asmLog.firstChild);
+        }
+
+        const hackMsgs = [
+            "> Bruteforcing singularity mesh...",
+            "> Overflowing event_horizon buffer",
+            "> Hooking gravitational syscalls",
+            "> Neutralizing photon escape velocity",
+            "> AI Payload: ROOT_ACCESS granted",
+            "> Downloading dark_matter_db...",
+            "> Cracking quantum parity bits"
+        ];
+
+        function updateMainTerm() {
+            const msg = hackMsgs[Math.floor(Math.random() * hackMsgs.length)];
+            const div = document.createElement('div');
+            div.innerText = msg;
+            div.style.color = Math.random() > 0.8 ? 'var(--kali-red)' : 'var(--kali-green)';
+            mainTerm.appendChild(div);
+            if (mainTerm.childNodes.length > 6) mainTerm.removeChild(mainTerm.firstChild);
+        }
+
+        let frame = 0;
+        let hackProgress = 0;
+
+        function animate() {
+            // Dark trails
+            ctx.globalAlpha = 0.2;
+            ctx.fillStyle = '#010402';
+            ctx.fillRect(0, 0, width, height);
+
+            frame++;
+            if (frame % 8 === 0) updateAsm();
+            if (frame % 60 === 0) {
+                updateMainTerm();
+                clock.innerText = new Date().toLocaleTimeString();
+            }
+
+            // Update Stats
+            if (frame % 10 === 0) {
+                hackProgress = (hackProgress + 0.01) % 100;
+                totalPct.innerText = hackProgress.toFixed(1);
+                document.getElementById('mem-val').innerText = "0x" + Math.floor(Math.random() * 0xFFFF).toString(16).toUpperCase();
+                document.getElementById('grav-val').innerText = (Math.random() * 100).toFixed(2) + "%";
+                document.getElementById('pb-1').style.width = Math.random() * 100 + "%";
+                document.getElementById('pb-2').style.width = (hackProgress) + "%";
+            }
+
+            particles.forEach(p => { p.update(); p.draw(); });
+            debris.forEach(p => { p.update(); p.draw(); });
+
+            drawBlackHole();
+
+            // Glitch effect occasional
+            if (Math.random() > 0.98) {
+                ctx.fillStyle = 'rgba(0, 255, 65, 0.05)';
+                ctx.fillRect(0, Math.random() * height, width, 20);
+            }
+
+            requestAnimationFrame(animate);
+        }
+
+        window.onload = animate;
+    </script>
+</body>
+</html>
