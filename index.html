@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Singularity OS // Brain Nebula Scanner</title>
+    <style>
+        :root {
+            --bg-color: #010405;
+            --kali-green: #00ff41;
+            --kali-cyan: #00d2ff;
+            --kali-purple: #bc13fe;
+            --kali-red: #ff3e3e;
+            --panel-bg: rgba(2, 10, 15, 0.95);
+            --border-glow: 0 0 15px rgba(0, 210, 255, 0.2);
+        }
+
+        body, html {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            background-color: var(--bg-color);
+            font-family: 'Fira Code', monospace;
+            color: var(--kali-cyan);
+        }
+
+        canvas {
+            display: block;
+            filter: contrast(1.1) brightness(1.2);
+        }
+
+        /* Scanline Overlay */
+        .crt-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.1) 50%),
+                        linear-gradient(90deg, rgba(255, 0, 0, 0.02), rgba(0, 255, 0, 0.01), rgba(0, 0, 255, 0.02));
+            background-size: 100% 2px, 2px 100%;
+            pointer-events: none;
+            z-index: 1000;
+        }
+
+        /* OS Dashboard Layout */
+        #os-interface {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: grid;
+            grid-template-rows: 40px 1fr 200px;
+            pointer-events: none;
+            z-index: 10;
+        }
+
+        /* Top Header */
+        header {
+            background: rgba(0, 0, 0, 0.9);
+            border-bottom: 1px solid var(--kali-cyan);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 20px;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            pointer-events: auto;
+        }
+
+        /* Footer Panel */
+        footer {
+            background: var(--panel-bg);
+            border-top: 2px solid var(--kali-cyan);
+            display: grid;
+            grid-template-columns: 350px 1fr 350px;
+            padding: 15px;
+            gap: 15px;
+            pointer-events: auto;
+            box-shadow: 0 -10px 30px rgba(0, 210, 255, 0.1);
+        }
+
+        .terminal-panel {
+            border: 1px solid rgba(0, 210, 255, 0.3);
+            background: rgba(0, 15, 25, 0.5);
+            padding: 10px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .panel-title {
+            position: absolute;
+            top: 0;
+            right: 10px;
+            font-size: 0.55rem;
+            color: var(--kali-cyan);
+            opacity: 0.6;
+            background: #010405;
+            padding: 2px 5px;
+        }
+
+        /* Brain Nebula Signals */
+        #signal-stream {
+            font-size: 0.7rem;
+            color: var(--kali-purple);
+            line-height: 1.3;
+        }
+
+        /* Kelvin Fluctuations */
+        .kelvin-monitor {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .metric-row {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.8rem;
+        }
+
+        .fluctuation-bar {
+            width: 100%;
+            height: 6px;
+            background: #001;
+            border: 1px solid var(--kali-purple);
+            position: relative;
+        }
+
+        .bar-fill {
+            height: 100%;
+            background: var(--kali-purple);
+            width: 50%;
+            box-shadow: 0 0 10px var(--kali-purple);
+            transition: width 0.2s ease;
+        }
+
+        /* Center OS Console */
+        .main-console {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+        }
+
+        .blink { animation: blinker 1s steps(2, start) infinite; }
+        @keyframes blinker { to { visibility: hidden; } }
+
+        .glitch-text { color: var(--kali-red); font-weight: bold; }
+    </style>
+</head>
+<body>
+
+    <div class="crt-overlay"></div>
+
+    <div id="os-interface">
+        <header>
+            <div>SINGULARITY_OS [Node: BRAIN-NEBULA-01]</div>
+            <div>STATUS: <span style="color:var(--kali-green)" class="blink">SCANNING</span></div>
+            <div id="clock">00:00:00</div>
+        </header>
+
+        <main><!-- Canvas renders background here --></main>
+
+        <footer>
+            <!-- Left: Assembly / Brain Pulse -->
+            <div class="terminal-panel" id="signal-stream">
+                <div class="panel-title">BRAIN_NEBULA_PULSE</div>
+                <div id="log-content"></div>
+            </div>
+
+            <!-- Center: Core Commands -->
+            <div class="terminal-panel main-console">
+                <div class="panel-title">CENTRAL_PROCESSING</div>
+                <div id="cmd-output" style="font-size: 0.85rem; width: 100%;">
+                    <div class="glitch-text">[!] KELVIN FLUCTUATION DETECTED</div>
+                    <div style="color: #fff">> Resolving Brain Nebula Signals...</div>
+                </div>
+                <div style="margin-top: 15px; font-size: 1.5rem; letter-spacing: 5px;">
+                    <span id="quantum-pct">000.00</span>%
+                </div>
+            </div>
+
+            <!-- Right: Kelvin Fluctuations -->
+            <div class="terminal-panel kelvin-monitor">
+                <div class="panel-title">KELVIN_SURVEILLANCE</div>
+                <div class="metric-row">
+                    <span>THERMAL_FLUX</span>
+                    <span id="thermal-val">1.042 K</span>
+                </div>
+                <div class="fluctuation-bar"><div class="bar-fill" id="thermal-bar"></div></div>
+                
+                <div class="metric-row" style="margin-top: 5px;">
+                    <span>NEBULA_STABILITY</span>
+                    <span id="stability-val">94.2%</span>
+                </div>
+                <div class="fluctuation-bar"><div class="bar-fill" id="stability-bar" style="background: var(--kali-cyan); border-color: var(--kali-cyan); box-shadow: 0 0 10px var(--kali-cyan);"></div></div>
+            </div>
+        </footer>
+    </div>
+
+    <canvas id="canvas"></canvas>
+
+    <script>
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+        const logContent = document.getElementById('log-content');
+        const cmdOutput = document.getElementById('cmd-output');
+        const quantumPct = document.getElementById('quantum-pct');
+        const thermalVal = document.getElementById('thermal-val');
+        const thermalBar = document.getElementById('thermal-bar');
+        const stabilityVal = document.getElementById('stability-val');
+        const stabilityBar = document.getElementById('stability-bar');
+
+        let width, height, centerX, centerY;
+        let particles = [];
+        let nebulaSignals = [];
+        const CORE_RADIUS = 60;
+        
+        function resize() {
+            width = window.innerWidth;
+            height = window.innerHeight;
+            canvas.width = width;
+            canvas.height = height;
+            centerX = width / 2;
+            centerY = (height - 200) / 2 + 20;
+        }
+
+        window.addEventListener('resize', resize);
+        resize();
+
+        class NeuralParticle {
+            constructor() {
+                this.reset();
+            }
+
+            reset() {
+                this.angle = Math.random() * Math.PI * 2;
+                this.distance = Math.random() * width + 100;
+                this.speed = 1 + Math.random() * 3;
+                this.size = Math.random() * 2 + 0.1;
+                this.color = Math.random() > 0.8 ? '#bc13fe' : (Math.random() > 0.5 ? '#00d2ff' : '#00ff41');
+                this.opacity = Math.random() * 0.5 + 0.1;
+            }
+
+            update() {
+                // Spiral gravitational pull
+                const pull = 400 / (this.distance + 1);
+                this.distance -= (this.speed + pull);
+                this.angle += 0.01 + (5 / (this.distance + 10));
+
+                if (this.distance < CORE_RADIUS) {
+                    this.reset();
+                    return true;
+                }
+                return false;
+            }
+
+            draw() {
+                const x = centerX + Math.cos(this.angle) * this.distance;
+                const y = centerY + Math.sin(this.angle) * this.distance;
+
+                ctx.globalAlpha = this.opacity;
+                ctx.fillStyle = this.color;
+                ctx.beginPath();
+                ctx.arc(x, y, this.size, 0, Math.PI * 2);
+                ctx.fill();
+
+                if (this.distance < 300) {
+                    ctx.beginPath();
+                    ctx.moveTo(x, y);
+                    const tx = centerX + Math.cos(this.angle - 0.02) * (this.distance + 10);
+                    const ty = centerY + Math.sin(this.angle - 0.02) * (this.distance + 10);
+                    ctx.lineTo(tx, ty);
+                    ctx.strokeStyle = this.color;
+                    ctx.lineWidth = 0.5;
+                    ctx.stroke();
+                }
+            }
+        }
+
+        for (let i = 0; i < 800; i++) particles.push(new NeuralParticle());
+
+        function drawSingularity() {
+            // The Singularity Core
+            ctx.globalAlpha = 1;
+            ctx.shadowBlur = 50;
+            ctx.shadowColor = '#bc13fe';
+            ctx.beginPath();
+            ctx.arc(centerX, centerY, CORE_RADIUS, 0, Math.PI * 2);
+            ctx.fillStyle = '#000';
+            ctx.fill();
+            ctx.shadowBlur = 0;
+
+            // Scanning Rings
+            const time = Date.now() * 0.002;
+            ctx.strokeStyle = 'rgba(0, 210, 255, 0.4)';
+            ctx.lineWidth = 1;
+            ctx.beginPath();
+            ctx.arc(centerX, centerY, CORE_RADIUS + 10 + Math.sin(time) * 5, 0, Math.PI * 2);
+            ctx.stroke();
+
+            // Brain Nebula Accretion
+            ctx.beginPath();
+            ctx.ellipse(centerX, centerY, 400, 80, 0.5, 0, Math.PI * 2);
+            const g = ctx.createRadialGradient(centerX, centerY, CORE_RADIUS, centerX, centerY, 400);
+            g.addColorStop(0, 'rgba(188, 19, 254, 0.15)');
+            g.addColorStop(0.5, 'rgba(0, 210, 255, 0.05)');
+            g.addColorStop(1, 'rgba(0, 0, 0, 0)');
+            ctx.fillStyle = g;
+            ctx.fill();
+        }
+
+        // Logic for OS Interface Updates
+        const nebulaInstructions = [
+            "SCAN_SIG: 0xFF42", "NEURAL_SYNAPSE_INIT", "DECODING_WAVE_01",
+            "KELVIN_SHIFT_DET", "BRAIN_PULSE_LOW", "Nebula_Auth_Pass",
+            "VECTOR_ALIGN_NULL", "FLUX_SUPERPOSITION", "MEM_DUMP_04"
+        ];
+
+        function updateSignals() {
+            const line = document.createElement('div');
+            line.innerText = `[${Math.random().toString(16).substr(2, 6)}] ${nebulaInstructions[Math.floor(Math.random() * nebulaInstructions.length)]}`;
+            logContent.prepend(line);
+            if (logContent.childNodes.length > 15) logContent.lastChild.remove();
+        }
+
+        const cmdMsgs = [
+            "> Initializing Brain Nebula Probe...",
+            "> Kelvin Fluctuations within margin.",
+            "> Analyzing Signal Superposition...",
+            "> Singularity OS: Stable.",
+            "> Mapping Neural Pathways...",
+            "> BRAIN_NEBULA_SIGNALS: DETECTED"
+        ];
+
+        function updateCmd() {
+            const div = document.createElement('div');
+            div.innerText = cmdMsgs[Math.floor(Math.random() * cmdMsgs.length)];
+            div.style.color = Math.random() > 0.8 ? 'var(--kali-purple)' : '#fff';
+            cmdOutput.appendChild(div);
+            if (cmdOutput.childNodes.length > 3) cmdOutput.removeChild(cmdOutput.firstChild);
+        }
+
+        let frame = 0;
+        function animate() {
+            ctx.globalAlpha = 0.2;
+            ctx.fillStyle = '#010405';
+            ctx.fillRect(0, 0, width, height);
+
+            frame++;
+            if (frame % 10 === 0) updateSignals();
+            if (frame % 100 === 0) updateCmd();
+            
+            if (frame % 20 === 0) {
+                const kv = (Math.random() * 0.5 + 1).toFixed(3);
+                thermalVal.innerText = kv + " K";
+                thermalBar.style.width = ((kv - 1) * 200) + "%";
+
+                const sv = (90 + Math.random() * 9).toFixed(1);
+                stabilityVal.innerText = sv + "%";
+                stabilityBar.style.width = sv + "%";
+
+                quantumPct.innerText = (Math.random() * 100).toFixed(2);
+                document.getElementById('clock').innerText = new Date().toLocaleTimeString();
+            }
+
+            particles.forEach(p => { p.update(); p.draw(); });
+            drawSingularity();
+
+            requestAnimationFrame(animate);
+        }
+
+        window.onload = animate;
+    </script>
+</body>
+</html>
