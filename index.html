@@ -3,13 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>JORDENS UNDERGANG</title>
+    <title>JORDENS UNDERGANG ALARM - TERMINAL STATUS</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap');
 
         body {
-            background-color: #050000;
+            background-color: #030000;
             color: #ff0000;
             font-family: 'Share Tech Mono', monospace;
             overflow-x: hidden;
@@ -17,9 +17,9 @@
             text-transform: uppercase;
         }
 
-        .doomsday-bg {
-            background-image: linear-gradient(rgba(0, 0, 0, 0.8), rgba(60, 0, 0, 0.9)), 
-                              url('https://images.unsplash.com/photo-1524334228333-0f6db392f8a1?auto=format&fit=crop&q=80&w=2000');
+        .apocalypse-bg {
+            background-image: linear-gradient(rgba(0, 0, 0, 0.85), rgba(80, 0, 0, 0.95)), 
+                              url('https://images.unsplash.com/photo-1518111459945-98271144849e?auto=format&fit=crop&q=80&w=2000');
             min-height: 100vh;
             background-attachment: fixed;
             background-position: center;
@@ -31,25 +31,25 @@
         }
 
         .monitor-border {
-            border: 8px double #ff0000;
-            box-shadow: 0 0 100px rgba(255, 0, 0, 0.9), inset 0 0 50px rgba(255, 0, 0, 0.7);
-            background: rgba(0, 0, 0, 0.95);
+            border: 10px double #ff0000;
+            box-shadow: 0 0 120px rgba(255, 0, 0, 1), inset 0 0 60px rgba(255, 0, 0, 0.8);
+            background: rgba(0, 0, 0, 0.97);
             width: 100%;
-            max-width: 1300px;
+            max-width: 1400px;
         }
 
         .glitch-extreme {
-            animation: glitch 0.05s linear infinite;
+            animation: glitch 0.04s linear infinite;
         }
 
         @keyframes glitch {
-            0% { transform: translate(0); text-shadow: 5px 0 #ff0000, -5px 0 #ffaa00; opacity: 1; }
-            50% { transform: translate(-5px, 5px); opacity: 0.8; }
-            100% { transform: translate(5px, -5px); text-shadow: -5px 0 #ff0000, 5px 0 #ffaa00; opacity: 1; }
+            0% { transform: translate(0); text-shadow: 6px 0 #ff0000, -6px 0 #ffaa00; opacity: 1; }
+            50% { transform: translate(-8px, 8px); opacity: 0.7; }
+            100% { transform: translate(8px, -8px); text-shadow: -6px 0 #ff0000, 6px 0 #ffaa00; opacity: 1; }
         }
 
         .emergency-flasher {
-            animation: flash 0.2s step-end infinite;
+            animation: flash 0.15s step-end infinite;
         }
 
         @keyframes flash {
@@ -57,134 +57,136 @@
         }
 
         .warning-strip {
-            background: repeating-linear-gradient(45deg, #000, #000 20px, #ff0000 20px, #ff0000 40px);
-            height: 30px;
+            background: repeating-linear-gradient(45deg, #000, #000 20px, #ff4500 20px, #ff4500 40px);
+            height: 40px;
             width: 100%;
-            border-bottom: 2px solid white;
+            border-bottom: 3px solid #fff;
         }
 
         .status-box {
-            background: rgba(255, 0, 0, 0.1);
-            border: 1px solid #ff0000;
-            padding: 10px;
+            background: rgba(255, 0, 0, 0.15);
+            border: 2px solid #ff0000;
+            padding: 15px;
+            box-shadow: 0 0 15px rgba(255, 0, 0, 0.3);
         }
 
-        ::-webkit-scrollbar { width: 12px; }
+        ::-webkit-scrollbar { width: 14px; }
         ::-webkit-scrollbar-track { background: #000; }
-        ::-webkit-scrollbar-thumb { background: #ff0000; border: 2px solid #000; }
+        ::-webkit-scrollbar-thumb { background: #ff0000; border: 3px solid #000; }
     </style>
 </head>
 <body>
 
     <div class="warning-strip"></div>
 
-    <div class="doomsday-bg">
-        <div class="monitor-border p-4 md:p-12 rounded-none">
-            <div class="flex flex-col md:flex-row justify-between items-center mb-6 border-b-4 border-red-600 pb-4 gap-4">
+    <div class="apocalypse-bg">
+        <div class="monitor-border p-4 md:p-14 rounded-none">
+            <div class="flex flex-col md:flex-row justify-between items-center mb-8 border-b-8 border-red-700 pb-6 gap-6">
                 <div class="text-left">
-                    <span class="block text-xl font-black text-white">STATUS: JORDENS UNDERGANG</span>
-                    <span class="block text-sm text-red-500">TEKTONISKE PLATER: KATASTROFALT SAMMENBRUDD</span>
+                    <span class="block text-2xl font-black text-white">SYSTEM: SELVDESTRUKSJON AKTIVERT</span>
+                    <span class="block text-lg text-red-500">SCHENGEN PLATE-KOLLAPS: 100% SANNOLIKHET</span>
                 </div>
-                <div class="text-right bg-red-600 text-black px-4 py-2 font-black animate-pulse">
-                    GLOBAL KATASTROFE: NIVÅ : Hyper Destruksjon Jordkloden
+                <div class="text-right bg-white text-black px-6 py-4 font-black text-2xl emergency-flasher">
+                    STATUS: JORDENS UNDERGANG
                 </div>
             </div>
 
-            <h1 class="text-5xl sm:text-7xl md:text-9xl font-black mb-6 glitch-extreme text-white text-center tracking-tighter">ÅLESUND ALARM 🚨</h1>
+            <h1 class="text-5xl sm:text-7xl md:text-[8rem] font-black mb-8 glitch-extreme text-white text-center leading-none tracking-tighter">JORDENS UNDERGANG ALARM 🚨</h1>
             
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-10">
-                <div class="bg-black border-4 border-red-600 p-6 flex flex-col justify-center items-center text-center">
-                    <h2 class="text-2xl font-black mb-2">MILLIONER OMKOMNE (EU)</h2>
-                    <div id="global-death" class="text-5xl md:text-7xl font-black text-white tabular-nums">128 849 012</div>
-                    <p class="text-sm mt-2 text-red-500 font-bold italic">LAVASMELTING AV KONTINENTET</p>
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-12">
+                <div class="bg-black border-8 border-red-600 p-8 text-center shadow-2xl">
+                    <h2 class="text-3xl font-black mb-4">GLOBAL LAND-ØDELEGGELSE</h2>
+                    <div id="destruction-rate" class="text-7xl md:text-9xl font-black text-white tabular-nums">64%</div>
+                    <p class="text-xl mt-4 text-red-500 font-bold italic">ERODERING AV TEKTONISKE PLATER</p>
                 </div>
-                <div class="bg-red-900/40 border-4 border-white p-6 text-center emergency-flasher">
-                    <h2 class="text-2xl font-black mb-2 text-white">REAKTOR-EKSPLOSJON (Russland)</h2>
-                    <div class="text-4xl md:text-5xl font-black">RADIOAKTIV LAVA-FLOM</div>
-                    <p class="text-sm mt-2 text-white font-bold">PRESSER VULKANER TIL Drepe Alle i Verden</p>
-                </div>
-            </div>
-
-            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-10">
-                <div class="status-box text-center">
-                    <h3 class="text-xs font-bold text-gray-400">SVERIGE / FINLAND</h3>
-                    <div class="text-2xl md:text-4xl font-black text-red-600">BORTE</div>
-                    <p class="text-[10px] text-red-400">TOTALT SMELTET</p>
-                </div>
-                <div class="status-box text-center">
-                    <h3 class="text-xs font-bold text-gray-400">ÅLESUND OFRE</h3>
-                    <div id="local-death" class="text-2xl md:text-4xl font-black text-white tabular-nums">72 000</div>
-                    <p class="text-[10px] text-red-400">ALLE VENTET DØDE</p>
-                </div>
-                <div class="status-box text-center">
-                    <h3 class="text-xs font-bold text-gray-400">TEKTONISK PLATE</h3>
-                    <div class="text-2xl md:text-4xl font-black text-red-600">SMADRET</div>
-                    <p class="text-[10px] text-red-400">SKORPEN OPPLØST</p>
+                <div class="bg-red-950 border-8 border-orange-500 p-8 text-center relative overflow-hidden">
+                    <h2 class="text-3xl font-black mb-4 text-orange-400">RUSSLAND REAKTOR-SMELT</h2>
+                    <div class="text-4xl md:text-6xl font-black text-white animate-pulse">KJERNEFYSISK KATASTROFE</div>
+                    <p class="text-lg mt-4 text-orange-300 font-bold uppercase">SEISMISK SELVDESTRUKSJON UTVIKLER SEG</p>
                 </div>
             </div>
 
-            <div class="p-6 bg-white text-black border-4 border-red-600 mb-6">
-                <marquee scrollamount="15" class="text-3xl font-black">
-                    LAVA FRA RUSSLAND-REAKTORENE PRESSER SEG OPP GJENNOM ALLE VULKANER --- ÅLESUND OG KYSTEN FORSVINNER I LAVAEN --- MILLIONER DØR I EUROPA --- TEKTONISKE PLATER KOLLAPSET --- INGEN OVERLEVENDE ETTER 21:00
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-6 mb-12">
+                <div class="status-box text-center">
+                    <h3 class="text-sm font-bold text-gray-400 mb-2">SCHENGEN-SONEN</h3>
+                    <div class="text-3xl md:text-5xl font-black text-red-600">SMADRET</div>
+                    <p class="text-xs text-red-400">EROSJON UTEN STOPP</p>
+                </div>
+                <div class="status-box text-center">
+                    <h3 class="text-sm font-bold text-gray-400 mb-2">OMKOMNE GLOBAL</h3>
+                    <div id="global-death" class="text-3xl md:text-5xl font-black text-white tabular-nums">1.2B</div>
+                    <p class="text-xs text-red-400">STIGER FORTLØPENDE</p>
+                </div>
+                <div class="status-box text-center">
+                    <h3 class="text-sm font-bold text-gray-400 mb-2">SELVDET-SYSTEM</h3>
+                    <div class="text-3xl md:text-5xl font-black text-red-600">AKTIVT</div>
+                    <p class="text-xs text-red-400">JORDENS KJERNE EKSPANDERER</p>
+                </div>
+            </div>
+
+            <div class="p-8 bg-red-600 text-white border-4 border-white mb-8">
+                <marquee scrollamount="25" class="text-4xl font-black">
+                    +++ ALARM: 64% AV LANDENE PÅ JORDEN ER ØDELAGT +++ RUSSLAND REAKTOR-SAMMENBRUDD HAR SMADRET TEKTONISKE PLATER I SCHENGEN +++ SEISMISK SELVDESTRUKSJON AKTIVERT +++ ÅLESUND KYSTEN FORSVINNER +++ INGEN REDNING MULIG +++
                 </marquee>
             </div>
         </div>
     </div>
 
-    <section class="bg-black py-16 px-4 md:px-12 border-t-[20px] border-red-900">
-        <div class="max-w-6xl mx-auto">
-            <h3 class="text-5xl md:text-8xl font-black text-white uppercase mb-12 italic border-b-8 border-red-600">SISTE SKRIK FRA ÅLESUND</h3>
+    <section class="bg-black py-20 px-4 md:px-16 border-t-[30px] border-red-950">
+        <div class="max-w-7xl mx-auto">
+            <h3 class="text-6xl md:text-9xl font-black text-white uppercase mb-16 italic border-b-10 border-red-600">KJERNEFYSISK GPS-LOGG</h3>
             
-            <div class="grid grid-cols-1 gap-6" id="incident-feed">
+            <div class="grid grid-cols-1 gap-10" id="incident-feed">
                 <!-- Katastrofe-feed -->
-                <div class="p-8 bg-zinc-900 border-l-[20px] border-red-600">
-                    <div class="flex justify-between text-sm text-red-500 mb-4 font-black">
-                        <span>OBSERVASJON: SENTRUM</span>
-                        <span>STATUS: Jordens UNDERGANG</span>
+                <div class="p-10 bg-zinc-950 border-l-[30px] border-red-600 shadow-inner">
+                    <div class="flex justify-between text-lg text-red-500 mb-6 font-black uppercase">
+                        <span>GPS: 55.7558° N, 37.6173° E (RUSSLAND-KJERNE)</span>
+                        <span>LOGG: TOTALT SAMMENBRUDD</span>
                     </div>
-                    <p class="text-white text-2xl md:text-4xl font-black leading-none uppercase italic">"LAVAEN KOMMER! JEG HØRER BARNA SKRIKE FRA JORDVOLLENE! TELEFONEN SMELTER I HÅNDEN MIN! HJELP—"</p>
+                    <p class="text-white text-3xl md:text-5xl font-black leading-tight uppercase italic">REAKTOR-EKSPLOSJON HAR SENDT SJOKKBØLGER GJENNOM SCHENGEN-PLATENE. EROSJON HAR STARTET. LANDMASSER SMULDRER OPP I LAVA-FLOM.</p>
                 </div>
             </div>
         </div>
     </section>
 
     <script>
-        let globalDeaths = 142849012;
-        let localDeaths = 72000;
+        let globalDeaths = 1240849012;
+        let destructionPercent = 64.00;
 
         const reports = [
-            "LAVA-OVERFLOD: Russiske reaktorer har sendt termisk sjokk gjennom platene. Alle vulkaner i Europa har utbrudd samtidig!",
-            "SKRIK FRA MOA: 'VI BLIR KASTET NED I LAVA-MASSENE!' – Radiosignal avbrutt av hyling og flytende stein.",
-            "TEKTONISK KOLLAPS: Hele det skandinaviske skjoldet knekker. Sverige og Finland er nå under lava-nivå.",
-            "ULYKKE #142: Mennesker fanget i brennende ferger på vei mot en kokende sjø. Skrikene overdøves av jordskjelv.",
-            "OBSERVASJON: Store jordvoller sprengt opp av indre trykk. Folk lider i minutter før de brenner opp.",
-            "EUROPA BRENNER: Tyskland og Polen rapporterer om lava-elver i gatene. Millioner dør akkurat nå.",
-            "ULYKKE #288: Sykehuset i Ålesund har sunket ned i en sprekk med brennende lava. Ingen kom seg ut.",
-            "KOMMUNIKASJON: 'Mamma, jorda smelter!' – Siste SMS mottatt fra Sula før øya ble smadret.",
-            "GEOLOGISK RAPPORT: Kysten forsvinner. Ålesund er ikke lenger på kartet. Kun lava gjenstår.",
-            "SKRIK: Tusenvis av stemmer i kor fra Aksla før fjellet ble kastet ned i magma-bassenget.",
-            "TEKNISK STATUS: Infrastruktur er aske. Elektrisitet erstattet av radioaktivt lys fra lava-massene.",
-            "SYSTEMFEIL: 300 varierte ulykker skjer samtidig. Mennesker knuses av fallende fjell og brennes av lava.",
-            "LAVA-TSUNAMI: Sjøen har blitt erstattet av flytende stein. Alt liv i havet er brent opp.",
-            "SISTE MELDING: Vi holder oss fast i mobilen, men bakken er borte. Jorda har åpnet seg. VI DØR NÅ!"
+            "GPS RADAR: 64% av jordkloden bekreftet delvis eller helt ødelagt. Prosessen akselererer hvert sekund.",
+            "SCHENGEN STATUS: Tektonplater smadret. Erosjoner har utslettet store deler av Sentral-Europa.",
+            "SEISMISK SELVDESTRUKSJON: Jordens kjerne har startet ekspansjon. Tektoniske plater rundt i verden kollapser.",
+            "GPS 62.47 N / 6.14 E: Ålesund kystlinje forsvinner i lava. Seismisk aktivitet måler utenfor skala.",
+            "KJERNEFYSISK SKADEVERK: Stråling og lava fra de russiske reaktorene presser seg gjennom jordskorpen i alle verdenshjørner.",
+            "SKRIK FRA DYPET: Akustiske sensorer registrerer millioner av skrik før platene raser over befolkningen.",
+            "JORDENS SELVDESTRUKSJON: Systemet ble aktivert av reaktor-sjokket. Jorden er programmert til total destruksjon.",
+            "GPS POSISJON: Flere land i Europa brenner ned til lava-nivå. Plate-sammenbrudd observert i sanntid.",
+            "OBSERVASJON: Mennesker lider i minutter før de forsvinner i de åpne sprekkene i grunnflaten.",
+            "STATUS: 400 forskjellige dødsmeldinger registrert i Ålesund sektor alene de siste 10 minuttene.",
+            "TEKTONISK RAPPORT: 64 % av landene er brent opp eller dekket av lava. Erosjon ødelegger gjenværende masser.",
+            "KJERNE REAKTOR STATUS: Termisk press fra Russland har skapt en kjedereaksjon i alle vulkanske soner.",
+            "ENDELIG VARSEL: Ingen sivilisasjon forventet etter kl 21:00. Jordens selvdestruksjon er irreversibel."
         ];
 
         function addIncident() {
             const feed = document.getElementById('incident-feed');
             const reportText = reports[Math.floor(Math.random() * reports.length)];
             const newDiv = document.createElement('div');
+            const lat = (Math.random() * 180 - 90).toFixed(4);
+            const lon = (Math.random() * 360 - 180).toFixed(4);
             
-            newDiv.className = "p-8 bg-zinc-900 border-l-[20px] border-red-800 animate-pulse";
+            newDiv.className = "p-10 bg-zinc-900 border-l-[30px] border-orange-700 animate-pulse transition-all";
             newDiv.innerHTML = `
-                <div class="flex justify-between text-xs text-red-500 mb-4 font-black">
-                    <span>${(Math.random()*1000).toFixed(0)} - KRITISK MELDING</span>
-                    <span>UNDERGANG: PÅGÅR</span>
+                <div class="flex justify-between text-sm text-orange-500 mb-6 font-black">
+                    <span>GPS POSISJON: ${lat}° N, ${lon}° E</span>
+                    <span>SKADEVERK: MAKSIMALT</span>
                 </div>
-                <p class="text-white text-2xl md:text-4xl font-black uppercase tracking-tighter italic leading-none">${reportText}</p>
+                <p class="text-white text-3xl md:text-5xl font-black uppercase tracking-tighter italic leading-none">${reportText}</p>
             `;
             
             feed.prepend(newDiv);
-            if (feed.children.length > 20) {
+            if (feed.children.length > 25) {
                 feed.removeChild(feed.lastChild);
             }
         }
@@ -194,13 +196,13 @@
         // Oppdater tallene
         setInterval(() => {
             const globalEl = document.getElementById('global-death');
-            const localEl = document.getElementById('local-death');
+            const rateEl = document.getElementById('destruction-rate');
             
-            globalDeaths += Math.floor(Math.random() * 50000);
-            localDeaths += Math.floor(Math.random() * 100);
+            globalDeaths += Math.floor(Math.random() * 500000);
+            destructionPercent += 0.01;
             
-            globalEl.innerText = globalDeaths.toLocaleString('nb-NO');
-            localEl.innerText = localDeaths.toLocaleString('nb-NO');
+            globalEl.innerText = (globalDeaths / 1000000000).toFixed(1) + "B";
+            rateEl.innerText = destructionPercent.toFixed(2) + "%";
         }, 3000);
 
     </script>
