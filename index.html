@@ -3,11 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Rakuten TV Portal</title>
+    <title>Rakuten TV - Norway Portal</title>
     <style>
         :root {
-            --bg-color: #050505;
             --rakuten-red: #e60012;
+            --bg-dark: #0a0a0a;
+            --tv-transition: 0.6s cubic-bezier(0.23, 1, 0.32, 1);
         }
 
         body, html {
@@ -15,137 +16,233 @@
             padding: 0;
             width: 100%;
             height: 100%;
-            background: var(--bg-color);
-            font-family: 'Segoe UI', Roboto, sans-serif;
+            background-color: #000;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
             overflow: hidden;
             display: flex;
             justify-content: center;
             align-items: center;
+            color: white;
+        }
+
+        /* The TV Container */
+        #tv-container {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: var(--bg-dark);
+            transition: all var(--tv-transition);
+            overflow: hidden;
+        }
+
+        /* Power Off State: A thin horizontal line */
+        #tv-container.off {
+            height: 2px;
+            width: 0%;
+            background: #fff;
+            box-shadow: 0 0 20px #fff;
+        }
+
+        /* Scanline Overlay for TV effect */
+        .scanlines {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(
+                rgba(18, 16, 16, 0) 50%,
+                rgba(0, 0, 0, 0.1) 50%
+            ), linear-gradient(
+                90deg,
+                rgba(255, 0, 0, 0.03),
+                rgba(0, 255, 0, 0.01),
+                rgba(0, 0, 255, 0.03)
+            );
+            background-size: 100% 4px, 3px 100%;
+            z-index: 5;
+            pointer-events: none;
+            opacity: 0.3;
         }
 
         /* Video Background */
         #video-bg {
-            position: fixed;
-            right: 0;
-            bottom: 0;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
             min-width: 100%;
             min-height: 100%;
-            z-index: -1;
-            filter: brightness(0.4);
-            transition: opacity 1s ease;
+            width: auto;
+            height: auto;
+            z-index: 1;
+            filter: brightness(0.4) saturate(1.2);
             opacity: 0;
+            transition: opacity 1s ease-in;
         }
 
-        /* TV Screen Effect */
-        .screen {
-            width: 100vw;
-            height: 100vh;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-            background: black;
-            box-shadow: inset 0 0 100px rgba(0,0,0,1);
+        #tv-container.on #video-bg {
+            opacity: 1;
         }
 
-        /* Power Off State */
-        .screen.off {
-            height: 2px;
-            width: 0%;
-            background: white;
-            box-shadow: 0 0 20px white;
-        }
-
+        /* Centered Content */
         .content {
-            text-align: center;
-            opacity: 0;
-            transform: scale(0.9);
-            transition: all 0.8s ease;
-        }
-
-        .screen.on .content {
-            opacity: 1;
-            transform: scale(1);
-        }
-
-        .screen.on #video-bg {
-            opacity: 1;
-        }
-
-        /* Minimal Link Style */
-        .rakuten-link {
-            color: white;
-            text-decoration: none;
-            font-size: 2.5rem;
-            font-weight: bold;
-            letter-spacing: 2px;
-            padding: 15px 40px;
-            border: 2px solid white;
-            transition: all 0.3s ease;
             position: relative;
             z-index: 10;
+            text-align: center;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.8s ease 0.4s;
         }
 
-        .rakuten-link:hover {
-            background: white;
-            color: black;
-            box-shadow: 0 0 30px rgba(255,255,255,0.5);
+        #tv-container.on .content {
+            opacity: 1;
+            transform: translateY(0);
         }
 
-        /* Remote Control Button */
-        .remote-btn {
+        .rakuten-logo {
+            font-size: 3.5rem;
+            font-weight: 900;
+            letter-spacing: -2px;
+            margin-bottom: 30px;
+            text-shadow: 0 0 20px rgba(255,255,255,0.2);
+        }
+
+        .rakuten-logo span {
+            color: var(--rakuten-red);
+        }
+
+        .visit-btn {
+            display: inline-block;
+            padding: 18px 45px;
+            background-color: var(--rakuten-red);
+            color: white;
+            text-decoration: none;
+            font-weight: bold;
+            border-radius: 50px;
+            text-transform: uppercase;
+            font-size: 0.9rem;
+            letter-spacing: 1.5px;
+            transition: transform 0.3s ease, background-color 0.3s ease, box-shadow 0.3s ease;
+            box-shadow: 0 10px 20px rgba(230, 0, 18, 0.3);
+        }
+
+        .visit-btn:hover {
+            background-color: #ff1a2b;
+            transform: scale(1.05);
+            box-shadow: 0 15px 30px rgba(230, 0, 18, 0.5);
+        }
+
+        /* Floating Remote Control UI */
+        .remote-ui {
             position: fixed;
             bottom: 40px;
-            background: #222;
-            color: #ff4d4d;
-            border: 2px solid #444;
-            padding: 15px;
+            right: 40px;
+            z-index: 100;
+            background: #1a1a1a;
+            padding: 20px;
+            border-radius: 20px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.8);
+            border: 1px solid #333;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .power-btn {
+            width: 50px;
+            height: 50px;
             border-radius: 50%;
+            background: #222;
+            border: 2px solid #444;
+            color: #555;
+            font-size: 1.2rem;
             cursor: pointer;
-            width: 60px;
-            height: 60px;
-            font-size: 20px;
             display: flex;
             justify-content: center;
             align-items: center;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.5);
-            z-index: 100;
+            transition: all 0.2s;
         }
 
-        .remote-btn:active {
-            transform: scale(0.9);
+        .power-btn.active {
+            color: #ff4d4d;
+            border-color: #ff4d4d;
+            box-shadow: 0 0 15px rgba(255, 77, 77, 0.4);
+            text-shadow: 0 0 5px rgba(255, 77, 77, 0.8);
+        }
+
+        .remote-label {
+            font-size: 0.6rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: #888;
+        }
+
+        /* Mobile Adjustments */
+        @media (max-width: 600px) {
+            .rakuten-logo { font-size: 2.2rem; }
+            .remote-ui { bottom: 20px; right: 20px; padding: 12px; }
+            .power-btn { width: 40px; height: 40px; }
         }
     </style>
 </head>
 <body>
 
-    <button class="remote-btn" onclick="toggleTV()" title="Power Button">⏻</button>
-
-    <div id="tv-screen" class="screen off">
-        <video autoplay muted loop id="video-bg">
-            <source src="background.mp4" type="video/mp4">
+    <div id="tv-container" class="off">
+        <div class="scanlines"></div>
+        
+        <!-- Video Background using a sample placeholder since .abc is custom -->
+        <video id="video-bg" autoplay muted loop playsinline>
+            <source src="https://assets.mixkit.co/videos/preview/mixkit-abstract-fast-moving-light-streaks-34706-large.mp4" type="video/mp4">
         </video>
 
         <div class="content">
-            <a href="https://www.rakuten.tv/no" target="_blank" class="rakuten-link">
-                RAKUTEN TV
+            <h1 class="rakuten-logo">Rakuten <span>TV</span></h1>
+            <a href="https://www.rakuten.tv/no" target="_blank" class="visit-btn" id="portal-link">
+                Åpne i nytt vindu
             </a>
-            <p style="color: rgba(255,255,255,0.6); margin-top: 20px;">Open in New Browser</p>
+            <p style="margin-top: 25px; font-size: 0.8rem; color: #aaa; opacity: 0.8;">
+                Din portal til de beste filmene og seriene.
+            </p>
         </div>
     </div>
 
+    <!-- Remote Controller UI -->
+    <div class="remote-ui">
+        <div class="remote-label">Remote</div>
+        <button class="power-btn" id="powerBtn" onclick="togglePower()">⏻</button>
+        <div class="remote-label">Power</div>
+    </div>
+
     <script>
-        function toggleTV() {
-            const screen = document.getElementById('tv-screen');
-            if (screen.classList.contains('off')) {
-                screen.classList.remove('off');
-                screen.classList.add('on');
+        const tv = document.getElementById('tv-container');
+        const powerBtn = document.getElementById('powerBtn');
+        const video = document.getElementById('video-bg');
+
+        function togglePower() {
+            if (tv.classList.contains('off')) {
+                // Turn ON
+                tv.classList.remove('off');
+                tv.classList.add('on');
+                powerBtn.classList.add('active');
+                video.play();
             } else {
-                screen.classList.remove('on');
-                screen.classList.add('off');
+                // Turn OFF
+                tv.classList.remove('on');
+                tv.classList.add('off');
+                powerBtn.classList.remove('active');
+                video.pause();
             }
         }
+
+        // Add a slight audio effect or auto-on simulation if needed
+        window.addEventListener('load', () => {
+            console.log("System Ready. Use Remote to Power On.");
+        });
     </script>
 </body>
 </html>
