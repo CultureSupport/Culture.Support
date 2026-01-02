@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="no">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rakuten TV Portal</title>
+    <style>
+        :root {
+            --bg-color: #050505;
+            --rakuten-red: #e60012;
+        }
+
+        body, html {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--bg-color);
+            font-family: 'Segoe UI', Roboto, sans-serif;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* Video Background */
+        #video-bg {
+            position: fixed;
+            right: 0;
+            bottom: 0;
+            min-width: 100%;
+            min-height: 100%;
+            z-index: -1;
+            filter: brightness(0.4);
+            transition: opacity 1s ease;
+            opacity: 0;
+        }
+
+        /* TV Screen Effect */
+        .screen {
+            width: 100vw;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            background: black;
+            box-shadow: inset 0 0 100px rgba(0,0,0,1);
+        }
+
+        /* Power Off State */
+        .screen.off {
+            height: 2px;
+            width: 0%;
+            background: white;
+            box-shadow: 0 0 20px white;
+        }
+
+        .content {
+            text-align: center;
+            opacity: 0;
+            transform: scale(0.9);
+            transition: all 0.8s ease;
+        }
+
+        .screen.on .content {
+            opacity: 1;
+            transform: scale(1);
+        }
+
+        .screen.on #video-bg {
+            opacity: 1;
+        }
+
+        /* Minimal Link Style */
+        .rakuten-link {
+            color: white;
+            text-decoration: none;
+            font-size: 2.5rem;
+            font-weight: bold;
+            letter-spacing: 2px;
+            padding: 15px 40px;
+            border: 2px solid white;
+            transition: all 0.3s ease;
+            position: relative;
+            z-index: 10;
+        }
+
+        .rakuten-link:hover {
+            background: white;
+            color: black;
+            box-shadow: 0 0 30px rgba(255,255,255,0.5);
+        }
+
+        /* Remote Control Button */
+        .remote-btn {
+            position: fixed;
+            bottom: 40px;
+            background: #222;
+            color: #ff4d4d;
+            border: 2px solid #444;
+            padding: 15px;
+            border-radius: 50%;
+            cursor: pointer;
+            width: 60px;
+            height: 60px;
+            font-size: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+            z-index: 100;
+        }
+
+        .remote-btn:active {
+            transform: scale(0.9);
+        }
+    </style>
+</head>
+<body>
+
+    <button class="remote-btn" onclick="toggleTV()" title="Power Button">⏻</button>
+
+    <div id="tv-screen" class="screen off">
+        <video autoplay muted loop id="video-bg">
+            <source src="background.mp4" type="video/mp4">
+        </video>
+
+        <div class="content">
+            <a href="https://www.rakuten.tv/no" target="_blank" class="rakuten-link">
+                RAKUTEN TV
+            </a>
+            <p style="color: rgba(255,255,255,0.6); margin-top: 20px;">Open in New Browser</p>
+        </div>
+    </div>
+
+    <script>
+        function toggleTV() {
+            const screen = document.getElementById('tv-screen');
+            if (screen.classList.contains('off')) {
+                screen.classList.remove('off');
+                screen.classList.add('on');
+            } else {
+                screen.classList.remove('on');
+                screen.classList.add('off');
+            }
+        }
+    </script>
+</body>
+</html>
