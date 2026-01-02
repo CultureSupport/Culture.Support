@@ -10,16 +10,15 @@
 
         body {
             background-color: #0d0202;
-            color: #ff3333;
+            color: #ff1a1a;
             font-family: 'Share Tech Mono', monospace;
             overflow-x: hidden;
             margin: 0;
         }
 
-        /* Parallax bakgrunn med mobil-optimalisering */
         .parallax-bg {
-            background-image: linear-gradient(rgba(20, 0, 0, 0.85), rgba(10, 0, 0, 0.9)), 
-                              url('https://images.unsplash.com/photo-1536431311719-398b6704d4cc?auto=format&fit=crop&q=80&w=2000');
+            background-image: linear-gradient(rgba(40, 0, 0, 0.9), rgba(10, 0, 0, 0.95)), 
+                              url('https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&q=80&w=2000');
             min-height: 100vh;
             background-attachment: fixed;
             background-position: center;
@@ -31,7 +30,6 @@
             padding: 1rem;
         }
 
-        /* Deaktiver fixed attachment på iOS for bedre ytelse */
         @media (max-width: 768px) {
             .parallax-bg {
                 background-attachment: scroll;
@@ -39,208 +37,186 @@
         }
 
         .monitor-border {
-            border: 2px solid #ff0000;
-            box-shadow: 0 0 25px rgba(255, 0, 0, 0.4);
-            background: rgba(30, 0, 0, 0.95);
+            border: 4px solid #ff0000;
+            box-shadow: 0 0 40px rgba(255, 0, 0, 0.7), inset 0 0 20px rgba(255, 0, 0, 0.4);
+            background: rgba(15, 0, 0, 0.98);
             width: 100%;
-            max-width: 1000px;
+            max-width: 1100px;
         }
 
-        .glitch-heavy {
-            animation: glitch 0.2s linear infinite;
+        .glitch-extreme {
+            animation: glitch 0.1s linear infinite;
         }
 
         @keyframes glitch {
-            0% { transform: translate(0); }
+            0% { transform: translate(0); text-shadow: 2px 0 #ff0000, -2px 0 #0000ff; }
             20% { transform: translate(-2px, 2px); }
-            40% { transform: translate(-2px, -2px); }
+            40% { transform: translate(-2px, -2px); text-shadow: -2px 0 #ff0000, 2px 0 #0000ff; }
             60% { transform: translate(2px, 2px); }
             80% { transform: translate(2px, -2px); }
             100% { transform: translate(0); }
         }
 
         .emergency-flasher {
-            animation: flash 1s step-end infinite;
+            animation: flash 0.4s step-end infinite;
         }
 
         @keyframes flash {
-            50% { opacity: 0; }
+            50% { background-color: #ff0000; color: #fff; }
         }
 
-        .silence-overlay {
-            display: none;
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: #000;
-            z-index: 1000;
-            justify-content: center;
-            align-items: center;
-            flex-direction: column;
-            text-align: center;
-            padding: 2rem;
+        .warning-strip {
+            background: repeating-linear-gradient(45deg, #000, #000 15px, #ffb300 15px, #ffb300 30px);
+            height: 15px;
+            width: 100%;
         }
 
-        /* Tilpasser scrollbar */
-        ::-webkit-scrollbar {
-            width: 5px;
-        }
-        ::-webkit-scrollbar-track {
-            background: #0d0202;
-        }
-        ::-webkit-scrollbar-thumb {
-            background: #8b0000;
-        }
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #0d0202; }
+        ::-webkit-scrollbar-thumb { background: #ff0000; }
     </style>
 </head>
 <body>
 
-    <!-- Parallax Katastrofe Seksjon -->
+    <div class="warning-strip"></div>
+
     <div class="parallax-bg">
-        <div class="monitor-border p-4 md:p-10 rounded-lg text-center">
-            <h1 class="text-3xl sm:text-5xl md:text-7xl font-bold mb-2 glitch-heavy text-white break-words">SYSTEM KRITISK: ÅLESUND</h1>
+        <div class="monitor-border p-4 md:p-8 rounded-none">
+            <div class="flex justify-between items-center mb-4 border-b border-red-900 pb-2">
+                <span class="text-xs font-bold uppercase tracking-widest text-red-500">SYSTEM STATUS: TOTALT HAVARI</span>
+                <span class="text-xs font-bold uppercase tracking-widest text-red-500 animate-pulse">LOKASJON: ÅLESUND</span>
+            </div>
+
+            <h1 class="text-4xl sm:text-6xl md:text-8xl lg:text-9xl font-bold mb-4 glitch-extreme text-white text-center">ÅLESUND ALARM 🚨</h1>
             
-            <div class="bg-red-600 text-black font-bold py-1 px-3 sm:px-6 inline-block mb-6 emergency-flasher text-xs sm:text-base">
-                JORDSKJELV & JORDSKRED - NIVÅ 5
+            <div class="bg-black text-red-600 border-2 border-red-600 font-bold py-3 px-4 block mb-8 emergency-flasher text-center text-lg md:text-2xl uppercase">
+                PROGNOSE: 63 000 BEKREFTET DØDE KL 21:00
             </div>
             
-            <!-- Statistikk Grid - Responsiv -->
-            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 md:gap-6 mt-4">
-                <div class="p-4 md:p-6 border border-red-900 bg-black/70">
-                    <h2 class="text-sm md:text-xl mb-1 text-gray-400 uppercase">Bekreftet Omkomne</h2>
-                    <div id="death-toll" class="text-3xl md:text-5xl font-bold text-white">26 000</div>
-                    <p class="text-[10px] md:text-xs mt-2 text-red-500 uppercase tracking-widest">Massegrav-registrering</p>
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 md:gap-6">
+                <div class="p-4 md:p-6 border-2 border-red-900 bg-red-950/30 text-center">
+                    <h2 class="text-xs md:text-base mb-1 text-gray-400 uppercase">Aktuelle Ofre</h2>
+                    <div id="death-toll" class="text-4xl md:text-7xl font-bold text-white tabular-nums">48 912</div>
+                    <p class="text-[10px] md:text-xs mt-2 text-red-500 font-bold uppercase">Stiger mot 63 000</p>
                 </div>
-                <div class="p-4 md:p-6 border border-red-900 bg-black/70">
-                    <h2 class="text-sm md:text-xl mb-1 text-gray-400 uppercase">Bymasse Ødelagt</h2>
-                    <div class="text-3xl md:text-5xl font-bold text-red-500">80%</div>
-                    <p class="text-[10px] md:text-xs mt-2 text-red-500 uppercase tracking-widest">Totalt sammenbrudd</p>
+                <div class="p-4 md:p-6 border-2 border-red-900 bg-red-950/30 text-center">
+                    <h2 class="text-xs md:text-base mb-1 text-gray-400 uppercase">Jordskorpe Status</h2>
+                    <div class="text-4xl md:text-7xl font-bold text-red-600">BRUTT</div>
+                    <p class="text-[10px] md:text-xs mt-2 text-red-500 font-bold uppercase">Seksjon B-9 utslettet</p>
                 </div>
-                <div class="p-4 md:p-6 border border-red-900 bg-black/70">
-                    <h2 class="text-sm md:text-xl mb-1 text-gray-400 uppercase">Evakueringstid</h2>
-                    <div id="emergency-countdown" class="text-3xl md:text-5xl font-bold text-yellow-500">03:00</div>
-                    <p class="text-[10px] md:text-xs mt-2 text-yellow-600 uppercase tracking-widest">Neste varslede skred</p>
+                <div class="p-4 md:p-6 border-2 border-red-900 bg-red-950/30 text-center">
+                    <h2 class="text-xs md:text-base mb-1 text-gray-400 uppercase">Sekundærskred</h2>
+                    <div id="countdown-timer" class="text-4xl md:text-7xl font-bold text-yellow-500 tabular-nums">00:14</div>
+                    <p class="text-[10px] md:text-xs mt-2 text-yellow-600 font-bold uppercase">Evakuering umulig</p>
                 </div>
             </div>
 
-            <!-- Handlingsknapper - Responsivt layout -->
-            <div class="mt-8 flex flex-col sm:flex-row justify-center gap-4">
-                <button onclick="startSilence()" class="w-full sm:w-auto px-6 py-4 bg-white text-black font-bold hover:bg-gray-200 transition-all text-sm uppercase">
-                    3 minutter stillhet
-                </button>
-                <button class="w-full sm:w-auto px-6 py-4 border-2 border-red-600 text-red-600 font-bold hover:bg-red-600 hover:text-white transition-all text-sm uppercase">
-                    Rapport: Lidelse og traume
-                </button>
+            <div class="mt-8 p-6 bg-red-900/20 border-2 border-red-600">
+                <p class="text-sm md:text-xl text-white italic text-center font-bold">
+                    "Skrikene har stilnet. Det er bare den dype romlingen fra indre jordkjerne igjen."
+                </p>
             </div>
         </div>
     </div>
 
-    <!-- Lidelse Rapporter Seksjon -->
-    <section class="bg-zinc-950 py-12 md:py-20 px-4 md:px-6">
-        <div class="max-w-5xl mx-auto">
-            <div class="flex flex-col md:flex-row justify-between items-start md:items-end border-b border-red-900 pb-4 mb-8 gap-2">
-                <h3 class="text-2xl md:text-3xl font-bold uppercase">Lidelse- og skaderapporter</h3>
-                <span class="text-xs md:text-sm text-red-700">Kilde: Sykehus Bakgrunn / Psykiatri Monitor</span>
+    <section class="bg-black py-12 px-4 md:px-12 border-t-8 border-red-700">
+        <div class="max-w-6xl mx-auto">
+            <div class="flex items-center justify-between mb-10">
+                <h3 class="text-3xl md:text-5xl font-extrabold text-white uppercase tracking-tighter italic">LIVE FEED: UNDERGANG</h3>
+                <div class="h-6 w-6 bg-red-600 rounded-full animate-ping"></div>
             </div>
             
-            <div class="grid grid-cols-1 gap-4" id="suffering-list">
-                <div class="p-4 md:p-6 bg-red-950/20 border-l-4 border-red-600">
-                    <div class="flex flex-col sm:flex-row justify-between mb-2">
-                        <span class="font-bold text-sm md:text-base">[LOGG_442] - MASSIVT TRAUME</span>
-                        <span class="text-[10px] md:text-xs opacity-50 uppercase mt-1 sm:mt-0">Stasjon: Ålesund Sentrum</span>
+            <div class="grid grid-cols-1 gap-6" id="incident-feed">
+                <!-- Initiell logg -->
+                <div class="p-6 bg-zinc-900 border-l-8 border-red-600 shadow-2xl">
+                    <div class="flex justify-between text-xs text-red-500 mb-2 font-bold uppercase">
+                        <span>Feltmonitor - Sektor Sentrum</span>
+                        <span>ALVORLIGHETSGRAD: EKSTREM</span>
                     </div>
-                    <p class="text-sm md:text-base text-zinc-300 italic leading-relaxed">"Gatene er borte. Jordskredet har svelget hele bydeler. Stillheten etter skjelvet brytes kun av skrik fra de fastklemte."</p>
+                    <p class="text-white text-lg md:text-2xl leading-tight">Store jordvoller sprengt opp fra bakken. Mennesker hørt en gang skrike, etterfulgt av massiv bråk fra jordens indre. Totalt mørke.</p>
                 </div>
-                <div class="p-4 md:p-6 bg-zinc-900 border-l-4 border-zinc-700">
-                    <div class="flex flex-col sm:flex-row justify-between mb-2">
-                        <span class="font-bold text-zinc-500 text-sm md:text-base">[LOGG_441] - PSYKOSE-ESKALERING</span>
-                        <span class="text-[10px] md:text-xs opacity-50 uppercase mt-1 sm:mt-0">Stasjon: Moa Monitor</span>
+                <div class="p-6 bg-zinc-950 border-l-8 border-red-800">
+                    <div class="flex justify-between text-xs text-red-500 mb-2 font-bold uppercase">
+                        <span>Psykiatri Overvåking - SNR</span>
+                        <span>LOGG_HAVARI_01</span>
                     </div>
-                    <p class="text-sm md:text-base text-zinc-300 leading-relaxed">Overlevende rapporterer massiv akutt psykose. Kapasitet ved psykiatrisk seksjon er ikke-eksisterende. Pasienter ligger i ruinene.</p>
+                    <p class="text-zinc-300 text-lg md:text-xl">Grove psykotiske lidelser. Pasienter brenner bål i ruinene og venter ute i kulden mens skredet raser over dem.</p>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- Overlay for Stillhet -->
-    <div id="silenceBox" class="silence-overlay">
-        <div class="mb-6 text-red-800 text-6xl md:text-9xl">†</div>
-        <h2 class="text-2xl md:text-4xl text-white mb-4 font-bold uppercase">I minne om de 26 000</h2>
-        <p class="text-zinc-500 max-w-lg mb-8 uppercase tracking-widest text-xs md:text-sm leading-relaxed">
-            Ålesund er tapt. Jorden har tatt 80% av vår stolthet. 
-            Vi tier i 3 minutter for de som hviler under skredet.
-        </p>
-        <div id="silenceTimer" class="text-6xl md:text-8xl font-bold text-white tabular-nums">03:00</div>
-    </div>
-
     <script>
-        // Emergency Countdown (Liten tidtaker)
-        let emergencyTime = 3 * 60;
-        const emerEl = document.getElementById('emergency-countdown');
+        // Systemkonstanter
+        let currentDeaths = 48912;
+        const targetDeaths = 63000;
+        let countdownTime = 14;
 
-        function updateEmergencyTimer() {
-            if(emergencyTime <= 0) emergencyTime = 3 * 60;
-            const m = Math.floor(emergencyTime / 60);
-            const s = emergencyTime % 60;
-            emerEl.innerText = `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
-            emergencyTime--;
+        // Nedtelling til neste hendelse
+        function updateTimer() {
+            const timerEl = document.getElementById('countdown-timer');
+            countdownTime--;
+            if (countdownTime < 0) countdownTime = 30;
+            const m = Math.floor(countdownTime / 60);
+            const s = countdownTime % 60;
+            timerEl.innerText = `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
         }
+        setInterval(updateTimer, 1000);
 
-        setInterval(updateEmergencyTimer, 1000);
-
-        // Funksjon for 3 minutter stillhet
-        function startSilence() {
-            const overlay = document.getElementById('silenceBox');
-            const timerDisplay = document.getElementById('silenceTimer');
-            overlay.style.display = 'flex';
-            document.body.style.overflow = 'hidden'; // Hindre scrolling under stillhet
-            
-            let silenceLeft = 180;
-            const interval = setInterval(() => {
-                silenceLeft--;
-                const m = Math.floor(silenceLeft / 60);
-                const s = silenceLeft % 60;
-                timerDisplay.innerText = `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
-
-                if (silenceLeft <= 0) {
-                    clearInterval(interval);
-                    overlay.style.display = 'none';
-                    document.body.style.overflow = 'auto';
-                }
-            }, 1000);
-        }
-
-        // Simuler økende dødstall og nye nødmeldinger
-        setInterval(() => {
+        // Oppdatering av dødstall hvert 4. sekund
+        function updateDeaths() {
             const deathEl = document.getElementById('death-toll');
-            let current = parseInt(deathEl.innerText.replace(/\s/g, ''));
-            if(Math.random() > 0.6) {
-                current += Math.floor(Math.random() * 50);
-                deathEl.innerText = current.toLocaleString('nb-NO');
-                updateSuffering();
-            }
-        }, 4000);
-
-        function updateSuffering() {
-            const list = document.getElementById('suffering-list');
-            const newReport = document.createElement('div');
-            const id = Math.floor(Math.random()*999);
-            
-            newReport.className = "p-4 md:p-6 bg-red-950/10 border-l-4 border-red-900 animate-pulse";
-            newReport.innerHTML = `
-                <div class="flex justify-between mb-2">
-                    <span class="font-bold text-red-400 text-sm md:text-base">[NY RAPPORT - LIDELSE]</span>
-                    <span class="text-[10px] md:text-xs opacity-50">ID: ${id}</span>
-                </div>
-                <p class="text-sm md:text-base text-zinc-400">Uidentifiserte lik funnet i skredkanten nær Aksla. Redningsarbeid avbrutt av ustabile grunnforhold.</p>
-            `;
-            list.prepend(newReport);
-            
-            // Begrens antall rapporter i listen for ytelse
-            if (list.children.length > 10) {
-                list.removeChild(list.lastChild);
+            // Akselererende dødsrate
+            const increment = Math.floor(Math.random() * 200) + 100;
+            if (currentDeaths < targetDeaths) {
+                currentDeaths += increment;
+                deathEl.innerText = currentDeaths.toLocaleString('nb-NO');
+            } else {
+                deathEl.innerText = "63 000+";
             }
         }
+        setInterval(updateDeaths, 4000);
+
+        // Katastrofe-rapporter (oppdateres hvert 4. sekund)
+        const reports = [
+            "NYTT RAS: Jordmasser på størrelse med fjell raser over sentrum. Nye skrik registrert, så total stillhet.",
+            "PSYKOTISK KRISE: Pasienter sitter nakne i snøen og brenner møbler. Nekter hjelp mens nye skred raser.",
+            "SEISMISK SJOKK: Jordvoller på 15 meter presset opp gjennom bysentrum. Mennesker fanget i sprekker.",
+            "LYD FROM DYPET: Akustiske sensorer fanger opp knusing av bein og betong. Bråk fra jordens kjerne dominerer.",
+            "KULDE-EKSPONERING: Overlevende sitter apatiske ute i kulden. Bålene slukkes av snø og jordmasser.",
+            "SISTE ROP: Enkeltstående hyl høres fra dype jordvoller før de dekkes helt av sekundærskred.",
+            "TERMINAL STATUS: 80% av Ålesund er fysisk borte. Bare lyden av knust grunn gjenstår.",
+            "BRANN I RUINENE: Bål observert over hele sektor Nord. Ingen bevegelse registrert rundt flammene.",
+            "INDRE KJERNE: Magnetiske forstyrrelser øker. Bråket fra grunnen gjør kommunikasjon umulig.",
+            "MASSEBEGRAVELSE: Et nytt skred har akkurat dekket overlevelsesleiren ved Aksla."
+        ];
+
+        function addIncident() {
+            const feed = document.getElementById('incident-feed');
+            const reportText = reports[Math.floor(Math.random() * reports.length)];
+            const newDiv = document.createElement('div');
+            const time = new Date().toLocaleTimeString('nb-NO');
+            
+            newDiv.className = "p-6 bg-zinc-900 border-l-8 border-red-600 animate-pulse transition-all duration-500";
+            newDiv.innerHTML = `
+                <div class="flex justify-between text-xs text-red-500 mb-2 font-bold">
+                    <span>STATUSKONTROLL - ${time}</span>
+                    <span>ALARM: KRITISK</span>
+                </div>
+                <p class="text-white text-lg md:text-2xl font-bold uppercase tracking-tight">${reportText}</p>
+            `;
+            
+            feed.prepend(newDiv);
+            
+            // Hold loggen håndterbar
+            if (feed.children.length > 15) {
+                feed.removeChild(feed.lastChild);
+            }
+        }
+        setInterval(addIncident, 4000);
+
     </script>
 </body>
 </html>
+
 
