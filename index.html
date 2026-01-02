@@ -3,26 +3,25 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>46000 omkommet ålesund</title>
+    <title>Ålesund Alarm - Jordens Undergang</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap');
 
         body {
-            background-color: #0d0202;
-            color: #ff1a1a;
+            background-color: #050000;
+            color: #ff3300;
             font-family: 'Share Tech Mono', monospace;
             overflow-x: hidden;
             margin: 0;
         }
 
-        .parallax-bg {
-            background-image: linear-gradient(rgba(40, 0, 0, 0.9), rgba(10, 0, 0, 0.95)), 
-                              url('https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&q=80&w=2000');
+        .lava-bg {
+            background-image: linear-gradient(rgba(50, 0, 0, 0.9), rgba(20, 0, 0, 0.95)), 
+                              url('https://images.unsplash.com/photo-1518111459945-98271144849e?auto=format&fit=crop&q=80&w=2000');
             min-height: 100vh;
             background-attachment: fixed;
             background-position: center;
-            background-repeat: no-repeat;
             background-size: cover;
             display: flex;
             align-items: center;
@@ -30,18 +29,12 @@
             padding: 1rem;
         }
 
-        @media (max-width: 768px) {
-            .parallax-bg {
-                background-attachment: scroll;
-            }
-        }
-
         .monitor-border {
-            border: 4px solid #ff0000;
-            box-shadow: 0 0 40px rgba(255, 0, 0, 0.7), inset 0 0 20px rgba(255, 0, 0, 0.4);
-            background: rgba(15, 0, 0, 0.98);
+            border: 5px solid #ff4500;
+            box-shadow: 0 0 50px rgba(255, 69, 0, 0.8), inset 0 0 30px rgba(255, 0, 0, 0.5);
+            background: rgba(10, 0, 0, 0.98);
             width: 100%;
-            max-width: 1100px;
+            max-width: 1200px;
         }
 
         .glitch-extreme {
@@ -49,16 +42,24 @@
         }
 
         @keyframes glitch {
-            0% { transform: translate(0); text-shadow: 2px 0 #ff0000, -2px 0 #0000ff; }
-            20% { transform: translate(-2px, 2px); }
-            40% { transform: translate(-2px, -2px); text-shadow: -2px 0 #ff0000, 2px 0 #0000ff; }
-            60% { transform: translate(2px, 2px); }
-            80% { transform: translate(2px, -2px); }
+            0% { transform: translate(0); text-shadow: 3px 0 #ff0000, -3px 0 #ffaa00; }
+            20% { transform: translate(-3px, 3px); }
+            40% { transform: translate(-3px, -3px); }
+            60% { transform: translate(3px, 3px); }
             100% { transform: translate(0); }
         }
 
+        .lava-pulse {
+            animation: lavaFlow 2s ease-in-out infinite;
+        }
+
+        @keyframes lavaFlow {
+            0%, 100% { box-shadow: 0 0 20px #ff4500; }
+            50% { box-shadow: 0 0 60px #ff0000; }
+        }
+
         .emergency-flasher {
-            animation: flash 0.4s step-end infinite;
+            animation: flash 0.3s step-end infinite;
         }
 
         @keyframes flash {
@@ -66,81 +67,81 @@
         }
 
         .warning-strip {
-            background: repeating-linear-gradient(45deg, #000, #000 15px, #ffb300 15px, #ffb300 30px);
-            height: 15px;
+            background: repeating-linear-gradient(45deg, #000, #000 15px, #ff4500 15px, #ff4500 30px);
+            height: 20px;
             width: 100%;
         }
 
-        ::-webkit-scrollbar { width: 8px; }
-        ::-webkit-scrollbar-track { background: #0d0202; }
-        ::-webkit-scrollbar-thumb { background: #ff0000; }
+        ::-webkit-scrollbar { width: 10px; }
+        ::-webkit-scrollbar-track { background: #050000; }
+        ::-webkit-scrollbar-thumb { background: #ff4500; }
     </style>
 </head>
 <body>
 
     <div class="warning-strip"></div>
 
-    <div class="parallax-bg">
-        <div class="monitor-border p-4 md:p-8 rounded-none">
-            <div class="flex justify-between items-center mb-4 border-b border-red-900 pb-2">
-                <span class="text-xs font-bold uppercase tracking-widest text-red-500">SYSTEM STATUS: TOTALT HAVARI</span>
-                <span class="text-xs font-bold uppercase tracking-widest text-red-500 animate-pulse">LOKASJON: ÅLESUND</span>
+    <div class="lava-bg">
+        <div class="monitor-border p-4 md:p-10 rounded-none lava-pulse">
+            <div class="flex justify-between items-center mb-6 border-b-2 border-orange-900 pb-2">
+                <span class="text-xs md:text-sm font-bold uppercase tracking-widest text-orange-500">GPS STATUS: KOLLAPS / LAVA-INFILTRASJON</span>
+                <span class="text-xs md:text-sm font-bold uppercase tracking-widest text-orange-500 animate-pulse">LOKASJON: KYSTEN FORSVINNER</span>
             </div>
 
-            <h1 class="text-4xl sm:text-6xl md:text-8xl lg:text-9xl font-bold mb-4 glitch-extreme text-white text-center">ÅLESUND ALARM 🚨</h1>
+            <h1 class="text-5xl sm:text-7xl md:text-9xl font-extrabold mb-6 glitch-extreme text-white text-center tracking-tighter">ÅLESUND ALARM 🚨</h1>
             
-            <div class="bg-black text-red-600 border-2 border-red-600 font-bold py-3 px-4 block mb-8 emergency-flasher text-center text-lg md:text-2xl uppercase">
-                PROGNOSE: 63 000 BEKREFTET DØDE KL 21:00
+            <div class="bg-red-700 text-white font-black py-4 px-4 block mb-10 emergency-flasher text-center text-xl md:text-4xl uppercase">
+                JORDENS UNDERGANG: 72 000 DØDE - INGEN OVERLEVENDE ETTER 21:00
             </div>
             
-            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 md:gap-6">
-                <div class="p-4 md:p-6 border-2 border-red-900 bg-red-950/30 text-center">
-                    <h2 class="text-xs md:text-base mb-1 text-gray-400 uppercase">Aktuelle Ofre</h2>
-                    <div id="death-toll" class="text-4xl md:text-7xl font-bold text-white tabular-nums">48 912</div>
-                    <p class="text-[10px] md:text-xs mt-2 text-red-500 font-bold uppercase">Stiger mot 63 000</p>
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-6">
+                <div class="p-6 border-2 border-orange-600 bg-red-950/40 text-center">
+                    <h2 class="text-sm md:text-lg mb-1 text-orange-300 uppercase font-bold">Ofre i Lava</h2>
+                    <div id="death-toll" class="text-5xl md:text-8xl font-black text-white tabular-nums">72 000</div>
+                    <p class="text-xs mt-2 text-orange-500 font-bold uppercase">Total utslettelse pågår</p>
                 </div>
-                <div class="p-4 md:p-6 border-2 border-red-900 bg-red-950/30 text-center">
-                    <h2 class="text-xs md:text-base mb-1 text-gray-400 uppercase">Jordskorpe Status</h2>
-                    <div class="text-4xl md:text-7xl font-bold text-red-600">BRUTT</div>
-                    <p class="text-[10px] md:text-xs mt-2 text-red-500 font-bold uppercase">Seksjon B-9 utslettet</p>
+                <div class="p-6 border-2 border-orange-600 bg-red-950/40 text-center">
+                    <h2 class="text-sm md:text-lg mb-1 text-orange-300 uppercase font-bold">Teknisk Nett</h2>
+                    <div class="text-5xl md:text-8xl font-black text-red-600">NULL</div>
+                    <p class="text-xs mt-2 text-orange-500 font-bold uppercase">Veinett/Fjell smadret</p>
                 </div>
-                <div class="p-4 md:p-6 border-2 border-red-900 bg-red-950/30 text-center">
-                    <h2 class="text-xs md:text-base mb-1 text-gray-400 uppercase">Sekundærskred</h2>
-                    <div id="countdown-timer" class="text-4xl md:text-7xl font-bold text-yellow-500 tabular-nums">00:14</div>
-                    <p class="text-[10px] md:text-xs mt-2 text-yellow-600 font-bold uppercase">Evakuering umulig</p>
+                <div class="p-6 border-2 border-orange-600 bg-red-950/40 text-center">
+                    <h2 class="text-sm md:text-lg mb-1 text-orange-300 uppercase font-bold">Tid til Slutt</h2>
+                    <div id="countdown-timer" class="text-5xl md:text-8xl font-black text-yellow-500 tabular-nums">00:08</div>
+                    <p class="text-xs mt-2 text-yellow-600 font-bold uppercase">Kysten forsvinner</p>
                 </div>
             </div>
 
-            <div class="mt-8 p-6 bg-red-900/20 border-2 border-red-600">
-                <p class="text-sm md:text-xl text-white italic text-center font-bold">
-                    "Skrikene har stilnet. Det er bare den dype romlingen fra indre jordkjerne igjen."
+            <div class="mt-10 p-8 bg-orange-900/30 border-4 border-red-600">
+                <p class="text-lg md:text-2xl text-white italic text-center font-black leading-tight uppercase">
+                    "Folk ringer og holder seg fast i det siste de har, før de kastes ned i lavamassene. Et skrik om hjelp, så bare bråk fra jordens kjerne."
                 </p>
             </div>
         </div>
     </div>
 
-    <section class="bg-black py-12 px-4 md:px-12 border-t-8 border-red-700">
+    <section class="bg-black py-16 px-4 md:px-12 border-t-8 border-orange-700">
         <div class="max-w-6xl mx-auto">
-            <div class="flex items-center justify-between mb-10">
-                <h3 class="text-3xl md:text-5xl font-extrabold text-white uppercase tracking-tighter italic">LIVE FEED: UNDERGANG</h3>
-                <div class="h-6 w-6 bg-red-600 rounded-full animate-ping"></div>
+            <div class="flex flex-col md:flex-row items-center justify-between mb-12 gap-4">
+                <h3 class="text-4xl md:text-6xl font-black text-white uppercase tracking-tighter italic">GPS RAPPORT: TOTAL ØDELEGGELSE</h3>
+                <div class="h-8 w-8 bg-orange-600 rounded-full animate-ping"></div>
             </div>
             
-            <div class="grid grid-cols-1 gap-6" id="incident-feed">
+            <div class="grid grid-cols-1 gap-8" id="incident-feed">
                 <!-- Initiell logg -->
-                <div class="p-6 bg-zinc-900 border-l-8 border-red-600 shadow-2xl">
-                    <div class="flex justify-between text-xs text-red-500 mb-2 font-bold uppercase">
-                        <span>Feltmonitor - Sektor Sentrum</span>
-                        <span>ALVORLIGHETSGRAD: EKSTREM</span>
+                <div class="p-8 bg-zinc-900 border-l-[12px] border-orange-600">
+                    <div class="flex justify-between text-sm text-orange-500 mb-3 font-black uppercase">
+                        <span>GPS: 62.4722° N, 6.1495° E (ÅLESUND SENTRUM)</span>
+                        <span>STATUS: SMELTET</span>
                     </div>
-                    <p class="text-white text-lg md:text-2xl leading-tight">Store jordvoller sprengt opp fra bakken. Mennesker hørt en gang skrike, etterfulgt av massiv bråk fra jordens indre. Totalt mørke.</p>
+                    <p class="text-white text-xl md:text-3xl font-bold leading-none uppercase">GRUNNFLATEN TOTALT ØDELAGT. BYEN BRENNER I LAVAMASSER. INGEN HUS STÅR IGJEN. INFRASTRUKTUR FORSVUNNET.</p>
                 </div>
-                <div class="p-6 bg-zinc-950 border-l-8 border-red-800">
-                    <div class="flex justify-between text-xs text-red-500 mb-2 font-bold uppercase">
-                        <span>Psykiatri Overvåking - SNR</span>
-                        <span>LOGG_HAVARI_01</span>
+                <div class="p-8 bg-zinc-950 border-l-[12px] border-red-900">
+                    <div class="flex justify-between text-sm text-red-600 mb-3 font-black uppercase">
+                        <span>GPS: ØYENE (GISKE/HESSA/ELLINGSØY)</span>
+                        <span>STATUS: TOTALT SMADRET</span>
                     </div>
-                    <p class="text-zinc-300 text-lg md:text-xl">Grove psykotiske lidelser. Pasienter brenner bål i ruinene og venter ute i kulden mens skredet raser over dem.</p>
+                    <p class="text-orange-500 text-xl md:text-2xl font-bold uppercase">Alle øyer er totalt smadret. Sjøen koker. Fjellene raser ned i lavaen. Ferdselssoner eksisterer ikke lenger.</p>
                 </div>
             </div>
         </div>
@@ -148,47 +149,32 @@
 
     <script>
         // Systemkonstanter
-        let currentDeaths = 48912;
-        const targetDeaths = 63000;
-        let countdownTime = 14;
+        let currentDeaths = 72000;
+        let countdownTime = 8;
 
-        // Nedtelling til neste hendelse
+        // Nedtelling til kystens forsvinning
         function updateTimer() {
             const timerEl = document.getElementById('countdown-timer');
             countdownTime--;
-            if (countdownTime < 0) countdownTime = 30;
+            if (countdownTime < 0) countdownTime = 20;
             const m = Math.floor(countdownTime / 60);
             const s = countdownTime % 60;
             timerEl.innerText = `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
         }
         setInterval(updateTimer, 1000);
 
-        // Oppdatering av dødstall hvert 4. sekund
-        function updateDeaths() {
-            const deathEl = document.getElementById('death-toll');
-            // Akselererende dødsrate
-            const increment = Math.floor(Math.random() * 200) + 100;
-            if (currentDeaths < targetDeaths) {
-                currentDeaths += increment;
-                deathEl.innerText = currentDeaths.toLocaleString('nb-NO');
-            } else {
-                deathEl.innerText = "63 000+";
-            }
-        }
-        setInterval(updateDeaths, 4000);
-
-        // Katastrofe-rapporter (oppdateres hvert 4. sekund)
+        // Katastrofe-rapporter fra GPS-områder (oppdateres hvert 4. sekund)
         const reports = [
-            "NYTT RAS: Jordmasser på størrelse med fjell raser over sentrum. Nye skrik registrert, så total stillhet.",
-            "PSYKOTISK KRISE: Pasienter sitter nakne i snøen og brenner møbler. Nekter hjelp mens nye skred raser.",
-            "SEISMISK SJOKK: Jordvoller på 15 meter presset opp gjennom bysentrum. Mennesker fanget i sprekker.",
-            "LYD FROM DYPET: Akustiske sensorer fanger opp knusing av bein og betong. Bråk fra jordens kjerne dominerer.",
-            "KULDE-EKSPONERING: Overlevende sitter apatiske ute i kulden. Bålene slukkes av snø og jordmasser.",
-            "SISTE ROP: Enkeltstående hyl høres fra dype jordvoller før de dekkes helt av sekundærskred.",
-            "TERMINAL STATUS: 80% av Ålesund er fysisk borte. Bare lyden av knust grunn gjenstår.",
-            "BRANN I RUINENE: Bål observert over hele sektor Nord. Ingen bevegelse registrert rundt flammene.",
-            "INDRE KJERNE: Magnetiske forstyrrelser øker. Bråket fra grunnen gjør kommunikasjon umulig.",
-            "MASSEBEGRAVELSE: Et nytt skred har akkurat dekket overlevelsesleiren ved Aksla."
+            "GPS RADAR: Ålesund havn forsvinner i lava. Vannet fordamper. Mennesker høres skrike i telefonen før signalet brytes.",
+            "FYLKESTALL: 72 000 bekreftet døde. Tallet øker eksponentielt etter hvert som lavaen når de siste tilfluktsstedene.",
+            "GEOLOGISK RAPPORT: Jordens undergang har startet i Ålesund. Kystlinjen trekker seg ned i jordens indre.",
+            "LAVA-STRØM: Flytende stein brenner opp alt. Hus smuldrer som papir. Mennesker lider i minutter før de forsvinner.",
+            "INFRASTRUKTUR-KOLLAPS: Veinettet er smeltet bort. Ingen ferdsel er mulig. Fjellene på Sunnmøre knuses av indre trykk.",
+            "GPS: 62.47 N / 6.30 E: Hele fjellsider raser over de få som fortsatt klamrer seg fast. Bare bråk fra kjernen gjenstår.",
+            "TERMINAL MELDING: Ingen livstegn etter kl 21:00. Ålesund blir en lavasjø.",
+            "SISTE KOMMUNIKASJON: 'Vi blir kastet ned i lavaen!' - Siste mottatte lyd før total radiostille.",
+            "STRUKTURELT SAMMENBRUDD: Grunnflatene i hele Møre og Romsdal endres permanent. Kysten forsvinner.",
+            "ALARM: Store jordvoller sprengt opp. Lavaen fosser ut av sprekkene og dekker overlevende øyeblikkelig."
         ];
 
         function addIncident() {
@@ -196,27 +182,33 @@
             const reportText = reports[Math.floor(Math.random() * reports.length)];
             const newDiv = document.createElement('div');
             const time = new Date().toLocaleTimeString('nb-NO');
+            const gpsLat = (Math.random() * (62.5 - 62.4) + 62.4).toFixed(4);
+            const gpsLon = (Math.random() * (6.3 - 6.0) + 6.0).toFixed(4);
             
-            newDiv.className = "p-6 bg-zinc-900 border-l-8 border-red-600 animate-pulse transition-all duration-500";
+            newDiv.className = "p-8 bg-zinc-900 border-l-[12px] border-orange-700 animate-pulse transition-all duration-300";
             newDiv.innerHTML = `
-                <div class="flex justify-between text-xs text-red-500 mb-2 font-bold">
-                    <span>STATUSKONTROLL - ${time}</span>
-                    <span>ALARM: KRITISK</span>
+                <div class="flex justify-between text-xs text-orange-500 mb-3 font-black">
+                    <span>GPS OVERVÅKING: ${gpsLat}° N, ${gpsLon}° E</span>
+                    <span>UNDERGANG: PÅGÅR</span>
                 </div>
-                <p class="text-white text-lg md:text-2xl font-bold uppercase tracking-tight">${reportText}</p>
+                <p class="text-white text-xl md:text-3xl font-black uppercase tracking-tighter italic">${reportText}</p>
             `;
             
             feed.prepend(newDiv);
-            
-            // Hold loggen håndterbar
             if (feed.children.length > 15) {
                 feed.removeChild(feed.lastChild);
             }
         }
         setInterval(addIncident, 4000);
 
+        // Simulert dødstallstigning
+        setInterval(() => {
+            const deathEl = document.getElementById('death-toll');
+            currentDeaths += Math.floor(Math.random() * 100);
+            deathEl.innerText = currentDeaths.toLocaleString('nb-NO');
+        }, 3000);
+
     </script>
 </body>
 </html>
-
 
