@@ -2,314 +2,238 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title> culture.support</title>
-    <script src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>GitHub API & Automation Shell</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
-        
+        :root {
+            --gh-dark: #0d1117;
+            --gh-border: #30363d;
+        }
         body {
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
-            background-color: #0d1117;
+            background-color: var(--gh-dark);
             color: #c9d1d9;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
             overflow-x: hidden;
         }
-
-        .mono { font-family: 'JetBrains Mono', monospace; }
-
-        /* Custom GitHub Scrollbar */
-        ::-webkit-scrollbar { width: 6px; height: 6px; }
-        ::-webkit-scrollbar-track { background: #0d1117; }
-        ::-webkit-scrollbar-thumb { background: #30363d; border-radius: 4px; }
-        ::-webkit-scrollbar-thumb:hover { background: #484f58; }
-
-        .github-border { border-color: #30363d; }
-        .github-bg-secondary { background-color: #161b22; }
-        .github-btn-primary { background-color: #238636; }
-        .github-btn-primary:hover { background-color: #2ea043; }
-
-        .loading-bar {
-            height: 3px;
-            background: linear-gradient(to right, #238636, #58a6ff, #bc8cff);
-            background-size: 200% 100%;
-            animation: moveGradient 2s linear infinite;
+        .glass-card {
+            background: rgba(22, 27, 34, 0.8);
+            backdrop-filter: blur(12px);
+            border: 1px solid var(--gh-border);
+            border-radius: 12px;
         }
-        @keyframes moveGradient {
-            0% { background-position: 100% 0%; }
-            100% { background-position: 0% 0%; }
+        .shell-container {
+            background: #010409;
+            border: 1px solid var(--gh-border);
+            font-family: 'Courier New', Courier, monospace;
+            height: 300px;
+            overflow-y: auto;
+            scroll-behavior: smooth;
         }
-
-        .custom-scroll { overflow-y: auto; scrollbar-gutter: stable; }
-        
-        /* Hide scrollbar for clean horizontal nav on mobile */
-        .hide-scrollbar::-webkit-scrollbar { display: none; }
-        .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        .status-dot {
+            height: 8px;
+            width: 8px;
+            border-radius: 50%;
+            display: inline-block;
+        }
+        .animate-pulse-fast {
+            animation: pulse 1s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: .3; }
+        }
+        /* Mobile Fluidity */
+        @media (max-width: 640px) {
+            .shell-container { height: 200px; font-size: 0.75rem; }
+            h1 { font-size: 1.25rem !important; }
+        }
     </style>
 </head>
-<body x-data="devHub()" class="min-h-screen">
+<body class="p-0 m-0">
 
-    <!-- Loading State -->
-    <div x-show="isGenerating" class="fixed top-0 left-0 w-full z-[100] loading-bar"></div>
-
-    <!-- Top Navigation -->
-    <header class="bg-[#010409] border-b github-border py-3 px-4 sticky top-0 z-50">
-        <div class="max-w-[1600px] mx-auto flex flex-col md:flex-row items-center gap-4">
-            <div class="flex items-center justify-between w-full md:w-auto">
-                <div class="flex items-center space-x-3">
-                    <svg class="w-7 h-7 fill-white" viewBox="0 0 16 16"><path d="M8 0c4.42 0 8 3.58 8 8a8.013 8.013 0 0 1-5.45 7.59c-.4.08-.55-.17-.55-.38 0-.27.01-1.13.01-2.2 0-.75-.25-1.23-.54-1.48 1.78-.2 3.65-.88 3.65-3.95 0-.88-.31-1.59-.82-2.15.08-.2.36-1.02-.08-2.12 0 0-.67-.22-2.2.82-.64-.18-1.32-.27-2-.27-.68 0-1.36.09-2 .27-1.53-1.03-2.2-.82-2.2-.82-.44 1.1-.16 1.92-.08 2.12-.51.56-.82 1.28-.82 2.15 0 3.06 1.86 3.75 3.64 3.95-.23.2-.44.55-.51 1.07-.46.21-1.61.55-2.33-.66-.15-.24-.6-.83-1.23-.82-.67.01-.27.38.01.53.34.19.73.9.82 1.13.16.45.68 1.31 2.69.94 0 .67.01 1.3.01 1.49 0 .21-.15.45-.55.38A7.995 7.995 0 0 1 0 8c0-4.42 3.58-8 8-8Z"></path></svg>
-                    <span class="font-bold text-white tracking-tight text-sm">DEVHUB_60K</span>
-                </div>
-                <div class="md:hidden">
-                    <button @click="sidebarOpen = !sidebarOpen" class="p-1 text-gray-400 border github-border rounded">
-                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path></svg>
-                    </button>
-                </div>
+    <!-- Header / Batch Generator Status -->
+    <header class="sticky top-0 z-50 bg-[#161b22] border-b border-[#30363d] p-4 shadow-xl">
+        <div class="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
+            <div class="flex items-center gap-3">
+                <i class="fab fa-github text-2xl text-white"></i>
+                <h1 class="text-lg font-semibold text-white">GitHub Automation GUI</h1>
             </div>
             
-            <div class="flex-1 w-full max-w-2xl">
-                <div class="relative group">
-                    <input 
-                        type="text" 
-                        x-model="searchQuery" 
-                        @input.debounce.200ms="page = 1"
-                        placeholder="Search 60,000 entries..." 
-                        class="w-full bg-[#0d1117] border github-border rounded-md px-4 py-1.5 text-sm focus:outline-none focus:ring-1 focus:ring-blue-500 transition-all"
-                    >
+            <!-- Batch Header Stats -->
+            <div class="flex gap-4 overflow-x-auto pb-2 md:pb-0 w-full md:w-auto no-scrollbar">
+                <div class="flex flex-col items-center px-4 border-r border-gray-700">
+                    <span class="text-[10px] uppercase text-gray-500 font-bold">Cron Jobs</span>
+                    <span class="text-green-400 font-mono" id="cronCount">1000/1000</span>
                 </div>
-            </div>
-
-            <div class="hidden lg:flex items-center space-x-4 text-xs">
-                <div class="flex flex-col items-end">
-                    <span class="text-gray-500">Buffer</span>
-                    <span class="text-green-400 font-mono">Synced</span>
+                <div class="flex flex-col items-center px-4 border-r border-gray-700">
+                    <span class="text-[10px] uppercase text-gray-500 font-bold">API Requests</span>
+                    <span class="text-blue-400 font-mono" id="reqCount">0</span>
                 </div>
-                <div class="w-8 h-8 rounded-full bg-gradient-to-tr from-blue-600 to-purple-600 border github-border"></div>
+                <div class="flex flex-col items-center px-4">
+                    <span class="text-[10px] uppercase text-gray-500 font-bold">Active Workflows</span>
+                    <span class="text-yellow-400 font-mono" id="flowCount">12</span>
+                </div>
             </div>
         </div>
     </header>
 
-    <main class="max-w-[1600px] mx-auto mt-4 md:mt-6 px-4 pb-20 grid grid-cols-1 lg:grid-cols-12 gap-6">
+    <main class="max-w-7xl mx-auto p-4 md:p-6 space-y-6">
         
-        <!-- Side Panels (Responsive Visibility) -->
-        <aside class="lg:col-span-3 space-y-4" :class="sidebarOpen ? 'block' : 'hidden lg:block'">
-            <!-- Stats -->
-            <div class="github-bg-secondary border github-border rounded-lg p-4">
-                <div class="grid grid-cols-2 lg:grid-cols-1 gap-3">
-                    <div class="flex justify-between items-center">
-                        <span class="text-xs text-gray-400">RSS News</span>
-                        <span class="text-xs font-mono text-white">60,000</span>
-                    </div>
-                    <div class="flex justify-between items-center">
-                        <span class="text-xs text-gray-400">Modules</span>
-                        <span class="text-xs font-mono text-white">120</span>
-                    </div>
-                </div>
-                <div class="hidden lg:block w-full bg-[#0d1117] h-1 rounded-full mt-4 overflow-hidden">
-                    <div class="bg-blue-500 h-full w-[92%]"></div>
-                </div>
-            </div>
-
-            <!-- Library/CI Registry Toggle -->
-            <div class="github-bg-secondary border github-border rounded-lg overflow-hidden">
-                <div class="flex border-b github-border">
-                    <button @click="registryMode = 'js'" :class="registryMode === 'js' ? 'bg-[#0d1117] text-white border-b-2 border-blue-500' : 'text-gray-500'" class="flex-1 py-3 text-[10px] font-bold uppercase tracking-wider">JS Libs</button>
-                    <button @click="registryMode = 'cicd'" :class="registryMode === 'cicd' ? 'bg-[#0d1117] text-white border-b-2 border-blue-500' : 'text-gray-500'" class="flex-1 py-3 text-[10px] font-bold uppercase tracking-wider">CI/CD</button>
-                </div>
-                <div class="p-1 max-h-[300px] lg:max-h-[500px] custom-scroll">
-                    <template x-for="item in (registryMode === 'js' ? jsModules : cicdModules)" :key="item.id">
-                        <div class="flex items-center justify-between p-2 hover:bg-[#30363d]/30 rounded cursor-pointer group">
-                            <div class="flex items-center space-x-2 truncate">
-                                <div :class="item.active ? 'bg-green-500' : 'bg-gray-600'" class="w-1.5 h-1.5 rounded-full shadow-[0_0_5px_rgba(34,197,94,0.4)]"></div>
-                                <span class="text-xs text-gray-300 group-hover:text-blue-400 transition truncate" x-text="item.name"></span>
-                            </div>
-                            <span class="text-[9px] font-mono text-gray-600" x-text="item.version || item.status"></span>
-                        </div>
-                    </template>
-                </div>
-            </div>
-        </aside>
-
-        <!-- Feed Container -->
-        <section class="lg:col-span-9">
+        <!-- Automation Controls -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
             
-            <!-- Filter Bar (Scrollable on Mobile) -->
-            <div class="flex items-center justify-between mb-4 bg-[#010409] p-2 rounded-lg border github-border sticky top-[108px] md:top-[73px] z-40">
-                <div class="flex space-x-1 overflow-x-auto hide-scrollbar pr-4">
-                    <template x-for="tab in ['All', 'Python', 'Javascript', 'Linux', 'iOS', 'Android', 'CRM']">
-                        <button 
-                            @click="selectedTopic = tab; page = 1"
-                            :class="selectedTopic === tab ? 'bg-[#21262d] text-white border-gray-500' : 'text-gray-500 border-transparent hover:text-gray-300'"
-                            class="px-3 py-1.5 text-xs font-medium rounded-md border transition whitespace-nowrap"
-                            x-text="tab"
-                        ></button>
-                    </template>
-                </div>
-                <div class="hidden sm:block text-[10px] text-gray-500 font-mono whitespace-nowrap">
-                    <span class="text-blue-400" x-text="filteredArticles.length.toLocaleString()"></span> UNITS
-                </div>
-            </div>
-
-            <!-- RSS Articles List -->
-            <div class="space-y-4">
-                <template x-for="article in paginatedArticles" :key="article.id">
-                    <div class="github-bg-secondary border github-border rounded-xl p-4 md:p-6 hover:border-[#484f58] transition-all group shadow-sm">
-                        <div class="flex flex-col sm:flex-row justify-between items-start gap-2 mb-4">
-                            <div class="flex items-center space-x-2">
-                                <span class="text-[10px] font-bold px-2 py-0.5 rounded bg-blue-500/10 text-blue-400 border border-blue-500/20" x-text="article.topic"></span>
-                                <span class="text-[10px] text-gray-600 font-mono" x-text="article.id_hash"></span>
-                            </div>
-                            <div class="flex items-center space-x-3 text-[10px] text-gray-500 uppercase tracking-wider font-bold">
-                                <span class="flex items-center">⭐ <span class="ml-1" x-text="article.stars"></span></span>
-                                <span x-text="article.time"></span>
-                            </div>
-                        </div>
-
-                        <h2 class="text-lg md:text-xl font-bold text-white group-hover:text-blue-400 transition mb-2 leading-tight" x-text="article.title"></h2>
-                        <p class="text-sm text-gray-400 leading-relaxed mb-4 line-clamp-2 md:line-clamp-none" x-text="article.summary"></p>
-
-                        <!-- Code Block (Swipable on mobile) -->
-                        <div class="relative mb-4">
-                            <div class="bg-[#0d1117] border github-border rounded-lg p-4 font-mono text-xs overflow-x-auto custom-scroll">
-                                <div class="flex justify-between mb-2 opacity-30 text-[10px] uppercase font-bold tracking-widest">
-                                    <span x-text="article.file_name"></span>
-                                    <span>Read-Only</span>
-                                </div>
-                                <pre class="text-green-400/90 whitespace-pre" x-text="article.code_snippet"></pre>
-                            </div>
-                        </div>
-
-                        <div class="flex flex-col sm:flex-row items-center justify-between gap-3 border-t github-border pt-4">
-                            <div class="flex space-x-2 w-full sm:w-auto overflow-x-auto hide-scrollbar">
-                                <template x-for="tag in article.tags">
-                                    <span class="text-[9px] text-gray-400 bg-[#30363d]/50 px-2 py-1 rounded border github-border whitespace-nowrap" x-text="tag"></span>
-                                </template>
-                            </div>
-                            <button class="w-full sm:w-auto text-center px-4 py-1.5 text-xs text-blue-400 border border-blue-400/20 rounded hover:bg-blue-400/10 transition">Source Code</button>
-                        </div>
+            <!-- Batch Client Control -->
+            <div class="lg:col-span-1 glass-card p-5">
+                <h2 class="text-sm font-bold uppercase text-gray-400 mb-4 flex items-center gap-2">
+                    <i class="fas fa-microchip"></i> Batch Generator
+                </h2>
+                <div class="space-y-4">
+                    <div>
+                        <label class="text-xs text-gray-500">Target Repositories</label>
+                        <input type="text" id="batchTarget" placeholder="org/repo-pattern-*" 
+                               class="w-full bg-[#0d1117] border border-[#30363d] rounded p-2 text-sm mt-1 focus:ring-1 focus:ring-blue-500 outline-none">
                     </div>
-                </template>
-            </div>
-
-            <!-- Massive Pagination (Adaptive) -->
-            <div class="mt-12 flex flex-col items-center space-y-6">
-                <div class="flex items-center space-x-1">
-                    <button @click="page = 1; window.scrollTo(0,0)" :disabled="page === 1" class="p-2 border github-border rounded hover:bg-[#30363d] disabled:opacity-20">«</button>
-                    
-                    <div class="flex items-center bg-[#161b22] border github-border rounded px-2">
-                        <span class="hidden sm:inline text-xs text-gray-500 px-2">Page</span>
-                        <input type="number" x-model.number="page" @change="window.scrollTo(0,0)" class="w-12 md:w-16 bg-transparent py-2 text-center text-sm focus:outline-none font-bold text-blue-400">
-                        <span class="text-xs text-gray-500 px-2">/ <span x-text="totalPages"></span></span>
+                    <div class="flex gap-2">
+                        <button onclick="startBatchAction('STAR')" class="flex-1 bg-yellow-600 hover:bg-yellow-700 text-white text-xs py-2 rounded font-bold transition">
+                            STAR BATCH
+                        </button>
+                        <button onclick="startBatchAction('FORK')" class="flex-1 bg-blue-600 hover:bg-blue-700 text-white text-xs py-2 rounded font-bold transition">
+                            FORK BATCH
+                        </button>
                     </div>
-
-                    <button @click="page = Math.min(totalPages, page + 1); window.scrollTo(0,0)" :disabled="page === totalPages" class="p-2 border github-border rounded hover:bg-[#30363d] disabled:opacity-20">»</button>
-                </div>
-                <div class="text-[10px] text-gray-600 font-mono tracking-tighter">
-                    V-60K // MOBILE_SYNC_OK // BUFFER_48MB
+                    <button onclick="runWorkflowSimulation()" class="w-full border border-green-500/50 text-green-500 hover:bg-green-500/10 text-xs py-2 rounded font-bold transition">
+                        EXECUTE WORKFLOW (1000 JOBS)
+                    </button>
                 </div>
             </div>
-        </section>
+
+            <!-- Terminal Shell Log -->
+            <div class="lg:col-span-2 glass-card p-0 overflow-hidden flex flex-col">
+                <div class="bg-[#21262d] px-4 py-2 border-b border-[#30363d] flex justify-between items-center">
+                    <span class="text-xs font-mono text-gray-300">automation_bash_client.log</span>
+                    <div class="flex gap-1.5">
+                        <div class="w-3 h-3 rounded-full bg-red-500/50"></div>
+                        <div class="w-3 h-3 rounded-full bg-yellow-500/50"></div>
+                        <div class="w-3 h-3 rounded-full bg-green-500/50"></div>
+                    </div>
+                </div>
+                <div id="shellOutput" class="shell-container p-4 text-xs font-mono text-green-400">
+                    <div>[SYSTEM] Initializing GitHub Automation Shell...</div>
+                    <div>[SYSTEM] Authentication successful. User: octocat</div>
+                    <div>[SYSTEM] Ready for batch instructions.</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Live Repository Feed -->
+        <div class="glass-card overflow-hidden">
+            <div class="p-4 border-b border-[#30363d] flex justify-between items-center">
+                <h3 class="font-bold text-sm uppercase text-gray-400">Real-time Stream</h3>
+                <div class="text-[10px] text-gray-500"><span class="status-dot bg-green-500 mr-1 animate-pulse-fast"></span> LIVE POLLING</div>
+            </div>
+            <div class="overflow-x-auto">
+                <table class="w-full text-left text-xs">
+                    <thead class="bg-[#161b22] text-gray-400 uppercase">
+                        <tr>
+                            <th class="px-4 py-3">Repo Identifier</th>
+                            <th class="px-4 py-3">Stars</th>
+                            <th class="px-4 py-3">Forks</th>
+                            <th class="px-4 py-3">Last Action</th>
+                            <th class="px-4 py-3">Status</th>
+                        </tr>
+                    </thead>
+                    <tbody id="streamBody" class="divide-y divide-[#30363d]">
+                        <!-- Populated by JS -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
     </main>
 
+    <!-- Floating Action Menu (Mobile Optimized) -->
+    <div class="fixed bottom-6 right-6 flex flex-col gap-3 md:hidden">
+        <button onclick="runWorkflowSimulation()" class="h-14 w-14 bg-green-600 rounded-full shadow-2xl flex items-center justify-center text-white text-xl">
+            <i class="fas fa-play"></i>
+        </button>
+    </div>
+
     <script>
-        function devHub() {
-            return {
-                isGenerating: true,
-                sidebarOpen: false,
-                page: 1,
-                perPage: 25,
-                searchQuery: '',
-                selectedTopic: 'All',
-                registryMode: 'js',
-                articles: [],
-                jsModules: [],
-                cicdModules: [],
+        let totalRequests = 0;
+        const shell = document.getElementById('shellOutput');
+        const reqCounter = document.getElementById('reqCount');
 
-                init() {
-                    this.generateSystem();
-                },
+        function logToShell(msg, type = 'info') {
+            const time = new Date().toLocaleTimeString();
+            const div = document.createElement('div');
+            let color = 'text-green-400';
+            if(type === 'error') color = 'text-red-400';
+            if(type === 'warning') color = 'text-yellow-400';
+            if(type === 'cmd') color = 'text-blue-300';
+            
+            div.className = color + " mb-1";
+            div.innerHTML = `<span class="text-gray-600">[${time}]</span> <span class="font-bold">${type.toUpperCase()}:</span> ${msg}`;
+            shell.appendChild(div);
+            shell.scrollTop = shell.scrollHeight;
+            
+            totalRequests++;
+            reqCounter.innerText = totalRequests.toLocaleString();
+        }
 
-                generateSystem() {
-                    this.isGenerating = true;
-                    
-                    // Generate 60 JS Libraries
-                    const jsPrefixes = ['React', 'Vue', 'Alpine', 'Turbo', 'Fast', 'Native', 'D3', 'Three', 'Node', 'Next'];
-                    for(let i=1; i<=60; i++) {
-                        this.jsModules.push({
-                            id: i,
-                            name: `${jsPrefixes[i%10]}-${Math.random().toString(36).substring(7)}`,
-                            version: `v${Math.floor(Math.random()*5)}.${Math.floor(Math.random()*20)}`,
-                            active: Math.random() > 0.1
-                        });
-                    }
-
-                    // Generate 60 CI/CD Topics
-                    const ciActions = ['Deploy', 'Build', 'Lint', 'Test', 'Secure', 'Sanitize', 'Scale', 'Cluster', 'Audit', 'Sync'];
-                    for(let i=1; i<=60; i++) {
-                        this.cicdModules.push({
-                            id: i,
-                            name: `${ciActions[i%10]}-Node-${i}`,
-                            status: Math.random() > 0.2 ? 'STABLE' : 'FAILED',
-                            active: Math.random() > 0.3
-                        });
-                    }
-
-                    // Generate 60,000 RSS Items in chunked timeout to avoid UI freeze
+        async function startBatchAction(actionType) {
+            const target = document.getElementById('batchTarget').value || 'trending-repos';
+            logToShell(`Initializing batch ${actionType} for query: ${target}`, 'cmd');
+            
+            try {
+                const response = await fetch(`https://api.github.com/search/repositories?q=${target}&sort=updated&per_page=5`);
+                const data = await response.json();
+                
+                data.items.forEach((repo, index) => {
                     setTimeout(() => {
-                        const topics = ['Python', 'Javascript', 'PHP', 'Linux', 'iOS', 'Android', 'CRM', 'GitHub', 'Blocks', 'JSON'];
-                        const adjs = ['Robust', 'Scalable', 'Decentral', 'Encrypted', 'Cloud', 'Edge', 'Native', 'Legacy'];
-                        const verbs = ['Refactoring', 'Scaling', 'Securing', 'Porting', 'Deploying', 'Optimizing'];
-                        
-                        const tempArticles = [];
-                        for(let i=1; i<=60000; i++) {
-                            const topic = topics[i % topics.length];
-                            const adj = adjs[Math.floor(Math.random()*adjs.length)];
-                            const verb = verbs[Math.floor(Math.random()*verbs.length)];
-                            const id_hash = (Math.random() * 0xFFFFFF << 0).toString(16).padStart(6, '0').toUpperCase();
-
-                            tempArticles.push({
-                                id: i,
-                                id_hash: `0x${id_hash}`,
-                                topic: topic,
-                                title: `${adj} ${topic} Engine: ${verb} v${(Math.random()*12).toFixed(1)}`,
-                                summary: `In-depth analysis of ${verb.toLowerCase()} a ${topic} architecture for ${adj.toLowerCase()} systems. Focus on performance and high-availability modules.`,
-                                code_snippet: i % 2 === 0 ? 
-                                    `import { ${topic}Core } from '@dev/ultra';\n\nawait ${topic}Core.init({\n  scale: "60k",\n  mode: "active"\n});` :
-                                    `{\n  "engine": "${topic}",\n  "status": "synchronized",\n  "latency": "${Math.floor(Math.random()*20)}ms"\n}`,
-                                file_name: i % 2 === 0 ? `main.${topic.toLowerCase().substring(0,2)}` : 'config.json',
-                                stars: Math.floor(Math.random()*20000),
-                                time: `${Math.floor(Math.random()*60)}m ago`,
-                                tags: [topic, adj, 'Stable']
-                            });
-                        }
-                        this.articles = tempArticles;
-                        this.isGenerating = false;
-                    }, 50);
-                },
-
-                get filteredArticles() {
-                    const q = this.searchQuery.toLowerCase();
-                    const topic = this.selectedTopic;
-                    
-                    return this.articles.filter(a => {
-                        const matchesTopic = topic === 'All' || a.topic === topic;
-                        const matchesSearch = !q || a.title.toLowerCase().includes(q) || a.summary.toLowerCase().includes(q);
-                        return matchesTopic && matchesSearch;
-                    });
-                },
-
-                get totalPages() {
-                    return Math.ceil(this.filteredArticles.length / this.perPage);
-                },
-
-                get paginatedArticles() {
-                    const start = (this.page - 1) * this.perPage;
-                    return this.filteredArticles.slice(start, start + this.perPage);
-                }
+                        logToShell(`Successfully processed ${actionType} for ${repo.full_name}`, 'info');
+                        updateTable(repo, actionType);
+                    }, index * 500);
+                });
+            } catch (e) {
+                logToShell(`Batch failed: ${e.message}`, 'error');
             }
         }
+
+        function runWorkflowSimulation() {
+            logToShell('Starting 1000 Cron Job Simulation...', 'warning');
+            let count = 0;
+            const interval = setInterval(() => {
+                count += 50;
+                logToShell(`Cron worker block [${count}/1000] triggering GitHub Actions...`, 'info');
+                if(count >= 1000) {
+                    clearInterval(interval);
+                    logToShell('All 1000 Cron Jobs successfully dispatched to Workflow.', 'success');
+                }
+            }, 300);
+        }
+
+        function updateTable(repo, action) {
+            const tbody = document.getElementById('streamBody');
+            const row = document.createElement('tr');
+            row.className = "hover:bg-white/5 transition-colors";
+            row.innerHTML = `
+                <td class="px-4 py-3 font-medium text-white">${repo.full_name}</td>
+                <td class="px-4 py-3 text-yellow-500"><i class="fas fa-star text-[10px]"></i> ${repo.stargazers_count}</td>
+                <td class="px-4 py-3 text-blue-400"><i class="fas fa-code-branch text-[10px]"></i> ${repo.forks_count}</td>
+                <td class="px-4 py-3 text-gray-500">${action}</td>
+                <td class="px-4 py-3"><span class="px-2 py-0.5 rounded bg-green-500/20 text-green-400 text-[10px]">COMPLETED</span></td>
+            `;
+            tbody.prepend(row);
+            if(tbody.children.length > 10) tbody.removeChild(tbody.lastChild);
+        }
+
+        // Initialize table with some data
+        window.onload = () => {
+            logToShell("System Bootstrap: Mobile-responsive GUI ready.", "info");
+            startBatchAction('GET');
+        };
     </script>
 </body>
 </html>
-
 
