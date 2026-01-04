@@ -3,16 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title> Culture.Support</title>
+    <title>MCP Interactive Game Hub - Playable</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Fira+Code:wght@300;500&family=Inter:wght@300;700&display=swap');
 
         :root {
             --primary: #00f2ff;
-            --accent: #ff0055;
             --active-green: #00ff41;
-            --bg-dark: #000000;
+            --docker-blue: #0db7ed;
+            --bg-dark: #010101;
         }
 
         body, html {
@@ -26,326 +27,288 @@
             width: 100vw;
         }
 
-        #cosmic-canvas {
+        #game-canvas {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            z-index: -1;
-        }
-
-        /* Bakgrunnsbibliotek */
-        .particle-library {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            pointer-events: none;
             z-index: 1;
         }
 
-        .css-module {
-            position: absolute;
-            width: 2px;
-            height: 2px;
-            background: var(--primary);
-            border-radius: 50%;
-            filter: blur(1px);
-            animation: float-around 20s infinite linear;
-        }
-
-        @keyframes float-around {
-            0% { transform: translate(0, 0); opacity: 0; }
-            50% { opacity: 0.8; }
-            100% { transform: translate(100px, 100px); opacity: 0; }
-        }
-
-        /* Sentrert rotasjonssystem */
-        #app-grid-container {
+        .ui-overlay {
             position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            width: 1px;
-            height: 1px;
+            inset: 0;
+            pointer-events: none;
             z-index: 10;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: transform 1s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
-        /* Kort/Node Styling */
-        .software-node {
-            position: absolute;
-            width: 100px;
-            height: 100px;
-            background: rgba(0, 0, 0, 0.6);
-            border: 1px solid rgba(0, 242, 255, 0.3);
-            border-radius: 16px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
-            font-family: 'Fira Code', monospace;
-            backdrop-filter: blur(10px);
+        .pointer-events-auto {
             pointer-events: auto;
         }
 
-        .node-content {
+        /* Docker Game Instance Grid */
+        .docker-grid {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 8px;
+            background: rgba(0, 0, 0, 0.8);
+            padding: 15px;
+            border-radius: 8px;
+            border: 1px solid rgba(13, 183, 237, 0.3);
+            backdrop-filter: blur(15px);
+        }
+
+        .game-instance {
+            width: 45px;
+            height: 45px;
+            background: #111;
+            border: 1px solid #333;
+            border-radius: 4px;
             display: flex;
             flex-direction: column;
             align-items: center;
-            text-align: center;
-            width: 100%;
-        }
-
-        /* Aktiv grønn stjerne-modus */
-        .software-node.active-focus {
-            border-color: var(--active-green);
-            box-shadow: 0 0 40px var(--active-green), inset 0 0 20px var(--active-green);
-            transform: scale(1.3);
-            z-index: 100;
-            background: rgba(0, 255, 65, 0.15);
-        }
-
-        .software-node.active-focus .font-bold {
-            color: var(--active-green);
-            text-shadow: 0 0 10px var(--active-green);
-        }
-
-        .software-node.active-focus .indicator-bar {
-            background-color: var(--active-green) !important;
-            width: 80% !important;
-            box-shadow: 0 0 15px var(--active-green);
-        }
-
-        /* Kode-eksempel Overlay (Hover) */
-        .code-snippet {
-            position: absolute;
-            bottom: 120%;
-            left: 50%;
-            transform: translateX(-50%) translateY(10px);
-            background: rgba(0, 10, 20, 0.95);
-            border: 1px solid var(--primary);
-            padding: 12px;
-            border-radius: 8px;
-            width: 200px;
+            justify-content: center;
             font-size: 10px;
-            color: var(--code-green);
-            opacity: 0;
-            visibility: hidden;
-            transition: all 0.3s ease;
-            white-space: pre-wrap;
-            pointer-events: none;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.8);
-            z-index: 200;
+            color: #555;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            cursor: pointer;
         }
 
-        .software-node:hover .code-snippet {
-            opacity: 1;
-            visibility: visible;
-            transform: translateX(-50%) translateY(0);
+        .game-instance:hover {
+            border-color: var(--primary);
+            color: var(--primary);
+            transform: scale(1.05);
         }
 
-        /* Footer Ticker */
-        .footer-banner {
-            position: fixed;
-            bottom: 0;
-            width: 100%;
-            background: rgba(0,0,0,0.8);
-            border-top: 1px solid rgba(0, 242, 255, 0.2);
-            padding: 10px 0;
-            z-index: 100;
-            backdrop-filter: blur(20px);
-            overflow: hidden;
-        }
-
-        .ticker-move {
-            display: flex;
-            animation: ticker 30s linear infinite;
-        }
-
-        @keyframes ticker {
-            0% { transform: translateX(50%); }
-            100% { transform: translateX(-100%); }
-        }
-
-        .ticker-item {
-            padding: 0 30px;
-            font-family: 'Fira Code', monospace;
+        .game-instance.selected {
+            border-color: var(--active-green);
             color: var(--active-green);
-            font-size: 12px;
-            white-space: nowrap;
+            box-shadow: 0 0 15px rgba(0, 255, 65, 0.4);
+            background: rgba(0, 255, 65, 0.1);
         }
+
+        /* Game Display Window */
+        .game-container {
+            position: fixed;
+            top: 50%;
+            left: 55%;
+            transform: translate(-50%, -50%);
+            width: 60%;
+            height: 70%;
+            background: #000;
+            border: 2px solid var(--primary);
+            border-radius: 12px;
+            display: none;
+            z-index: 50;
+            overflow: hidden;
+            box-shadow: 0 0 50px rgba(0, 242, 255, 0.2);
+        }
+
+        .game-iframe {
+            width: 100%;
+            height: calc(100% - 40px);
+            border: none;
+        }
+
+        .game-header {
+            height: 40px;
+            background: #111;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 15px;
+            border-bottom: 1px solid #222;
+        }
+
+        /* Console */
+        .console-window {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            width: 350px;
+            height: 180px;
+            background: rgba(0, 0, 0, 0.85);
+            border: 1px solid var(--docker-blue);
+            border-radius: 4px;
+            font-family: 'Fira Code', monospace;
+            backdrop-filter: blur(10px);
+        }
+
+        .console-body {
+            padding: 10px;
+            font-size: 10px;
+            color: #0db7ed;
+            height: 140px;
+            overflow-y: auto;
+        }
+
+        .loading-overlay {
+            position: absolute;
+            inset: 0;
+            background: black;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 60;
+            display: none;
+        }
+
+        .loader {
+            border: 4px solid #111;
+            border-top: 4px solid var(--primary);
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
     </style>
 </head>
 <body>
 
-    <canvas id="cosmic-canvas"></canvas>
-    <div class="particle-library" id="css-particles"></div>
+    <canvas id="game-canvas"></canvas>
 
-    <!-- Container for den roterende stacken -->
-    <div id="app-grid-container"></div>
+    <!-- Spillvindu -->
+    <div id="game-window" class="game-container pointer-events-auto">
+        <div class="game-header">
+            <span id="game-title" class="text-xs font-bold text-blue-400">LOADING_MODULE...</span>
+            <button onclick="closeGame()" class="text-red-500 hover:text-red-300 text-xs">LUKK SPILL [X]</button>
+        </div>
+        <div id="loader" class="loading-overlay">
+            <div class="loader"></div>
+            <div class="mt-4 text-[10px] text-blue-400 animate-pulse">LASTER INN ONLINE MODUL...</div>
+        </div>
+        <iframe id="game-frame" class="game-iframe" src=""></iframe>
+    </div>
 
-    <div class="footer-banner">
-        <div class="ticker-move" id="footer-ticker"></div>
+    <div class="ui-overlay">
+        <!-- Docker Grid -->
+        <div class="docker-grid pointer-events-auto">
+            <div class="col-span-5 text-[10px] uppercase tracking-widest mb-2 text-gray-400 font-bold">Tilgjengelige Online Spill (Docker)</div>
+            <div id="instance-container" class="contents"></div>
+        </div>
+
+        <!-- Console -->
+        <div class="console-window pointer-events-auto">
+            <div class="p-2 border-b border-gray-800 text-[9px] text-gray-500">MCP_CORE_LOG</div>
+            <div class="console-body" id="console-out">
+                <div>[System] Venter på valg av spill...</div>
+            </div>
+        </div>
     </div>
 
     <script>
-        const canvas = document.getElementById('cosmic-canvas');
-        const ctx = canvas.getContext('2d');
-        let width, height;
-        const particles = [];
+        // --- 3D BAKGRUNN ---
+        let scene, camera, renderer;
+        function init3D() {
+            scene = new THREE.Scene();
+            camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+            renderer = new THREE.WebGLRenderer({ canvas: document.getElementById('game-canvas'), antialias: true, alpha: true });
+            renderer.setSize(window.innerWidth, window.innerHeight);
 
-        // Stack-data med kode-eksempler
-        const stackData = [
-            { name: "Python", code: "def hello():\n  print('AI Active')" },
-            { name: "Rust", code: "fn main() {\n  println!('Safe');\n}" },
-            { name: "Java", code: "public class Main {\n  // Bytecode\n}" },
-            { name: "C++", code: "#include <iostream>\nint main() {}" },
-            { name: "JS", code: "const ai = () => {\n  return true;\n}" },
-            { name: "Go", code: "package main\nimport 'fmt'" },
-            { name: "Swift", code: "let msg = 'Hi'\nprint(msg)" },
-            { name: "SQL", code: "SELECT * FROM \nneural_nodes;" },
-            { name: "Torch", code: "import torch\nx = torch.randn(5)" },
-            { name: "Docker", code: "FROM alpine\nCMD ['run']" },
-            { name: "Wasm", code: "(module\n  (func $hello))" },
-            { name: "Linux", code: "sudo apt-get \nupdate -y" },
-            { name: "Git", code: "git commit -m \n'Initial AI'" },
-            { name: "Keras", code: "model.add(\nDense(512))" },
-            { name: "Node", code: "require('http')\n.listen(80)" },
-            { name: "React", code: "export default \nfunction App() {}" },
-            { name: "PHP", code: "<?php echo \n'Backend'; ?>" },
-            { name: "Ruby", code: "puts 'Hello \nWorld'" },
-            { name: "Dart", code: "void main() {\n  runApp();\n}" },
-            { name: "HTML5", code: "<canvas id='ai'>\n</canvas>" }
+            const geometry = new THREE.TorusGeometry(10, 3, 16, 100);
+            const material = new THREE.MeshPhongMaterial({ color: 0x0db7ed, wireframe: true });
+            const torus = new THREE.Mesh(geometry, material);
+            scene.add(torus);
+
+            const light = new THREE.PointLight(0xffffff, 1, 100);
+            light.position.set(10, 10, 10);
+            scene.add(light);
+            camera.position.z = 30;
+
+            function animate() {
+                requestAnimationFrame(animate);
+                torus.rotation.x += 0.01;
+                torus.rotation.y += 0.005;
+                renderer.render(scene, camera);
+            }
+            animate();
+        }
+
+        // --- SPILLKATALOG ---
+        const gameLibrary = [
+            { name: "2048 Puzzle", url: "https://play2048.co/" },
+            { name: "Hextris", url: "https://hextris.io/" },
+            { name: "Pacman Classic", url: "https://pacman.live/play.html" },
+            { name: "Flappy Bird Clone", url: "https://flappybird.io/" },
+            { name: "Little Alchemy", url: "https://littlealchemy.com/" },
+            { name: "Snake", url: "https://poki.com/en/g/snake-is-mlg" },
+            { name: "Tetris JS", url: "https://tetris.com/play-tetris" },
+            { name: "Paper.io", url: "https://paper-io.com/" },
+            { name: "Color Switch", url: "https://poki.com/en/g/color-switch" },
+            { name: "Doodle Jump", url: "https://poki.com/en/g/doodle-jump" }
         ];
 
-        let activeIndex = 0;
-        const totalDuration = 20000; // 20 sekunder total syklus
-        const itemDuration = 3000; // 3 sekunder per kort
-
-        function init() {
-            width = canvas.width = window.innerWidth;
-            height = canvas.height = window.innerHeight;
-            
-            const pLib = document.getElementById('css-particles');
-            pLib.innerHTML = '';
-            for(let i=0; i<50; i++) {
+        function createInstances() {
+            const container = document.getElementById('instance-container');
+            for(let i=1; i<=20; i++) {
                 const div = document.createElement('div');
-                div.className = 'css-module';
-                div.style.left = Math.random() * 100 + 'vw';
-                div.style.top = Math.random() * 100 + 'vh';
-                div.style.animationDelay = Math.random() * 5 + 's';
-                pLib.appendChild(div);
-            }
-
-            const gridContainer = document.getElementById('app-grid-container');
-            gridContainer.innerHTML = '';
-            
-            stackData.forEach((item, i) => {
-                const node = document.createElement('div');
-                node.className = 'software-node';
-                node.id = `node-${i}`;
-                
-                node.innerHTML = `
-                    <div class="code-snippet">${item.code}</div>
-                    <div class="node-content">
-                        <div class="text-[8px] opacity-40 mb-1">NODE_${i}</div>
-                        <div class="font-bold text-xs">${item.name}</div>
-                        <div class="indicator-bar w-4 h-1 bg-cyan-500 mt-2 rounded-full transition-all duration-500"></div>
-                    </div>
-                `;
-                
-                const angle = (i / stackData.length) * Math.PI * 2;
-                const radius = window.innerWidth < 768 ? 130 : 260;
-                const x = Math.cos(angle) * radius;
-                const y = Math.sin(angle) * radius;
-                
-                node.style.left = `${x}px`;
-                node.style.top = `${y}px`;
-                node.style.marginLeft = "-50px";
-                node.style.marginTop = "-50px";
-                
-                gridContainer.appendChild(node);
-            });
-
-            // Ticker
-            const ticker = document.getElementById('footer-ticker');
-            ticker.innerHTML = stackData.concat(stackData).map(d => `<span class="ticker-item">CORE_ENG_ACTIVE: ${d.name}</span>`).join('');
-        }
-
-        // Syklus-logikk
-        function rotateStack() {
-            const container = document.getElementById('app-grid-container');
-            
-            // Fjern aktiv klasse fra forrige
-            document.querySelectorAll('.software-node').forEach(n => n.classList.remove('active-focus'));
-            
-            // Legg til på ny
-            const currentNode = document.getElementById(`node-${activeIndex}`);
-            if(currentNode) currentNode.classList.add('active-focus');
-            
-            // Roter selve containeren slik at det aktive kortet alltid er i fokus (valgfritt estetisk valg)
-            const anglePerItem = 360 / stackData.length;
-            container.style.transform = `translate(-50%, -50%) rotate(${-activeIndex * anglePerItem}deg)`;
-
-            // Mot-rotasjon av noder for å holde dem oppreist
-            document.querySelectorAll('.software-node').forEach((node, i) => {
-                node.style.transform = `rotate(${activeIndex * anglePerItem}deg)`;
-                if(i === activeIndex) node.style.transform += ` scale(1.3)`;
-            });
-
-            activeIndex = (activeIndex + 1) % stackData.length;
-        }
-
-        // Canvas Bakgrunn
-        class Star {
-            constructor() {
-                this.x = Math.random() * width;
-                this.y = Math.random() * height;
-                this.size = Math.random() * 2;
-                this.v = 0.02 + Math.random() * 0.05;
-                this.op = Math.random();
-            }
-            draw() {
-                this.op += this.v;
-                if(this.op > 1 || this.op < 0) this.v *= -1;
-                ctx.fillStyle = `rgba(0, 255, 65, ${Math.max(0, this.op * 0.3)})`;
-                ctx.beginPath();
-                ctx.arc(this.x, this.y, this.size, 0, Math.PI*2);
-                ctx.fill();
+                div.className = 'game-instance';
+                div.id = `inst-${i}`;
+                div.innerHTML = `<span class="opacity-30">#${i}</span><span class="font-bold">G${i}</span>`;
+                div.onclick = () => loadOnlineGame(i);
+                container.appendChild(div);
             }
         }
 
-        for(let i=0; i<200; i++) particles.push(new Star());
+        function loadOnlineGame(id) {
+            const gameWindow = document.getElementById('game-window');
+            const iframe = document.getElementById('game-frame');
+            const loader = document.getElementById('loader');
+            const title = document.getElementById('game-title');
 
-        function animate() {
-            ctx.fillStyle = 'rgba(0,0,0,0.2)';
-            ctx.fillRect(0,0,width,height);
-            particles.forEach(p => p.draw());
-
-            // Puls i bakgrunnen ved aktiv node
-            const grad = ctx.createRadialGradient(width/2, height/2, 0, width/2, height/2, width*0.5);
-            grad.addColorStop(0, 'rgba(0, 255, 65, 0.03)');
-            grad.addColorStop(1, 'transparent');
-            ctx.fillStyle = grad;
-            ctx.fillRect(0,0,width,height);
-
-            requestAnimationFrame(animate);
+            // Velg et spill basert på ID (looper gjennom katalogen)
+            const game = gameLibrary[(id - 1) % gameLibrary.length];
+            
+            // UI State
+            document.querySelectorAll('.game-instance').forEach(el => el.classList.remove('selected'));
+            document.getElementById(`inst-${id}`).classList.add('selected');
+            
+            gameWindow.style.display = 'block';
+            loader.style.display = 'flex';
+            title.textContent = `DOCKER_INSTANCE_${id}: ${game.name.toUpperCase()}`;
+            
+            logToConsole(`[Docker] Starter container G${id}...`);
+            logToConsole(`[MCP] Laster online modul: ${game.url}`);
+            
+            iframe.src = game.url;
+            iframe.onload = () => {
+                loader.style.display = 'none';
+                logToConsole(`[System] Spill innlastet og klart.`);
+            };
         }
 
-        window.addEventListener('resize', init);
-        init();
-        animate();
-        
-        // Start den sekvensielle rotasjonen hvert 3. sekund
-        setInterval(rotateStack, itemDuration);
-        rotateStack(); // Start umiddelbart
+        function closeGame() {
+            document.getElementById('game-window').style.display = 'none';
+            document.getElementById('game-frame').src = "";
+            document.querySelectorAll('.game-instance').forEach(el => el.classList.remove('selected'));
+            logToConsole("[System] Container stoppet. Venter på ny kommando.");
+        }
+
+        function logToConsole(msg) {
+            const out = document.getElementById('console-out');
+            const div = document.createElement('div');
+            div.textContent = `> ${msg}`;
+            out.prepend(div);
+            if(out.childNodes.length > 10) out.removeChild(out.lastChild);
+        }
+
+        window.onload = () => {
+            init3D();
+            createInstances();
+        };
+
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        });
     </script>
 </body>
 </html>
