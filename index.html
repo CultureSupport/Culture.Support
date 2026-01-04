@@ -3,15 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title> Culture.Support</title>
+    <title>AI & Kodeverk Eksperiment - Aktiv Stack</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Fira+Code:wght@300;500&family=Inter:wght@300;700&display=swap');
 
         :root {
             --primary: #00f2ff;
-            --accent: #7000ff;
-            --bg-dark: #050505;
+            --accent: #ff0055;
+            --active-green: #00ff41;
+            --bg-dark: #000000;
         }
 
         body, html {
@@ -20,340 +21,334 @@
             background-color: var(--bg-dark);
             color: white;
             font-family: 'Inter', sans-serif;
-            overflow-x: hidden;
-            height: 2000px;
+            overflow: hidden;
+            height: 100vh;
+            width: 100vw;
         }
 
-        /* Mørk bakgrunn med interaktivt lys */
-        #parallax-container {
+        #cosmic-canvas {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
             z-index: -1;
-            background: 
-                radial-gradient(circle at 20% 30%, #0a0a0a 0%, #000 100%),
-                radial-gradient(circle at 80% 70%, #080808 0%, #000 100%);
         }
 
-        .glow-layer {
-            position: absolute;
+        /* Bakgrunnsbibliotek */
+        .particle-library {
+            position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background: radial-gradient(circle at var(--mouse-x, 50%) var(--mouse-y, 50%), rgba(0, 242, 255, 0.03) 0%, transparent 50%);
             pointer-events: none;
+            z-index: 1;
         }
 
-        /* Terminal Font Animasjon - SENTRERT TOPP */
-        .terminal-container {
-            position: fixed;
-            top: 50px;
-            left: 50%;
-            transform: translateX(-50%);
-            font-family: 'Fira Code', monospace;
-            font-size: 1.5rem;
-            width: 100%;
-            text-align: center;
-            z-index: 10;
-        }
-
-        @media (min-width: 768px) {
-            .terminal-container {
-                font-size: 3rem;
-                top: 80px;
-            }
-        }
-
-        .cursor {
-            display: inline-block;
-            width: 10px;
-            height: 1.5rem;
+        .css-module {
+            position: absolute;
+            width: 2px;
+            height: 2px;
             background: var(--primary);
-            margin-left: 5px;
-            animation: blink 0.8s infinite;
-            vertical-align: middle;
+            border-radius: 50%;
+            filter: blur(1px);
+            animation: float-around 20s infinite linear;
         }
 
-        @media (min-width: 768px) {
-            .cursor { height: 3rem; width: 15px; }
+        @keyframes float-around {
+            0% { transform: translate(0, 0); opacity: 0; }
+            50% { opacity: 0.8; }
+            100% { transform: translate(100px, 100px); opacity: 0; }
         }
 
-        @keyframes blink {
-            50% { opacity: 0; }
-        }
-
-        /* Sirkulær Meny System - SENTRERT MIDTEN */
-        .circular-menu-container {
+        /* Sentrert rotasjonssystem */
+        #app-grid-container {
             position: fixed;
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            width: 300px;
-            height: 300px;
+            width: 1px;
+            height: 1px;
+            z-index: 10;
             display: flex;
             align-items: center;
             justify-content: center;
-            z-index: 5;
+            transition: transform 1s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
-        @media (min-width: 768px) {
-            .circular-menu-container {
-                width: 500px;
-                height: 500px;
-            }
-        }
-
-        .orbit {
-            position: absolute;
-            border: 1px solid rgba(0, 242, 255, 0.1);
-            border-radius: 50%;
-            animation: rotateOrbit 60s linear infinite;
-        }
-
-        @keyframes rotateOrbit {
-            from { transform: rotate(0deg); }
-            to { transform: rotate(360deg); }
-        }
-
+        /* Kort/Node Styling */
         .software-node {
             position: absolute;
-            width: 45px;
-            height: 45px;
-            background: rgba(0, 0, 0, 0.8);
-            border: 1px solid rgba(0, 242, 255, 0.4);
-            border-radius: 50%;
+            width: 100px;
+            height: 100px;
+            background: rgba(0, 0, 0, 0.6);
+            border: 1px solid rgba(0, 242, 255, 0.3);
+            border-radius: 16px;
             display: flex;
             align-items: center;
             justify-content: center;
             cursor: pointer;
-            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
-            font-size: 8px;
-            font-weight: bold;
-            color: var(--primary);
-            text-transform: uppercase;
+            transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+            font-family: 'Fira Code', monospace;
+            backdrop-filter: blur(10px);
+            pointer-events: auto;
+        }
+
+        .node-content {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
             text-align: center;
-            padding: 2px;
-            backdrop-filter: blur(4px);
+            width: 100%;
         }
 
-        @media (min-width: 768px) {
-            .software-node {
-                width: 70px;
-                height: 70px;
-                font-size: 10px;
-            }
-        }
-
-        .software-node:hover {
-            background: var(--primary);
-            color: black;
+        /* Aktiv grønn stjerne-modus */
+        .software-node.active-focus {
+            border-color: var(--active-green);
+            box-shadow: 0 0 40px var(--active-green), inset 0 0 20px var(--active-green);
             transform: scale(1.3);
-            box-shadow: 0 0 35px var(--primary);
-            border-color: white;
             z-index: 100;
+            background: rgba(0, 255, 65, 0.15);
         }
 
-        /* Footer Animasjon Banner */
+        .software-node.active-focus .font-bold {
+            color: var(--active-green);
+            text-shadow: 0 0 10px var(--active-green);
+        }
+
+        .software-node.active-focus .indicator-bar {
+            background-color: var(--active-green) !important;
+            width: 80% !important;
+            box-shadow: 0 0 15px var(--active-green);
+        }
+
+        /* Kode-eksempel Overlay (Hover) */
+        .code-snippet {
+            position: absolute;
+            bottom: 120%;
+            left: 50%;
+            transform: translateX(-50%) translateY(10px);
+            background: rgba(0, 10, 20, 0.95);
+            border: 1px solid var(--primary);
+            padding: 12px;
+            border-radius: 8px;
+            width: 200px;
+            font-size: 10px;
+            color: var(--code-green);
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+            white-space: pre-wrap;
+            pointer-events: none;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.8);
+            z-index: 200;
+        }
+
+        .software-node:hover .code-snippet {
+            opacity: 1;
+            visibility: visible;
+            transform: translateX(-50%) translateY(0);
+        }
+
+        /* Footer Ticker */
         .footer-banner {
             position: fixed;
             bottom: 0;
-            left: 0;
             width: 100%;
-            background: rgba(0, 0, 0, 0.8);
+            background: rgba(0,0,0,0.8);
             border-top: 1px solid rgba(0, 242, 255, 0.2);
-            padding: 15px 0;
-            overflow: hidden;
-            white-space: nowrap;
+            padding: 10px 0;
             z-index: 100;
-            backdrop-filter: blur(10px);
+            backdrop-filter: blur(20px);
+            overflow: hidden;
         }
 
-        .ticker-wrapper {
-            display: inline-block;
+        .ticker-move {
+            display: flex;
             animation: ticker 30s linear infinite;
         }
 
-        .ticker-item {
-            display: inline-block;
-            padding: 0 40px;
-            font-family: 'Fira Code', monospace;
-            font-size: 0.9rem;
-            color: var(--primary);
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            opacity: 0.7;
-        }
-
-        .ticker-item::after {
-            content: " •";
-            margin-left: 40px;
-            color: rgba(255, 255, 255, 0.2);
-        }
-
         @keyframes ticker {
-            0% { transform: translateX(0); }
-            100% { transform: translateX(-50%); }
+            0% { transform: translateX(50%); }
+            100% { transform: translateX(-100%); }
         }
 
-        /* Subtil visuell markør nederst */
-        .scroll-visual {
-            position: absolute;
-            top: 1950px;
-            left: 50%;
-            transform: translateX(-50%);
-            opacity: 0.2;
+        .ticker-item {
+            padding: 0 30px;
+            font-family: 'Fira Code', monospace;
+            color: var(--active-green);
+            font-size: 12px;
+            white-space: nowrap;
         }
     </style>
 </head>
 <body>
 
-    <div id="parallax-container">
-        <div class="glow-layer" id="mouse-glow"></div>
-    </div>
+    <canvas id="cosmic-canvas"></canvas>
+    <div class="particle-library" id="css-particles"></div>
 
-    <!-- Terminal Animasjon - Sentrert på toppen -->
-    <div class="terminal-container">
-        <div class="text-xs uppercase tracking-[0.3em] opacity-30 mb-2">System Stack_</div>
-        <div class="flex items-center justify-center">
-            <span id="typed-text"></span><span class="cursor"></span>
-        </div>
-    </div>
+    <!-- Container for den roterende stacken -->
+    <div id="app-grid-container"></div>
 
-    <!-- Sirkulær Meny - Sentrert i midten av skjermen -->
-    <div class="circular-menu-container" id="menu-system">
-        <div class="orbit w-full h-full"></div>
-        <div class="orbit w-3/4 h-3/4" style="animation-direction: reverse; animation-duration: 40s;"></div>
-        <div class="orbit w-1/2 h-1/2" style="animation-duration: 25s;"></div>
-        
-        <div id="nodes-container" class="relative w-full h-full flex items-center justify-center"></div>
-    </div>
-
-    <!-- Footer Kode Info Banner -->
     <div class="footer-banner">
-        <div class="ticker-wrapper">
-            <span class="ticker-item">Machine Learning</span>
-            <span class="ticker-item">Deep Learning</span>
-            <span class="ticker-item">Convolution</span>
-            <span class="ticker-item">Neural Networks</span>
-            <span class="ticker-item">Natural Language Processing</span>
-            <span class="ticker-item">Text to Speech</span>
-            <span class="ticker-item">Neural Layer</span>
-            <span class="ticker-item">Recurrent Networks</span>
-            <span class="ticker-item">ReLU</span>
-            <span class="ticker-item">Boltzmann Algorithm</span>
-            <span class="ticker-item">Neuron Network</span>
-            <span class="ticker-item">Activation Function</span>
-            <!-- Dupliserer for sømløs loop -->
-            <span class="ticker-item">Machine Learning</span>
-            <span class="ticker-item">Deep Learning</span>
-            <span class="ticker-item">Convolution</span>
-            <span class="ticker-item">Neural Networks</span>
-            <span class="ticker-item">Natural Language Processing</span>
-            <span class="ticker-item">Text to Speech</span>
-            <span class="ticker-item">Neural Layer</span>
-            <span class="ticker-item">Recurrent Networks</span>
-            <span class="ticker-item">ReLU</span>
-            <span class="ticker-item">Boltzmann Algorithm</span>
-            <span class="ticker-item">Neuron Network</span>
-            <span class="ticker-item">Activation Function</span>
-        </div>
-    </div>
-
-    <div class="scroll-visual">
-        <div class="w-px h-10 bg-gradient-to-b from-cyan-400 to-transparent mx-auto"></div>
+        <div class="ticker-move" id="footer-ticker"></div>
     </div>
 
     <script>
-        // Moduler (20 enheter)
-        const modules = [
-            "Python", "Java", "Javascript", "Keras", "Plotlib", "Scalar", 
-            "Svelte", "React", "Node JS", "Pass", "Sass", "CRM", "Cloud", 
-            "Interaction", "CSS", "UI/UX", "API", "SQL", "Git", "Dev"
+        const canvas = document.getElementById('cosmic-canvas');
+        const ctx = canvas.getContext('2d');
+        let width, height;
+        const particles = [];
+
+        // Stack-data med kode-eksempler
+        const stackData = [
+            { name: "Python", code: "def hello():\n  print('AI Active')" },
+            { name: "Rust", code: "fn main() {\n  println!('Safe');\n}" },
+            { name: "Java", code: "public class Main {\n  // Bytecode\n}" },
+            { name: "C++", code: "#include <iostream>\nint main() {}" },
+            { name: "JS", code: "const ai = () => {\n  return true;\n}" },
+            { name: "Go", code: "package main\nimport 'fmt'" },
+            { name: "Swift", code: "let msg = 'Hi'\nprint(msg)" },
+            { name: "SQL", code: "SELECT * FROM \nneural_nodes;" },
+            { name: "Torch", code: "import torch\nx = torch.randn(5)" },
+            { name: "Docker", code: "FROM alpine\nCMD ['run']" },
+            { name: "Wasm", code: "(module\n  (func $hello))" },
+            { name: "Linux", code: "sudo apt-get \nupdate -y" },
+            { name: "Git", code: "git commit -m \n'Initial AI'" },
+            { name: "Keras", code: "model.add(\nDense(512))" },
+            { name: "Node", code: "require('http')\n.listen(80)" },
+            { name: "React", code: "export default \nfunction App() {}" },
+            { name: "PHP", code: "<?php echo \n'Backend'; ?>" },
+            { name: "Ruby", code: "puts 'Hello \nWorld'" },
+            { name: "Dart", code: "void main() {\n  runApp();\n}" },
+            { name: "HTML5", code: "<canvas id='ai'>\n</canvas>" }
         ];
 
-        const container = document.getElementById('nodes-container');
-        
-        function buildMenu() {
-            container.innerHTML = '';
-            const isMobile = window.innerWidth < 768;
-            const baseRadius = isMobile ? 140 : 240;
-            const radiusSteps = [baseRadius, baseRadius * 0.7, baseRadius * 0.45];
+        let activeIndex = 0;
+        const totalDuration = 20000; // 20 sekunder total syklus
+        const itemDuration = 3000; // 3 sekunder per kort
+
+        function init() {
+            width = canvas.width = window.innerWidth;
+            height = canvas.height = window.innerHeight;
             
-            modules.forEach((mod, index) => {
+            const pLib = document.getElementById('css-particles');
+            pLib.innerHTML = '';
+            for(let i=0; i<50; i++) {
+                const div = document.createElement('div');
+                div.className = 'css-module';
+                div.style.left = Math.random() * 100 + 'vw';
+                div.style.top = Math.random() * 100 + 'vh';
+                div.style.animationDelay = Math.random() * 5 + 's';
+                pLib.appendChild(div);
+            }
+
+            const gridContainer = document.getElementById('app-grid-container');
+            gridContainer.innerHTML = '';
+            
+            stackData.forEach((item, i) => {
                 const node = document.createElement('div');
                 node.className = 'software-node';
-                node.innerText = mod;
+                node.id = `node-${i}`;
                 
-                const orbitIndex = index % 3;
-                const radius = radiusSteps[orbitIndex];
-                const angle = (index / (modules.length / 3)) * Math.PI * 2;
+                node.innerHTML = `
+                    <div class="code-snippet">${item.code}</div>
+                    <div class="node-content">
+                        <div class="text-[8px] opacity-40 mb-1">NODE_${i}</div>
+                        <div class="font-bold text-xs">${item.name}</div>
+                        <div class="indicator-bar w-4 h-1 bg-cyan-500 mt-2 rounded-full transition-all duration-500"></div>
+                    </div>
+                `;
                 
+                const angle = (i / stackData.length) * Math.PI * 2;
+                const radius = window.innerWidth < 768 ? 130 : 260;
                 const x = Math.cos(angle) * radius;
                 const y = Math.sin(angle) * radius;
                 
-                node.style.left = `calc(50% + ${x}px - ${isMobile ? 22 : 35}px)`;
-                node.style.top = `calc(50% + ${y}px - ${isMobile ? 22 : 35}px)`;
+                node.style.left = `${x}px`;
+                node.style.top = `${y}px`;
+                node.style.marginLeft = "-50px";
+                node.style.marginTop = "-50px";
                 
-                container.appendChild(node);
+                gridContainer.appendChild(node);
             });
+
+            // Ticker
+            const ticker = document.getElementById('footer-ticker');
+            ticker.innerHTML = stackData.concat(stackData).map(d => `<span class="ticker-item">CORE_ENG_ACTIVE: ${d.name}</span>`).join('');
         }
 
-        // Typing animasjon
-        const techStack = [
-            "Python", "Java", "Javascript", "Keras", "Plotlib", "Scalar", 
-            "Svelte", "React", "Node JS", "Pass", "Sass", "CRM", "Cloud", 
-            "Interaction", "CSS"
-        ];
-        
-        let techIndex = 0;
-        let charIndex = 0;
-        let isDeleting = false;
-        const target = document.getElementById('typed-text');
-
-        function type() {
-            const currentWord = techStack[techIndex];
-            const shouldDelete = isDeleting;
+        // Syklus-logikk
+        function rotateStack() {
+            const container = document.getElementById('app-grid-container');
             
-            target.textContent = shouldDelete 
-                ? currentWord.substring(0, charIndex - 1) 
-                : currentWord.substring(0, charIndex + 1);
+            // Fjern aktiv klasse fra forrige
+            document.querySelectorAll('.software-node').forEach(n => n.classList.remove('active-focus'));
             
-            charIndex = shouldDelete ? charIndex - 1 : charIndex + 1;
+            // Legg til på ny
+            const currentNode = document.getElementById(`node-${activeIndex}`);
+            if(currentNode) currentNode.classList.add('active-focus');
+            
+            // Roter selve containeren slik at det aktive kortet alltid er i fokus (valgfritt estetisk valg)
+            const anglePerItem = 360 / stackData.length;
+            container.style.transform = `translate(-50%, -50%) rotate(${-activeIndex * anglePerItem}deg)`;
 
-            let typeSpeed = shouldDelete ? 50 : 150;
+            // Mot-rotasjon av noder for å holde dem oppreist
+            document.querySelectorAll('.software-node').forEach((node, i) => {
+                node.style.transform = `rotate(${activeIndex * anglePerItem}deg)`;
+                if(i === activeIndex) node.style.transform += ` scale(1.3)`;
+            });
 
-            if (!shouldDelete && charIndex === currentWord.length) {
-                typeSpeed = 2000;
-                isDeleting = true;
-            } else if (shouldDelete && charIndex === 0) {
-                isDeleting = false;
-                techIndex = (techIndex + 1) % techStack.length;
-                typeSpeed = 500;
+            activeIndex = (activeIndex + 1) % stackData.length;
+        }
+
+        // Canvas Bakgrunn
+        class Star {
+            constructor() {
+                this.x = Math.random() * width;
+                this.y = Math.random() * height;
+                this.size = Math.random() * 2;
+                this.v = 0.02 + Math.random() * 0.05;
+                this.op = Math.random();
             }
-
-            setTimeout(type, typeSpeed);
+            draw() {
+                this.op += this.v;
+                if(this.op > 1 || this.op < 0) this.v *= -1;
+                ctx.fillStyle = `rgba(0, 255, 65, ${Math.max(0, this.op * 0.3)})`;
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI*2);
+                ctx.fill();
+            }
         }
 
-        document.addEventListener('mousemove', (e) => {
-            const xPercent = (e.clientX / window.innerWidth) * 100;
-            const yPercent = (e.clientY / window.innerHeight) * 100;
-            const glow = document.getElementById('mouse-glow');
-            glow.style.setProperty('--mouse-x', `${xPercent}%`);
-            glow.style.setProperty('--mouse-y', `${yPercent}%`);
-        });
+        for(let i=0; i<200; i++) particles.push(new Star());
 
-        window.onload = () => {
-            type();
-            buildMenu();
-        };
+        function animate() {
+            ctx.fillStyle = 'rgba(0,0,0,0.2)';
+            ctx.fillRect(0,0,width,height);
+            particles.forEach(p => p.draw());
 
-        window.onresize = buildMenu;
+            // Puls i bakgrunnen ved aktiv node
+            const grad = ctx.createRadialGradient(width/2, height/2, 0, width/2, height/2, width*0.5);
+            grad.addColorStop(0, 'rgba(0, 255, 65, 0.03)');
+            grad.addColorStop(1, 'transparent');
+            ctx.fillStyle = grad;
+            ctx.fillRect(0,0,width,height);
+
+            requestAnimationFrame(animate);
+        }
+
+        window.addEventListener('resize', init);
+        init();
+        animate();
+        
+        // Start den sekvensielle rotasjonen hvert 3. sekund
+        setInterval(rotateStack, itemDuration);
+        rotateStack(); // Start umiddelbart
     </script>
 </body>
 </html>
+
 
 
