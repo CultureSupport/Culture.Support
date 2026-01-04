@@ -1,5 +1,4 @@
 # Culture.Support
 
 
-Building a healthy Github
-Community Post
+Building a healthy app
