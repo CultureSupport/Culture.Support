@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DevHub - Engineering Blog & Registry</title>
+    <title>DevHub 60K - Massive Scale RSS & CI/CD</title>
     <script src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
@@ -13,351 +13,289 @@
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
             background-color: #0d1117;
             color: #c9d1d9;
+            overflow-x: hidden;
         }
 
         .mono { font-family: 'JetBrains Mono', monospace; }
 
         /* Custom GitHub Scrollbar */
-        ::-webkit-scrollbar { width: 10px; }
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
         ::-webkit-scrollbar-track { background: #0d1117; }
-        ::-webkit-scrollbar-thumb { background: #30363d; border-radius: 5px; }
+        ::-webkit-scrollbar-thumb { background: #30363d; border-radius: 4px; }
         ::-webkit-scrollbar-thumb:hover { background: #484f58; }
 
         .github-border { border-color: #30363d; }
         .github-bg-secondary { background-color: #161b22; }
-        .github-text-link { color: #58a6ff; }
         .github-btn-primary { background-color: #238636; }
         .github-btn-primary:hover { background-color: #2ea043; }
 
-        /* Activity Graph Pixel Style */
-        .pixel { width: 10px; height: 10px; border-radius: 2px; }
-        .pixel-0 { background-color: #161b22; }
-        .pixel-1 { background-color: #0e4429; }
-        .pixel-2 { background-color: #006d32; }
-        .pixel-3 { background-color: #26a641; }
-        .pixel-4 { background-color: #39d353; }
+        .loading-bar {
+            height: 3px;
+            background: linear-gradient(to right, #238636, #58a6ff, #bc8cff);
+            background-size: 200% 100%;
+            animation: moveGradient 2s linear infinite;
+        }
+        @keyframes moveGradient {
+            0% { background-position: 100% 0%; }
+            100% { background-position: 0% 0%; }
+        }
+
+        .custom-scroll { overflow-y: auto; scrollbar-gutter: stable; }
+        
+        /* Hide scrollbar for clean horizontal nav on mobile */
+        .hide-scrollbar::-webkit-scrollbar { display: none; }
+        .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
     </style>
 </head>
 <body x-data="devHub()" class="min-h-screen">
 
-    <!-- Header / Navigation -->
-    <header class="bg-[#010409] border-b github-border py-4 px-4 sticky top-0 z-50">
-        <div class="max-w-7xl mx-auto flex items-center justify-between">
-            <div class="flex items-center space-x-4">
-                <svg class="w-8 h-8 fill-white" viewBox="0 0 16 16" version="1.1" aria-hidden="true"><path d="M8 0c4.42 0 8 3.58 8 8a8.013 8.013 0 0 1-5.45 7.59c-.4.08-.55-.17-.55-.38 0-.27.01-1.13.01-2.2 0-.75-.25-1.23-.54-1.48 1.78-.2 3.65-.88 3.65-3.95 0-.88-.31-1.59-.82-2.15.08-.2.36-1.02-.08-2.12 0 0-.67-.22-2.2.82-.64-.18-1.32-.27-2-.27-.68 0-1.36.09-2 .27-1.53-1.03-2.2-.82-2.2-.82-.44 1.1-.16 1.92-.08 2.12-.51.56-.82 1.28-.82 2.15 0 3.06 1.86 3.75 3.64 3.95-.23.2-.44.55-.51 1.07-.46.21-1.61.55-2.33-.66-.15-.24-.6-.83-1.23-.82-.67.01-.27.38.01.53.34.19.73.9.82 1.13.16.45.68 1.31 2.69.94 0 .67.01 1.3.01 1.49 0 .21-.15.45-.55.38A7.995 7.995 0 0 1 0 8c0-4.42 3.58-8 8-8Z"></path></svg>
-                <div class="hidden md:block">
-                    <span class="font-semibold text-white">DevHub</span> / <span class="text-gray-400">Engineering</span>
+    <!-- Loading State -->
+    <div x-show="isGenerating" class="fixed top-0 left-0 w-full z-[100] loading-bar"></div>
+
+    <!-- Top Navigation -->
+    <header class="bg-[#010409] border-b github-border py-3 px-4 sticky top-0 z-50">
+        <div class="max-w-[1600px] mx-auto flex flex-col md:flex-row items-center gap-4">
+            <div class="flex items-center justify-between w-full md:w-auto">
+                <div class="flex items-center space-x-3">
+                    <svg class="w-7 h-7 fill-white" viewBox="0 0 16 16"><path d="M8 0c4.42 0 8 3.58 8 8a8.013 8.013 0 0 1-5.45 7.59c-.4.08-.55-.17-.55-.38 0-.27.01-1.13.01-2.2 0-.75-.25-1.23-.54-1.48 1.78-.2 3.65-.88 3.65-3.95 0-.88-.31-1.59-.82-2.15.08-.2.36-1.02-.08-2.12 0 0-.67-.22-2.2.82-.64-.18-1.32-.27-2-.27-.68 0-1.36.09-2 .27-1.53-1.03-2.2-.82-2.2-.82-.44 1.1-.16 1.92-.08 2.12-.51.56-.82 1.28-.82 2.15 0 3.06 1.86 3.75 3.64 3.95-.23.2-.44.55-.51 1.07-.46.21-1.61.55-2.33-.66-.15-.24-.6-.83-1.23-.82-.67.01-.27.38.01.53.34.19.73.9.82 1.13.16.45.68 1.31 2.69.94 0 .67.01 1.3.01 1.49 0 .21-.15.45-.55.38A7.995 7.995 0 0 1 0 8c0-4.42 3.58-8 8-8Z"></path></svg>
+                    <span class="font-bold text-white tracking-tight text-sm">DEVHUB_60K</span>
+                </div>
+                <div class="md:hidden">
+                    <button @click="sidebarOpen = !sidebarOpen" class="p-1 text-gray-400 border github-border rounded">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path></svg>
+                    </button>
                 </div>
             </div>
-            <div class="flex flex-1 max-w-md mx-6">
-                <div class="relative w-full">
+            
+            <div class="flex-1 w-full max-w-2xl">
+                <div class="relative group">
                     <input 
                         type="text" 
                         x-model="searchQuery" 
-                        placeholder="Search 600 articles..." 
-                        class="w-full bg-[#0d1117] border github-border rounded-md px-3 py-1 text-sm focus:outline-none focus:ring-1 focus:ring-blue-500 transition-all"
+                        @input.debounce.200ms="page = 1"
+                        placeholder="Search 60,000 entries..." 
+                        class="w-full bg-[#0d1117] border github-border rounded-md px-4 py-1.5 text-sm focus:outline-none focus:ring-1 focus:ring-blue-500 transition-all"
                     >
-                    <span class="absolute right-3 top-1.5 text-xs text-gray-500 border github-border px-1 rounded">/</span>
                 </div>
             </div>
-            <div class="flex items-center space-x-3 text-sm font-medium">
-                <a href="#" class="hover:text-blue-400 transition">Pull requests</a>
-                <a href="#" class="hover:text-blue-400 transition">Issues</a>
-                <a href="#" class="hover:text-blue-400 transition">Marketplace</a>
+
+            <div class="hidden lg:flex items-center space-x-4 text-xs">
+                <div class="flex flex-col items-end">
+                    <span class="text-gray-500">Buffer</span>
+                    <span class="text-green-400 font-mono">Synced</span>
+                </div>
+                <div class="w-8 h-8 rounded-full bg-gradient-to-tr from-blue-600 to-purple-600 border github-border"></div>
             </div>
         </div>
     </header>
 
-    <main class="max-w-7xl mx-auto mt-6 px-4 pb-20 grid grid-cols-1 lg:grid-cols-12 gap-6">
+    <main class="max-w-[1600px] mx-auto mt-4 md:mt-6 px-4 pb-20 grid grid-cols-1 lg:grid-cols-12 gap-6">
         
-        <!-- Left Sidebar: Profile & Registry -->
-        <aside class="lg:col-span-3 space-y-6">
-            <!-- Profile Info -->
-            <div>
-                <div class="w-full aspect-square rounded-full border-2 github-border bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 mb-4 overflow-hidden shadow-xl">
-                    <!-- Fake Identicon using CSS shapes -->
-                    <div class="w-full h-full opacity-30 grid grid-cols-5">
-                        <template x-for="i in 25">
-                            <div :class="Math.random() > 0.5 ? 'bg-white' : 'bg-transparent'"></div>
-                        </template>
+        <!-- Side Panels (Responsive Visibility) -->
+        <aside class="lg:col-span-3 space-y-4" :class="sidebarOpen ? 'block' : 'hidden lg:block'">
+            <!-- Stats -->
+            <div class="github-bg-secondary border github-border rounded-lg p-4">
+                <div class="grid grid-cols-2 lg:grid-cols-1 gap-3">
+                    <div class="flex justify-between items-center">
+                        <span class="text-xs text-gray-400">RSS News</span>
+                        <span class="text-xs font-mono text-white">60,000</span>
+                    </div>
+                    <div class="flex justify-between items-center">
+                        <span class="text-xs text-gray-400">Modules</span>
+                        <span class="text-xs font-mono text-white">120</span>
                     </div>
                 </div>
-                <h1 class="text-2xl font-bold text-white leading-tight">Engineering Feed</h1>
-                <p class="text-gray-400 text-lg mb-4">@internal-gen-v3</p>
-                <p class="text-sm mb-4">Automated technical insights for full-stack developers. Updated every 300ms.</p>
-                <button class="w-full py-1.5 px-4 rounded-md github-bg-secondary border github-border text-sm font-medium hover:bg-[#30363d] transition">Edit profile</button>
-                
-                <div class="mt-6 flex items-center space-x-4 text-xs text-gray-400">
-                    <span class="flex items-center"><svg class="w-4 h-4 mr-1 opacity-70" fill="currentColor" viewBox="0 0 16 16"><path d="M2 5.5a.5.5 0 0 1 .5-.5h2a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-2a.5.5 0 0 1-.5-.5v-1z"></path></svg> 12.4k followers</span>
-                    <span class="flex items-center">820 following</span>
+                <div class="hidden lg:block w-full bg-[#0d1117] h-1 rounded-full mt-4 overflow-hidden">
+                    <div class="bg-blue-500 h-full w-[92%]"></div>
                 </div>
             </div>
 
-            <hr class="github-border">
-
-            <!-- Active Modules Registry -->
-            <div>
-                <h3 class="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3">Active Modules (30)</h3>
-                <div class="space-y-1 max-h-96 overflow-y-auto pr-2">
-                    <template x-for="mod in modules" :key="mod.id">
-                        <div class="group flex items-center justify-between p-2 rounded-md hover:bg-[#161b22] border border-transparent hover:border-[#30363d] cursor-pointer transition">
-                            <div class="flex items-center space-x-2">
-                                <div :class="mod.status === 'online' ? 'bg-green-500' : 'bg-yellow-500'" class="w-2 h-2 rounded-full animate-pulse"></div>
-                                <span class="text-sm font-medium text-blue-400 group-hover:underline" x-text="mod.name"></span>
+            <!-- Library/CI Registry Toggle -->
+            <div class="github-bg-secondary border github-border rounded-lg overflow-hidden">
+                <div class="flex border-b github-border">
+                    <button @click="registryMode = 'js'" :class="registryMode === 'js' ? 'bg-[#0d1117] text-white border-b-2 border-blue-500' : 'text-gray-500'" class="flex-1 py-3 text-[10px] font-bold uppercase tracking-wider">JS Libs</button>
+                    <button @click="registryMode = 'cicd'" :class="registryMode === 'cicd' ? 'bg-[#0d1117] text-white border-b-2 border-blue-500' : 'text-gray-500'" class="flex-1 py-3 text-[10px] font-bold uppercase tracking-wider">CI/CD</button>
+                </div>
+                <div class="p-1 max-h-[300px] lg:max-h-[500px] custom-scroll">
+                    <template x-for="item in (registryMode === 'js' ? jsModules : cicdModules)" :key="item.id">
+                        <div class="flex items-center justify-between p-2 hover:bg-[#30363d]/30 rounded cursor-pointer group">
+                            <div class="flex items-center space-x-2 truncate">
+                                <div :class="item.active ? 'bg-green-500' : 'bg-gray-600'" class="w-1.5 h-1.5 rounded-full shadow-[0_0_5px_rgba(34,197,94,0.4)]"></div>
+                                <span class="text-xs text-gray-300 group-hover:text-blue-400 transition truncate" x-text="item.name"></span>
                             </div>
-                            <span class="text-[10px] mono text-gray-500" x-text="mod.version"></span>
+                            <span class="text-[9px] font-mono text-gray-600" x-text="item.version || item.status"></span>
                         </div>
                     </template>
                 </div>
             </div>
         </aside>
 
-        <!-- Main Content Area -->
+        <!-- Feed Container -->
         <section class="lg:col-span-9">
             
-            <!-- Repository Tabs -->
-            <nav class="flex border-b github-border mb-6">
-                <button @click="currentTab = 'overview'" :class="currentTab === 'overview' ? 'border-orange-500 text-white' : 'border-transparent'" class="px-4 py-2 border-b-2 text-sm font-medium hover:border-gray-500 transition">Overview</button>
-                <button @click="currentTab = 'feed'" :class="currentTab === 'feed' ? 'border-orange-500 text-white' : 'border-transparent'" class="px-4 py-2 border-b-2 text-sm font-medium flex items-center">
-                    Feed <span class="ml-2 px-2 bg-[#30363d] rounded-full text-[10px]" x-text="filteredArticles.length"></span>
-                </button>
-                <button class="px-4 py-2 border-transparent border-b-2 text-sm font-medium text-gray-500 hover:border-gray-500 transition cursor-not-allowed">Projects</button>
-                <button class="px-4 py-2 border-transparent border-b-2 text-sm font-medium text-gray-500 hover:border-gray-500 transition cursor-not-allowed">Packages</button>
-            </nav>
-
-            <!-- Overview Tab (Stats and Highlights) -->
-            <div x-show="currentTab === 'overview'" x-transition>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
-                    <div class="github-bg-secondary border github-border rounded-md p-4">
-                        <div class="flex justify-between items-start mb-2">
-                            <a href="#" class="text-blue-400 font-semibold hover:underline">system-runtime-v4</a>
-                            <span class="text-xs border github-border rounded-full px-2 py-0.5 text-gray-400">Public</span>
-                        </div>
-                        <p class="text-xs text-gray-400 mb-4">Stable environment for the generator engine and load balancer.</p>
-                        <div class="flex items-center space-x-4 text-xs">
-                            <span class="flex items-center"><span class="w-3 h-3 bg-yellow-500 rounded-full mr-1"></span> JavaScript</span>
-                            <span class="flex items-center">⭐ 2.4k</span>
-                        </div>
-                    </div>
-                    <div class="github-bg-secondary border github-border rounded-md p-4">
-                        <div class="flex justify-between items-start mb-2">
-                            <a href="#" class="text-blue-400 font-semibold hover:underline">devhub-ui-kit</a>
-                            <span class="text-xs border github-border rounded-full px-2 py-0.5 text-gray-400">Public</span>
-                        </div>
-                        <p class="text-xs text-gray-400 mb-4">React components and styles used across the dev ecosystem.</p>
-                        <div class="flex items-center space-x-4 text-xs">
-                            <span class="flex items-center"><span class="w-3 h-3 bg-blue-500 rounded-full mr-1"></span> TypeScript</span>
-                            <span class="flex items-center">⭐ 1.1k</span>
-                        </div>
-                    </div>
+            <!-- Filter Bar (Scrollable on Mobile) -->
+            <div class="flex items-center justify-between mb-4 bg-[#010409] p-2 rounded-lg border github-border sticky top-[108px] md:top-[73px] z-40">
+                <div class="flex space-x-1 overflow-x-auto hide-scrollbar pr-4">
+                    <template x-for="tab in ['All', 'Python', 'Javascript', 'Linux', 'iOS', 'Android', 'CRM']">
+                        <button 
+                            @click="selectedTopic = tab; page = 1"
+                            :class="selectedTopic === tab ? 'bg-[#21262d] text-white border-gray-500' : 'text-gray-500 border-transparent hover:text-gray-300'"
+                            class="px-3 py-1.5 text-xs font-medium rounded-md border transition whitespace-nowrap"
+                            x-text="tab"
+                        ></button>
+                    </template>
                 </div>
-
-                <!-- Activity Graph Simulator -->
-                <h3 class="text-sm mb-3">1,402 contributions in the last year</h3>
-                <div class="github-bg-secondary border github-border rounded-md p-4 overflow-x-auto">
-                    <div class="flex gap-1" style="min-width: 600px;">
-                        <template x-for="week in 52">
-                            <div class="flex flex-col gap-1">
-                                <template x-for="day in 7">
-                                    <div :class="'pixel pixel-' + Math.floor(Math.random() * 5)"></div>
-                                </template>
-                            </div>
-                        </template>
-                    </div>
-                    <div class="mt-4 flex justify-between items-center text-xs text-gray-500">
-                        <span>Learn how we count contributions</span>
-                        <div class="flex items-center gap-1">
-                            <span>Less</span>
-                            <div class="pixel pixel-0"></div>
-                            <div class="pixel pixel-1"></div>
-                            <div class="pixel pixel-2"></div>
-                            <div class="pixel pixel-3"></div>
-                            <div class="pixel pixel-4"></div>
-                            <span>More</span>
-                        </div>
-                    </div>
+                <div class="hidden sm:block text-[10px] text-gray-500 font-mono whitespace-nowrap">
+                    <span class="text-blue-400" x-text="filteredArticles.length.toLocaleString()"></span> UNITS
                 </div>
             </div>
 
-            <!-- Feed Tab (The Main Feed) -->
-            <div x-show="currentTab === 'feed'" x-transition>
-                
-                <!-- Filters & Controls -->
-                <div class="flex flex-col sm:flex-row gap-2 mb-6 justify-between items-center">
-                    <div class="flex items-center space-x-2 w-full sm:w-auto">
-                        <select x-model="selectedTech" class="bg-transparent border github-border text-sm rounded-md px-2 py-1 text-gray-300 focus:outline-none">
-                            <option value="All">All Technologies</option>
-                            <template x-for="tech in techOptions" :key="tech">
-                                <option :value="tech" x-text="tech"></option>
-                            </template>
-                        </select>
-                        <select x-model="sortBy" class="bg-transparent border github-border text-sm rounded-md px-2 py-1 text-gray-300 focus:outline-none">
-                            <option value="newest">Newest</option>
-                            <option value="stars">Most Stars</option>
-                        </select>
-                    </div>
-                    <div class="text-xs text-gray-500">
-                        Showing <span x-text="paginatedArticles.length"></span> of <span x-text="filteredArticles.length"></span> results
-                    </div>
-                </div>
-
-                <!-- Articles List -->
-                <div class="space-y-0 divide-y github-border border-y github-border">
-                    <template x-for="article in paginatedArticles" :key="article.id">
-                        <div class="py-6 group">
-                            <div class="flex justify-between items-start mb-1">
-                                <h2 class="text-xl font-semibold text-blue-400 group-hover:underline cursor-pointer">
-                                    <span x-text="article.title"></span>
-                                </h2>
-                                <button class="flex items-center space-x-1 px-3 py-1 bg-[#21262d] border github-border rounded-md text-xs font-medium hover:bg-[#30363d] transition">
-                                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.382-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"></path></svg>
-                                    <span>Star</span>
-                                </button>
+            <!-- RSS Articles List -->
+            <div class="space-y-4">
+                <template x-for="article in paginatedArticles" :key="article.id">
+                    <div class="github-bg-secondary border github-border rounded-xl p-4 md:p-6 hover:border-[#484f58] transition-all group shadow-sm">
+                        <div class="flex flex-col sm:flex-row justify-between items-start gap-2 mb-4">
+                            <div class="flex items-center space-x-2">
+                                <span class="text-[10px] font-bold px-2 py-0.5 rounded bg-blue-500/10 text-blue-400 border border-blue-500/20" x-text="article.topic"></span>
+                                <span class="text-[10px] text-gray-600 font-mono" x-text="article.id_hash"></span>
                             </div>
-                            <p class="text-gray-400 text-sm mb-4 leading-relaxed max-w-3xl" x-text="article.description"></p>
-                            
-                            <div class="flex flex-wrap items-center gap-4 text-xs text-gray-500 mt-2">
-                                <div class="flex items-center">
-                                    <span class="w-3 h-3 rounded-full mr-1.5" :style="'background-color:' + article.techColor"></span>
-                                    <span x-text="article.tech"></span>
-                                </div>
-                                <div class="flex items-center">
-                                    <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M8 .25a.75.75 0 01.673.418l1.882 3.815 4.21.612a.75.75 0 01.416 1.279l-3.046 2.97.719 4.192a.75.75 0 01-1.088.791L8 12.347l-3.766 1.98a.75.75 0 01-1.088-.79l.72-4.194L.818 6.374a.75.75 0 01.416-1.28l4.21-.611L7.327.668A.75.75 0 018 .25zm0 2.445L6.615 5.5a.75.75 0 01-.564.41l-3.097.45 2.24 2.184a.75.75 0 01.216.664l-.528 3.084 2.769-1.456a.75.75 0 01.698 0l2.77 1.456-.53-3.084a.75.75 0 01.216-.664l2.24-2.183-3.096-.45a.75.75 0 01-.564-.41L8 2.695v.001z"></path></svg>
-                                    <span x-text="article.stars"></span>
-                                </div>
-                                <div class="flex items-center">
-                                    <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M5 3.25a.75.75 0 11-1.5 0 .75.75 0 011.5 0zm0 2.122a2.25 2.25 0 10-1.5 0v.878A2.25 2.25 0 005.75 8.5h1.5v2.128a2.251 2.251 0 101.5 0V8.5h1.5a2.25 2.25 0 002.25-2.25v-.878a2.25 2.25 0 10-1.5 0v.878a.75.75 0 01-.75.75h-4.5A.75.75 0 015 6.25v-.878zm3.75 7.378a.75.75 0 11-1.5 0 .75.75 0 011.5 0zm3-8.75a.75.75 0 100-1.5.75.75 0 000 1.5z"></path></svg>
-                                    <span x-text="article.forks"></span>
-                                </div>
-                                <div x-text="article.date"></div>
-                                <div x-text="article.license" class="uppercase"></div>
+                            <div class="flex items-center space-x-3 text-[10px] text-gray-500 uppercase tracking-wider font-bold">
+                                <span class="flex items-center">⭐ <span class="ml-1" x-text="article.stars"></span></span>
+                                <span x-text="article.time"></span>
                             </div>
                         </div>
-                    </template>
-                </div>
 
-                <!-- Pagination -->
-                <div class="mt-8 flex justify-center space-x-2">
-                    <button 
-                        @click="page > 1 ? page-- : null" 
-                        :disabled="page === 1"
-                        class="px-3 py-1 rounded border github-border text-sm font-medium disabled:opacity-30 hover:bg-[#161b22] transition"
-                    >Previous</button>
+                        <h2 class="text-lg md:text-xl font-bold text-white group-hover:text-blue-400 transition mb-2 leading-tight" x-text="article.title"></h2>
+                        <p class="text-sm text-gray-400 leading-relaxed mb-4 line-clamp-2 md:line-clamp-none" x-text="article.summary"></p>
+
+                        <!-- Code Block (Swipable on mobile) -->
+                        <div class="relative mb-4">
+                            <div class="bg-[#0d1117] border github-border rounded-lg p-4 font-mono text-xs overflow-x-auto custom-scroll">
+                                <div class="flex justify-between mb-2 opacity-30 text-[10px] uppercase font-bold tracking-widest">
+                                    <span x-text="article.file_name"></span>
+                                    <span>Read-Only</span>
+                                </div>
+                                <pre class="text-green-400/90 whitespace-pre" x-text="article.code_snippet"></pre>
+                            </div>
+                        </div>
+
+                        <div class="flex flex-col sm:flex-row items-center justify-between gap-3 border-t github-border pt-4">
+                            <div class="flex space-x-2 w-full sm:w-auto overflow-x-auto hide-scrollbar">
+                                <template x-for="tag in article.tags">
+                                    <span class="text-[9px] text-gray-400 bg-[#30363d]/50 px-2 py-1 rounded border github-border whitespace-nowrap" x-text="tag"></span>
+                                </template>
+                            </div>
+                            <button class="w-full sm:w-auto text-center px-4 py-1.5 text-xs text-blue-400 border border-blue-400/20 rounded hover:bg-blue-400/10 transition">Source Code</button>
+                        </div>
+                    </div>
+                </template>
+            </div>
+
+            <!-- Massive Pagination (Adaptive) -->
+            <div class="mt-12 flex flex-col items-center space-y-6">
+                <div class="flex items-center space-x-1">
+                    <button @click="page = 1; window.scrollTo(0,0)" :disabled="page === 1" class="p-2 border github-border rounded hover:bg-[#30363d] disabled:opacity-20">«</button>
                     
-                    <template x-for="p in visiblePages" :key="p">
-                        <button 
-                            @click="page = p" 
-                            :class="page === p ? 'github-btn-primary border-transparent' : 'github-bg-secondary border github-border hover:bg-[#30363d]'"
-                            class="px-3 py-1 rounded text-sm font-medium transition"
-                            x-text="p"
-                        ></button>
-                    </template>
+                    <div class="flex items-center bg-[#161b22] border github-border rounded px-2">
+                        <span class="hidden sm:inline text-xs text-gray-500 px-2">Page</span>
+                        <input type="number" x-model.number="page" @change="window.scrollTo(0,0)" class="w-12 md:w-16 bg-transparent py-2 text-center text-sm focus:outline-none font-bold text-blue-400">
+                        <span class="text-xs text-gray-500 px-2">/ <span x-text="totalPages"></span></span>
+                    </div>
 
-                    <button 
-                        @click="page < totalPages ? page++ : null" 
-                        :disabled="page === totalPages"
-                        class="px-3 py-1 rounded border github-border text-sm font-medium disabled:opacity-30 hover:bg-[#161b22] transition"
-                    >Next</button>
+                    <button @click="page = Math.min(totalPages, page + 1); window.scrollTo(0,0)" :disabled="page === totalPages" class="p-2 border github-border rounded hover:bg-[#30363d] disabled:opacity-20">»</button>
+                </div>
+                <div class="text-[10px] text-gray-600 font-mono tracking-tighter">
+                    V-60K // MOBILE_SYNC_OK // BUFFER_48MB
                 </div>
             </div>
         </section>
     </main>
 
-    <!-- Footer -->
-    <footer class="max-w-7xl mx-auto border-t github-border mt-12 py-8 px-4 flex flex-col md:flex-row justify-between items-center text-xs text-gray-500 space-y-4 md:space-y-0">
-        <div class="flex items-center space-x-4">
-            <svg class="w-6 h-6 opacity-50" fill="currentColor" viewBox="0 0 16 16"><path d="M8 0c4.42 0 8 3.58 8 8a8.013 8.013 0 0 1-5.45 7.59c-.4.08-.55-.17-.55-.38 0-.27.01-1.13.01-2.2 0-.75-.25-1.23-.54-1.48 1.78-.2 3.65-.88 3.65-3.95 0-.88-.31-1.59-.82-2.15.08-.2.36-1.02-.08-2.12 0 0-.67-.22-2.2.82-.64-.18-1.32-.27-2-.27-.68 0-1.36.09-2 .27-1.53-1.03-2.2-.82-2.2-.82-.44 1.1-.16 1.92-.08 2.12-.51.56-.82 1.28-.82 2.15 0 3.06 1.86 3.75 3.64 3.95-.23.2-.44.55-.51 1.07-.46.21-1.61.55-2.33-.66-.15-.24-.6-.83-1.23-.82-.67.01-.27.38.01.53.34.19.73.9.82 1.13.16.45.68 1.31 2.69.94 0 .67.01 1.3.01 1.49 0 .21-.15.45-.55.38A7.995 7.995 0 0 1 0 8c0-4.42 3.58-8 8-8Z"></path></svg>
-            <span>© 2024 DevHub-Gen, Inc.</span>
-        </div>
-        <div class="flex space-x-6">
-            <a href="#" class="hover:text-blue-400">Terms</a>
-            <a href="#" class="hover:text-blue-400">Privacy</a>
-            <a href="#" class="hover:text-blue-400">Security</a>
-            <a href="#" class="hover:text-blue-400">Docs</a>
-        </div>
-    </footer>
-
     <script>
         function devHub() {
             return {
-                searchQuery: '',
-                selectedTech: 'All',
-                sortBy: 'newest',
-                currentTab: 'feed',
+                isGenerating: true,
+                sidebarOpen: false,
                 page: 1,
-                perPage: 15,
+                perPage: 25,
+                searchQuery: '',
+                selectedTopic: 'All',
+                registryMode: 'js',
                 articles: [],
-                modules: [],
-                techOptions: ['JavaScript', 'TypeScript', 'Python', 'Go', 'Rust', 'C++', 'Kotlin', 'React Native', 'Swift'],
-                
+                jsModules: [],
+                cicdModules: [],
+
                 init() {
-                    this.generateData();
-                    this.generateModules();
+                    this.generateSystem();
                 },
 
-                generateData() {
-                    const techs = [
-                        { name: 'JavaScript', color: '#f1e05a' },
-                        { name: 'TypeScript', color: '#3178c6' },
-                        { name: 'Python', color: '#3572A5' },
-                        { name: 'Go', color: '#00ADD8' },
-                        { name: 'Rust', color: '#dea584' },
-                        { name: 'C++', color: '#f34b7d' },
-                        { name: 'Kotlin', color: '#A97BFF' },
-                        { name: 'React Native', color: '#61dafb' },
-                        { name: 'Swift', color: '#F05138' }
-                    ];
+                generateSystem() {
+                    this.isGenerating = true;
+                    
+                    // Generate 60 JS Libraries
+                    const jsPrefixes = ['React', 'Vue', 'Alpine', 'Turbo', 'Fast', 'Native', 'D3', 'Three', 'Node', 'Next'];
+                    for(let i=1; i<=60; i++) {
+                        this.jsModules.push({
+                            id: i,
+                            name: `${jsPrefixes[i%10]}-${Math.random().toString(36).substring(7)}`,
+                            version: `v${Math.floor(Math.random()*5)}.${Math.floor(Math.random()*20)}`,
+                            active: Math.random() > 0.1
+                        });
+                    }
 
-                    const subjects = ['Compiler', 'Engine', 'Runtime', 'Framework', 'Library', 'Protocol', 'Middleware', 'UI Kit', 'CLI Tool', 'Database'];
-                    const verbs = ['Optimizing', 'Rewriting', 'Scaling', 'Refactoring', 'Benchmarking', 'Integrating', 'Deploying', 'Debugging', 'Porting'];
+                    // Generate 60 CI/CD Topics
+                    const ciActions = ['Deploy', 'Build', 'Lint', 'Test', 'Secure', 'Sanitize', 'Scale', 'Cluster', 'Audit', 'Sync'];
+                    for(let i=1; i<=60; i++) {
+                        this.cicdModules.push({
+                            id: i,
+                            name: `${ciActions[i%10]}-Node-${i}`,
+                            status: Math.random() > 0.2 ? 'STABLE' : 'FAILED',
+                            active: Math.random() > 0.3
+                        });
+                    }
 
-                    for (let i = 1; i <= 600; i++) {
-                        const tech = techs[Math.floor(Math.random() * techs.length)];
-                        const sub = subjects[Math.floor(Math.random() * subjects.length)];
-                        const verb = verbs[Math.floor(Math.random() * verbs.length)];
+                    // Generate 60,000 RSS Items in chunked timeout to avoid UI freeze
+                    setTimeout(() => {
+                        const topics = ['Python', 'Javascript', 'PHP', 'Linux', 'iOS', 'Android', 'CRM', 'GitHub', 'Blocks', 'JSON'];
+                        const adjs = ['Robust', 'Scalable', 'Decentral', 'Encrypted', 'Cloud', 'Edge', 'Native', 'Legacy'];
+                        const verbs = ['Refactoring', 'Scaling', 'Securing', 'Porting', 'Deploying', 'Optimizing'];
                         
-                        this.articles.push({
-                            id: i,
-                            title: `${verb} ${sub} in ${tech.name} for Enterprise Systems`,
-                            description: `A deep dive into how we managed to achieve 10x performance improvements when handling high-concurrency workloads using modern ${tech.name} paradigms and custom memory allocators.`,
-                            tech: tech.name,
-                            techColor: tech.color,
-                            stars: Math.floor(Math.random() * 5000),
-                            forks: Math.floor(Math.random() * 1000),
-                            date: `Updated ${Math.floor(Math.random() * 28) + 1} days ago`,
-                            license: 'MIT',
-                            timestamp: Date.now() - (Math.random() * 10000000000)
-                        });
-                    }
-                },
+                        const tempArticles = [];
+                        for(let i=1; i<=60000; i++) {
+                            const topic = topics[i % topics.length];
+                            const adj = adjs[Math.floor(Math.random()*adjs.length)];
+                            const verb = verbs[Math.floor(Math.random()*verbs.length)];
+                            const id_hash = (Math.random() * 0xFFFFFF << 0).toString(16).padStart(6, '0').toUpperCase();
 
-                generateModules() {
-                    const prefixes = ['Core', 'Auth', 'Data', 'Socket', 'Pipe', 'Fetch', 'Push', 'Web', 'IO', 'Async'];
-                    for (let i = 1; i <= 30; i++) {
-                        this.modules.push({
-                            id: i,
-                            name: `${prefixes[i % 10]}-Module-${Math.floor(Math.random() * 999)}`,
-                            status: Math.random() > 0.1 ? 'online' : 'maintenance',
-                            version: `v${Math.floor(Math.random() * 5)}.${Math.floor(Math.random() * 10)}.${Math.floor(Math.random() * 20)}`
-                        });
-                    }
+                            tempArticles.push({
+                                id: i,
+                                id_hash: `0x${id_hash}`,
+                                topic: topic,
+                                title: `${adj} ${topic} Engine: ${verb} v${(Math.random()*12).toFixed(1)}`,
+                                summary: `In-depth analysis of ${verb.toLowerCase()} a ${topic} architecture for ${adj.toLowerCase()} systems. Focus on performance and high-availability modules.`,
+                                code_snippet: i % 2 === 0 ? 
+                                    `import { ${topic}Core } from '@dev/ultra';\n\nawait ${topic}Core.init({\n  scale: "60k",\n  mode: "active"\n});` :
+                                    `{\n  "engine": "${topic}",\n  "status": "synchronized",\n  "latency": "${Math.floor(Math.random()*20)}ms"\n}`,
+                                file_name: i % 2 === 0 ? `main.${topic.toLowerCase().substring(0,2)}` : 'config.json',
+                                stars: Math.floor(Math.random()*20000),
+                                time: `${Math.floor(Math.random()*60)}m ago`,
+                                tags: [topic, adj, 'Stable']
+                            });
+                        }
+                        this.articles = tempArticles;
+                        this.isGenerating = false;
+                    }, 50);
                 },
 
                 get filteredArticles() {
-                    let filtered = this.articles.filter(a => {
-                        const matchesSearch = a.title.toLowerCase().includes(this.searchQuery.toLowerCase()) || 
-                                            a.description.toLowerCase().includes(this.searchQuery.toLowerCase());
-                        const matchesTech = this.selectedTech === 'All' || a.tech === this.selectedTech;
-                        return matchesSearch && matchesTech;
+                    const q = this.searchQuery.toLowerCase();
+                    const topic = this.selectedTopic;
+                    
+                    return this.articles.filter(a => {
+                        const matchesTopic = topic === 'All' || a.topic === topic;
+                        const matchesSearch = !q || a.title.toLowerCase().includes(q) || a.summary.toLowerCase().includes(q);
+                        return matchesTopic && matchesSearch;
                     });
-
-                    if (this.sortBy === 'stars') {
-                        filtered.sort((a, b) => b.stars - a.stars);
-                    } else {
-                        filtered.sort((a, b) => b.timestamp - a.timestamp);
-                    }
-
-                    return filtered;
                 },
 
                 get totalPages() {
@@ -367,18 +305,11 @@
                 get paginatedArticles() {
                     const start = (this.page - 1) * this.perPage;
                     return this.filteredArticles.slice(start, start + this.perPage);
-                },
-
-                get visiblePages() {
-                    const pages = [];
-                    const start = Math.max(1, this.page - 2);
-                    const end = Math.min(this.totalPages, start + 4);
-                    for (let i = start; i <= end; i++) pages.push(i);
-                    return pages;
                 }
             }
         }
     </script>
 </body>
 </html>
+
 
