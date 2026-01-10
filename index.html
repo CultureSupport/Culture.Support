@@ -1,236 +1,215 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Art Hall \\ Culture.Support</title>
+    <title>قاعة الفن \\ الإشعاع المقدس</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- FontAwesome for the Gold Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        body {
-            background-color: #050505;
-            color: #e0e0e0;
-            overflow: hidden;
-            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+        @import url('https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&display=swap');
+
+        :root {
+            --gold: #ffd700;
+            --deep-gold: #d4af37;
+            --fire: #ff4400;
+            --glass-bg: rgba(20, 16, 5, 0.4);
         }
 
-        /* Ambient background glow with a hint of gold */
-        .ambient-glow {
+        body {
+            background-color: #020202;
+            color: #e0e0e0;
+            font-family: 'Amiri', serif;
+            margin: 0;
+            height: 2000px;
+            background: radial-gradient(circle at top, #0a0805 0%, #020202 100%);
+            overflow-x: hidden;
+        }
+
+        /* --- تأثيرات الخلفية الضوئية --- */
+        #bg-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        /* جسيمات النور المتطايرة (بدون كلمات) */
+        .light-particle {
+            position: absolute;
+            background: var(--gold);
+            width: 3px;
+            height: 3px;
+            border-radius: 50%;
+            filter: blur(1px);
+            box-shadow: 0 0 10px var(--gold), 0 0 20px var(--fire);
+            pointer-events: none;
+        }
+
+        @keyframes float-up {
+            0% { transform: translateY(100vh) scale(0); opacity: 0; }
+            50% { opacity: 0.8; }
+            100% { transform: translateY(-10vh) scale(1.5); opacity: 0; }
+        }
+
+        /* --- واجهة العرض المركزية --- */
+        .viewport-center {
             position: fixed;
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            width: 70vw;
-            height: 70vh;
-            background: radial-gradient(circle, rgba(212, 175, 55, 0.05) 0%, rgba(0, 0, 0, 0) 70%);
-            pointer-events: none;
-            z-index: 0;
+            z-index: 10;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
         }
 
-        /* Fixed 300x300 Frame styling */
         .art-frame {
-            position: relative;
-            width: 300px;
-            height: 300px;
+            width: 380px;
+            height: 380px;
+            background: #000;
+            border: 1px solid var(--deep-gold);
             padding: 12px;
-            background: #111;
-            box-shadow: 0 0 50px rgba(0, 0, 0, 0.9), 0 0 30px rgba(212, 175, 55, 0.05);
-            border: 1px solid #222;
-            transition: transform 0.3s ease;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            overflow: hidden;
-            perspective: 1000px;
+            box-shadow: 0 0 100px rgba(212, 175, 55, 0.15), 0 0 40px rgba(0,0,0,1);
+            position: relative;
+            transition: transform 0.2s ease-out;
         }
 
         .art-frame img {
             width: 100%;
             height: 100%;
             object-fit: cover;
-            filter: contrast(1.1) brightness(0.85);
+            filter: contrast(1.1) brightness(0.9);
         }
 
-        /* HUD elements */
-        .hud-line {
-            background: rgba(212, 175, 55, 0.2);
-            height: 1px;
-            width: 100%;
-        }
-
-        .hud-bracket {
-            border: 1px solid rgba(212, 175, 55, 0.3);
-            width: 20px;
-            height: 20px;
+        /* توهج خلف الإطار */
+        .frame-glow {
             position: absolute;
-            z-index: 20;
+            top: 50%;
+            left: 50%;
+            width: 120%;
+            height: 120%;
+            background: radial-gradient(circle, rgba(212, 175, 55, 0.2) 0%, transparent 70%);
+            transform: translate(-50%, -50%);
+            z-index: -1;
+            animation: pulse-glow 4s infinite alternate;
         }
 
-        .corner-tl { top: -5px; left: -5px; border-right: 0; border-bottom: 0; }
-        .corner-tr { top: -5px; right: -5px; border-left: 0; border-bottom: 0; }
-        .corner-bl { bottom: -5px; left: -5px; border-right: 0; border-top: 0; }
-        .corner-br { bottom: -5px; right: -5px; border-left: 0; border-top: 0; }
+        @keyframes pulse-glow {
+            from { opacity: 0.5; transform: translate(-50%, -50%) scale(1); }
+            to { opacity: 1; transform: translate(-50%, -50%) scale(1.1); }
+        }
 
-        /* Glassmorphic GOLD Footer Dock */
-        .gold-glass-dock {
-            background: rgba(30, 25, 10, 0.5);
-            backdrop-filter: blur(20px) saturate(150%);
-            -webkit-backdrop-filter: blur(20px) saturate(150%);
+        /* --- تذييل الصفحة الزجاجي المبسط --- */
+        .gold-footer {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 85%;
+            max-width: 600px;
+            background: var(--glass-bg);
+            backdrop-filter: blur(25px);
             border: 1px solid rgba(212, 175, 55, 0.3);
-            border-radius: 24px;
-            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.9), inset 0 0 15px rgba(212, 175, 55, 0.1);
-            padding: 10px 20px;
-        }
-
-        .gold-icon {
-            color: #d4af37; /* Metallic Gold */
-            text-shadow: 0 0 10px rgba(212, 175, 55, 0.5), 0 0 20px rgba(212, 175, 55, 0.2);
-            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            border-radius: 50px;
+            padding: 15px 40px;
             display: flex;
-            flex-direction: column;
-            align-items: center;
             justify-content: center;
-            width: 50px;
-            height: 50px;
-            position: relative;
+            align-items: center;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+            z-index: 100;
         }
 
-        .gold-icon:hover {
-            transform: translateY(-12px) scale(1.25);
-            color: #ffefba; /* Bright Gold Highlight */
-            text-shadow: 0 0 15px rgba(212, 175, 55, 0.8), 0 0 30px rgba(212, 175, 55, 0.4);
+        .footer-text {
+            font-size: 11px;
+            letter-spacing: 6px;
+            text-transform: uppercase;
+            color: var(--gold);
+            font-weight: bold;
+            text-align: center;
+            opacity: 0.8;
         }
 
-        /* Particle glow under icons */
-        .icon-particle {
-            position: absolute;
-            bottom: -5px;
-            width: 4px;
-            height: 4px;
-            background: #d4af37;
-            border-radius: 50%;
-            opacity: 0;
-            transition: opacity 0.3s;
-            box-shadow: 0 0 10px #d4af37;
-        }
-
-        .gold-icon:hover .icon-particle {
-            opacity: 1;
-        }
-
-        .scan-line {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 2px;
-            background: rgba(212, 175, 55, 0.08);
-            animation: scan 5s linear infinite;
-            pointer-events: none;
-            z-index: 25;
-        }
-
-        @keyframes scan {
-            from { top: 0; }
-            to { top: 100%; }
+        .scroll-indicator {
+            position: fixed;
+            top: 40px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 10px;
+            letter-spacing: 4px;
+            color: var(--deep-gold);
+            opacity: 0.3;
+            text-transform: uppercase;
         }
     </style>
 </head>
-<body class="flex items-center justify-center h-screen w-screen">
+<body>
 
-    <div class="ambient-glow"></div>
+    <div id="bg-container"></div>
+    <div class="scroll-indicator">معرض الإشعاع المقدس</div>
 
-    <!-- Top HUD -->
-    <div class="fixed top-0 left-0 w-full p-6 flex justify-between items-center z-10 opacity-60">
-        <div class="text-xs tracking-widest uppercase flex flex-col">
-            <span class="text-amber-500/80">Sector: Sharia Art Gallery</span>
-            <span class="text-neutral-600">Dark Art Room : Sharia Law </span>
+    <div class="viewport-center">
+        <div class="art-frame" id="main-frame">
+            <div class="frame-glow"></div>
+            <img src="bilde.jpg" alt="" onerror="this.src='https://via.placeholder.com/400/000/D4AF37?text=Sacred+Art'">
         </div>
-        <div class="text-right text-xs tracking-widest uppercase">
-            <span id="timestamp" class="text-amber-200/50">00:00:00</span><br>
-            <span class="text-amber-600/30">Dark Room: Sharia Law Time</span>
+        <div class="mt-12 text-center">
+            <h1 class="text-[12px] tracking-[1.5em] text-amber-500 uppercase font-bold">Divine Radiance</h1>
         </div>
     </div>
 
-    <!-- Main Content -->
-    <main class="relative z-10 flex flex-col items-center">
-        <div class="art-frame">
-            <div class="scan-line"></div>
-            
-            <!-- Target Brackets -->
-            <div class="hud-bracket corner-tl"></div>
-            <div class="hud-bracket corner-tr"></div>
-            <div class="hud-bracket corner-bl"></div>
-            <div class="hud-bracket corner-br"></div>
-
-            <!-- Image -->
-            <img 
-                src="App.png" 
-                alt="Exhibited Work" ">
-        </div>
-
-        <!-- Info Plate -->
-        <div class="mt-8 text-center">
-            <h1 class="text-sm font-light tracking-[0.4em] uppercase text-amber-500/60 mb-2">Subject: Meditation</h1>
-            <div class="flex items-center justify-center gap-4 text-[10px] text-neutral-600 uppercase">
-                <div class="w-12 hud-line"></div>
-                <span>Sharia</span>
-                <div class="w-12 hud-line"></div>
-            </div>
-        </div>
-    </main>
-
-    <!-- Gold Glassmorphic Footer Dock -->
-    <div class="fixed bottom-10 left-1/2 -translate-x-1/2 z-20">
-        <div class="gold-glass-dock flex items-center gap-2">
-            <div class="gold-icon">
-                <i class="fas fa-glasses text-xl"></i>
-                <div class="icon-particle"></div>
-            </div>
-            <div class="gold-icon">
-                <i class="fas fa-wifi text-xl"></i>
-                <div class="icon-particle"></div>
-            </div>
-            <div class="gold-icon">
-                <i class="fas fa-people-carry text-xl"></i>
-                <div class="icon-particle"></div>
-            </div>
-            <div class="gold-icon">
-                <i class="fas fa-hamsa text-xl"></i>
-                <div class="icon-particle"></div>
-            </div>
-            <div class="gold-icon">
-                <i class="fas fa-om text-xl"></i>
-                <div class="icon-particle"></div>
-            </div>
-            <div class="gold-icon">
-                <i class="fas fa-pray text-xl"></i>
-                <div class="icon-particle"></div>
-            </div>
-            <div class="gold-icon">
-                <i class="fas fa-quran text-xl"></i>
-                <div class="icon-particle"></div>
-            </div>
-        </div>
+    <!-- التذييل الزجاجي الذهبي -->
+    <div class="gold-footer">
+        <div class="footer-text">تأمل النور المقدس</div>
     </div>
 
     <script>
-        function updateClock() {
-            const now = new Date();
-            const time = now.getHours().toString().padStart(2, '0') + ':' +
-                         now.getMinutes().toString().padStart(2, '0') + ':' +
-                         now.getSeconds().toString().padStart(2, '0');
-            document.getElementById('timestamp').textContent = time;
-        }
-        setInterval(updateClock, 1000);
-        updateClock();
+        const container = document.getElementById('bg-container');
 
+        // إنشاء جسيمات ضوئية عشوائية
+        function createParticle() {
+            const p = document.createElement('div');
+            p.className = 'light-particle';
+            
+            const startX = Math.random() * 100 + 'vw';
+            const size = Math.random() * 3 + 1 + 'px';
+            const duration = Math.random() * 5 + 5 + 's';
+            const delay = Math.random() * 5 + 's';
+
+            p.style.left = startX;
+            p.style.width = size;
+            p.style.height = size;
+            p.style.animation = `float-up ${duration} linear ${delay} infinite`;
+            
+            container.appendChild(p);
+
+            // إزالة الجسيمات القديمة للحفاظ على الأداء
+            if (container.children.length > 100) {
+                container.removeChild(container.firstChild);
+            }
+        }
+
+        // توليد الجسيمات بشكل مستمر
+        for (let i = 0; i < 50; i++) {
+            createParticle();
+        }
+        setInterval(createParticle, 200);
+
+        // تأثير التوازي عند التمرير
+        window.addEventListener('scroll', () => {
+            const scrolled = window.pageYOffset;
+            container.style.transform = `translateY(${scrolled * 0.1}px)`;
+        });
+
+        // تأثير حركة الإطار مع الفأرة
         document.addEventListener('mousemove', (e) => {
             const moveX = (e.clientX - window.innerWidth / 2) * 0.01;
             const moveY = (e.clientY - window.innerHeight / 2) * 0.01;
-            const frame = document.querySelector('.art-frame');
-            frame.style.transform = `translate(${moveX}px, ${moveY}px) rotateY(${moveX * 1.5}deg) rotateX(${-moveY * 1.5}deg)`;
+            const frame = document.getElementById('main-frame');
+            frame.style.transform = `rotateY(${moveX * 5}deg) rotateX(${-moveY * 5}deg)`;
         });
     </script>
 </body>
