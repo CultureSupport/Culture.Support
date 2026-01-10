@@ -3,8 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Art Hall \ Culture.Support</title>
+    <title>Art Hall HUD Viewer</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome for the Gold Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         body {
             background-color: #050505;
@@ -13,15 +15,15 @@
             font-family: 'Inter', system-ui, -apple-system, sans-serif;
         }
 
-        /* Ambient background glow */
+        /* Ambient background glow with a hint of gold */
         .ambient-glow {
             position: fixed;
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            width: 60vw;
-            height: 60vh;
-            background: radial-gradient(circle, rgba(40, 40, 50, 0.3) 0%, rgba(0, 0, 0, 0) 70%);
+            width: 70vw;
+            height: 70vh;
+            background: radial-gradient(circle, rgba(212, 175, 55, 0.05) 0%, rgba(0, 0, 0, 0) 70%);
             pointer-events: none;
             z-index: 0;
         }
@@ -33,7 +35,7 @@
             height: 300px;
             padding: 12px;
             background: #111;
-            box-shadow: 0 0 50px rgba(0, 0, 0, 0.8), 0 0 20px rgba(255, 255, 255, 0.05);
+            box-shadow: 0 0 50px rgba(0, 0, 0, 0.9), 0 0 30px rgba(212, 175, 55, 0.05);
             border: 1px solid #222;
             transition: transform 0.3s ease;
             display: flex;
@@ -47,18 +49,18 @@
             width: 100%;
             height: 100%;
             object-fit: cover;
-            filter: contrast(1.05) brightness(0.9);
+            filter: contrast(1.1) brightness(0.85);
         }
 
         /* HUD elements */
         .hud-line {
-            background: rgba(255, 255, 255, 0.1);
+            background: rgba(212, 175, 55, 0.2);
             height: 1px;
             width: 100%;
         }
 
         .hud-bracket {
-            border: 1px solid rgba(255, 255, 255, 0.2);
+            border: 1px solid rgba(212, 175, 55, 0.3);
             width: 20px;
             height: 20px;
             position: absolute;
@@ -70,14 +72,61 @@
         .corner-bl { bottom: -5px; left: -5px; border-right: 0; border-top: 0; }
         .corner-br { bottom: -5px; right: -5px; border-left: 0; border-top: 0; }
 
+        /* Glassmorphic GOLD Footer Dock */
+        .gold-glass-dock {
+            background: rgba(30, 25, 10, 0.5);
+            backdrop-filter: blur(20px) saturate(150%);
+            -webkit-backdrop-filter: blur(20px) saturate(150%);
+            border: 1px solid rgba(212, 175, 55, 0.3);
+            border-radius: 24px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.9), inset 0 0 15px rgba(212, 175, 55, 0.1);
+            padding: 10px 20px;
+        }
+
+        .gold-icon {
+            color: #d4af37; /* Metallic Gold */
+            text-shadow: 0 0 10px rgba(212, 175, 55, 0.5), 0 0 20px rgba(212, 175, 55, 0.2);
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            width: 50px;
+            height: 50px;
+            position: relative;
+        }
+
+        .gold-icon:hover {
+            transform: translateY(-12px) scale(1.25);
+            color: #ffefba; /* Bright Gold Highlight */
+            text-shadow: 0 0 15px rgba(212, 175, 55, 0.8), 0 0 30px rgba(212, 175, 55, 0.4);
+        }
+
+        /* Particle glow under icons */
+        .icon-particle {
+            position: absolute;
+            bottom: -5px;
+            width: 4px;
+            height: 4px;
+            background: #d4af37;
+            border-radius: 50%;
+            opacity: 0;
+            transition: opacity 0.3s;
+            box-shadow: 0 0 10px #d4af37;
+        }
+
+        .gold-icon:hover .icon-particle {
+            opacity: 1;
+        }
+
         .scan-line {
             position: absolute;
             top: 0;
             left: 0;
             width: 100%;
             height: 2px;
-            background: rgba(255, 255, 255, 0.05);
-            animation: scan 4s linear infinite;
+            background: rgba(212, 175, 55, 0.08);
+            animation: scan 5s linear infinite;
             pointer-events: none;
             z-index: 25;
         }
@@ -95,12 +144,12 @@
     <!-- Top HUD -->
     <div class="fixed top-0 left-0 w-full p-6 flex justify-between items-center z-10 opacity-60">
         <div class="text-xs tracking-widest uppercase flex flex-col">
-            <span>Sector: Dark Gallery</span>
-            <span class="text-neutral-600"> Art Hall</span>
+            <span class="text-amber-500/80">Sector: Art Gallery</span>
+            <span class="text-neutral-600">Dark Art Room</span>
         </div>
         <div class="text-right text-xs tracking-widest uppercase">
-            <span id="timestamp">00:00:00</span><br>
-            <span class="text-emerald-500/50">Status: Active</span>
+            <span id="timestamp" class="text-amber-200/50">00:00:00</span><br>
+            <span class="text-amber-600/30">Dark Room</span>
         </div>
     </div>
 
@@ -115,29 +164,54 @@
             <div class="hud-bracket corner-bl"></div>
             <div class="hud-bracket corner-br"></div>
 
-            <!-- The Updated Image -->
+            <!-- Image -->
             <img 
                 src="App.png" 
-                alt="Profile">
+                alt="Exhibited Work" ">
         </div>
 
         <!-- Info Plate -->
         <div class="mt-8 text-center">
-            <h1 class="text-sm font-light tracking-[0.3em] uppercase opacity-80 mb-2">Subject: Meditation Office</h1>
-            <div class="flex items-center justify-center gap-4 text-[10px] text-neutral-500 uppercase">
+            <h1 class="text-sm font-light tracking-[0.4em] uppercase text-amber-500/60 mb-2">Subject: Meditation</h1>
+            <div class="flex items-center justify-center gap-4 text-[10px] text-neutral-600 uppercase">
                 <div class="w-12 hud-line"></div>
-                <span>Art Room</span>
+                <span>Art Frame</span>
                 <div class="w-12 hud-line"></div>
             </div>
         </div>
     </main>
 
-    <!-- Bottom HUD -->
-    <div class="fixed bottom-0 left-0 w-full p-6 flex justify-center z-10">
-        <div class="flex gap-8 text-[10px] tracking-tighter uppercase opacity-30">
-            <span>Exhibition </span>
-            <span>Dark </span>
-            <span> Art</span>
+    <!-- Gold Glassmorphic Footer Dock -->
+    <div class="fixed bottom-10 left-1/2 -translate-x-1/2 z-20">
+        <div class="gold-glass-dock flex items-center gap-2">
+            <div class="gold-icon">
+                <i class="fas fa-glasses text-xl"></i>
+                <div class="icon-particle"></div>
+            </div>
+            <div class="gold-icon">
+                <i class="fas fa-wifi text-xl"></i>
+                <div class="icon-particle"></div>
+            </div>
+            <div class="gold-icon">
+                <i class="fas fa-people-carry text-xl"></i>
+                <div class="icon-particle"></div>
+            </div>
+            <div class="gold-icon">
+                <i class="fas fa-hamsa text-xl"></i>
+                <div class="icon-particle"></div>
+            </div>
+            <div class="gold-icon">
+                <i class="fas fa-om text-xl"></i>
+                <div class="icon-particle"></div>
+            </div>
+            <div class="gold-icon">
+                <i class="fas fa-pray text-xl"></i>
+                <div class="icon-particle"></div>
+            </div>
+            <div class="gold-icon">
+                <i class="fas fa-quran text-xl"></i>
+                <div class="icon-particle"></div>
+            </div>
         </div>
     </div>
 
@@ -156,8 +230,7 @@
             const moveX = (e.clientX - window.innerWidth / 2) * 0.01;
             const moveY = (e.clientY - window.innerHeight / 2) * 0.01;
             const frame = document.querySelector('.art-frame');
-            // Enhanced rotation for the new perspective
-            frame.style.transform = `translate(${moveX}px, ${moveY}px) rotateY(${moveX * 1.2}deg) rotateX(${-moveY * 1.2}deg)`;
+            frame.style.transform = `translate(${moveX}px, ${moveY}px) rotateY(${moveX * 1.5}deg) rotateX(${-moveY * 1.5}deg)`;
         });
     </script>
 </body>
