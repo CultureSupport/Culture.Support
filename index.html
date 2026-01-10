@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Art Hall HUD Viewer</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            background-color: #050505;
+            color: #e0e0e0;
+            overflow: hidden;
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+        }
+
+        /* Ambient background glow */
+        .ambient-glow {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 60vw;
+            height: 60vh;
+            background: radial-gradient(circle, rgba(40, 40, 50, 0.3) 0%, rgba(0, 0, 0, 0) 70%);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        /* Fixed 300x300 Frame styling */
+        .art-frame {
+            position: relative;
+            width: 300px;
+            height: 300px;
+            padding: 12px;
+            background: #111;
+            box-shadow: 0 0 50px rgba(0, 0, 0, 0.8), 0 0 20px rgba(255, 255, 255, 0.05);
+            border: 1px solid #222;
+            transition: transform 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            perspective: 1000px;
+        }
+
+        .art-frame img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            filter: contrast(1.05) brightness(0.9);
+        }
+
+        /* HUD elements */
+        .hud-line {
+            background: rgba(255, 255, 255, 0.1);
+            height: 1px;
+            width: 100%;
+        }
+
+        .hud-bracket {
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            width: 20px;
+            height: 20px;
+            position: absolute;
+            z-index: 20;
+        }
+
+        .corner-tl { top: -5px; left: -5px; border-right: 0; border-bottom: 0; }
+        .corner-tr { top: -5px; right: -5px; border-left: 0; border-bottom: 0; }
+        .corner-bl { bottom: -5px; left: -5px; border-right: 0; border-top: 0; }
+        .corner-br { bottom: -5px; right: -5px; border-left: 0; border-top: 0; }
+
+        .scan-line {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: rgba(255, 255, 255, 0.05);
+            animation: scan 4s linear infinite;
+            pointer-events: none;
+            z-index: 25;
+        }
+
+        @keyframes scan {
+            from { top: 0; }
+            to { top: 100%; }
+        }
+    </style>
+</head>
+<body class="flex items-center justify-center h-screen w-screen">
+
+    <div class="ambient-glow"></div>
+
+    <!-- Top HUD -->
+    <div class="fixed top-0 left-0 w-full p-6 flex justify-between items-center z-10 opacity-60">
+        <div class="text-xs tracking-widest uppercase flex flex-col">
+            <span>Sector: Gallery_Alpha</span>
+            <span class="text-neutral-600">File: Gemini_Generated_Image</span>
+        </div>
+        <div class="text-right text-xs tracking-widest uppercase">
+            <span id="timestamp">00:00:00</span><br>
+            <span class="text-emerald-500/50">Status: Active</span>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <main class="relative z-10 flex flex-col items-center">
+        <div class="art-frame">
+            <div class="scan-line"></div>
+            
+            <!-- Target Brackets -->
+            <div class="hud-bracket corner-tl"></div>
+            <div class="hud-bracket corner-tr"></div>
+            <div class="hud-bracket corner-bl"></div>
+            <div class="hud-bracket corner-br"></div>
+
+            <!-- The Updated Image -->
+            <img 
+                src="Copy.png" 
+                alt="Exhibited Work" 
+               
+               
+            >
+        </div>
+
+        <!-- Info Plate -->
+        <div class="mt-8 text-center">
+            <h1 class="text-sm font-light tracking-[0.3em] uppercase opacity-80 mb-2">Subject: Generated_Entity_01</h1>
+            <div class="flex items-center justify-center gap-4 text-[10px] text-neutral-500 uppercase">
+                <div class="w-12 hud-line"></div>
+                <span>Curated Environment v1.0.5</span>
+                <div class="w-12 hud-line"></div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Bottom HUD -->
+    <div class="fixed bottom-0 left-0 w-full p-6 flex justify-center z-10">
+        <div class="flex gap-8 text-[10px] tracking-tighter uppercase opacity-30">
+            <span>Exhibition_Hall_01</span>
+            <span>Ref_No_C0RL</span>
+            <span>Grid_Lock_300px</span>
+        </div>
+    </div>
+
+    <script>
+        function updateClock() {
+            const now = new Date();
+            const time = now.getHours().toString().padStart(2, '0') + ':' +
+                         now.getMinutes().toString().padStart(2, '0') + ':' +
+                         now.getSeconds().toString().padStart(2, '0');
+            document.getElementById('timestamp').textContent = time;
+        }
+        setInterval(updateClock, 1000);
+        updateClock();
+
+        document.addEventListener('mousemove', (e) => {
+            const moveX = (e.clientX - window.innerWidth / 2) * 0.01;
+            const moveY = (e.clientY - window.innerHeight / 2) * 0.01;
+            const frame = document.querySelector('.art-frame');
+            // Enhanced rotation for the new perspective
+            frame.style.transform = `translate(${moveX}px, ${moveY}px) rotateY(${moveX * 1.2}deg) rotateX(${-moveY * 1.2}deg)`;
+        });
+    </script>
+</body>
+</html>
