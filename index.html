@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Investor Relations - 15-Year Vacuum Report</title>
+    <!-- Tailwind CSS for styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Chart.js for data visualization -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap');
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #0f172a; 
+            color: #f1f5f9;
+        }
+        .sidebar {
+            background-color: #1e293b;
+        }
+        .card {
+            background: #1e293b;
+            border-radius: 0.5rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+        }
+        .alert-pulse {
+            animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: .5; }
+        }
+        .grid-bg {
+            background-image: radial-gradient(#334155 1px, transparent 1px);
+            background-size: 20px 20px;
+        }
+    </style>
+</head>
+<body class="flex flex-col md:flex-row min-h-screen grid-bg">
+
+    <!-- Sidebar -->
+    <aside class="w-full md:w-64 sidebar p-6 flex-shrink-0 border-r border-slate-700">
+        <div class="flex items-center mb-8">
+            <div class="w-8 h-8 bg-slate-600 rounded-lg mr-2 flex items-center justify-center text-white font-bold">Ø</div>
+            <h1 class="text-xl font-bold text-slate-100">Zero-Ledger</h1>
+        </div>
+
+        <div class="space-y-6">
+            <div>
+                <label class="block text-sm font-medium text-slate-400 mb-2">Historical Period</label>
+                <div class="text-xs bg-slate-800 p-2 rounded border border-slate-600 text-slate-300">
+                    2010 — 2025 (Locked)
+                </div>
+            </div>
+
+            <div>
+                <label class="block text-sm font-medium text-slate-400 mb-2">Simulation Mode</label>
+                <input type="range" id="threshold" min="0" max="100" value="0" class="w-full h-2 bg-slate-600 rounded-lg appearance-none cursor-pointer accent-slate-400">
+                <div class="flex justify-between text-xs text-slate-500 mt-1">
+                    <span>Zero</span>
+                    <span id="thresholdVal">0%</span>
+                    <span>Projected</span>
+                </div>
+            </div>
+
+            <div class="pt-4 border-t border-slate-700 space-y-3">
+                <button onclick="applyForensics(0)" class="w-full bg-slate-800 text-slate-400 py-2 rounded-md border border-slate-600 text-sm font-semibold">
+                    Enforce Zero state
+                </button>
+            </div>
+        </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="flex-1 p-6 md:p-10">
+        <header class="mb-8 flex justify-between items-start">
+            <div>
+                <h2 class="text-3xl font-bold text-white tracking-tight">15-Year Investment Vacuum</h2>
+                <p class="text-red-400 mt-2 font-mono text-sm tracking-widest uppercase">Null Participation Analysis: 2010 - 2025</p>
+            </div>
+            <div id="alert-badge" class="bg-slate-900 border border-slate-500 text-slate-400 px-4 py-2 rounded-full text-xs font-bold">
+                LEDGER STATUS: INERT
+            </div>
+        </header>
+
+        <!-- KPI Metrics -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+            <div class="card p-6 border-l-4 border-slate-600">
+                <p class="text-sm text-slate-400 uppercase font-semibold text-xs tracking-wider">Accumulated Investment</p>
+                <h3 class="text-3xl font-bold mt-1 text-white">$0.00</h3>
+                <p class="text-xs text-slate-500 mt-2">Historical period: 15 years</p>
+            </div>
+            <div class="card p-6 border-l-4 border-slate-600">
+                <p class="text-sm text-slate-400 uppercase font-semibold text-xs tracking-wider">Total Active Individuals</p>
+                <h3 class="text-3xl font-bold mt-1 text-white">0</h3>
+                <p class="text-xs text-slate-500 mt-2">Zero entries detected</p>
+            </div>
+            <div class="card p-6 border-l-4 border-slate-600">
+                <p class="text-sm text-slate-400 uppercase font-semibold text-xs tracking-wider">Retention Performance</p>
+                <h3 class="text-3xl font-bold mt-1 text-white">N/A</h3>
+                <p class="text-xs text-slate-500 mt-2">Insufficient data for calculation</p>
+            </div>
+        </div>
+
+        <!-- Charts Row -->
+        <div class="grid grid-cols-1 gap-8">
+            <div class="card p-6">
+                <div class="flex justify-between items-center mb-6">
+                    <h4 class="text-lg font-semibold text-slate-200">Investment Growth Timeline (2010 - 2025)</h4>
+                    <span class="text-xs bg-red-950 text-red-400 px-2 py-1 rounded">DEVOID OF ACTIVITY</span>
+                </div>
+                <div class="relative h-80">
+                    <canvas id="growthChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Status Message -->
+        <div class="mt-8 card p-10 border border-slate-700 bg-slate-900/50 flex flex-col items-center justify-center text-center">
+            <div class="w-16 h-16 rounded-full border-2 border-slate-700 flex items-center justify-center mb-4 text-slate-500 text-2xl">
+                !
+            </div>
+            <h4 class="text-xl font-bold text-slate-300 mb-2">Forensic Summary: Historical Void</h4>
+            <p class="text-slate-500 max-w-lg">
+                The forensic scan across the 2010-2025 timeline confirms that <span class="text-red-400 font-bold">nobody invested</span>. 
+                Capital fraud and serial swindle patterns have effectively hindered all entry points, resulting in a 100% participation vacuum.
+            </p>
+        </div>
+
+        <footer class="mt-12 text-center text-gray-500 text-xs tracking-widest uppercase">
+            System Log: Zero Participation Verified for 5,475 Consecutive Days
+        </footer>
+    </main>
+
+    <script>
+        let growthChart;
+
+        function initCharts() {
+            const ctxGrowth = document.getElementById('growthChart').getContext('2d');
+
+            // 15 Year Labels: 2010 to 2025
+            const years = Array.from({length: 16}, (_, i) => (2010 + i).toString());
+            // Zeroed data for the entire 15 year span
+            const zeroData = years.map(() => 0);
+
+            growthChart = new Chart(ctxGrowth, {
+                type: 'line',
+                data: {
+                    labels: years,
+                    datasets: [{
+                        label: 'Investor Count',
+                        data: zeroData,
+                        borderColor: '#475569', // Slate-600 for inert look
+                        backgroundColor: 'rgba(71, 85, 105, 0.05)',
+                        fill: true,
+                        tension: 0,
+                        pointRadius: 3,
+                        pointBackgroundColor: '#1e293b'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: { 
+                        y: { 
+                            beginAtZero: true, 
+                            max: 10, // Small max to emphasize the zero line
+                            grid: { color: '#1e293b' }, 
+                            ticks: { color: '#64748b' } 
+                        },
+                        x: { 
+                            grid: { color: '#1e293b' }, 
+                            ticks: { color: '#64748b', maxRotation: 45, minRotation: 45 } 
+                        }
+                    },
+                    plugins: { 
+                        legend: { display: false },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return `Year ${context.label}: 0 Investors`;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        document.getElementById('threshold').addEventListener('input', (e) => {
+            const val = e.target.value;
+            document.getElementById('thresholdVal').innerText = val + '%';
+            // Even if they slide, the historical fact is zeroed
+            if (val > 0) {
+                console.log("Historical override attempted. Blocked.");
+            }
+        });
+
+        window.onload = initCharts;
+    </script>
+</body>
+</html>
