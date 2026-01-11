@@ -3,12 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Culture.Support</title>
+    <title>Nebula Glass Shooter</title>
     <style>
         :root {
             --glass-bg: rgba(255, 255, 255, 0.1);
             --glass-border: rgba(255, 255, 255, 0.2);
             --accent: #00f2ff;
+            --bomb-accent: #ffae00;
             --danger: #ff4d4d;
         }
 
@@ -119,6 +120,18 @@
             border: 2px solid var(--accent);
         }
 
+        #bomb-btn {
+            width: 65px;
+            height: 65px;
+            border-radius: 50%;
+            pointer-events: auto;
+            border: 2px solid var(--bomb-accent);
+            margin-right: 10px;
+            color: var(--bomb-accent);
+            font-weight: bold;
+            font-size: 0.7rem;
+        }
+
         /* Overlays */
         #overlay-screen {
             position: absolute;
@@ -156,6 +169,17 @@
             height: 30px;
         }
 
+        .controls-hint {
+            position: absolute;
+            bottom: 10px;
+            left: 0;
+            right: 0;
+            text-align: center;
+            font-size: 0.7rem;
+            opacity: 0.4;
+            pointer-events: none;
+        }
+
         @media (min-width: 1024px) {
             #mobile-controls { display: none; }
         }
@@ -172,12 +196,16 @@
             <div id="score" class="stat-value">0000</div>
         </div>
         <div class="stat-item">
+            <div class="stat-label">Mass Bombs</div>
+            <div id="bombs-count" class="stat-value" style="color: var(--bomb-accent)">3</div>
+        </div>
+        <div class="stat-item">
             <div class="stat-label">Level</div>
             <div id="level" class="stat-value">1</div>
         </div>
         <div class="stat-item">
             <div class="stat-label">Armor</div>
-            <div id="lives" class="stat-value" style="color: var(--accent)">3</div>
+            <div id="lives" class="stat-value" style="color: #4dff88">100</div>
         </div>
     </div>
 
@@ -198,10 +226,15 @@
                 <svg viewBox="0 0 24 24"><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/></svg>
             </div>
         </div>
-        <div class="ctrl-btn glass-panel" id="fire-btn">
-            <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8z"/></svg>
+        <div style="display: flex; align-items: center;">
+            <div class="ctrl-btn glass-panel" id="bomb-btn">BOMB</div>
+            <div class="ctrl-btn glass-panel" id="fire-btn">
+                <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8z"/></svg>
+            </div>
         </div>
     </div>
+
+    <div class="controls-hint">B KEY: MASS BOMB | WASD/ARROWS: MOVE | SPACE: FIRE</div>
 </div>
 
 <script>
@@ -210,14 +243,20 @@
     const scoreEl = document.getElementById('score');
     const levelEl = document.getElementById('level');
     const livesEl = document.getElementById('lives');
+    const bombsEl = document.getElementById('bombs-count');
     const overlay = document.getElementById('overlay-screen');
     const statusText = document.getElementById('status-text');
     const finalStats = document.getElementById('final-stats');
 
+    // Configuration
+    const STARTING_ARMOR = 100;
+    const STARTING_BOMBS = 3;
+
     // State
     let gameActive = true;
     let score = 0;
-    let lives = 3;
+    let lives = STARTING_ARMOR;
+    let bombs = STARTING_BOMBS;
     let level = 1;
     let keys = {};
     
@@ -250,26 +289,71 @@
     function resize() {
         canvas.width = window.innerWidth;
         canvas.height = window.innerHeight;
-        player.y = canvas.height - 180; // Adjusted for mobile controls
+        player.y = canvas.height - 180; 
         if (window.innerWidth > 1024) player.y = canvas.height - 100;
         player.x = canvas.width / 2 - player.w / 2;
     }
 
     function setupInput() {
-        window.addEventListener('keydown', e => keys[e.code] = true);
+        window.addEventListener('keydown', e => {
+            keys[e.code] = true;
+            if (e.code === 'KeyB') triggerMassBomb();
+        });
         window.addEventListener('keyup', e => keys[e.code] = false);
 
         const bind = (id, key) => {
             const el = document.getElementById(id);
-            el.addEventListener('touchstart', (e) => { e.preventDefault(); keys[key] = true; });
+            if (!el) return;
+            el.addEventListener('touchstart', (e) => { 
+                e.preventDefault(); 
+                if (id === 'bomb-btn') triggerMassBomb();
+                else keys[key] = true; 
+            });
             el.addEventListener('touchend', (e) => { e.preventDefault(); keys[key] = false; });
-            el.addEventListener('mousedown', () => keys[key] = true);
+            el.addEventListener('mousedown', () => {
+                if (id === 'bomb-btn') triggerMassBomb();
+                else keys[key] = true;
+            });
             el.addEventListener('mouseup', () => keys[key] = false);
         };
         bind('left-btn', 'ArrowLeft');
         bind('right-btn', 'ArrowRight');
         bind('fire-btn', 'Space');
+        bind('bomb-btn', 'KeyB');
     }
+
+    function triggerMassBomb() {
+        if (!gameActive || bombs <= 0) return;
+        bombs--;
+        updateUI();
+
+        // Screen shake effect placeholder (visual logic in update/draw)
+        screenShake = 30;
+
+        // Launch 20 radial missiles
+        for (let i = 0; i < 20; i++) {
+            const angle = (Math.PI * 2 / 20) * i;
+            bullets.push({
+                x: player.x + player.w/2,
+                y: player.y + player.h/2,
+                w: 8,
+                h: 8,
+                isMissile: true,
+                vx: Math.cos(angle) * 12,
+                vy: Math.sin(angle) * 12,
+                color: '#ffae00'
+            });
+        }
+
+        // Auto-damage all current enemies for the "Massive Explosion" feel
+        enemies.forEach(e => {
+            createExplosion(e.x + e.w/2, e.y + e.h/2, '#ffae00');
+            score += 25 * level;
+        });
+        enemies = []; // Wipe the wave
+    }
+
+    let screenShake = 0;
 
     function spawnWave() {
         const rows = 3 + Math.min(Math.floor(level/2), 3);
@@ -292,7 +376,7 @@
     }
 
     function resetGame() {
-        score = 0; lives = 3; level = 1;
+        score = 0; lives = STARTING_ARMOR; bombs = STARTING_BOMBS; level = 1;
         enemies = []; bullets = []; enemyBullets = []; particles = [];
         gameActive = true;
         overlay.style.display = 'none';
@@ -305,14 +389,19 @@
         scoreEl.innerText = score.toString().padStart(4, '0');
         levelEl.innerText = level;
         livesEl.innerText = lives;
+        bombsEl.innerText = bombs;
+        
+        if (lives <= 20) livesEl.style.color = 'var(--danger)';
+        else if (lives <= 50) livesEl.style.color = '#ffaa00';
+        else livesEl.style.color = '#4dff88';
     }
 
     function createExplosion(x, y, color) {
-        for(let i=0; i<12; i++) {
+        for(let i=0; i<15; i++) {
             particles.push({
                 x, y,
-                vx: (Math.random() - 0.5) * 8,
-                vy: (Math.random() - 0.5) * 8,
+                vx: (Math.random() - 0.5) * 12,
+                vy: (Math.random() - 0.5) * 12,
                 life: 1,
                 color
             });
@@ -322,6 +411,8 @@
     function update() {
         if (!gameActive) return;
 
+        if (screenShake > 0) screenShake *= 0.9;
+
         stars.forEach(s => {
             s.y += s.speed;
             if (s.y > canvas.height) s.y = 0;
@@ -329,15 +420,24 @@
 
         if ((keys['ArrowLeft'] || keys['KeyA']) && player.x > 20) player.x -= 7;
         if ((keys['ArrowRight'] || keys['KeyD']) && player.x < canvas.width - player.w - 20) player.x += 7;
+        
         if ((keys['Space'] || keys['KeyW'] || keys['ArrowUp']) && player.cooldown <= 0) {
-            bullets.push({ x: player.x + player.w/2 - 2, y: player.y, w: 4, h: 15 });
+            bullets.push({ x: player.x + player.w/2 - 2, y: player.y, w: 4, h: 15, isMissile: false });
             player.cooldown = 12;
         }
         if (player.cooldown > 0) player.cooldown--;
 
         bullets.forEach((b, i) => {
-            b.y -= 10;
-            if (b.y < -20) bullets.splice(i, 1);
+            if (b.isMissile) {
+                b.x += b.vx;
+                b.y += b.vy;
+            } else {
+                b.y -= 10;
+            }
+
+            if (b.y < -50 || b.y > canvas.height + 50 || b.x < -50 || b.x > canvas.width + 50) {
+                bullets.splice(i, 1);
+            }
         });
 
         enemyBullets.forEach((b, i) => {
@@ -368,7 +468,7 @@
 
             bullets.forEach((b, bi) => {
                 if (b.x < e.x + e.w && b.x + b.w > e.x && b.y < e.y + e.h && b.y + b.h > e.y) {
-                    bullets.splice(bi, 1);
+                    if (!b.isMissile) bullets.splice(bi, 1);
                     createExplosion(e.x + e.w/2, e.y + e.h/2, `hsl(${e.hue}, 100%, 50%)`);
                     enemies.splice(i, 1);
                     score += 50 * level;
@@ -383,17 +483,24 @@
 
         if (enemies.length === 0) {
             level++;
+            // Grant a bomb every 2 levels
+            if (level % 2 === 0) bombs++;
             updateUI();
             spawnWave();
         }
 
         particles.forEach((p, i) => {
-            p.x += p.vx; p.y += p.vy; p.life -= 0.03;
+            p.x += p.vx; p.y += p.vy; p.life -= 0.02;
             if (p.life <= 0) particles.splice(i, 1);
         });
     }
 
     function draw() {
+        ctx.save();
+        if (screenShake > 1) {
+            ctx.translate((Math.random()-0.5)*screenShake, (Math.random()-0.5)*screenShake);
+        }
+
         ctx.clearRect(0, 0, canvas.width, canvas.height);
 
         // Stars
@@ -406,7 +513,6 @@
         ctx.shadowBlur = 15;
         ctx.shadowColor = player.color;
         
-        // Player Ship (Sleek Shape)
         ctx.fillStyle = player.color;
         ctx.beginPath();
         ctx.moveTo(player.x + player.w/2, player.y);
@@ -417,9 +523,17 @@
         ctx.fill();
 
         // Bullets
-        ctx.fillStyle = '#fff';
-        ctx.shadowColor = '#fff';
-        bullets.forEach(b => ctx.fillRect(b.x, b.y, b.w, b.h));
+        bullets.forEach(b => {
+            ctx.fillStyle = b.color || '#fff';
+            ctx.shadowColor = b.color || '#fff';
+            if (b.isMissile) {
+                ctx.beginPath();
+                ctx.arc(b.x, b.y, b.w, 0, Math.PI*2);
+                ctx.fill();
+            } else {
+                ctx.fillRect(b.x, b.y, b.w, b.h);
+            }
+        });
 
         // Enemy Bullets
         ctx.fillStyle = '#ff4d4d';
@@ -430,11 +544,9 @@
         enemies.forEach(e => {
             ctx.fillStyle = `hsl(${e.hue}, 80%, 60%)`;
             ctx.shadowColor = `hsl(${e.hue}, 80%, 60%)`;
-            // Simple Alien Shape
             ctx.beginPath();
             ctx.roundRect(e.x, e.y, e.w, e.h, 5);
             ctx.fill();
-            // Eyes
             ctx.fillStyle = '#000';
             ctx.fillRect(e.x + 8, e.y + 6, 4, 4);
             ctx.fillRect(e.x + e.w - 12, e.y + 6, 4, 4);
@@ -444,9 +556,12 @@
         particles.forEach(p => {
             ctx.fillStyle = p.color;
             ctx.globalAlpha = p.life;
-            ctx.fillRect(p.x, p.y, 3, 3);
+            ctx.beginPath();
+            ctx.arc(p.x, p.y, 2, 0, Math.PI*2);
+            ctx.fill();
         });
         ctx.globalAlpha = 1;
+        ctx.restore();
     }
 
     function gameLoop() {
@@ -459,4 +574,5 @@
 </script>
 </body>
 </html>
+
 
