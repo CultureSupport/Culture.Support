@@ -26,374 +26,436 @@
             background-color: var(--dracula-bg);
             color: var(--dracula-fg);
             font-family: 'Fira Code', monospace;
-            overflow-x: hidden;
+            overflow: hidden; 
+            height: 100vh;
+            user-select: none;
         }
 
-        /* Glassmorphism Styles */
         .glass-panel {
             background: rgba(68, 71, 90, 0.4);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
             border: 1px solid rgba(255, 255, 255, 0.1);
         }
 
         .glass-icon {
             background: rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(5px);
+            backdrop-filter: blur(8px);
             border: 1px solid rgba(255, 255, 255, 0.2);
             border-radius: 50%;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
+
+        .swipe-left { transform: translateX(-150%) rotate(-30deg) !important; opacity: 0 !important; pointer-events: none; }
+        .swipe-right { transform: translateX(150%) rotate(30deg) !important; opacity: 0 !important; pointer-events: none; }
 
         .terminal-border {
             border: 1px solid var(--dracula-current);
-            box-shadow: 0 15px 35px rgba(0,0,0,0.6);
+            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
         }
 
         .code-snippet {
             background-color: #1e1f29;
             border-radius: 0.75rem;
-            padding: 1.25rem;
-            font-size: 0.8rem;
-            line-height: 1.5;
+            padding: 1rem;
+            font-size: 0.7rem;
+            line-height: 1.6;
             border-left: 4px solid var(--dracula-purple);
-            max-height: 220px;
+            max-height: 160px;
             overflow-y: auto;
+            position: relative;
         }
 
-        .code-keyword { color: var(--dracula-pink); }
-        .code-func { color: var(--dracula-green); }
-        .code-string { color: var(--dracula-yellow); }
-        .code-comment { color: var(--dracula-comment); font-style: italic; }
-        .code-type { color: var(--dracula-cyan); }
-
-        .scanline {
-            width: 100%; height: 100px; z-index: 100;
-            background: linear-gradient(0deg, rgba(0,0,0,0) 0%, rgba(255,255,255,0.01) 50%, rgba(0,0,0,0) 100%);
-            opacity: 0.1; position: fixed; bottom: 100%;
-            animation: scanline 8s linear infinite; pointer-events: none;
+        .code-snippet::before {
+            content: 'TERMINAL';
+            position: absolute;
+            top: 2px;
+            right: 8px;
+            font-size: 8px;
+            color: var(--dracula-comment);
+            letter-spacing: 1px;
         }
 
-        @keyframes scanline { 0% { bottom: 100%; } 100% { bottom: -100px; } }
-
+        .active-nav { color: var(--dracula-pink); border-bottom: 2px solid var(--dracula-pink); }
+        
         .profile-img-container {
             position: relative;
-            height: 280px;
+            height: 260px;
             overflow: hidden;
             background: #1e1f29;
         }
 
-        .profile-img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            transition: transform 0.5s ease;
+        .ai-glow {
+            box-shadow: 0 0 20px rgba(189, 147, 249, 0.4);
+            animation: pulse-glow 2s infinite alternate;
         }
 
-        .match-overlay-pill {
-            position: absolute;
-            top: 1rem;
-            right: 1rem;
-            padding: 0.5rem 1rem;
-            border-radius: 99px;
-            font-weight: 800;
-            font-size: 0.75rem;
-            background: rgba(189, 147, 249, 0.85);
-            backdrop-filter: blur(4px);
-            color: white;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+        @keyframes pulse-glow {
+            from { box-shadow: 0 0 10px rgba(189, 147, 249, 0.2); }
+            to { box-shadow: 0 0 25px rgba(189, 147, 249, 0.6); }
         }
 
-        /* Nav & Buttons */
-        .btn-action {
-            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        .nav-btn:active { transform: scale(0.9); }
+        
+        /* Loading animation */
+        .shimmer {
+            background: linear-gradient(90deg, #282a36 25%, #44475a 50%, #282a36 75%);
+            background-size: 200% 100%;
+            animation: shimmer 1.5s infinite;
         }
-        .btn-action:active { transform: scale(0.9); }
-
-        ::-webkit-scrollbar { width: 5px; }
-        ::-webkit-scrollbar-track { background: transparent; }
-        ::-webkit-scrollbar-thumb { background: var(--dracula-purple); border-radius: 10px; }
+        @keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
     </style>
 </head>
-<body class="min-h-screen flex flex-col selection:bg-purple-500/30">
-    <div class="scanline"></div>
+<body class="flex flex-col">
 
-    <header class="border-b border-gray-800/50 p-4 sticky top-0 bg-[#282a36]/80 backdrop-blur-md z-50">
+    <!-- Header -->
+    <header class="border-b border-gray-800/50 p-4 bg-[#282a36]/80 backdrop-blur-md z-50">
         <div class="max-w-md mx-auto flex justify-between items-center">
             <div class="flex items-center space-x-2">
-                <div class="glass-icon w-8 h-8 flex items-center justify-center text-pink-500">
-                    <i class="fas fa-code-merge"></i>
-                </div>
-                <h1 class="text-xl font-bold tracking-tighter">Dev<span class="text-purple-400">Match</span></h1>
+                <i class="fas fa-brain text-pink-500 animate-pulse"></i>
+                <h1 class="text-lg font-bold tracking-tighter">DevMatch <span class="text-purple-400">Enterprise</span></h1>
             </div>
-            <div id="stats" class="text-[10px] text-gray-500 font-mono bg-black/20 px-3 py-1 rounded-full">
-                <span class="text-green-400">●</span> 800 NODES_SYNCED
+            <div id="status-bar" class="text-[9px] font-mono text-gray-500">
+                <span class="text-green-400">●</span> <span id="node-count">3000</span> NODES_ACTIVE
             </div>
         </div>
     </header>
 
-    <main id="app-container" class="flex-grow max-w-md mx-auto w-full p-4 pb-24">
-        <div id="discovery-view" class="relative h-full">
-            <!-- Current Profile Card -->
-            <div id="current-card" class="terminal-border rounded-2xl bg-[#282a36] overflow-hidden transform transition-all duration-500 flex flex-col h-full">
+    <!-- Main Content Area -->
+    <main id="main-view" class="flex-grow max-w-md mx-auto w-full relative overflow-hidden flex flex-col p-4 pb-20">
+        
+        <!-- DISCOVERY VIEW -->
+        <div id="view-discovery" class="view-segment h-full flex flex-col transition-all duration-300">
+            <div id="current-card" class="terminal-border rounded-2xl bg-[#282a36] overflow-hidden transform transition-all duration-500 flex flex-col h-full relative">
                 
-                <!-- Profile Image Area -->
                 <div class="profile-img-container">
-                    <img id="dev-photo" src="" alt="Profile" class="profile-img">
-                    <div id="match-percent" class="match-overlay-pill">--% MATCH</div>
-                    
-                    <!-- Name & Title Glass Overlay -->
-                    <div class="absolute bottom-0 left-0 right-0 p-5 bg-gradient-to-t from-black/80 to-transparent">
+                    <img id="dev-photo" src="" alt="Profile" class="w-full h-full object-cover transition-opacity duration-300">
+                    <div id="match-score" class="absolute top-3 right-3 glass-panel px-3 py-1 rounded-full text-[10px] font-bold text-purple-200">--% MATCH</div>
+                    <div class="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black/90 to-transparent">
                         <div class="flex items-center space-x-2">
-                            <h2 id="dev-name" class="text-2xl font-bold text-white drop-shadow-md">Laster...</h2>
-                            <div id="gender-icon" class="glass-icon w-6 h-6 flex items-center justify-center text-xs"></div>
+                            <h2 id="dev-name" class="text-xl font-bold text-white uppercase tracking-tight">System Booting...</h2>
+                            <span id="dev-gender-icon" class="text-xs"></span>
                         </div>
-                        <p id="dev-role" class="text-cyan-300 font-medium text-sm drop-shadow-md">Software Engineer</p>
+                        <p id="dev-role" class="text-cyan-300 text-xs font-mono font-bold">INITIALIZING_PROTOCOL</p>
                     </div>
                 </div>
 
-                <!-- Info & Code Area -->
-                <div class="p-5 space-y-4 flex-grow overflow-y-auto">
-                    <div class="flex justify-between items-center">
-                        <span id="file-name" class="text-[10px] text-gray-500 font-mono italic">loading...</span>
-                        <span id="dev-lang" class="text-[10px] px-2 py-0.5 rounded bg-purple-500/20 text-purple-300 font-bold border border-purple-500/30 uppercase tracking-widest">Lang</span>
+                <div class="p-4 space-y-3 flex-grow overflow-y-auto bg-[#1e1f29]/30">
+                    <div class="flex justify-between items-center text-[9px] font-mono">
+                        <span id="file-name" class="text-gray-500 italic">main.exe</span>
+                        <span id="dev-lang" class="text-pink-400 font-bold tracking-widest uppercase">system</span>
                     </div>
-                    
-                    <div class="code-snippet font-mono" id="dev-code">
-                        <!-- Code injected by JS -->
-                    </div>
-
-                    <div id="dev-bio" class="text-sm text-gray-300 leading-relaxed border-l-2 border-gray-700 pl-4 py-1 italic">
-                        "Henter bio..."
-                    </div>
-
-                    <div class="flex flex-wrap gap-2" id="dev-stack">
-                        <!-- Tags injected by JS -->
-                    </div>
+                    <div id="dev-code" class="code-snippet font-mono text-gray-300"></div>
+                    <div id="dev-bio" class="text-xs text-gray-400 leading-relaxed border-l-2 border-purple-500/50 pl-3 italic"></div>
+                    <div id="dev-stack" class="flex flex-wrap gap-1.5 mt-2"></div>
                 </div>
 
-                <!-- Interaction Bar -->
-                <div class="grid grid-cols-3 gap-0 border-t border-gray-800 bg-[#21222c]/50 p-2">
-                    <button onclick="handlePR('close')" class="btn-action p-4 text-red-500 flex flex-col items-center group">
-                        <div class="glass-icon w-12 h-12 flex items-center justify-center mb-1 group-hover:bg-red-500 group-hover:text-white transition-all">
-                            <i class="fas fa-terminal"></i>
+                <!-- Action Bar -->
+                <div class="grid grid-cols-3 border-t border-gray-800 bg-[#21222c]">
+                    <button onclick="swipe('left')" class="p-4 flex flex-col items-center hover:bg-red-500/10 transition-colors group">
+                        <div class="glass-icon w-12 h-12 flex items-center justify-center mb-1 group-active:scale-90">
+                            <i class="fas fa-times text-red-500 text-xl"></i>
                         </div>
-                        <span class="text-[9px] font-black uppercase tracking-widest">Abort</span>
+                        <span class="text-[8px] uppercase font-bold text-gray-500">Drop</span>
                     </button>
-                    <button onclick="handlePR('changes')" class="btn-action p-4 text-yellow-500 flex flex-col items-center group">
-                        <div class="glass-icon w-12 h-12 flex items-center justify-center mb-1 group-hover:bg-yellow-500 group-hover:text-white transition-all">
-                            <i class="fas fa-code-pull-request"></i>
+                    <button onclick="openReview()" class="p-4 border-l border-r border-gray-800 flex flex-col items-center hover:bg-yellow-500/10 transition-colors group">
+                        <div class="glass-icon w-12 h-12 flex items-center justify-center mb-1 group-active:scale-90">
+                            <i class="fas fa-eye text-yellow-500 text-xl"></i>
                         </div>
-                        <span class="text-[9px] font-black uppercase tracking-widest">Review</span>
+                        <span class="text-[8px] uppercase font-bold text-gray-500">Inspect</span>
                     </button>
-                    <button onclick="handlePR('approve')" class="btn-action p-4 text-green-500 flex flex-col items-center group">
-                        <div class="glass-icon w-12 h-12 flex items-center justify-center mb-1 group-hover:bg-green-500 group-hover:text-white transition-all">
-                            <i class="fas fa-check-double"></i>
+                    <button onclick="swipe('right')" class="p-4 flex flex-col items-center hover:bg-green-500/10 transition-colors group">
+                        <div class="glass-icon w-12 h-12 flex items-center justify-center mb-1 group-active:scale-90">
+                            <i class="fas fa-bolt text-green-500 text-xl"></i>
                         </div>
-                        <span class="text-[9px] font-black uppercase tracking-widest">Merge</span>
+                        <span class="text-[8px] uppercase font-bold text-gray-500">Merge</span>
                     </button>
                 </div>
             </div>
         </div>
+
+        <!-- LOGS/MESSAGES VIEW -->
+        <div id="view-messages" class="view-segment hidden h-full flex flex-col">
+            <div class="flex items-center justify-between mb-4">
+                <h2 class="text-xs font-bold uppercase tracking-widest text-gray-500">Connection Logs</h2>
+                <span id="match-count" class="text-[10px] bg-purple-500 text-white px-2 py-0.5 rounded-full">0</span>
+            </div>
+            <div id="chat-list" class="flex-grow overflow-y-auto space-y-2 pr-1">
+                <!-- Chatter genereres her -->
+            </div>
+        </div>
+
+        <!-- CONFIG VIEW -->
+        <div id="view-settings" class="view-segment hidden h-full overflow-y-auto space-y-6 pb-6">
+            <div class="glass-panel p-6 rounded-2xl flex flex-col items-center text-center">
+                <div class="relative w-24 h-24 mb-4">
+                    <div class="absolute inset-0 bg-purple-500 rounded-full blur-md opacity-20 animate-pulse"></div>
+                    <div class="w-full h-full rounded-full border-2 border-purple-500 p-1 bg-black relative z-10 overflow-hidden ai-glow">
+                        <img src="https://images.unsplash.com/photo-1675435489823-3796fc7c631a?auto=format&fit=crop&w=300&q=80" class="w-full h-full rounded-full object-cover grayscale">
+                    </div>
+                    <div class="absolute -bottom-1 -right-1 bg-green-500 w-4 h-4 rounded-full border-2 border-[#282a36] z-20"></div>
+                </div>
+                <h3 class="font-bold text-lg text-white">Gemini-Core <span class="text-purple-400">Enterprise</span></h3>
+                <p class="text-[10px] text-gray-500 font-mono tracking-widest uppercase mb-4">Root AI Software Architect</p>
+                
+                <div class="grid grid-cols-2 gap-2 w-full">
+                    <div class="bg-black/30 p-2 rounded border border-white/5">
+                        <p class="text-[8px] text-gray-500 uppercase">Uptime</p>
+                        <p class="text-xs font-bold text-green-400">99.99%</p>
+                    </div>
+                    <div class="bg-black/30 p-2 rounded border border-white/5">
+                        <p class="text-[8px] text-gray-500 uppercase">Load</p>
+                        <p class="text-xs font-bold text-cyan-400">0.02ms</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="space-y-4">
+                <h3 class="text-xs font-bold text-gray-500 uppercase tracking-widest">Global Variables</h3>
+                <div class="glass-panel rounded-xl p-4 space-y-4">
+                    <div class="flex justify-between items-center">
+                        <span class="text-xs">Advanced Match Algorithm</span>
+                        <input type="checkbox" checked class="w-4 h-4 accent-purple-500">
+                    </div>
+                    <div class="flex justify-between items-center">
+                        <span class="text-xs">Recursive Discovery</span>
+                        <input type="checkbox" checked class="w-4 h-4 accent-purple-500">
+                    </div>
+                    <div class="flex justify-between items-center">
+                        <span class="text-xs">Stealth Mode</span>
+                        <input type="checkbox" class="w-4 h-4 accent-purple-500">
+                    </div>
+                </div>
+
+                <div class="glass-panel p-4 rounded-xl">
+                    <p class="text-[10px] text-purple-300 font-mono mb-2">// Current Bio</p>
+                    <textarea class="w-full bg-black/20 border border-white/10 rounded p-2 text-xs text-gray-300 focus:outline-none focus:border-purple-500" rows="3">Neural network processing... Generating high-performance code for decentralized dating systems.</textarea>
+                </div>
+                
+                <button onclick="logout()" class="w-full p-4 text-red-400 text-xs font-bold uppercase tracking-widest border border-red-500/20 rounded-xl hover:bg-red-500/10 transition-all flex items-center justify-center space-x-2">
+                    <i class="fas fa-power-off"></i>
+                    <span>Terminate Process</span>
+                </button>
+            </div>
+        </div>
+
     </main>
 
-    <!-- Navigation -->
-    <nav class="fixed bottom-0 left-0 right-0 bg-[#282a36]/95 backdrop-blur-xl border-t border-gray-800 p-4 z-40">
-        <div class="max-w-md mx-auto flex justify-between items-center px-4">
-            <button class="text-purple-400 flex flex-col items-center">
+    <!-- Navigation Bar -->
+    <nav class="fixed bottom-0 left-0 right-0 bg-[#282a36]/95 backdrop-blur-xl border-t border-gray-800 p-3 z-50">
+        <div class="max-w-md mx-auto flex justify-around">
+            <button onclick="switchView('discovery')" id="nav-discovery" class="nav-btn flex flex-col items-center active-nav transition-all">
                 <i class="fas fa-microchip text-xl"></i>
-                <span class="text-[8px] font-bold mt-1">CORE</span>
+                <span class="text-[8px] mt-1 font-bold">CORE</span>
             </button>
-            <button class="text-gray-500 flex flex-col items-center">
+            <button onclick="switchView('messages')" id="nav-messages" class="nav-btn flex flex-col items-center text-gray-500 hover:text-white transition-all">
                 <i class="fas fa-code-branch text-xl"></i>
-                <span class="text-[8px] font-bold mt-1">FORKS</span>
+                <span class="text-[8px] mt-1 font-bold">LOGS</span>
             </button>
-            <button class="text-gray-500 flex flex-col items-center">
-                <i class="fas fa-message text-xl"></i>
-                <span class="text-[8px] font-bold mt-1">LOGS</span>
-            </button>
-            <button class="text-gray-500 flex flex-col items-center">
-                <i class="fas fa-sliders text-xl"></i>
-                <span class="text-[8px] font-bold mt-1">CONFIG</span>
+            <button onclick="switchView('settings')" id="nav-settings" class="nav-btn flex flex-col items-center text-gray-500 hover:text-white transition-all">
+                <i class="fas fa-terminal text-xl"></i>
+                <span class="text-[8px] mt-1 font-bold">CONFIG</span>
             </button>
         </div>
     </nav>
 
-    <!-- Modals -->
-    <div id="pr-modal" class="fixed inset-0 bg-black/90 backdrop-blur-md flex items-center justify-center p-6 hidden z-[100]">
-        <div class="glass-panel w-full max-w-sm rounded-2xl overflow-hidden shadow-2xl border-purple-500/20">
-            <div class="bg-purple-500/20 p-4 flex justify-between items-center">
-                <h3 class="text-xs font-black uppercase tracking-widest text-purple-300">Request Changes</h3>
-                <button onclick="closeModal()"><i class="fas fa-times"></i></button>
-            </div>
-            <div class="p-6 space-y-4">
-                <textarea id="pr-message" class="w-full bg-black/40 border border-white/10 rounded-xl p-4 text-sm focus:border-purple-500 outline-none h-32 text-gray-200 font-mono" placeholder="Begrunn hvorfor denne koden trenger refaktorering..."></textarea>
-                <button onclick="submitPRMessage()" class="w-full bg-gradient-to-r from-purple-600 to-pink-600 text-white font-black py-4 rounded-xl text-xs uppercase tracking-[0.2em] shadow-lg">
-                    Broadcast Review
-                </button>
-            </div>
-        </div>
-    </div>
-
-    <div id="match-overlay" class="fixed inset-0 bg-black/95 flex flex-col items-center justify-center p-6 hidden z-[110] text-center">
-        <div class="relative mb-8">
-            <div class="absolute inset-0 bg-pink-500 blur-3xl opacity-30 animate-pulse"></div>
-            <i class="fas fa-heart-circle-check text-8xl text-pink-500 relative"></i>
-        </div>
-        <h2 class="text-4xl font-black italic mb-4 bg-gradient-to-r from-pink-400 to-purple-500 bg-clip-text text-transparent uppercase tracking-tighter">PR Approved!</h2>
-        <p class="text-lg mb-10 text-gray-400 font-mono">Gratulerer! <span id="match-name-display" class="text-white border-b-2 border-pink-500"></span> har akseptert din merge request.</p>
-        <div class="w-full max-w-xs space-y-4">
-            <button onclick="location.reload()" class="w-full glass-panel text-white font-black py-5 rounded-2xl uppercase tracking-[0.2em] hover:bg-white/10 transition-all border-pink-500/50">
-                Init Chat.bin
-            </button>
-            <button onclick="closeMatch()" class="w-full text-gray-500 text-[10px] font-bold uppercase tracking-widest">
-                Continue Scoping
-            </button>
-        </div>
-    </div>
-
-    <div id="notification-area" class="fixed top-24 left-0 right-0 flex flex-col items-center space-y-3 pointer-events-none z-50"></div>
+    <!-- Overlay Notifications -->
+    <div id="notification-root" class="fixed top-24 inset-x-0 flex flex-col items-center space-y-2 pointer-events-none z-[100]"></div>
 
     <script>
-        // Constants & Generators
-        const IMAGES = {
-            male: (id) => `https://images.unsplash.com/photo-${1500648767791 + id % 50}-00221447b1b1?auto=format&fit=crop&q=80&w=600`,
-            female: (id) => `https://images.unsplash.com/photo-${1494790108377 + id % 50}-be9c29b29330?auto=format&fit=crop&q=80&w=600`
-        };
-
-        const firstNamesMale = ["Erik", "Anders", "Marius", "Lars", "Kevin", "Sander", "Henrik", "Jonas", "Stian", "Fredrik", "Thomas", "Magnus", "Olav", "Espen", "Eivind", "Niklas", "Tobias", "Simen", "Vegard", "Aleksander", "Christian", "Adrian", "Daniel", "Elias", "Felix"];
-        const firstNamesFemale = ["Julie", "Mina", "Sara", "Linnea", "Emilie", "Sofie", "Nora", "Ingrid", "Thea", "Ida", "Vilde", "Hanna", "Malin", "Tuva", "Ada", "Kaja", "Eline", "Aurora", "Frida", "Maja", "Selma", "Amalie", "Lea", "Oda", "Ronja"];
-        const lastNames = ["Script", "Byte", "Logic", "Node", "Cache", "Stack", "Commit", "Push", "Query", "Kernel", "Flow", "Cloud", "Array", "String", "Hash", "Heap", "Thread", "Lambda"];
-        const roles = ["Frontend Wizard", "Backend Brain", "DevOps Ninja", "Fullstack Architect", "Security Auditor", "AI Researcher", "Mobile Guru", "Game Dev", "Cloud Specialist", "Data Scientist"];
-        
+        // --- 3000 PROFILES DATA ENGINE ---
+        const firstNamesM = ["Erik", "Anders", "Marius", "Lars", "Loke", "Sander", "Henrik", "Jonas", "Stian", "Fredrik", "Kim", "Olav", "Eivind", "Tobias", "Nikolai"];
+        const firstNamesF = ["Julie", "Mina", "Sara", "Linnea", "Emilie", "Sofie", "Nora", "Ingrid", "Thea", "Ida", "Vilde", "Hanna", "Malin", "Tuva", "Ada"];
+        const lastNames = ["Byte", "Logic", "Node", "Cache", "Stack", "Commit", "Push", "Query", "Kernel", "Flow", "Frame", "Array", "String", "Object"];
+        const roles = ["Software Architect", "Fullstack Developer", "Frontend Wizard", "Backend Ninja", "Cloud Engineer", "AI Researcher", "Security Specialist", "DevOps Guru", "Mobile Specialist"];
         const languages = [
-            { name: "TypeScript", color: "text-blue-400", code: () => `<span class="code-keyword">type</span> <span class="code-type">Heart</span> = 'Love' | 'Logic';\n<span class="code-keyword">const</span> connection = (you: <span class="code-type">Partner</span>): <span class="code-type">Heart</span> => {\n  <span class="code-keyword">return</span> you.compatibility > <span class="code-type">0.9</span> ? <span class="code-string">'Love'</span> : <span class="code-string">'Logic'</span>;\n};` },
-            { name: "Python", color: "text-yellow-400", code: () => `<span class="code-keyword">import</span> soulmate\n\n<span class="code-keyword">while</span> <span class="code-keyword">True</span>:\n  match = soulmate.<span class="code-func">scan</span>(location=<span class="code-string">'Norway'</span>)\n  <span class="code-keyword">if</span> match.is_perfect():\n    <span class="code-keyword">print</span>(<span class="code-string">"Merging brains..."</span>)\n    <span class="code-keyword">break</span>` },
-            { name: "Rust", color: "text-orange-500", code: () => `<span class="code-keyword">pub fn</span> <span class="code-func">connect</span>(other: &<span class="code-type">Dev</span>) -> <span class="code-type">Result</span>&lt;(), <span class="code-type">Error</span>&gt; {\n  <span class="code-keyword">let</span> bond = <span class="code-type">Safety</span>::new(other)?;\n  <span class="code-func">println!</span>(<span class="code-string">"Safe relationship established"</span>);\n  <span class="code-type">Ok</span>(())\n}` },
-            { name: "Go", color: "text-cyan-400", code: () => `<span class="code-keyword">func</span> <span class="code-func">main</span>() {\n  c := make(<span class="code-keyword">chan</span> <span class="code-type">Love</span>)\n  <span class="code-keyword">go</span> <span class="code-func">date</span>(c)\n  msg := &lt;-c\n  fmt.<span class="code-func">Println</span>(msg)\n}` }
+            { name: "TypeScript", code: "interface User {\n  id: string;\n  isMatch: boolean;\n}" },
+            { name: "Python", code: "def analyze(data):\n  return [x for x in data if x.quality > 9000]" },
+            { name: "Rust", code: "fn main() -> Result<(), DevMatchError> {\n  let heart = Soul::new();\n}" },
+            { name: "Go", code: "func handleMatch(c *Context) {\n  go asyncMerge(c.DevID)\n}" },
+            { name: "Swift", code: "struct Profile: View {\n  var body: some View { Text(\"Swipe\") }\n}" }
         ];
-
-        const bios = [
-            "Søker en partner som ikke sletter databasen min.",
-            "Min kjærlighet for kode er thread-safe.",
+        const bioTemplates = [
+            "Søker en partner med 100% test-dekning.",
+            "Koder raskere enn jeg dater. Null bugs i hjertet.",
+            "Spesialist på mørk kaffe og mørk modus.",
             "Leter etter noen å debugge livet med.",
-            "Lover å aldri force-pushe til ditt hjerte.",
-            "Er du en API? For jeg føler en sterk tilkobling.",
-            "Søker en backend som tåler mine forespørsler.",
-            "Trenger en frontend som kan styles med kjærlighet.",
-            "Min hjerne kjører på kaffe og gode algoritmer."
+            "Merge request sendt. Venter på svar.",
+            "Min kjærlighet for kode er thread-safe."
         ];
+        const stackList = ["React", "Vue", "Docker", "AWS", "Kubernetes", "Next.js", "GraphQL", "Redis", "Tensorflow", "Svelte", "Postgres", "Kafka"];
 
-        // Generate 800 profiles
-        const developers = [];
-        for (let i = 0; i < 800; i++) {
-            const isMale = Math.random() > 0.5;
-            const firstName = isMale ? firstNamesMale[i % firstNamesMale.length] : firstNamesFemale[i % firstNamesFemale.length];
-            const lang = languages[i % languages.length];
-            developers.push({
-                id: i,
-                gender: isMale ? 'male' : 'female',
-                name: `${firstName} ${lastNames[i % lastNames.length]}`,
-                role: roles[i % roles.length],
-                match: Math.floor(Math.random() * 40 + 60) + "%",
-                photo: isMale ? IMAGES.male(i) : IMAGES.female(i),
-                lang: lang.name,
-                code: lang.code(),
-                stack: ["React", "Go", "Docker", "Rust", "Swift", "Vue", "AWS", "Node"].sort(() => Math.random() - 0.5).slice(0, 3),
-                bio: bios[i % bios.length],
-                fileName: `source_code_${i}.${lang.name === 'Python' ? 'py' : 'ts'}`
-            });
+        // State
+        let developers = [];
+        let currentIndex = 0;
+        let matches = [];
+        let totalCreated = 3000;
+
+        // Factory function for 3000 profiles
+        function generateProfiles(count) {
+            const data = [];
+            for (let i = 0; i < count; i++) {
+                const isMale = Math.random() > 0.5;
+                const firstName = isMale ? firstNamesM[i % firstNamesM.length] : firstNamesF[i % firstNamesF.length];
+                const lang = languages[i % languages.length];
+                const randomId = 1500000000000 + (i * 731);
+                
+                data.push({
+                    id: i,
+                    name: `${firstName} ${lastNames[i % lastNames.length]}`,
+                    gender: isMale ? 'male' : 'female',
+                    role: roles[i % roles.length],
+                    lang: lang.name,
+                    code: lang.code,
+                    match: Math.floor(Math.random() * 30 + 70) + "%",
+                    photo: `https://images.unsplash.com/photo-${(isMale ? 1500648767791 : 1494790108377) + (i % 500)}?auto=format&fit=crop&q=80&w=600`,
+                    bio: bioTemplates[i % bioTemplates.length],
+                    stack: stackList.sort(() => Math.random() - 0.5).slice(0, 3),
+                    file: `dev_${i}.${lang.name === 'Python' ? 'py' : (lang.name === 'Rust' ? 'rs' : 'ts')}`
+                });
+            }
+            return data;
         }
 
-        let currentIndex = 0;
+        // --- APP CONTROLLER ---
+        function switchView(viewName) {
+            document.querySelectorAll('.view-segment').forEach(v => v.classList.add('hidden'));
+            document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active-nav', 'text-gray-500'));
+            
+            document.getElementById(`view-${viewName}`).classList.remove('hidden');
+            document.getElementById(`nav-${viewName}`).classList.add('active-nav');
 
-        function updateCard() {
+            if(viewName === 'messages') renderChats();
+        }
+
+        function renderCurrentDev() {
             const dev = developers[currentIndex];
             const card = document.getElementById('current-card');
             
-            // Subtle transition
-            card.classList.add('opacity-0', 'scale-95');
+            // UI Reset
+            card.classList.remove('swipe-left', 'swipe-right', 'opacity-0');
             
+            // Image Load
+            const img = document.getElementById('dev-photo');
+            img.style.opacity = '0';
+            img.src = dev.photo;
+            img.onload = () => img.style.opacity = '1';
+
+            document.getElementById('dev-name').innerText = dev.name;
+            document.getElementById('dev-role').innerText = dev.role;
+            document.getElementById('match-score').innerText = dev.match + " MATCH";
+            document.getElementById('dev-lang').innerText = dev.lang;
+            document.getElementById('dev-code').innerHTML = `<pre>${dev.code}</pre>`;
+            document.getElementById('dev-bio').innerText = dev.bio;
+            document.getElementById('file-name').innerText = dev.file;
+            
+            const genderIcon = document.getElementById('dev-gender-icon');
+            genderIcon.innerHTML = dev.gender === 'male' ? '<i class="fas fa-mars text-blue-400"></i>' : '<i class="fas fa-venus text-pink-400"></i>';
+
+            const stack = document.getElementById('dev-stack');
+            stack.innerHTML = '';
+            dev.stack.forEach(s => {
+                const span = document.createElement('span');
+                span.className = "bg-white/5 border border-white/10 px-2 py-0.5 rounded text-[8px] font-bold text-gray-400 uppercase tracking-tighter";
+                span.innerText = s;
+                stack.appendChild(span);
+            });
+        }
+
+        function swipe(direction) {
+            const card = document.getElementById('current-card');
+            const dev = developers[currentIndex];
+
+            if(direction === 'right') {
+                card.classList.add('swipe-right');
+                notify(`MERGE COMMITTED: ${dev.name}`, "green");
+                matches.unshift(dev);
+                document.getElementById('match-count').innerText = matches.length;
+            } else {
+                card.classList.add('swipe-left');
+                notify("BRANCH REJECTED", "red");
+            }
+
+            // Sync with virtual data stream
             setTimeout(() => {
-                document.getElementById('dev-photo').src = dev.photo;
-                document.getElementById('dev-name').innerText = dev.name;
-                document.getElementById('dev-role').innerText = dev.role;
-                document.getElementById('dev-code').innerHTML = dev.code.replace(/\n/g, '<br>');
-                document.getElementById('match-percent').innerText = dev.match + " MATCH";
-                document.getElementById('file-name').innerText = dev.fileName;
-                document.getElementById('dev-lang').innerText = dev.lang;
-                document.getElementById('dev-bio').innerText = `"${dev.bio}"`;
-
-                const icon = document.getElementById('gender-icon');
-                icon.innerHTML = dev.gender === 'male' ? '<i class="fas fa-mars text-blue-400"></i>' : '<i class="fas fa-venus text-pink-400"></i>';
-
-                const stack = document.getElementById('dev-stack');
-                stack.innerHTML = '';
-                dev.stack.forEach(s => {
-                    const pill = document.createElement('span');
-                    pill.className = "bg-white/5 border border-white/10 px-3 py-1 rounded-lg text-[10px] font-bold text-gray-400";
-                    pill.innerText = s;
-                    stack.appendChild(pill);
-                });
-
-                card.classList.remove('opacity-0', 'scale-95');
+                currentIndex = (currentIndex + 1) % developers.length;
+                renderCurrentDev();
+                card.style.transition = 'none';
+                card.style.transform = 'translateY(40px) scale(0.9)';
+                setTimeout(() => {
+                    card.style.transition = 'all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275)';
+                    card.style.transform = 'translateY(0) scale(1)';
+                }, 50);
             }, 300);
         }
 
-        function handlePR(action) {
-            const card = document.getElementById('current-card');
-            if (action === 'close') {
-                showNotification("ABORTED: Branch deleted.", "red");
-                card.style.transform = "translateX(-150%) rotate(-20deg)";
-                next();
-            } else if (action === 'changes') {
-                document.getElementById('pr-modal').classList.remove('hidden');
-            } else if (action === 'approve') {
-                showNotification("MERGE ATTEMPT IN PROGRESS...", "green");
-                card.style.transform = "translateX(150%) rotate(20deg)";
-                setTimeout(() => {
-                    document.getElementById('match-name-display').innerText = developers[currentIndex].name;
-                    document.getElementById('match-overlay').classList.remove('hidden');
-                }, 500);
+        function renderChats() {
+            const list = document.getElementById('chat-list');
+            list.innerHTML = '';
+            
+            if(matches.length === 0) {
+                list.innerHTML = `
+                    <div class="flex flex-col items-center justify-center py-20 text-center space-y-4 opacity-30">
+                        <i class="fas fa-satellite text-4xl"></i>
+                        <p class="text-xs font-mono tracking-widest uppercase">No Peer Connections Established</p>
+                    </div>
+                `;
+                return;
             }
+
+            matches.forEach(m => {
+                const div = document.createElement('div');
+                div.className = "glass-panel p-3 rounded-xl flex items-center space-x-3 cursor-pointer hover:bg-white/5 transition-all border-l-4 border-purple-500 active:scale-95";
+                div.innerHTML = `
+                    <div class="relative">
+                        <img src="${m.photo}" class="w-10 h-10 rounded-full object-cover border border-purple-500/30 grayscale hover:grayscale-0 transition-all">
+                        <div class="absolute -bottom-1 -right-1 w-3 h-3 bg-green-500 rounded-full border-2 border-[#282a36]"></div>
+                    </div>
+                    <div class="flex-grow">
+                        <div class="flex justify-between items-center">
+                            <span class="text-xs font-bold uppercase tracking-tight">${m.name}</span>
+                            <span class="text-[7px] text-gray-500 font-mono">ID_${m.id}</span>
+                        </div>
+                        <p class="text-[10px] text-gray-400 font-mono truncate">Ready for code review?</p>
+                    </div>
+                `;
+                div.onclick = () => notify(`Opening Secure Channel: ${m.name}...`, "purple");
+                list.appendChild(div);
+            });
         }
 
-        function next() {
-            setTimeout(() => {
-                currentIndex = (currentIndex + 1) % developers.length;
-                const card = document.getElementById('current-card');
-                card.style.transition = 'none';
-                card.style.transform = 'translateY(50px) scale(0.9)';
-                card.style.opacity = '0';
-                setTimeout(() => {
-                    card.style.transition = 'all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275)';
-                    updateCard();
-                }, 50);
-            }, 400);
+        function notify(text, color) {
+            const root = document.getElementById('notification-root');
+            const n = document.createElement('div');
+            const colorMap = {
+                red: "bg-red-500/90",
+                green: "bg-green-500/90",
+                purple: "bg-purple-500/90",
+                yellow: "bg-yellow-500/90"
+            };
+            n.className = `${colorMap[color] || 'bg-gray-800'} text-white text-[9px] font-black px-6 py-2 rounded-full border border-white/20 shadow-2xl animate-bounce uppercase tracking-widest z-[200]`;
+            n.innerText = text;
+            root.appendChild(n);
+            setTimeout(() => n.remove(), 2500);
         }
 
-        function closeModal() { document.getElementById('pr-modal').classList.add('hidden'); }
-        function submitPRMessage() {
-            closeModal();
-            showNotification("Review Broadcasted. Status: PENDING", "yellow");
-            next();
-        }
-        function closeMatch() {
-            document.getElementById('match-overlay').classList.add('hidden');
-            next();
+        function openReview() {
+            notify("SCANNING PROFILE DEPENDENCIES...", "yellow");
         }
 
-        function showNotification(text, color) {
-            const area = document.getElementById('notification-area');
-            const note = document.createElement('div');
-            const colorClass = color === 'red' ? 'bg-red-500/90' : (color === 'green' ? 'bg-green-500/90' : 'bg-yellow-500/90');
-            note.className = `${colorClass} text-white text-[10px] font-black px-6 py-2 rounded-full border border-white/20 shadow-2xl backdrop-blur-md animate-bounce uppercase tracking-widest`;
-            note.innerText = text;
-            area.appendChild(note);
-            setTimeout(() => note.remove(), 3000);
+        function logout() {
+            notify("DE-INITIALIZING CORE...", "red");
+            setTimeout(() => location.reload(), 1500);
         }
 
-        window.onload = updateCard;
+        // BOOTSTRAP
+        window.onload = () => {
+            console.log("Generating 3000 nodes...");
+            developers = generateProfiles(totalCreated);
+            renderCurrentDev();
+        };
     </script>
 </body>
 </html>
+
 
