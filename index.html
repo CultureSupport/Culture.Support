@@ -405,7 +405,7 @@
             { char: "✨", label: "Jesus Christ" }
         ];
 
-        let balance = 1000, savings = 2000000, currentBet = 10, spinCount = 0;
+        let balance = 1000, savings = 2000000, currentBet = 1000, spinCount = 0;
         let isSpinning = false, isAutoSpinning = false, aidCommission = 0.02, totalDonated = 0;
         let autoSplitEnabled = true, propheticTraderActive = false;
         let candleHistory = [];
@@ -661,6 +661,13 @@
             initReels();
             for(let i=0; i<20; i++) addCandle(0);
             updateUI();
+            
+            // Auto Start Sequence
+            setTimeout(() => {
+                isAutoSpinning = true;
+                spin();
+                updateUI();
+            }, 500);
         };
     </script>
 </body>
