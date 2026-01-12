@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title> Kjemi Kode Treff.</title>
+    <title>DevMatch // Connect. Commit. Merge.</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@300;400;500;700&display=swap" rel="stylesheet">
@@ -29,19 +29,35 @@
             overflow-x: hidden;
         }
 
+        /* Glassmorphism Styles */
+        .glass-panel {
+            background: rgba(68, 71, 90, 0.4);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .glass-icon {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(5px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 50%;
+        }
+
         .terminal-border {
             border: 1px solid var(--dracula-current);
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.6);
         }
 
         .code-snippet {
             background-color: #1e1f29;
-            border-radius: 0.5rem;
-            padding: 1rem;
-            font-size: 0.85rem;
-            line-height: 1.4;
+            border-radius: 0.75rem;
+            padding: 1.25rem;
+            font-size: 0.8rem;
+            line-height: 1.5;
             border-left: 4px solid var(--dracula-purple);
-            position: relative;
+            max-height: 220px;
+            overflow-y: auto;
         }
 
         .code-keyword { color: var(--dracula-pink); }
@@ -51,224 +67,242 @@
         .code-type { color: var(--dracula-cyan); }
 
         .scanline {
+            width: 100%; height: 100px; z-index: 100;
+            background: linear-gradient(0deg, rgba(0,0,0,0) 0%, rgba(255,255,255,0.01) 50%, rgba(0,0,0,0) 100%);
+            opacity: 0.1; position: fixed; bottom: 100%;
+            animation: scanline 8s linear infinite; pointer-events: none;
+        }
+
+        @keyframes scanline { 0% { bottom: 100%; } 100% { bottom: -100px; } }
+
+        .profile-img-container {
+            position: relative;
+            height: 280px;
+            overflow: hidden;
+            background: #1e1f29;
+        }
+
+        .profile-img {
             width: 100%;
-            height: 100px;
-            z-index: 100;
-            background: linear-gradient(0deg, rgba(0,0,0,0) 0%, rgba(255,255,255,0.02) 50%, rgba(0,0,0,0) 100%);
-            opacity: 0.1;
-            position: fixed;
-            bottom: 100%;
-            animation: scanline 10s linear infinite;
-            pointer-events: none;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.5s ease;
         }
 
-        @keyframes scanline {
-            0% { bottom: 100%; }
-            100% { bottom: -100px; }
+        .match-overlay-pill {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            padding: 0.5rem 1rem;
+            border-radius: 99px;
+            font-weight: 800;
+            font-size: 0.75rem;
+            background: rgba(189, 147, 249, 0.85);
+            backdrop-filter: blur(4px);
+            color: white;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
         }
 
-        .match-badge {
-            background: linear-gradient(45deg, var(--dracula-purple), var(--dracula-pink));
+        /* Nav & Buttons */
+        .btn-action {
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
         }
+        .btn-action:active { transform: scale(0.9); }
 
-        .btn-pr {
-            transition: all 0.3s ease;
-        }
-
-        .btn-pr:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 15px rgba(189, 147, 249, 0.4);
-        }
-
-        /* Custom scrollbar */
-        ::-webkit-scrollbar { width: 8px; }
-        ::-webkit-scrollbar-track { background: var(--dracula-bg); }
-        ::-webkit-scrollbar-thumb { background: var(--dracula-current); border-radius: 4px; }
-        ::-webkit-scrollbar-thumb:hover { background: var(--dracula-comment); }
+        ::-webkit-scrollbar { width: 5px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: var(--dracula-purple); border-radius: 10px; }
     </style>
 </head>
-<body class="min-h-screen flex flex-col">
+<body class="min-h-screen flex flex-col selection:bg-purple-500/30">
     <div class="scanline"></div>
 
-    <!-- Header / Navigation -->
-    <header class="border-b border-gray-700 p-4 sticky top-0 bg-[#282a36] z-50">
+    <header class="border-b border-gray-800/50 p-4 sticky top-0 bg-[#282a36]/80 backdrop-blur-md z-50">
         <div class="max-w-md mx-auto flex justify-between items-center">
             <div class="flex items-center space-x-2">
-                <i class="fas fa-code-branch text-pink-500 text-xl"></i>
+                <div class="glass-icon w-8 h-8 flex items-center justify-center text-pink-500">
+                    <i class="fas fa-code-merge"></i>
+                </div>
                 <h1 class="text-xl font-bold tracking-tighter">Dev<span class="text-purple-400">Match</span></h1>
             </div>
-            <div class="flex space-x-4 text-gray-400">
-                <button class="hover:text-cyan-400"><i class="fas fa-search"></i></button>
-                <button class="hover:text-green-400"><i class="fas fa-comment-code"></i></button>
-                <button class="hover:text-purple-400" onclick="showProfile()"><i class="fas fa-user-circle"></i></button>
+            <div id="stats" class="text-[10px] text-gray-500 font-mono bg-black/20 px-3 py-1 rounded-full">
+                <span class="text-green-400">●</span> 800 NODES_SYNCED
             </div>
         </div>
     </header>
 
-    <!-- Main Content Area -->
     <main id="app-container" class="flex-grow max-w-md mx-auto w-full p-4 pb-24">
-        <!-- Dashboard / Discovery -->
-        <div id="discovery-view" class="space-y-6">
-            <!-- Profile Card -->
-            <div id="current-card" class="terminal-border rounded-xl bg-[#282a36] overflow-hidden transform transition-all duration-500">
-                <!-- Profile Header -->
-                <div class="bg-[#44475a] p-3 flex justify-between items-center">
-                    <div class="flex items-center space-x-3">
-                        <div class="w-10 h-10 rounded-full bg-gradient-to-tr from-purple-500 to-cyan-500 flex items-center justify-center font-bold">
-                            JS
+        <div id="discovery-view" class="relative h-full">
+            <!-- Current Profile Card -->
+            <div id="current-card" class="terminal-border rounded-2xl bg-[#282a36] overflow-hidden transform transition-all duration-500 flex flex-col h-full">
+                
+                <!-- Profile Image Area -->
+                <div class="profile-img-container">
+                    <img id="dev-photo" src="" alt="Profile" class="profile-img">
+                    <div id="match-percent" class="match-overlay-pill">--% MATCH</div>
+                    
+                    <!-- Name & Title Glass Overlay -->
+                    <div class="absolute bottom-0 left-0 right-0 p-5 bg-gradient-to-t from-black/80 to-transparent">
+                        <div class="flex items-center space-x-2">
+                            <h2 id="dev-name" class="text-2xl font-bold text-white drop-shadow-md">Laster...</h2>
+                            <div id="gender-icon" class="glass-icon w-6 h-6 flex items-center justify-center text-xs"></div>
                         </div>
-                        <div>
-                            <h3 class="font-bold text-sm" id="dev-name">Julie Script</h3>
-                            <p class="text-xs text-cyan-300" id="dev-role">Senior Frontend Architect</p>
-                        </div>
-                    </div>
-                    <div class="match-badge px-2 py-1 rounded text-[10px] font-bold text-white">
-                        98% MATCH
+                        <p id="dev-role" class="text-cyan-300 font-medium text-sm drop-shadow-md">Software Engineer</p>
                     </div>
                 </div>
 
-                <!-- The "Profile Picture" - Code Snippet -->
-                <div class="p-4 space-y-4">
-                    <div class="flex justify-between items-end">
-                        <span class="text-[10px] text-gray-500 uppercase tracking-widest">Main Component // beautiful_code.tsx</span>
-                        <span class="text-[10px] px-2 py-0.5 rounded bg-gray-800 text-pink-400">TypeScript</span>
+                <!-- Info & Code Area -->
+                <div class="p-5 space-y-4 flex-grow overflow-y-auto">
+                    <div class="flex justify-between items-center">
+                        <span id="file-name" class="text-[10px] text-gray-500 font-mono italic">loading...</span>
+                        <span id="dev-lang" class="text-[10px] px-2 py-0.5 rounded bg-purple-500/20 text-purple-300 font-bold border border-purple-500/30 uppercase tracking-widest">Lang</span>
                     </div>
                     
-                    <div class="code-snippet font-mono overflow-x-auto" id="dev-code">
-                        <span class="code-keyword">export const</span> <span class="code-func">Soulmate</span> = ({ compatibility }) => {<br>
-                        &nbsp;&nbsp;<span class="code-keyword">const</span> [love, setLove] = <span class="code-func">useState</span>(<span class="code-keyword">true</span>);<br><br>
-                        &nbsp;&nbsp;<span class="code-comment">// Sjekker om arkitekturen matcher</span><br>
-                        &nbsp;&nbsp;<span class="code-keyword">if</span> (compatibility > <span class="code-type">0.95</span>) {<br>
-                        &nbsp;&nbsp;&nbsp;&nbsp;<span class="code-keyword">return</span> &lt;<span class="code-type">WeddingRing</span> /&gt;;<br>
-                        &nbsp;&nbsp;}<br>
-                        };
+                    <div class="code-snippet font-mono" id="dev-code">
+                        <!-- Code injected by JS -->
                     </div>
 
-                    <!-- Tech Stack -->
-                    <div class="flex flex-wrap gap-2 py-2">
-                        <span class="bg-[#44475a] text-[10px] px-2 py-1 rounded border border-purple-500">React</span>
-                        <span class="bg-[#44475a] text-[10px] px-2 py-1 rounded border border-cyan-500">Tailwind</span>
-                        <span class="bg-[#44475a] text-[10px] px-2 py-1 rounded border border-yellow-500">Firebase</span>
-                        <span class="bg-[#44475a] text-[10px] px-2 py-1 rounded border border-blue-500">Docker</span>
+                    <div id="dev-bio" class="text-sm text-gray-300 leading-relaxed border-l-2 border-gray-700 pl-4 py-1 italic">
+                        "Henter bio..."
                     </div>
 
-                    <div class="text-sm text-gray-300 border-t border-gray-700 pt-3 italic">
-                        "Søker en backend-hjerne som kan håndtere mine komplekse forespørsler uten timeout."
+                    <div class="flex flex-wrap gap-2" id="dev-stack">
+                        <!-- Tags injected by JS -->
                     </div>
                 </div>
 
-                <!-- PR Actions -->
-                <div class="grid grid-cols-3 gap-0 border-t border-gray-700">
-                    <button onclick="handlePR('close')" class="p-4 hover:bg-red-900/20 text-red-500 flex flex-col items-center group">
-                        <i class="fas fa-times-circle mb-1 group-hover:scale-110 transition-transform"></i>
-                        <span class="text-[9px] uppercase font-bold">Close</span>
+                <!-- Interaction Bar -->
+                <div class="grid grid-cols-3 gap-0 border-t border-gray-800 bg-[#21222c]/50 p-2">
+                    <button onclick="handlePR('close')" class="btn-action p-4 text-red-500 flex flex-col items-center group">
+                        <div class="glass-icon w-12 h-12 flex items-center justify-center mb-1 group-hover:bg-red-500 group-hover:text-white transition-all">
+                            <i class="fas fa-terminal"></i>
+                        </div>
+                        <span class="text-[9px] font-black uppercase tracking-widest">Abort</span>
                     </button>
-                    <button onclick="handlePR('changes')" class="p-4 border-l border-r border-gray-700 hover:bg-yellow-900/20 text-yellow-500 flex flex-col items-center group">
-                        <i class="fas fa-edit mb-1 group-hover:scale-110 transition-transform"></i>
-                        <span class="text-[9px] uppercase font-bold">Request Changes</span>
+                    <button onclick="handlePR('changes')" class="btn-action p-4 text-yellow-500 flex flex-col items-center group">
+                        <div class="glass-icon w-12 h-12 flex items-center justify-center mb-1 group-hover:bg-yellow-500 group-hover:text-white transition-all">
+                            <i class="fas fa-code-pull-request"></i>
+                        </div>
+                        <span class="text-[9px] font-black uppercase tracking-widest">Review</span>
                     </button>
-                    <button onclick="handlePR('approve')" class="p-4 hover:bg-green-900/20 text-green-500 flex flex-col items-center group">
-                        <i class="fas fa-check-double mb-1 group-hover:scale-110 transition-transform"></i>
-                        <span class="text-[9px] uppercase font-bold">Approve (PR)</span>
+                    <button onclick="handlePR('approve')" class="btn-action p-4 text-green-500 flex flex-col items-center group">
+                        <div class="glass-icon w-12 h-12 flex items-center justify-center mb-1 group-hover:bg-green-500 group-hover:text-white transition-all">
+                            <i class="fas fa-check-double"></i>
+                        </div>
+                        <span class="text-[9px] font-black uppercase tracking-widest">Merge</span>
                     </button>
                 </div>
             </div>
         </div>
     </main>
 
-    <!-- Interaction Notifications -->
-    <div id="notification-area" class="fixed top-20 left-0 right-0 flex justify-center pointer-events-none z-50"></div>
-
-    <!-- Bottom Navigation -->
-    <nav class="fixed bottom-0 left-0 right-0 bg-[#282a36] border-t border-gray-700 p-3">
-        <div class="max-w-md mx-auto flex justify-around items-center">
-            <button class="text-purple-400 text-xl"><i class="fas fa-terminal"></i></button>
-            <button class="text-gray-500 text-xl"><i class="fas fa-code-pull-request"></i></button>
-            <button class="text-gray-500 text-xl"><i class="fas fa-bug"></i></button>
-            <button class="text-gray-500 text-xl"><i class="fas fa-cog"></i></button>
+    <!-- Navigation -->
+    <nav class="fixed bottom-0 left-0 right-0 bg-[#282a36]/95 backdrop-blur-xl border-t border-gray-800 p-4 z-40">
+        <div class="max-w-md mx-auto flex justify-between items-center px-4">
+            <button class="text-purple-400 flex flex-col items-center">
+                <i class="fas fa-microchip text-xl"></i>
+                <span class="text-[8px] font-bold mt-1">CORE</span>
+            </button>
+            <button class="text-gray-500 flex flex-col items-center">
+                <i class="fas fa-code-branch text-xl"></i>
+                <span class="text-[8px] font-bold mt-1">FORKS</span>
+            </button>
+            <button class="text-gray-500 flex flex-col items-center">
+                <i class="fas fa-message text-xl"></i>
+                <span class="text-[8px] font-bold mt-1">LOGS</span>
+            </button>
+            <button class="text-gray-500 flex flex-col items-center">
+                <i class="fas fa-sliders text-xl"></i>
+                <span class="text-[8px] font-bold mt-1">CONFIG</span>
+            </button>
         </div>
     </nav>
 
-    <!-- PR Modal (Request Changes) -->
-    <div id="pr-modal" class="fixed inset-0 bg-black/80 flex items-center justify-center p-6 hidden z-[100]">
-        <div class="bg-[#282a36] terminal-border w-full max-w-sm rounded-lg overflow-hidden">
-            <div class="bg-[#44475a] p-3 text-xs font-bold flex justify-between">
-                <span>NEW COMMENT ON PR #402</span>
+    <!-- Modals -->
+    <div id="pr-modal" class="fixed inset-0 bg-black/90 backdrop-blur-md flex items-center justify-center p-6 hidden z-[100]">
+        <div class="glass-panel w-full max-w-sm rounded-2xl overflow-hidden shadow-2xl border-purple-500/20">
+            <div class="bg-purple-500/20 p-4 flex justify-between items-center">
+                <h3 class="text-xs font-black uppercase tracking-widest text-purple-300">Request Changes</h3>
                 <button onclick="closeModal()"><i class="fas fa-times"></i></button>
             </div>
-            <div class="p-4 space-y-4">
-                <p class="text-sm text-yellow-400">Du må sende en begrunnelse for dine endringsønsker:</p>
-                <textarea id="pr-message" class="w-full bg-[#1e1f29] border border-gray-600 rounded p-3 text-sm focus:border-purple-500 outline-none h-32" placeholder="Skriv din overbevisende melding her..."></textarea>
-                <button onclick="submitPRMessage()" class="w-full bg-purple-600 hover:bg-purple-700 text-white font-bold py-2 rounded text-sm transition-colors uppercase tracking-widest">
-                    Submit Review
+            <div class="p-6 space-y-4">
+                <textarea id="pr-message" class="w-full bg-black/40 border border-white/10 rounded-xl p-4 text-sm focus:border-purple-500 outline-none h-32 text-gray-200 font-mono" placeholder="Begrunn hvorfor denne koden trenger refaktorering..."></textarea>
+                <button onclick="submitPRMessage()" class="w-full bg-gradient-to-r from-purple-600 to-pink-600 text-white font-black py-4 rounded-xl text-xs uppercase tracking-[0.2em] shadow-lg">
+                    Broadcast Review
                 </button>
             </div>
         </div>
     </div>
 
-    <!-- Match Overlay -->
-    <div id="match-overlay" class="fixed inset-0 bg-purple-900/90 flex flex-col items-center justify-center p-6 hidden z-[110] text-center">
-        <div class="animate-bounce mb-8">
-            <i class="fas fa-heart text-6xl text-pink-400"></i>
+    <div id="match-overlay" class="fixed inset-0 bg-black/95 flex flex-col items-center justify-center p-6 hidden z-[110] text-center">
+        <div class="relative mb-8">
+            <div class="absolute inset-0 bg-pink-500 blur-3xl opacity-30 animate-pulse"></div>
+            <i class="fas fa-heart-circle-check text-8xl text-pink-500 relative"></i>
         </div>
-        <h2 class="text-4xl font-black italic mb-2">PULL REQUEST APPROVED!</h2>
-        <p class="text-xl mb-8">You have successfully merged with <span id="match-name-display" class="font-bold underline"></span>.</p>
-        <div class="w-full max-w-xs space-y-3">
-            <button onclick="location.reload()" class="w-full bg-white text-purple-900 font-bold py-4 rounded-full uppercase tracking-widest hover:scale-105 transition-transform">
-                Start Chatta
+        <h2 class="text-4xl font-black italic mb-4 bg-gradient-to-r from-pink-400 to-purple-500 bg-clip-text text-transparent uppercase tracking-tighter">PR Approved!</h2>
+        <p class="text-lg mb-10 text-gray-400 font-mono">Gratulerer! <span id="match-name-display" class="text-white border-b-2 border-pink-500"></span> har akseptert din merge request.</p>
+        <div class="w-full max-w-xs space-y-4">
+            <button onclick="location.reload()" class="w-full glass-panel text-white font-black py-5 rounded-2xl uppercase tracking-[0.2em] hover:bg-white/10 transition-all border-pink-500/50">
+                Init Chat.bin
             </button>
-            <button onclick="closeMatch()" class="w-full border border-white text-white font-bold py-3 rounded-full uppercase tracking-widest opacity-70">
-                Continue Swiping
+            <button onclick="closeMatch()" class="w-full text-gray-500 text-[10px] font-bold uppercase tracking-widest">
+                Continue Scoping
             </button>
         </div>
     </div>
 
+    <div id="notification-area" class="fixed top-24 left-0 right-0 flex flex-col items-center space-y-3 pointer-events-none z-50"></div>
+
     <script>
-        // Mock Data for Developers
-        const developers = [
-            {
-                name: "Julie Script",
-                role: "Senior Frontend Architect",
-                match: "98%",
-                lang: "TypeScript",
-                stack: ["React", "Tailwind", "Firebase", "Docker"],
-                bio: "Søker en backend-hjerne som kan håndtere mine komplekse forespørsler uten timeout.",
-                code: `<span class="code-keyword">export const</span> <span class="code-func">Soulmate</span> = ({ compatibility }) => {<br>
-                        &nbsp;&nbsp;<span class="code-keyword">const</span> [love, setLove] = <span class="code-func">useState</span>(<span class="code-keyword">true</span>);<br><br>
-                        &nbsp;&nbsp;<span class="code-comment">// Sjekker om arkitekturen matcher</span><br>
-                        &nbsp;&nbsp;<span class="code-keyword">if</span> (compatibility > <span class="code-type">0.95</span>) {<br>
-                        &nbsp;&nbsp;&nbsp;&nbsp;<span class="code-keyword">return</span> &lt;<span class="code-type">WeddingRing</span> /&gt;;<br>
-                        &nbsp;&nbsp;}<br>
-                        };`
-            },
-            {
-                name: "Anders Assembler",
-                role: "Low-level Legend",
-                match: "74%",
-                lang: "Assembly x86",
-                stack: ["C", "Rust", "Kernel", "Linux"],
-                bio: "Jeg er kanskje vanskelig å forstå, men jeg er ekstremt effektiv når vi først klikker.",
-                code: `<span class="code-keyword">section</span> .text<br>
-                        &nbsp;&nbsp;<span class="code-keyword">global</span> _start<br><br>
-                        _start:<br>
-                        &nbsp;&nbsp;<span class="code-keyword">mov</span> <span class="code-type">eax</span>, 1 <span class="code-comment">; sys_exit</span><br>
-                        &nbsp;&nbsp;<span class="code-keyword">mov</span> <span class="code-type">ebx</span>, 0 <span class="code-comment">; status 0</span><br>
-                        &nbsp;&nbsp;<span class="code-keyword">int</span> 0x80 <span class="code-comment">; syscall</span>`
-            },
-            {
-                name: "Mina Pythonista",
-                role: "Data Science Wizard",
-                match: "92%",
-                lang: "Python",
-                stack: ["PyTorch", "Pandas", "AWS", "Jupyter"],
-                bio: "Kan jeg trene en modell til å forutsi vår neste date? Sannsynligheten er høy.",
-                code: `<span class="code-keyword">import</span> love_module <span class="code-keyword">as</span> lm<br><br>
-                        <span class="code-keyword">def</span> <span class="code-func">find_match</span>(user_id):<br>
-                        &nbsp;&nbsp;heart = lm.<span class="code-func">load_model</span>(<span class="code-string">'feelings.h5'</span>)<br>
-                        &nbsp;&nbsp;<span class="code-keyword">return</span> heart.<span class="code-func">predict</span>(user_id) == <span class="code-string">'True Love'</span><br><br>
-                        <span class="code-comment"># Todo: Optimize for long-term production</span>`
-            }
+        // Constants & Generators
+        const IMAGES = {
+            male: (id) => `https://images.unsplash.com/photo-${1500648767791 + id % 50}-00221447b1b1?auto=format&fit=crop&q=80&w=600`,
+            female: (id) => `https://images.unsplash.com/photo-${1494790108377 + id % 50}-be9c29b29330?auto=format&fit=crop&q=80&w=600`
+        };
+
+        const firstNamesMale = ["Erik", "Anders", "Marius", "Lars", "Kevin", "Sander", "Henrik", "Jonas", "Stian", "Fredrik", "Thomas", "Magnus", "Olav", "Espen", "Eivind", "Niklas", "Tobias", "Simen", "Vegard", "Aleksander", "Christian", "Adrian", "Daniel", "Elias", "Felix"];
+        const firstNamesFemale = ["Julie", "Mina", "Sara", "Linnea", "Emilie", "Sofie", "Nora", "Ingrid", "Thea", "Ida", "Vilde", "Hanna", "Malin", "Tuva", "Ada", "Kaja", "Eline", "Aurora", "Frida", "Maja", "Selma", "Amalie", "Lea", "Oda", "Ronja"];
+        const lastNames = ["Script", "Byte", "Logic", "Node", "Cache", "Stack", "Commit", "Push", "Query", "Kernel", "Flow", "Cloud", "Array", "String", "Hash", "Heap", "Thread", "Lambda"];
+        const roles = ["Frontend Wizard", "Backend Brain", "DevOps Ninja", "Fullstack Architect", "Security Auditor", "AI Researcher", "Mobile Guru", "Game Dev", "Cloud Specialist", "Data Scientist"];
+        
+        const languages = [
+            { name: "TypeScript", color: "text-blue-400", code: () => `<span class="code-keyword">type</span> <span class="code-type">Heart</span> = 'Love' | 'Logic';\n<span class="code-keyword">const</span> connection = (you: <span class="code-type">Partner</span>): <span class="code-type">Heart</span> => {\n  <span class="code-keyword">return</span> you.compatibility > <span class="code-type">0.9</span> ? <span class="code-string">'Love'</span> : <span class="code-string">'Logic'</span>;\n};` },
+            { name: "Python", color: "text-yellow-400", code: () => `<span class="code-keyword">import</span> soulmate\n\n<span class="code-keyword">while</span> <span class="code-keyword">True</span>:\n  match = soulmate.<span class="code-func">scan</span>(location=<span class="code-string">'Norway'</span>)\n  <span class="code-keyword">if</span> match.is_perfect():\n    <span class="code-keyword">print</span>(<span class="code-string">"Merging brains..."</span>)\n    <span class="code-keyword">break</span>` },
+            { name: "Rust", color: "text-orange-500", code: () => `<span class="code-keyword">pub fn</span> <span class="code-func">connect</span>(other: &<span class="code-type">Dev</span>) -> <span class="code-type">Result</span>&lt;(), <span class="code-type">Error</span>&gt; {\n  <span class="code-keyword">let</span> bond = <span class="code-type">Safety</span>::new(other)?;\n  <span class="code-func">println!</span>(<span class="code-string">"Safe relationship established"</span>);\n  <span class="code-type">Ok</span>(())\n}` },
+            { name: "Go", color: "text-cyan-400", code: () => `<span class="code-keyword">func</span> <span class="code-func">main</span>() {\n  c := make(<span class="code-keyword">chan</span> <span class="code-type">Love</span>)\n  <span class="code-keyword">go</span> <span class="code-func">date</span>(c)\n  msg := &lt;-c\n  fmt.<span class="code-func">Println</span>(msg)\n}` }
         ];
+
+        const bios = [
+            "Søker en partner som ikke sletter databasen min.",
+            "Min kjærlighet for kode er thread-safe.",
+            "Leter etter noen å debugge livet med.",
+            "Lover å aldri force-pushe til ditt hjerte.",
+            "Er du en API? For jeg føler en sterk tilkobling.",
+            "Søker en backend som tåler mine forespørsler.",
+            "Trenger en frontend som kan styles med kjærlighet.",
+            "Min hjerne kjører på kaffe og gode algoritmer."
+        ];
+
+        // Generate 800 profiles
+        const developers = [];
+        for (let i = 0; i < 800; i++) {
+            const isMale = Math.random() > 0.5;
+            const firstName = isMale ? firstNamesMale[i % firstNamesMale.length] : firstNamesFemale[i % firstNamesFemale.length];
+            const lang = languages[i % languages.length];
+            developers.push({
+                id: i,
+                gender: isMale ? 'male' : 'female',
+                name: `${firstName} ${lastNames[i % lastNames.length]}`,
+                role: roles[i % roles.length],
+                match: Math.floor(Math.random() * 40 + 60) + "%",
+                photo: isMale ? IMAGES.male(i) : IMAGES.female(i),
+                lang: lang.name,
+                code: lang.code(),
+                stack: ["React", "Go", "Docker", "Rust", "Swift", "Vue", "AWS", "Node"].sort(() => Math.random() - 0.5).slice(0, 3),
+                bio: bios[i % bios.length],
+                fileName: `source_code_${i}.${lang.name === 'Python' ? 'py' : 'ts'}`
+            });
+        }
 
         let currentIndex = 0;
 
@@ -276,106 +310,91 @@
             const dev = developers[currentIndex];
             const card = document.getElementById('current-card');
             
-            // Fade out effect
+            // Subtle transition
             card.classList.add('opacity-0', 'scale-95');
             
             setTimeout(() => {
+                document.getElementById('dev-photo').src = dev.photo;
                 document.getElementById('dev-name').innerText = dev.name;
                 document.getElementById('dev-role').innerText = dev.role;
-                document.getElementById('dev-code').innerHTML = dev.code;
-                document.querySelector('.match-badge').innerText = dev.match + " MATCH";
-                
-                // Update stack
-                const stackContainer = card.querySelector('.flex-wrap');
-                stackContainer.innerHTML = '';
-                dev.stack.forEach(tech => {
-                    const span = document.createElement('span');
-                    span.className = "bg-[#44475a] text-[10px] px-2 py-1 rounded border border-purple-500";
-                    span.innerText = tech;
-                    stackContainer.appendChild(span);
+                document.getElementById('dev-code').innerHTML = dev.code.replace(/\n/g, '<br>');
+                document.getElementById('match-percent').innerText = dev.match + " MATCH";
+                document.getElementById('file-name').innerText = dev.fileName;
+                document.getElementById('dev-lang').innerText = dev.lang;
+                document.getElementById('dev-bio').innerText = `"${dev.bio}"`;
+
+                const icon = document.getElementById('gender-icon');
+                icon.innerHTML = dev.gender === 'male' ? '<i class="fas fa-mars text-blue-400"></i>' : '<i class="fas fa-venus text-pink-400"></i>';
+
+                const stack = document.getElementById('dev-stack');
+                stack.innerHTML = '';
+                dev.stack.forEach(s => {
+                    const pill = document.createElement('span');
+                    pill.className = "bg-white/5 border border-white/10 px-3 py-1 rounded-lg text-[10px] font-bold text-gray-400";
+                    pill.innerText = s;
+                    stack.appendChild(pill);
                 });
 
-                document.querySelector('.text-gray-300.italic').innerText = `"${dev.bio}"`;
-                document.querySelector('.text-pink-400').innerText = dev.lang;
-
-                // Fade in
                 card.classList.remove('opacity-0', 'scale-95');
             }, 300);
         }
 
         function handlePR(action) {
             const card = document.getElementById('current-card');
-            
             if (action === 'close') {
-                showNotification("PR Closed: Moving to next candidate.", "red");
-                card.classList.add('-translate-x-full', 'opacity-0');
-                nextDev();
+                showNotification("ABORTED: Branch deleted.", "red");
+                card.style.transform = "translateX(-150%) rotate(-20deg)";
+                next();
             } else if (action === 'changes') {
                 document.getElementById('pr-modal').classList.remove('hidden');
             } else if (action === 'approve') {
-                showNotification("Submitting Pull Request...", "green");
-                card.classList.add('translate-x-full', 'opacity-0');
-                
-                // Simulate a match
+                showNotification("MERGE ATTEMPT IN PROGRESS...", "green");
+                card.style.transform = "translateX(150%) rotate(20deg)";
                 setTimeout(() => {
                     document.getElementById('match-name-display').innerText = developers[currentIndex].name;
                     document.getElementById('match-overlay').classList.remove('hidden');
-                }, 800);
+                }, 500);
             }
         }
 
-        function nextDev() {
+        function next() {
             setTimeout(() => {
                 currentIndex = (currentIndex + 1) % developers.length;
                 const card = document.getElementById('current-card');
-                card.classList.remove('-translate-x-full', 'translate-x-full', 'opacity-0');
-                updateCard();
-            }, 500);
+                card.style.transition = 'none';
+                card.style.transform = 'translateY(50px) scale(0.9)';
+                card.style.opacity = '0';
+                setTimeout(() => {
+                    card.style.transition = 'all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275)';
+                    updateCard();
+                }, 50);
+            }, 400);
         }
 
-        function closeModal() {
-            document.getElementById('pr-modal').classList.add('hidden');
-        }
-
+        function closeModal() { document.getElementById('pr-modal').classList.add('hidden'); }
         function submitPRMessage() {
-            const msg = document.getElementById('pr-message').value;
-            if(!msg) return;
-            
             closeModal();
-            showNotification("Review submitted! Waiting for developer response...", "yellow");
-            nextDev();
-            document.getElementById('pr-message').value = '';
+            showNotification("Review Broadcasted. Status: PENDING", "yellow");
+            next();
         }
-
         function closeMatch() {
             document.getElementById('match-overlay').classList.add('hidden');
-            nextDev();
+            next();
         }
 
         function showNotification(text, color) {
             const area = document.getElementById('notification-area');
             const note = document.createElement('div');
-            const colorClass = color === 'red' ? 'bg-red-500' : (color === 'green' ? 'bg-green-500' : 'bg-yellow-500');
-            
-            note.className = `${colorClass} text-white text-[10px] font-bold py-2 px-4 rounded shadow-lg animate-bounce uppercase tracking-widest`;
+            const colorClass = color === 'red' ? 'bg-red-500/90' : (color === 'green' ? 'bg-green-500/90' : 'bg-yellow-500/90');
+            note.className = `${colorClass} text-white text-[10px] font-black px-6 py-2 rounded-full border border-white/20 shadow-2xl backdrop-blur-md animate-bounce uppercase tracking-widest`;
             note.innerText = text;
-            
             area.appendChild(note);
             setTimeout(() => note.remove(), 3000);
         }
 
-        function showProfile() {
-            showNotification("System: Profile edit mode under development.", "yellow");
-        }
-
-        // Initialize first card
-        window.onload = () => {
-            updateCard();
-            console.log("DevMatch Engine Loaded. Happy coding!");
-        };
+        window.onload = updateCard;
     </script>
 </body>
 </html>
-
 
 
