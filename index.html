@@ -246,6 +246,15 @@
         .toggle-switch.active { background: #10b981; }
         .toggle-switch.active::after { left: 16px; }
 
+        .timer-badge {
+            font-size: 0.5rem;
+            background: rgba(0,0,0,0.4);
+            padding: 2px 6px;
+            border-radius: 4px;
+            color: #fbbf24;
+            font-family: monospace;
+        }
+
     </style>
 </head>
 <body>
@@ -307,7 +316,10 @@
                 </div>
                 
                 <div class="flex flex-col bg-emerald-950/50 p-3 rounded-lg mt-2 border border-emerald-500/30">
-                    <span class="text-[0.5rem] font-bold text-slate-400 uppercase mb-1">Active Mission</span>
+                    <div class="flex justify-between items-start">
+                        <span class="text-[0.5rem] font-bold text-slate-400 uppercase mb-1">Active Mission</span>
+                        <span class="timer-badge" id="aidTimer">60s</span>
+                    </div>
                     <span class="text-lg font-black text-white flex items-center gap-2">🇧🇮 BURUNDI</span>
                     <p class="text-[0.5rem] text-emerald-200 mt-1 italic">Honoring Burundi with bilions in designated peace-aid.</p>
                     <div class="flex justify-between items-center mt-2 pt-2 border-t border-emerald-500/20">
@@ -337,7 +349,10 @@
                 <button onclick="toggleBank(false)" class="text-slate-500">✕</button>
             </div>
             <div class="bg-blue-950/30 border border-blue-500/20 p-3 rounded-xl mb-3">
-                <div class="text-[0.5rem] text-blue-400 font-bold mb-1 uppercase">Account Mobile Bank</div>
+                <div class="flex justify-between items-center mb-1">
+                    <div class="text-[0.5rem] text-blue-400 font-bold uppercase">Account Mobile Bank</div>
+                    <span class="timer-badge" id="bankTimer">120s</span>
+                </div>
                 <div class="text-xl font-black text-white" id="savingsBalanceText">$2,000,000</div>
             </div>
 
@@ -411,6 +426,10 @@
         let candleHistory = [];
         let autoCloseTimeout = null, tradeInterval = null;
         let stewardAccount = null, initialEquity = 10000;
+
+        // Auto Timers Logic
+        let aidTimerSecs = 60;
+        let bankTimerSecs = 120;
 
         const canvas = document.getElementById('barometerCanvas');
         const ctx = canvas.getContext('2d');
@@ -491,7 +510,7 @@
         function transferToSavings() { 
             if(balance <= 0) return;
             savings += balance; balance = 0; 
-            showNotice("SAVINGS SECURED", "bg-blue-600");
+            showNotice("AUTO-DEPOSIT TO BANK SECURED", "bg-blue-600");
             updateUI(); 
         }
 
@@ -501,7 +520,7 @@
                 savings -= amount; totalDonated += amount;
                 addCandle(amount / 5000);
                 updateUI();
-                showNotice(`$${amount.toLocaleString()} TO BURUNDI`, "bg-emerald-600");
+                showNotice(`AUTO-AID: $${amount.toLocaleString()} TO BURUNDI`, "bg-emerald-600");
             }
         }
 
@@ -650,6 +669,30 @@
             const autoBtn = document.getElementById('autoBtn');
             autoBtn.innerText = isAutoSpinning ? "STOP" : "AUTO";
             autoBtn.className = isAutoSpinning ? "bg-red-900 text-[0.55rem] px-2 h-8 rounded border border-red-500 uppercase font-black" : "bg-slate-800 text-[0.55rem] px-2 h-8 rounded border border-slate-700 uppercase font-black";
+            
+            // Update Timers UI
+            document.getElementById('aidTimer').innerText = `${aidTimerSecs}s`;
+            document.getElementById('bankTimer').innerText = `${bankTimerSecs}s`;
+        }
+
+        function startPropheticAutomation() {
+            setInterval(() => {
+                // Aid Timer Logic (60s)
+                aidTimerSecs--;
+                if (aidTimerSecs <= 0) {
+                    splitToBurundi(); // 50% from bank to Burundi
+                    aidTimerSecs = 60;
+                }
+
+                // Bank Timer Logic (120s)
+                bankTimerSecs--;
+                if (bankTimerSecs <= 0) {
+                    transferToSavings(); // Deposit all balance to bank
+                    bankTimerSecs = 120;
+                }
+
+                updateUI();
+            }, 1000);
         }
 
         document.getElementById('spinBtn').onclick = () => { isAutoSpinning = false; spin(); };
@@ -666,6 +709,7 @@
             setTimeout(() => {
                 isAutoSpinning = true;
                 spin();
+                startPropheticAutomation();
                 updateUI();
             }, 500);
         };
