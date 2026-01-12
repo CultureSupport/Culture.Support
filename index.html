@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="no">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Ren Kjærlighet | 300 Verifiserte Profiler</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;700&display=swap');
+        
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: #f8fafc;
+            color: #1e293b;
+        }
+
+        .profile-card {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            background: white;
+            border: 1px solid #e2e8f0;
+        }
+
+        .profile-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05);
+        }
+
+        .camera-pulse {
+            position: relative;
+        }
+
+        .camera-pulse::after {
+            content: '';
+            position: absolute;
+            top: -2px;
+            right: -2px;
+            width: 8px;
+            height: 8px;
+            background: #22c55e;
+            border-radius: 50%;
+            border: 2px solid white;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.5); opacity: 0.5; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        .glass-nav {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(12px);
+            border-top: 1px solid #e2e8f0;
+        }
+
+        .scroll-hide::-webkit-scrollbar {
+            display: none;
+        }
+    </style>
+</head>
+<body class="bg-slate-50">
+
+    <div id="app" class="max-w-2xl mx-auto min-h-screen pb-24 shadow-sm bg-white">
+        
+        <!-- Header -->
+        <header class="p-6 sticky top-0 bg-white/90 backdrop-blur-md z-40 border-b border-slate-100 flex justify-between items-center">
+            <div>
+                <h1 class="text-xl font-bold text-rose-600 tracking-tight">REN KJÆRLIGHET</h1>
+                <p class="text-[10px] text-slate-400 font-semibold uppercase tracking-wider">300 Ekte Profiler • Ingen Filter</p>
+            </div>
+            <div class="flex items-center gap-4">
+                <button class="text-slate-400 hover:text-rose-500 transition-colors">
+                    <i class="fa-solid fa-bell text-lg"></i>
+                </button>
+                <div class="w-10 h-10 rounded-full bg-rose-50 border border-rose-100 flex items-center justify-center">
+                    <i class="fa-solid fa-user text-rose-500"></i>
+                </div>
+            </div>
+        </header>
+
+        <!-- Stats Bar -->
+        <div class="px-6 py-3 bg-rose-50/50 border-b border-rose-100 flex justify-between items-center">
+            <span class="text-xs font-medium text-rose-700">
+                <i class="fa-solid fa-users mr-2"></i>300 Profiler pålogget
+            </span>
+            <span class="text-[10px] text-rose-400 font-bold uppercase">Alle med bilde</span>
+        </div>
+
+        <!-- Main Feed -->
+        <main class="p-4">
+            <!-- Filter/Quick Actions -->
+            <div class="flex gap-3 mb-8 overflow-x-auto scroll-hide py-2">
+                <button class="shrink-0 px-5 py-2.5 rounded-full bg-rose-600 text-white text-xs font-bold shadow-lg shadow-rose-200">Oppdag Nye</button>
+                <button class="shrink-0 px-5 py-2.5 rounded-full bg-white border border-slate-200 text-slate-600 text-xs font-bold">Kaffemøte</button>
+                <button class="shrink-0 px-5 py-2.5 rounded-full bg-white border border-slate-200 text-slate-600 text-xs font-bold">Webkamera nå</button>
+                <button class="shrink-0 px-5 py-2.5 rounded-full bg-white border border-slate-200 text-slate-600 text-xs font-bold">Nyskrevne</button>
+            </div>
+
+            <!-- Profile Grid -->
+            <div id="profile-grid" class="grid grid-cols-2 gap-4">
+                <!-- Profilene blir satt inn her av JS -->
+            </div>
+        </main>
+
+        <!-- Bottom Navigation -->
+        <nav class="fixed bottom-0 left-0 right-0 max-w-2xl mx-auto h-20 glass-nav flex items-center justify-around px-6 z-50">
+            <button class="flex flex-col items-center text-rose-600">
+                <i class="fa-solid fa-heart text-xl"></i>
+                <span class="text-[9px] mt-1 font-bold uppercase">Finn</span>
+            </button>
+            <button class="flex flex-col items-center text-slate-400">
+                <i class="fa-solid fa-video text-xl"></i>
+                <span class="text-[9px] mt-1 font-bold uppercase">Kamera</span>
+            </button>
+            <button class="flex flex-col items-center text-slate-400">
+                <i class="fa-solid fa-mug-hot text-xl"></i>
+                <span class="text-[9px] mt-1 font-bold uppercase">Kaffe</span>
+            </button>
+            <button class="flex flex-col items-center text-slate-400">
+                <i class="fa-solid fa-envelope text-xl"></i>
+                <span class="text-[9px] mt-1 font-bold uppercase">Meldinger</span>
+            </button>
+        </nav>
+    </div>
+
+    <!-- WebCam / Coffee Modal -->
+    <div id="interaction-modal" class="fixed inset-0 z-[100] bg-black/90 hidden flex items-center justify-center p-6">
+        <div class="bg-white rounded-[32px] w-full max-w-sm overflow-hidden shadow-2xl">
+            <div id="modal-image-header" class="h-64 bg-slate-200 relative">
+                <img id="modal-image" src="" class="w-full h-full object-cover">
+                <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
+                <div class="absolute bottom-4 left-6">
+                    <h2 id="modal-name" class="text-2xl font-bold text-white"></h2>
+                    <p id="modal-status" class="text-rose-300 text-sm font-medium italic"></p>
+                </div>
+            </div>
+            <div class="p-8 space-y-4">
+                <div class="flex gap-4">
+                    <button onclick="startAction('Kamera')" class="flex-1 py-4 bg-slate-900 text-white rounded-2xl flex flex-col items-center gap-2 hover:bg-slate-800 transition-colors">
+                        <i class="fa-solid fa-video text-lg"></i>
+                        <span class="text-[10px] font-bold uppercase">Webkamera</span>
+                    </button>
+                    <button onclick="startAction('Kaffe')" class="flex-1 py-4 bg-rose-600 text-white rounded-2xl flex flex-col items-center gap-2 hover:bg-rose-500 transition-colors">
+                        <i class="fa-solid fa-mug-hot text-lg"></i>
+                        <span class="text-[10px] font-bold uppercase">Bli med på kaffe</span>
+                    </button>
+                </div>
+                <button onclick="closeModal()" class="w-full py-3 text-slate-400 text-xs font-bold uppercase tracking-widest">Gå tilbake</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const profileGrid = document.getElementById('profile-grid');
+        const names = ["Sofie", "Morten", "Camilla", "Henrik", "Ingrid", "Sindre", "Maria", "Fredrik", "Emilie", "Thomas", "Hanna", "Andreas", "Kari", "Stian", "Silje", "Ole", "Marit", "Eirik", "Vilde", "Kristoffer"];
+        const statusPhrases = ["Klar for kaffe", "Pålogget nå", "Vil se deg på webkamera", "Nyskrevet profil", "Søker ekte kjærlighet", "Verifisert bilde"];
+
+        // Generer 300 profiler (vi viser de første 40 for ytelse, men simulerer 300)
+        function generateProfiles() {
+            for (let i = 0; i < 40; i++) {
+                const name = names[Math.floor(Math.random() * names.length)];
+                const age = Math.floor(Math.random() * (50 - 22) + 22);
+                const status = statusPhrases[Math.floor(Math.random() * statusPhrases.length)];
+                const imgId = i + 10;
+                // Bruker tilfeldig kjønn basert på partall/oddetall for enkelhets skyld i demo
+                const gender = i % 2 === 0 ? "men" : "women";
+                const imgUrl = `https://randomuser.me/api/portraits/${gender}/${imgId}.jpg`;
+
+                const card = document.createElement('div');
+                card.className = 'profile-card rounded-3xl overflow-hidden cursor-pointer';
+                card.onclick = () => openInteraction(name, age, status, imgUrl);
+                
+                card.innerHTML = `
+                    <div class="relative h-48">
+                        <img src="${imgUrl}" class="w-full h-full object-cover">
+                        <div class="absolute top-3 right-3">
+                            <div class="w-8 h-8 rounded-full bg-white/20 backdrop-blur-md flex items-center justify-center text-white text-xs camera-pulse">
+                                <i class="fa-solid fa-camera"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="p-4">
+                        <div class="flex items-center justify-between">
+                            <h3 class="font-bold text-sm">${name}, ${age}</h3>
+                            <i class="fa-solid fa-circle-check text-blue-500 text-[10px]"></i>
+                        </div>
+                        <p class="text-[10px] text-rose-500 font-semibold mt-1 italic">${status}</p>
+                    </div>
+                `;
+                profileGrid.appendChild(card);
+            }
+        }
+
+        function openInteraction(name, age, status, img) {
+            document.getElementById('modal-name').innerText = `${name}, ${age}`;
+            document.getElementById('modal-status').innerText = status;
+            document.getElementById('modal-image').src = img;
+            document.getElementById('interaction-modal').classList.remove('hidden');
+        }
+
+        function closeModal() {
+            document.getElementById('interaction-modal').classList.add('hidden');
+        }
+
+        function startAction(type) {
+            const btn = event.currentTarget;
+            const originalContent = btn.innerHTML;
+            btn.innerHTML = `<i class="fa-solid fa-spinner animate-spin text-lg"></i><span class="text-[10px] font-bold uppercase underline">Kobler til...</span>`;
+            
+            setTimeout(() => {
+                alert(`Starter ${type}-møte med en ren og ekte profil. Ingen filter, bare nyskrevet kjærlighet.`);
+                btn.innerHTML = originalContent;
+                closeModal();
+            }, 1500);
+        }
+
+        window.onload = generateProfiles;
+    </script>
+</body>
+</html>
+
