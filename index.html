@@ -166,7 +166,6 @@
             cursor: pointer;
         }
 
-        /* Jackpot Ceremony Styles */
         #ceremonyOverlay {
             position: fixed;
             inset: 0;
@@ -220,7 +219,6 @@
         </div>
     </header>
 
-    <!-- Holy Spirit Ceremony Overlay -->
     <div id="ceremonyOverlay">
         <div class="spirit-dove">🕊️</div>
         <h1 class="text-4xl glow-text mb-4">HOLY SPIRIT SERMON</h1>
@@ -261,8 +259,11 @@
                 <div class="text-[0.5rem] text-blue-400 font-bold mb-1 uppercase">Account Mobile Bank</div>
                 <div class="text-xl font-black text-white" id="savingsBalanceText">$2,000,000</div>
             </div>
-            <button onclick="transferToSavings()" class="w-full bg-blue-600 py-2.5 rounded-lg text-[0.65rem] font-black mb-2">DEPOSIT TO Account</button>
-            <button onclick="transferToSlot()" class="w-full bg-slate-800 py-2.5 rounded-lg text-[0.65rem] font-black border border-slate-700">WITHDRAW $5,000</button>
+            <div class="space-y-2">
+                <button onclick="transferToSavings()" class="w-full bg-blue-600 py-2.5 rounded-lg text-[0.65rem] font-black">DEPOSIT TO Account</button>
+                <button onclick="transferToSlot()" class="w-full bg-slate-800 py-2.5 rounded-lg text-[0.65rem] font-black border border-slate-700">WITHDRAW $5,000</button>
+                <button onclick="bankToAid50()" class="w-full bg-emerald-600 py-2.5 rounded-lg text-[0.65rem] font-black border border-emerald-400 shadow-[0_0_15px_rgba(16,185,129,0.3)]">TRANSFEER 50% TO AID PANEL</button>
+            </div>
         </div>
 
         <div class="slot-perspective">
@@ -282,8 +283,8 @@
 
     <footer class="game-footer">
         <div class="flex gap-2">
-            <button onclick="toggleAid(true)" class="bg-emerald-900/30 border border-emerald-500/30 w-14 h-14 rounded-xl text-lg">Aid Panel</button>
-            <button onclick="toggleBank(true)" class="bg-blue-900/30 border border-blue-500/30 w-14 h-14 rounded-xl text-lg">Mobile Bank</button>
+            <button onclick="toggleAid(true)" class="bg-emerald-900/30 border border-emerald-500/30 w-14 h-14 rounded-xl text-[0.5rem] font-black text-emerald-400">AID PANEL</button>
+            <button onclick="toggleBank(true)" class="bg-blue-900/30 border border-blue-500/30 w-14 h-14 rounded-xl text-[0.5rem] font-black text-blue-400 uppercase">MOBILE BANK</button>
         </div>
         <div class="flex flex-col items-center">
             <div class="text-[0.5rem] font-bold text-slate-500 uppercase mb-1">Spin Count: <span id="spinCountText" class="text-white">0</span>/5</div>
@@ -319,12 +320,31 @@
         const canvas = document.getElementById('barometerCanvas');
         const ctx = canvas.getContext('2d');
 
-        function toggleAid(show) { document.getElementById('aidGui').classList.toggle('visible', show); if(show) toggleBank(false); }
+        function toggleAid(show) { document.getElementById('aidGui').classList.toggle('visible', show); if(show) { toggleBank(false); drawBarometer(); } }
         function toggleBank(show) { document.getElementById('bankGui').classList.toggle('visible', show); if(show) toggleAid(false); }
         function updateAidPerc(val) { aidCommission = val / 100; document.getElementById('aidPercLabel').innerText = `${val}%`; }
 
         function transferToSavings() { savings += balance; balance = 0; updateUI(); }
         function transferToSlot() { if(savings >= 5000) { savings -= 5000; balance += 5000; updateUI(); } }
+
+        // New feature: 50% transfer to aid
+        function bankToAid50() {
+            const amount = Math.floor(savings * 0.5);
+            if(amount > 0) {
+                savings -= amount;
+                totalDonated += amount;
+                addCandle(amount / 10000); // Visual impact on graph
+                updateUI();
+                showNotice(`MISSION FUNDED: $${amount.toLocaleString()}`, "bg-emerald-600");
+            }
+        }
+
+        function showNotice(m, c="bg-blue-600") {
+            const n = document.createElement('div');
+            n.className = `fixed top-1/2 left-1/2 -translate-x-1/2 ${c} px-8 py-3 rounded-full font-black text-[0.7rem] z-[300] shadow-2xl border border-white/20`;
+            n.innerText = m; document.body.appendChild(n);
+            setTimeout(() => n.remove(), 2000);
+        }
 
         function initReels() {
             [0,1,2].forEach(idx => {
@@ -340,6 +360,33 @@
             });
         }
 
+        function drawBarometer() {
+            const w = canvas.width = canvas.offsetWidth;
+            const h = canvas.height = canvas.offsetHeight;
+            ctx.clearRect(0,0,w,h);
+            const candleW = 8, gap = 4;
+            const maxCandles = Math.floor(w / (candleW + gap));
+            const history = candleHistory.slice(-maxCandles);
+            
+            history.forEach((c, i) => {
+                const x = i * (candleW + gap) + gap;
+                const isUp = c.close >= c.open;
+                ctx.fillStyle = isUp ? '#10b981' : '#ef4444';
+                const bodyY = h - (Math.max(c.open, c.close) * 0.8);
+                const bodyH = Math.max(2, Math.abs(c.open - c.close) * 0.8);
+                ctx.fillRect(x, bodyY, candleW, bodyH);
+            });
+        }
+
+        function addCandle(impact) {
+            const lastClose = candleHistory.length ? candleHistory[candleHistory.length-1].close : 50;
+            const open = lastClose;
+            const close = Math.max(5, Math.min(100, open + (impact * 5) + (Math.random() * 4 - 2)));
+            candleHistory.push({ open, close });
+            if(candleHistory.length > 50) candleHistory.shift();
+            drawBarometer();
+        }
+
         async function spin() {
             if (isSpinning || balance < currentBet) { isAutoSpinning = false; updateUI(); return; }
             
@@ -347,9 +394,7 @@
             spinCount++;
             balance -= currentBet;
             
-            // Every 5th spin is a Holy Spirit Jackpot
             const isJackpotSpin = spinCount % 5 === 0;
-            
             updateUI();
             
             const results = [];
@@ -358,11 +403,9 @@
                 strip.style.transition = 'none';
                 strip.style.transform = `translateY(0px)`;
                 
-                // Target selection
                 let targetIdx;
                 if (isJackpotSpin) {
-                    // Force the Holy Spirit Dove (index 5 in holyIcons)
-                    targetIdx = 30 + i; // Offset to look natural
+                    targetIdx = 30 + i;
                     const iconDiv = strip.children[targetIdx];
                     iconDiv.innerHTML = `<span>🕊️</span><span class="icon-label">Holy Spirit</span>`;
                 } else {
@@ -370,7 +413,7 @@
                 }
 
                 requestAnimationFrame(() => {
-                    strip.style.transition = `transform ${1 + i * 0.4}s cubic-bezier(0.2, 0, 0.1, 1)`;
+                    strip.style.transition = `transform ${1.2 + i * 0.4}s cubic-bezier(0.2, 0, 0.1, 1)`;
                     strip.style.transform = `translateY(-${targetIdx * 100}px)`;
                 });
                 
@@ -389,24 +432,20 @@
             }
             
             isSpinning = false;
-            if (isAutoSpinning && !isJackpotSpin) setTimeout(spin, 500);
+            if (isAutoSpinning && !isJackpotSpin) setTimeout(spin, 600);
         }
 
         function triggerJackpot() {
-            // 500,000% Multiplier
             const jackpotAmount = currentBet * 5000; 
             balance += jackpotAmount;
             
-            // Ceremony UI
             document.getElementById('ceremonyAmount').innerText = `$${jackpotAmount.toLocaleString()}`;
             document.getElementById('ceremonyOverlay').style.display = 'flex';
             
-            // Auto Aid Deduction (2-20%)
             const aidAmount = Math.floor(jackpotAmount * aidCommission);
             totalDonated += aidAmount;
             balance -= aidAmount;
-            document.getElementById('aidDonatedText').innerText = `$${totalDonated.toLocaleString()}`;
-            
+            addCandle(2);
             updateUI();
         }
 
@@ -429,6 +468,7 @@
                 const aid = Math.floor(winAmt * aidCommission);
                 balance -= aid;
                 totalDonated += aid;
+                addCandle(winMult/10);
                 
                 const overlay = document.getElementById('winDisplay');
                 overlay.querySelector('h2').innerText = `+$${winAmt}`;
@@ -442,9 +482,11 @@
         function updateUI() {
             document.getElementById('balanceText').innerText = `$${balance.toLocaleString()}`;
             document.getElementById('savingsBalanceText').innerText = `$${savings.toLocaleString()}`;
+            document.getElementById('bankSlotBalanceText') ? document.getElementById('bankSlotBalanceText').innerText = `$${balance.toLocaleString()}` : null;
             document.getElementById('betText').innerText = `$${currentBet}`;
             document.getElementById('spinCountText').innerText = spinCount % 5 === 0 && spinCount !== 0 ? "5" : spinCount % 5;
             document.getElementById('autoBtn').innerText = isAutoSpinning ? "STOP" : "AUTO";
+            document.getElementById('aidDonatedText').innerText = `$${totalDonated.toLocaleString()}`;
         }
 
         document.getElementById('spinBtn').onclick = () => { isAutoSpinning = false; spin(); };
@@ -452,7 +494,11 @@
         document.getElementById('betUp').onclick = () => { currentBet += 10; updateUI(); };
         document.getElementById('betDown').onclick = () => { if(currentBet > 10) currentBet -= 10; updateUI(); };
 
-        window.onload = initReels;
+        window.onload = () => {
+            initReels();
+            for(let i=0; i<10; i++) candleHistory.push({open: 50, close: 50});
+            updateUI();
+        };
     </script>
 </body>
 </html>
