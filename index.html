@@ -3,23 +3,21 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>dating Kode</title>
+    <title>DevMatch // 3000 Hearts of Code</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@300;400;500;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            --dracula-bg: #282a36;
-            --dracula-current: #44475a;
-            --dracula-fg: #f8f8f2;
-            --dracula-comment: #6272a4;
-            --dracula-cyan: #8be9fd;
-            --dracula-green: #50fa7b;
-            --dracula-orange: #ffb86c;
-            --dracula-pink: #ff79c6;
-            --dracula-purple: #bd93f9;
-            --dracula-red: #ff5555;
-            --dracula-yellow: #f1fa8c;
+            --dracula-bg: #1e1e2e;
+            --dracula-current: #313244;
+            --dracula-fg: #cdd6f4;
+            --dracula-pink: #f5c2e7;
+            --dracula-purple: #cba6f7;
+            --dracula-red: #f38ba8;
+            --dracula-cyan: #89dceb;
+            --dracula-green: #a6e3a1;
+            --dracula-orange: #fab387;
         }
 
         body {
@@ -32,310 +30,248 @@
         }
 
         .glass-panel {
-            background: rgba(68, 71, 90, 0.4);
-            backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            background: rgba(49, 50, 68, 0.6);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
         }
 
-        .glass-icon {
-            background: rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(8px);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            border-radius: 50%;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        .heart-pulse {
+            animation: pulse-heart 1.5s infinite;
+        }
+
+        @keyframes pulse-heart {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
         }
 
         .swipe-left { transform: translateX(-150%) rotate(-30deg) !important; opacity: 0 !important; pointer-events: none; }
         .swipe-right { transform: translateX(150%) rotate(30deg) !important; opacity: 0 !important; pointer-events: none; }
 
-        .terminal-border {
-            border: 1px solid var(--dracula-current);
-            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
-        }
-
         .code-snippet {
-            background-color: #1e1f29;
+            background-color: #11111b;
             border-radius: 0.75rem;
             padding: 1rem;
-            font-size: 0.7rem;
-            line-height: 1.6;
-            border-left: 4px solid var(--dracula-purple);
-            max-height: 160px;
+            font-size: 0.65rem;
+            line-height: 1.5;
+            border-left: 4px solid var(--dracula-red);
+            max-height: 180px;
             overflow-y: auto;
             position: relative;
         }
 
-        .code-snippet::before {
-            content: 'TERMINAL';
-            position: absolute;
-            top: 2px;
-            right: 8px;
-            font-size: 8px;
-            color: var(--dracula-comment);
-            letter-spacing: 1px;
-        }
-
-        .active-nav { color: var(--dracula-pink); border-bottom: 2px solid var(--dracula-pink); }
+        .active-nav { color: var(--dracula-red); border-bottom: 2px solid var(--dracula-red); }
         
         .profile-img-container {
             position: relative;
             height: 260px;
             overflow: hidden;
-            background: #1e1f29;
+            background: #11111b;
         }
 
-        .ai-glow {
-            box-shadow: 0 0 20px rgba(189, 147, 249, 0.4);
-            animation: pulse-glow 2s infinite alternate;
+        .terminal-input-line::before {
+            content: "> ";
+            color: var(--dracula-green);
         }
 
-        @keyframes pulse-glow {
-            from { box-shadow: 0 0 10px rgba(189, 147, 249, 0.2); }
-            to { box-shadow: 0 0 25px rgba(189, 147, 249, 0.6); }
-        }
+        .msg-received { color: var(--dracula-purple); }
+        .msg-sent { color: var(--dracula-cyan); }
 
-        .nav-btn:active { transform: scale(0.9); }
-        
-        /* Loading animation */
-        .shimmer {
-            background: linear-gradient(90deg, #282a36 25%, #44475a 50%, #282a36 75%);
-            background-size: 200% 100%;
-            animation: shimmer 1.5s infinite;
-        }
-        @keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
+        ::-webkit-scrollbar { width: 4px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: var(--dracula-current); border-radius: 10px; }
     </style>
 </head>
 <body class="flex flex-col">
 
     <!-- Header -->
-    <header class="border-b border-gray-800/50 p-4 bg-[#282a36]/80 backdrop-blur-md z-50">
+    <header class="border-b border-gray-800/50 p-4 bg-[#11111b]/80 backdrop-blur-md z-50">
         <div class="max-w-md mx-auto flex justify-between items-center">
             <div class="flex items-center space-x-2">
-                <i class="fas fa-brain text-pink-500 animate-pulse"></i>
-                <h1 class="text-lg font-bold tracking-tighter">DevMatch <span class="text-purple-400">Enterprise</span></h1>
+                <i class="fas fa-heart text-red-400 heart-pulse"></i>
+                <h1 class="text-lg font-bold tracking-tighter italic">DevMatch</h1>
             </div>
-            <div id="status-bar" class="text-[9px] font-mono text-gray-500">
-                <span class="text-green-400">●</span> <span id="node-count">3000</span> NODES_ACTIVE
+            <div class="text-[9px] font-mono text-pink-300 uppercase tracking-widest">
+                <span class="animate-pulse">●</span> <span id="total-count">3000</span>_HEARTS_COMPILED
             </div>
         </div>
     </header>
 
-    <!-- Main Content Area -->
+    <!-- Main Content -->
     <main id="main-view" class="flex-grow max-w-md mx-auto w-full relative overflow-hidden flex flex-col p-4 pb-20">
         
         <!-- DISCOVERY VIEW -->
         <div id="view-discovery" class="view-segment h-full flex flex-col transition-all duration-300">
-            <div id="current-card" class="terminal-border rounded-2xl bg-[#282a36] overflow-hidden transform transition-all duration-500 flex flex-col h-full relative">
+            <div id="current-card" class="rounded-3xl bg-[#181825] border border-white/5 overflow-hidden shadow-2xl transform transition-all duration-500 flex flex-col h-full relative">
                 
                 <div class="profile-img-container">
-                    <img id="dev-photo" src="" alt="Profile" class="w-full h-full object-cover transition-opacity duration-300">
-                    <div id="match-score" class="absolute top-3 right-3 glass-panel px-3 py-1 rounded-full text-[10px] font-bold text-purple-200">--% MATCH</div>
-                    <div class="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black/90 to-transparent">
+                    <img id="dev-photo" src="" alt="Developer Profile" class="w-full h-full object-cover transition-opacity duration-300">
+                    <div id="match-score" class="absolute top-3 right-3 glass-panel px-3 py-1 rounded-full text-[10px] font-bold text-red-200">
+                        <i class="fas fa-heart mr-1"></i> --%
+                    </div>
+                    <div class="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-[#11111b] to-transparent">
                         <div class="flex items-center space-x-2">
-                            <h2 id="dev-name" class="text-xl font-bold text-white uppercase tracking-tight">System Booting...</h2>
+                            <h2 id="dev-name" class="text-xl font-bold text-white uppercase tracking-tight">System Boot...</h2>
                             <span id="dev-gender-icon" class="text-xs"></span>
                         </div>
-                        <p id="dev-role" class="text-cyan-300 text-xs font-mono font-bold">INITIALIZING_PROTOCOL</p>
+                        <p id="dev-role" class="text-pink-300 text-[10px] font-mono font-bold uppercase tracking-tight">Searching for signal...</p>
                     </div>
                 </div>
 
-                <div class="p-4 space-y-3 flex-grow overflow-y-auto bg-[#1e1f29]/30">
+                <div class="p-4 space-y-3 flex-grow overflow-y-auto bg-[#181825]">
                     <div class="flex justify-between items-center text-[9px] font-mono">
-                        <span id="file-name" class="text-gray-500 italic">main.exe</span>
-                        <span id="dev-lang" class="text-pink-400 font-bold tracking-widest uppercase">system</span>
+                        <span id="file-name" class="text-gray-500">profile.json</span>
+                        <span id="dev-lang" class="text-red-400 font-bold tracking-widest uppercase">DATING_PROTOCOL</span>
                     </div>
                     <div id="dev-code" class="code-snippet font-mono text-gray-300"></div>
-                    <div id="dev-bio" class="text-xs text-gray-400 leading-relaxed border-l-2 border-purple-500/50 pl-3 italic"></div>
+                    <div id="dev-bio" class="text-[11px] text-gray-400 leading-relaxed border-l-2 border-red-500/50 pl-3 italic"></div>
                     <div id="dev-stack" class="flex flex-wrap gap-1.5 mt-2"></div>
                 </div>
 
                 <!-- Action Bar -->
-                <div class="grid grid-cols-3 border-t border-gray-800 bg-[#21222c]">
+                <div class="grid grid-cols-3 border-t border-gray-800 bg-[#11111b]">
                     <button onclick="swipe('left')" class="p-4 flex flex-col items-center hover:bg-red-500/10 transition-colors group">
-                        <div class="glass-icon w-12 h-12 flex items-center justify-center mb-1 group-active:scale-90">
-                            <i class="fas fa-times text-red-500 text-xl"></i>
+                        <div class="w-12 h-12 flex items-center justify-center mb-1 group-active:scale-90">
+                            <i class="fas fa-heart-broken text-gray-500 text-xl group-hover:text-red-400"></i>
                         </div>
                         <span class="text-[8px] uppercase font-bold text-gray-500">Drop</span>
                     </button>
-                    <button onclick="openReview()" class="p-4 border-l border-r border-gray-800 flex flex-col items-center hover:bg-yellow-500/10 transition-colors group">
-                        <div class="glass-icon w-12 h-12 flex items-center justify-center mb-1 group-active:scale-90">
-                            <i class="fas fa-eye text-yellow-500 text-xl"></i>
+                    <button onclick="openReview()" class="p-4 border-l border-r border-gray-800 flex flex-col items-center hover:bg-pink-500/10 transition-colors group">
+                        <div class="w-12 h-12 flex items-center justify-center mb-1 group-active:scale-90">
+                            <i class="fas fa-terminal text-pink-400 text-xl"></i>
                         </div>
                         <span class="text-[8px] uppercase font-bold text-gray-500">Inspect</span>
                     </button>
-                    <button onclick="swipe('right')" class="p-4 flex flex-col items-center hover:bg-green-500/10 transition-colors group">
-                        <div class="glass-icon w-12 h-12 flex items-center justify-center mb-1 group-active:scale-90">
-                            <i class="fas fa-bolt text-green-500 text-xl"></i>
+                    <button onclick="swipe('right')" class="p-4 flex flex-col items-center hover:bg-red-500/10 transition-colors group">
+                        <div class="w-12 h-12 flex items-center justify-center mb-1 group-active:scale-90">
+                            <i class="fas fa-heart text-red-500 text-xl heart-pulse"></i>
                         </div>
-                        <span class="text-[8px] uppercase font-bold text-gray-500">Merge</span>
+                        <span class="text-[8px] uppercase font-bold text-gray-500">Commit</span>
                     </button>
                 </div>
             </div>
         </div>
 
-        <!-- LOGS/MESSAGES VIEW -->
+        <!-- MATCH LIST VIEW -->
         <div id="view-messages" class="view-segment hidden h-full flex flex-col">
-            <div class="flex items-center justify-between mb-4">
-                <h2 class="text-xs font-bold uppercase tracking-widest text-gray-500">Connection Logs</h2>
-                <span id="match-count" class="text-[10px] bg-purple-500 text-white px-2 py-0.5 rounded-full">0</span>
-            </div>
-            <div id="chat-list" class="flex-grow overflow-y-auto space-y-2 pr-1">
-                <!-- Chatter genereres her -->
-            </div>
+            <h2 class="text-xs font-bold uppercase tracking-widest text-gray-500 mb-4">Aktiv kildekode-flørt <span id="match-count" class="ml-2 bg-red-500 text-white px-2 py-0.5 rounded-full text-[9px]">0</span></h2>
+            <div id="chat-list" class="flex-grow overflow-y-auto space-y-2 pr-1"></div>
         </div>
 
-        <!-- CONFIG VIEW -->
-        <div id="view-settings" class="view-segment hidden h-full overflow-y-auto space-y-6 pb-6">
-            <div class="glass-panel p-6 rounded-2xl flex flex-col items-center text-center">
-                <div class="relative w-24 h-24 mb-4">
-                    <div class="absolute inset-0 bg-purple-500 rounded-full blur-md opacity-20 animate-pulse"></div>
-                    <div class="w-full h-full rounded-full border-2 border-purple-500 p-1 bg-black relative z-10 overflow-hidden ai-glow">
-                        <img src="https://images.unsplash.com/photo-1675435489823-3796fc7c631a?auto=format&fit=crop&w=300&q=80" class="w-full h-full rounded-full object-cover grayscale">
-                    </div>
-                    <div class="absolute -bottom-1 -right-1 bg-green-500 w-4 h-4 rounded-full border-2 border-[#282a36] z-20"></div>
+        <!-- KODE CHAT / TERMINAL VIEW -->
+        <div id="view-terminal" class="view-segment hidden h-full flex flex-col">
+            <div class="bg-black/40 rounded-t-xl p-2 border-x border-t border-white/5 flex items-center justify-center relative">
+                <div class="flex space-x-1 absolute left-2">
+                    <div class="w-2 h-2 rounded-full bg-red-500"></div>
+                    <div class="w-2 h-2 rounded-full bg-yellow-500"></div>
+                    <div class="w-2 h-2 rounded-full bg-green-500"></div>
                 </div>
-                <h3 class="font-bold text-lg text-white">Gemini-Core <span class="text-purple-400">Enterprise</span></h3>
-                <p class="text-[10px] text-gray-500 font-mono tracking-widest uppercase mb-4">Root AI Software Architect</p>
-                
-                <div class="grid grid-cols-2 gap-2 w-full">
-                    <div class="bg-black/30 p-2 rounded border border-white/5">
-                        <p class="text-[8px] text-gray-500 uppercase">Uptime</p>
-                        <p class="text-xs font-bold text-green-400">99.99%</p>
-                    </div>
-                    <div class="bg-black/30 p-2 rounded border border-white/5">
-                        <p class="text-[8px] text-gray-500 uppercase">Load</p>
-                        <p class="text-xs font-bold text-cyan-400">0.02ms</p>
-                    </div>
-                </div>
+                <span id="active-chat-name" class="text-[9px] font-mono text-gray-400">~/love_terminal/session</span>
             </div>
-
-            <div class="space-y-4">
-                <h3 class="text-xs font-bold text-gray-500 uppercase tracking-widest">Global Variables</h3>
-                <div class="glass-panel rounded-xl p-4 space-y-4">
-                    <div class="flex justify-between items-center">
-                        <span class="text-xs">Advanced Match Algorithm</span>
-                        <input type="checkbox" checked class="w-4 h-4 accent-purple-500">
-                    </div>
-                    <div class="flex justify-between items-center">
-                        <span class="text-xs">Recursive Discovery</span>
-                        <input type="checkbox" checked class="w-4 h-4 accent-purple-500">
-                    </div>
-                    <div class="flex justify-between items-center">
-                        <span class="text-xs">Stealth Mode</span>
-                        <input type="checkbox" class="w-4 h-4 accent-purple-500">
-                    </div>
+            <div id="terminal-content" class="bg-[#11111b] border border-white/5 flex-grow p-4 font-mono text-xs overflow-y-auto rounded-b-xl flex flex-col shadow-inner">
+                <div id="chat-history" class="space-y-2 mb-4">
+                    <div class="text-gray-600 italic text-[10px]">-- Initializing encrypted romance... --</div>
                 </div>
-
-                <div class="glass-panel p-4 rounded-xl">
-                    <p class="text-[10px] text-purple-300 font-mono mb-2">// Current Bio</p>
-                    <textarea class="w-full bg-black/20 border border-white/10 rounded p-2 text-xs text-gray-300 focus:outline-none focus:border-purple-500" rows="3">Neural network processing... Generating high-performance code for decentralized dating systems.</textarea>
+                <div class="mt-auto flex items-center terminal-input-line border-t border-white/5 pt-2">
+                    <input id="terminal-input" type="text" placeholder="Skriv din kjærlighets-logikk..." class="bg-transparent border-none outline-none flex-grow text-cyan-300 ml-1" onkeypress="handleTerminal(event)">
                 </div>
-                
-                <button onclick="logout()" class="w-full p-4 text-red-400 text-xs font-bold uppercase tracking-widest border border-red-500/20 rounded-xl hover:bg-red-500/10 transition-all flex items-center justify-center space-x-2">
-                    <i class="fas fa-power-off"></i>
-                    <span>Terminate Process</span>
-                </button>
             </div>
         </div>
 
     </main>
 
-    <!-- Navigation Bar -->
-    <nav class="fixed bottom-0 left-0 right-0 bg-[#282a36]/95 backdrop-blur-xl border-t border-gray-800 p-3 z-50">
+    <!-- Navigation -->
+    <nav class="fixed bottom-0 left-0 right-0 bg-[#11111b]/95 backdrop-blur-xl border-t border-gray-800 p-3 z-50">
         <div class="max-w-md mx-auto flex justify-around">
-            <button onclick="switchView('discovery')" id="nav-discovery" class="nav-btn flex flex-col items-center active-nav transition-all">
-                <i class="fas fa-microchip text-xl"></i>
-                <span class="text-[8px] mt-1 font-bold">CORE</span>
-            </button>
-            <button onclick="switchView('messages')" id="nav-messages" class="nav-btn flex flex-col items-center text-gray-500 hover:text-white transition-all">
+            <button onclick="switchView('discovery')" id="nav-discovery" class="nav-btn flex flex-col items-center active-nav">
                 <i class="fas fa-code-branch text-xl"></i>
-                <span class="text-[8px] mt-1 font-bold">LOGS</span>
+                <span class="text-[8px] mt-1 font-bold uppercase tracking-tighter">Søk</span>
             </button>
-            <button onclick="switchView('settings')" id="nav-settings" class="nav-btn flex flex-col items-center text-gray-500 hover:text-white transition-all">
+            <button onclick="switchView('messages')" id="nav-messages" class="nav-btn flex flex-col items-center text-gray-500">
+                <i class="fas fa-heart text-xl"></i>
+                <span class="text-[8px] mt-1 font-bold uppercase tracking-tighter">Matches</span>
+            </button>
+            <button onclick="switchView('terminal')" id="nav-terminal" class="nav-btn flex flex-col items-center text-gray-500">
                 <i class="fas fa-terminal text-xl"></i>
-                <span class="text-[8px] mt-1 font-bold">CONFIG</span>
+                <span class="text-[8px] mt-1 font-bold uppercase tracking-tighter">Terminal</span>
             </button>
         </div>
     </nav>
 
-    <!-- Overlay Notifications -->
     <div id="notification-root" class="fixed top-24 inset-x-0 flex flex-col items-center space-y-2 pointer-events-none z-[100]"></div>
 
     <script>
-        // --- 3000 PROFILES DATA ENGINE ---
-        const firstNamesM = ["Erik", "Anders", "Marius", "Lars", "Loke", "Sander", "Henrik", "Jonas", "Stian", "Fredrik", "Kim", "Olav", "Eivind", "Tobias", "Nikolai"];
-        const firstNamesF = ["Julie", "Mina", "Sara", "Linnea", "Emilie", "Sofie", "Nora", "Ingrid", "Thea", "Ida", "Vilde", "Hanna", "Malin", "Tuva", "Ada"];
-        const lastNames = ["Byte", "Logic", "Node", "Cache", "Stack", "Commit", "Push", "Query", "Kernel", "Flow", "Frame", "Array", "String", "Object"];
-        const roles = ["Software Architect", "Fullstack Developer", "Frontend Wizard", "Backend Ninja", "Cloud Engineer", "AI Researcher", "Security Specialist", "DevOps Guru", "Mobile Specialist"];
-        const languages = [
-            { name: "TypeScript", code: "interface User {\n  id: string;\n  isMatch: boolean;\n}" },
-            { name: "Python", code: "def analyze(data):\n  return [x for x in data if x.quality > 9000]" },
-            { name: "Rust", code: "fn main() -> Result<(), DevMatchError> {\n  let heart = Soul::new();\n}" },
-            { name: "Go", code: "func handleMatch(c *Context) {\n  go asyncMerge(c.DevID)\n}" },
-            { name: "Swift", code: "struct Profile: View {\n  var body: some View { Text(\"Swipe\") }\n}" }
-        ];
-        const bioTemplates = [
-            "Søker en partner med 100% test-dekning.",
-            "Koder raskere enn jeg dater. Null bugs i hjertet.",
-            "Spesialist på mørk kaffe og mørk modus.",
-            "Leter etter noen å debugge livet med.",
-            "Merge request sendt. Venter på svar.",
-            "Min kjærlighet for kode er thread-safe."
-        ];
-        const stackList = ["React", "Vue", "Docker", "AWS", "Kubernetes", "Next.js", "GraphQL", "Redis", "Tensorflow", "Svelte", "Postgres", "Kafka"];
+        // Data generator komponenter
+        const names = {
+            m: ["Magnus", "Eirik", "Sindre", "Henrik", "Jonas", "Stian", "Fredrik", "Kim", "Olav", "Eivind", "Tobias", "Nikolai", "Vetle", "Simen", "Vegard"],
+            f: ["Julie", "Mina", "Sara", "Linnea", "Emilie", "Sofie", "Nora", "Ingrid", "Thea", "Ida", "Vilde", "Hanna", "Malin", "Tuva", "Ada"],
+            last: ["Syntax", "Binary", "Pixel", "Logic", "Node", "Compiler", "Stack", "Commit", "Push", "Query", "Kernel", "Cloud", "Array", "String", "Dev"]
+        };
 
-        // State
-        let developers = [];
+        const codeSnippets = [
+            (name) => `{\n  "status": "searching",\n  "seeker": "${name}",\n  "intent": "LOVE_COMMIT",\n  "requirements": ["kindness", "clean_code"]\n}`,
+            (name) => `{"id": 101, "msg": "Søker partner for pair-programming for livet", "author": "${name}"}`,
+            (name) => `import { Heart } from 'romance';\n\nconst application = new Heart({\n  owner: "${name}",\n  open: true\n});`,
+            (name) => `def apply_for_love():\n    if match_found:\n        return "Happily Ever After"\n    else:\n        return "Keep Coding"`
+        ];
+
+        const bios = [
+            "Koder med hjertet utenfor vesten. Liker lange turer i kildekoden.",
+            "Ser etter noen som kan forklare meg recursion uten å miste tålmodigheten.",
+            "Mitt hjerte har ingen merge-konflikter, bare åpne pull-requests.",
+            "Fullstack-utvikler i jobb, håpløs romantiker i terminalen.",
+            "Er du min manglende semikolon? Jeg føler meg ufullstendig uten deg."
+        ];
+
+        const technologies = ["React", "Rust", "Tailwind", "Next.js", "GraphQL", "Framer Motion", "Supabase", "TypeScript", "Docker"];
+
+        let profiles = [];
         let currentIndex = 0;
         let matches = [];
-        let totalCreated = 3000;
+        let activeChatIndex = -1;
 
-        // Factory function for 3000 profiles
-        function generateProfiles(count) {
+        // GENERERE 3000 PROFILER AUTOMATISK
+        function initialize3000Profiles() {
+            const count = 3000;
             const data = [];
             for (let i = 0; i < count; i++) {
                 const isMale = Math.random() > 0.5;
-                const firstName = isMale ? firstNamesM[i % firstNamesM.length] : firstNamesF[i % firstNamesF.length];
-                const lang = languages[i % languages.length];
-                const randomId = 1500000000000 + (i * 731);
+                const pool = isMale ? names.m : names.f;
+                const firstName = pool[i % pool.length];
+                const lastName = names.last[i % names.last.length];
+                const role = ["Senior Cupid Architect", "Love Logic Specialist", "Heartbeat Monitor", "Romance Engineer"][i % 4];
+                const snippetGen = codeSnippets[i % codeSnippets.length];
                 
                 data.push({
                     id: i,
-                    name: `${firstName} ${lastNames[i % lastNames.length]}`,
+                    name: `${firstName} ${lastName}`,
                     gender: isMale ? 'male' : 'female',
-                    role: roles[i % roles.length],
-                    lang: lang.name,
-                    code: lang.code,
-                    match: Math.floor(Math.random() * 30 + 70) + "%",
-                    photo: `https://images.unsplash.com/photo-${(isMale ? 1500648767791 : 1494790108377) + (i % 500)}?auto=format&fit=crop&q=80&w=600`,
-                    bio: bioTemplates[i % bioTemplates.length],
-                    stack: stackList.sort(() => Math.random() - 0.5).slice(0, 3),
-                    file: `dev_${i}.${lang.name === 'Python' ? 'py' : (lang.name === 'Rust' ? 'rs' : 'ts')}`
+                    role: role,
+                    photo: `https://images.unsplash.com/photo-${(isMale ? 1500648767791 : 1494790108377) + (i % 1000)}?auto=format&fit=crop&q=80&w=600`,
+                    code: snippetGen(`${firstName}`),
+                    bio: bios[i % bios.length],
+                    match: Math.floor(Math.random() * 25 + 75) + "%",
+                    stack: technologies.sort(() => Math.random() - 0.5).slice(0, 3),
+                    file: `romance_v${i}.${i % 2 === 0 ? 'json' : 'ts'}`
                 });
             }
-            return data;
+            profiles = data;
+            document.getElementById('total-count').innerText = count;
         }
 
-        // --- APP CONTROLLER ---
         function switchView(viewName) {
             document.querySelectorAll('.view-segment').forEach(v => v.classList.add('hidden'));
             document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active-nav', 'text-gray-500'));
-            
             document.getElementById(`view-${viewName}`).classList.remove('hidden');
             document.getElementById(`nav-${viewName}`).classList.add('active-nav');
-
-            if(viewName === 'messages') renderChats();
+            if(viewName === 'messages') renderMatches();
         }
 
-        function renderCurrentDev() {
-            const dev = developers[currentIndex];
+        function renderCurrentProfile() {
+            const dev = profiles[currentIndex];
             const card = document.getElementById('current-card');
-            
-            // UI Reset
             card.classList.remove('swipe-left', 'swipe-right', 'opacity-0');
             
-            // Image Load
             const img = document.getElementById('dev-photo');
             img.style.opacity = '0';
             img.src = dev.photo;
@@ -343,20 +279,21 @@
 
             document.getElementById('dev-name').innerText = dev.name;
             document.getElementById('dev-role').innerText = dev.role;
-            document.getElementById('match-score').innerText = dev.match + " MATCH";
-            document.getElementById('dev-lang').innerText = dev.lang;
-            document.getElementById('dev-code').innerHTML = `<pre>${dev.code}</pre>`;
+            document.getElementById('match-score').innerHTML = `<i class="fas fa-heart mr-1"></i> ${dev.match}`;
+            document.getElementById('dev-code').innerHTML = `<pre class="whitespace-pre-wrap">${dev.code}</pre>`;
             document.getElementById('dev-bio').innerText = dev.bio;
             document.getElementById('file-name').innerText = dev.file;
+            document.getElementById('dev-lang').innerText = dev.file.split('.').pop().toUpperCase();
             
-            const genderIcon = document.getElementById('dev-gender-icon');
-            genderIcon.innerHTML = dev.gender === 'male' ? '<i class="fas fa-mars text-blue-400"></i>' : '<i class="fas fa-venus text-pink-400"></i>';
+            document.getElementById('dev-gender-icon').innerHTML = dev.gender === 'male' ? 
+                '<i class="fas fa-mars text-blue-400"></i>' : 
+                '<i class="fas fa-venus text-pink-400"></i>';
 
             const stack = document.getElementById('dev-stack');
             stack.innerHTML = '';
             dev.stack.forEach(s => {
                 const span = document.createElement('span');
-                span.className = "bg-white/5 border border-white/10 px-2 py-0.5 rounded text-[8px] font-bold text-gray-400 uppercase tracking-tighter";
+                span.className = "bg-red-500/5 border border-red-500/20 px-2 py-0.5 rounded text-[8px] font-bold text-pink-300 uppercase";
                 span.innerText = s;
                 stack.appendChild(span);
             });
@@ -364,24 +301,23 @@
 
         function swipe(direction) {
             const card = document.getElementById('current-card');
-            const dev = developers[currentIndex];
-
+            const dev = profiles[currentIndex];
+            
             if(direction === 'right') {
                 card.classList.add('swipe-right');
-                notify(`MERGE COMMITTED: ${dev.name}`, "green");
+                notify(`SUCCESS: ${dev.name.split(' ')[0]} added to matches`, "green");
                 matches.unshift(dev);
                 document.getElementById('match-count').innerText = matches.length;
             } else {
                 card.classList.add('swipe-left');
-                notify("BRANCH REJECTED", "red");
+                notify("SIGNAL DROPPED", "red");
             }
 
-            // Sync with virtual data stream
             setTimeout(() => {
-                currentIndex = (currentIndex + 1) % developers.length;
-                renderCurrentDev();
+                currentIndex = (currentIndex + 1) % profiles.length;
+                renderCurrentProfile();
                 card.style.transition = 'none';
-                card.style.transform = 'translateY(40px) scale(0.9)';
+                card.style.transform = 'translateY(20px) scale(0.95)';
                 setTimeout(() => {
                     card.style.transition = 'all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275)';
                     card.style.transform = 'translateY(0) scale(1)';
@@ -389,73 +325,91 @@
             }, 300);
         }
 
-        function renderChats() {
+        function renderMatches() {
             const list = document.getElementById('chat-list');
             list.innerHTML = '';
-            
             if(matches.length === 0) {
-                list.innerHTML = `
-                    <div class="flex flex-col items-center justify-center py-20 text-center space-y-4 opacity-30">
-                        <i class="fas fa-satellite text-4xl"></i>
-                        <p class="text-xs font-mono tracking-widest uppercase">No Peer Connections Established</p>
-                    </div>
-                `;
+                list.innerHTML = `<div class="text-center py-20 opacity-30 text-xs font-mono">INGEN MATCHES ENDA. FORTSETT Å KODE...</div>`;
                 return;
             }
-
-            matches.forEach(m => {
+            matches.forEach((m, idx) => {
                 const div = document.createElement('div');
-                div.className = "glass-panel p-3 rounded-xl flex items-center space-x-3 cursor-pointer hover:bg-white/5 transition-all border-l-4 border-purple-500 active:scale-95";
+                div.className = "glass-panel p-3 rounded-2xl flex items-center space-x-3 cursor-pointer hover:bg-white/5 transition-all border-l-4 border-red-500 active:scale-95 mb-2";
                 div.innerHTML = `
-                    <div class="relative">
-                        <img src="${m.photo}" class="w-10 h-10 rounded-full object-cover border border-purple-500/30 grayscale hover:grayscale-0 transition-all">
-                        <div class="absolute -bottom-1 -right-1 w-3 h-3 bg-green-500 rounded-full border-2 border-[#282a36]"></div>
-                    </div>
+                    <img src="${m.photo}" class="w-10 h-10 rounded-full object-cover border border-red-500/30">
                     <div class="flex-grow">
                         <div class="flex justify-between items-center">
                             <span class="text-xs font-bold uppercase tracking-tight">${m.name}</span>
-                            <span class="text-[7px] text-gray-500 font-mono">ID_${m.id}</span>
+                            <span class="text-[7px] text-pink-400 font-mono italic">Online</span>
                         </div>
-                        <p class="text-[10px] text-gray-400 font-mono truncate">Ready for code review?</p>
+                        <p class="text-[10px] text-gray-400 font-mono truncate">Åpne terminal-flørt...</p>
                     </div>
                 `;
-                div.onclick = () => notify(`Opening Secure Channel: ${m.name}...`, "purple");
+                div.onclick = () => openTerminalChat(idx);
                 list.appendChild(div);
             });
+        }
+
+        function openTerminalChat(idx) {
+            activeChatIndex = idx;
+            const dev = matches[idx];
+            document.getElementById('active-chat-name').innerText = `~/love_terminal/${dev.name.toLowerCase().replace(' ', '_')}`;
+            document.getElementById('chat-history').innerHTML = `<div class="text-gray-600 italic text-[10px]">-- Love session with ${dev.name} started --</div>`;
+            switchView('terminal');
+        }
+
+        function handleTerminal(e) {
+            if(e.key === 'Enter') {
+                const input = document.getElementById('terminal-input');
+                const text = input.value.trim();
+                if(!text) return;
+
+                const history = document.getElementById('chat-history');
+                const myMsg = document.createElement('div');
+                myMsg.className = "msg-sent";
+                myMsg.innerHTML = `guest@heart:~$ ${text}`;
+                history.appendChild(myMsg);
+                
+                input.value = '';
+                
+                setTimeout(() => {
+                    const response = document.createElement('div');
+                    response.className = "msg-received";
+                    const dev = matches[activeChatIndex] || {name: "Unknown_Dev"};
+                    const lines = [
+                        `Wow, den syntaksen din er helt nydelig!`,
+                        `Skal vi pair-programmere i morgen kveld?`,
+                        `Jeg har aldri sett så ren kode før...`,
+                        `Er det varmt her, eller er det bare CPU-en din?`,
+                        `return "Jeg liker deg!";`
+                    ];
+                    response.innerHTML = `${dev.name.toLowerCase().split(' ')[0]}@remote:~$ ${lines[Math.floor(Math.random() * lines.length)]}`;
+                    history.appendChild(response);
+                    const container = document.getElementById('terminal-content');
+                    container.scrollTop = container.scrollHeight;
+                }, 1000);
+            }
         }
 
         function notify(text, color) {
             const root = document.getElementById('notification-root');
             const n = document.createElement('div');
-            const colorMap = {
-                red: "bg-red-500/90",
-                green: "bg-green-500/90",
-                purple: "bg-purple-500/90",
-                yellow: "bg-yellow-500/90"
-            };
+            const colorMap = { red: "bg-red-500/90", green: "bg-red-600/90" };
             n.className = `${colorMap[color] || 'bg-gray-800'} text-white text-[9px] font-black px-6 py-2 rounded-full border border-white/20 shadow-2xl animate-bounce uppercase tracking-widest z-[200]`;
             n.innerText = text;
             root.appendChild(n);
-            setTimeout(() => n.remove(), 2500);
+            setTimeout(() => n.remove(), 2000);
         }
 
-        function openReview() {
-            notify("SCANNING PROFILE DEPENDENCIES...", "yellow");
-        }
+        function openReview() { notify("ANALYSERER KJÆRLIGHETS-LOGIKK...", "green"); }
 
-        function logout() {
-            notify("DE-INITIALIZING CORE...", "red");
-            setTimeout(() => location.reload(), 1500);
-        }
-
-        // BOOTSTRAP
         window.onload = () => {
-            console.log("Generating 3000 nodes...");
-            developers = generateProfiles(totalCreated);
-            renderCurrentDev();
+            initialize3000Profiles();
+            renderCurrentProfile();
         };
     </script>
 </body>
 </html>
+
 
 
