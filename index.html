@@ -3,15 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Mobile slot Machine</title>
+    <title>Culture.Support</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         :root {
             --machine-dark: #020617;
-            --glass: rgba(255, 255, 255, 0.03);
-            --glass-border: rgba(255, 255, 255, 0.1);
             --mega-gold: #fbbf24;
             --icon-size: 100px;
+            --bullish: #10b981;
+            --bearish: #ef4444;
+            --bank-blue: #3b82f6;
         }
 
         body {
@@ -26,29 +27,19 @@
             padding: 0;
         }
 
-        /* High-Speed Shaking */
-        @keyframes shake {
-            0% { transform: translate(0, 0); }
-            25% { transform: translate(-5px, 5px); }
-            50% { transform: translate(5px, -5px); }
-            75% { transform: translate(-5px, -5px); }
-            100% { transform: translate(5px, 5px); }
-        }
-        .shaking { animation: shake 0.1s linear infinite; }
-
         .top-banner {
             background: #020617;
             height: 28px;
             display: flex;
             align-items: center;
             overflow: hidden;
-            border-bottom: 1px solid var(--glass-border);
+            border-bottom: 1px solid rgba(255,255,255,0.1);
             flex-shrink: 0;
         }
 
         .marquee {
             white-space: nowrap;
-            animation: marquee 10s linear infinite;
+            animation: marquee 15s linear infinite;
             color: #fbbf24;
             font-weight: 900;
             font-size: 0.7rem;
@@ -67,6 +58,58 @@
             position: relative;
         }
 
+        /* Panels Shared Styles */
+        .side-panel {
+            position: absolute;
+            width: 280px;
+            background: #020617;
+            border-radius: 20px;
+            padding: 12px;
+            z-index: 150;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.9);
+            transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            pointer-events: none;
+            top: 20px;
+        }
+
+        .side-panel.visible {
+            transform: translateX(0) !important;
+            pointer-events: auto;
+        }
+
+        .aid-panel { left: 20px; border: 2px solid #10b981; transform: translateX(-130%); }
+        .bank-panel { right: 20px; border: 2px solid var(--bank-blue); transform: translateX(130%); }
+
+        .barometer-container {
+            position: relative;
+            width: 100%;
+            height: 100px;
+            background: #000;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            border: 1px solid #1e293b;
+            overflow: hidden;
+        }
+
+        .barometer-canvas { width: 100%; height: 100%; }
+
+        /* Signal Markers */
+        .signal-tag {
+            position: absolute;
+            font-size: 0.5rem;
+            font-weight: 900;
+            padding: 1px 4px;
+            border-radius: 3px;
+            text-transform: uppercase;
+            animation: pulse-signal 1s infinite;
+            z-index: 10;
+        }
+
+        @keyframes pulse-signal {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.7; transform: scale(1.1); }
+        }
+
         .slot-perspective {
             perspective: 1200px;
             flex: 1;
@@ -74,12 +117,6 @@
             align-items: center;
             justify-content: center;
             padding: 10px;
-            position: relative;
-        }
-
-        .machine-wrapper {
-            position: relative;
-            transform: rotateX(2deg);
         }
 
         .machine-body {
@@ -95,9 +132,7 @@
             align-items: center;
             padding: 10px;
             gap: 8px;
-            z-index: 2;
             box-shadow: 0 0 40px rgba(0,0,0,0.8);
-            transition: filter 0.3s;
         }
 
         .reel-container {
@@ -127,95 +162,25 @@
             font-size: 2.8rem;
         }
 
-        .spinning .slot-icon {
-            filter: blur(8px);
-            opacity: 0.7;
+        input[type=range] {
+            -webkit-appearance: none;
+            width: 100%;
+            background: #1e293b;
+            height: 6px;
+            border-radius: 5px;
         }
 
-        /* Mobile Bank GUI Overlay */
-        .mobile-bank-overlay {
-            position: absolute;
-            right: 20px;
-            top: 20px;
-            width: 240px;
-            background: #020617;
-            border: 2px solid #3b82f6;
-            border-radius: 20px;
-            padding: 15px;
-            z-index: 150;
-            box-shadow: 0 20px 50px rgba(0,0,0,0.9), 0 0 30px rgba(59, 130, 246, 0.2);
-            transform: translateX(130%);
-            transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            pointer-events: none;
-        }
-
-        .mobile-bank-overlay.visible {
-            transform: translateX(0);
-            pointer-events: auto;
-        }
-
-        /* Aid Fund Panel */
-        .aid-panel {
-            position: absolute;
-            left: 20px;
-            top: 20px;
-            width: 220px;
-            background: #020617;
-            border: 2px solid #10b981;
-            border-radius: 20px;
-            padding: 12px;
-            z-index: 150;
-            box-shadow: 0 20px 50px rgba(0,0,0,0.9);
-            transform: translateX(-130%);
-            transition: transform 0.4s ease;
-            pointer-events: none;
-        }
-
-        .aid-panel.visible {
-            transform: translateX(0);
-            pointer-events: auto;
-        }
-
-        /* Mobile Bank Trigger Button */
-        .bank-icon-btn {
-            position: fixed;
-            right: 20px;
-            bottom: 110px;
-            width: 80px;
-            height: 80px;
-            background: linear-gradient(135deg, #1d4ed8, #1e40af);
-            border-radius: 20px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            box-shadow: 0 8px 20px rgba(29, 78, 216, 0.4);
-            z-index: 160;
-            transition: all 0.3s ease;
-            border: 2px solid rgba(255,255,255,0.2);
-            padding: 8px;
-        }
-
-        .bank-icon-btn:hover { transform: translateY(-5px); background: linear-gradient(135deg, #2563eb, #1d4ed8); }
-
-        .bank-label {
-            font-size: 0.6rem; font-weight: 800; text-transform: uppercase; margin-top: 6px;
-            color: #ffffff; letter-spacing: 0.02em; text-align: center; line-height: 1; white-space: nowrap;
-        }
-
-        .bank-balance-row { display: flex; justify-content: space-between; font-size: 0.75rem; margin-bottom: 12px; color: #94a3b8; }
-
-        .bank-btn {
-            width: 100%; padding: 12px; border-radius: 10px; font-size: 0.75rem; font-weight: 800;
-            margin-top: 8px; text-transform: uppercase; transition: all 0.2s; border: 1px solid transparent;
+        input[type=range]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            height: 16px; width: 16px; border-radius: 50%;
+            background: #10b981; cursor: pointer; border: 2px solid white;
         }
 
         .game-footer {
             background: #020617;
             padding: 12px 15px env(safe-area-inset-bottom);
             display: grid;
-            grid-template-columns: 1fr auto 1fr;
+            grid-template-columns: 1.2fr auto 1.2fr;
             align-items: center;
             border-top: 1px solid #1e293b;
             z-index: 40;
@@ -231,333 +196,335 @@
 
         .win-overlay {
             position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
-            background: rgba(0,0,0,0.95); padding: 25px; border: 2px solid var(--mega-gold);
-            text-align: center; display: none; z-index: 100; border-radius: 15px;
-        }
-
-        .timer-badge { font-size: 0.5rem; color: #3b82f6; margin-top: 10px; text-align: center; font-weight: bold; }
-
-        @media (max-width: 640px) {
-            :root { --icon-size: 80px; }
-            .mobile-bank-overlay, .aid-panel { width: 190px; }
-            .bank-icon-btn { right: 10px; bottom: 130px; width: 65px; height: 65px; }
+            background: rgba(0,0,0,0.95); padding: 20px; border: 2px solid var(--mega-gold);
+            text-align: center; display: none; z-index: 100; border-radius: 15px; width: 220px;
         }
     </style>
 </head>
 <body>
 
     <header class="top-banner">
-        <div class="marquee">
-            🌍 HELP AFRICA HUNGRY • GIVE 2% TO CAMEROON AID • MOBILE BANK SECURE • Aid 2% of Campaign Gaming Balance • 
+        <div class="marquee" id="marqueeText">
+            🌍 AUTO-AID: 2% COMMISSION • MOBILE BANK: $2,000,000 SAVINGS ACTIVE • Send Also Mobile Fund to Aid Before Start Play Slot Machine • Controll from Mobile and Aid Panel
         </div>
     </header>
 
-    <div class="main-layout" id="dropTarget">
+    <div class="main-layout">
         <!-- Aid Panel -->
-        <div class="aid-panel" id="aidGui">
+        <div class="side-panel aid-panel" id="aidGui">
             <div class="flex items-center justify-between mb-2">
-                <span class="text-[0.6rem] font-black text-emerald-400">AID FUND PANEL</span>
+                <div class="flex flex-col">
+                    <span class="text-[0.6rem] font-black text-emerald-400">AID BAROMETER</span>
+                    <span class="text-[0.4rem] text-slate-500 uppercase tracking-widest">Global Performance</span>
+                </div>
                 <button onclick="toggleAid(false)" class="text-slate-500">✕</button>
             </div>
-            <div class="text-[0.55rem] text-slate-400 mb-3 leading-tight italic">Giving back 2% of your chips to support those in need.</div>
             
-            <div class="space-y-2">
-                <div class="bg-black/40 p-2 rounded-lg border border-slate-800">
-                    <div class="flex justify-between text-[0.6rem] mb-1">
-                        <span id="aidTargetLabel">AID CAMEROON</span>
-                        <span class="text-emerald-400" id="aidDonatedText">$0</span>
-                    </div>
-                    <div class="w-full bg-slate-900 h-1.5 rounded-full overflow-hidden">
-                        <div id="aidProgress" class="bg-emerald-500 h-full" style="width: 0%"></div>
-                    </div>
-                </div>
-
-                <div class="grid grid-cols-2 gap-2 mt-2">
-                    <button onclick="switchAid('Cameroon')" class="text-[0.5rem] bg-slate-800 p-2 rounded border border-slate-700 font-bold hover:bg-slate-700">CAMEROON</button>
-                    <button onclick="switchAid('Africa')" class="text-[0.5rem] bg-slate-800 p-2 rounded border border-slate-700 font-bold hover:bg-slate-700">AFRICA</button>
-                </div>
-
-                <button onclick="donateToAid()" class="w-full bg-emerald-600 py-2 rounded-lg text-[0.6rem] font-black shadow-lg shadow-emerald-900/20 active:scale-95 transition-transform mt-1">
-                    GIVE 2% BALANCE
-                </button>
+            <div class="barometer-container">
+                <canvas id="barometerCanvas" class="barometer-canvas"></canvas>
+                <div id="signalOverlay"></div>
             </div>
+
+            <div class="bg-black/40 p-2 rounded-lg border border-slate-800 mb-3">
+                <div class="flex justify-between text-[0.65rem] mb-1">
+                    <span id="aidTargetLabel" class="font-bold text-white italic">PALESTINE</span>
+                    <span class="text-emerald-400 font-black" id="aidDonatedText">$0</span>
+                </div>
+                <div class="text-[0.45rem] text-slate-400">Total Funds Distributed Globally</div>
+            </div>
+
+            <div class="px-1 mb-4">
+                <div class="flex justify-between text-[0.55rem] font-bold text-slate-400 mb-1">
+                    <span>AID COMMISSION (2% - 20%)</span>
+                    <span class="text-emerald-400 bg-emerald-950 px-1 rounded" id="aidPercLabel">2%</span>
+                </div>
+                <input type="range" id="aidSlider" min="2" max="20" value="2" oninput="updateAidPerc(this.value)">
+            </div>
+
+            <div class="grid grid-cols-4 gap-1 mb-3">
+                <button onclick="switchAid('Palestine')" class="text-[0.4rem] bg-slate-900 border border-slate-800 p-1 rounded hover:bg-slate-800">PALESTINE</button>
+                <button onclick="switchAid('Syria')" class="text-[0.4rem] bg-slate-900 border border-slate-800 p-1 rounded hover:bg-slate-800">SYRIA</button>
+                <button onclick="switchAid('Africa')" class="text-[0.4rem] bg-slate-900 border border-slate-800 p-1 rounded hover:bg-slate-800">AFRICA</button>
+                <button onclick="switchAid('Slovenia')" class="text-[0.4rem] bg-slate-900 border border-slate-800 p-1 rounded hover:bg-slate-800">SLOVENIA</button>
+            </div>
+
+            <button onclick="manualAidSync()" class="w-full bg-emerald-600 py-2 rounded-lg text-[0.6rem] font-black shadow-lg">MANUAL 2% BAROMETER SYNC</button>
         </div>
 
-        <div class="slot-perspective" id="simArea">
-            <div class="machine-wrapper" id="shakeTarget">
-                <div class="machine-body" id="machine">
-                    <div class="reel-container"><div class="reel-strip" id="reel0"></div></div>
-                    <div class="reel-container"><div class="reel-strip" id="reel1"></div></div>
-                    <div class="reel-container"><div class="reel-strip" id="reel2"></div></div>
-                    
-                    <div id="winDisplay" class="win-overlay">
-                        <div class="text-[0.6rem] text-yellow-500 font-black" id="winTierText">PREMIER STATUS</div>
-                        <h2 class="text-3xl font-black text-white italic" id="winLabelText">JACKPOT</h2>
-                        <p id="winAmountText" class="text-2xl font-bold text-yellow-400">+$0</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Mobile Bank GUI -->
-        <div class="mobile-bank-overlay" id="bankGui">
-            <div class="flex items-center justify-between mb-4">
+        <!-- Mobile Bank Panel -->
+        <div class="side-panel bank-panel" id="bankGui">
+            <div class="flex items-center justify-between mb-3">
                 <div class="flex flex-col">
-                    <h3 class="text-xs font-black uppercase text-blue-400 tracking-tighter">Mobile Bank</h3>
-                    <span class="text-[0.5rem] text-slate-500">Secure Session</span>
+                    <span class="text-[0.6rem] font-black text-blue-400 uppercase">Mobile Bank Fund</span>
+                    <span class="text-[0.4rem] text-slate-500 uppercase tracking-widest">Savings Vault</span>
                 </div>
-                <button onclick="closeBankManually()" class="text-slate-500 hover:text-white">✕</button>
-            </div>
-            
-            <div class="bg-black/50 p-4 rounded-xl border border-slate-800 mb-4">
-                <div class="bank-balance-row">
-                    <span>SAVINGS</span>
-                    <span class="text-white font-black" id="savingsText">$5,000</span>
-                </div>
-                <div class="bank-balance-row !mb-0">
-                    <span>SLOT CHIPS</span>
-                    <span class="text-green-400 font-black" id="bankSlotBalanceText">$1,000</span>
-                </div>
+                <button onclick="toggleBank(false)" class="text-slate-500">✕</button>
             </div>
 
-            <button onclick="transferToSavings()" class="bank-btn bg-blue-600 text-white hover:bg-blue-500">Transfer All to Savings</button>
-            <button onclick="transferToSlots()" class="bank-btn bg-slate-800 text-slate-200 mt-2 border-slate-700">Withdraw $100</button>
-            
-            <div id="bankTimerDisplay" class="timer-badge">Session active</div>
+            <div class="bg-blue-950/30 border border-blue-500/20 p-3 rounded-xl mb-3">
+                <div class="text-[0.5rem] text-blue-400 font-bold mb-1 uppercase">Savings Balance</div>
+                <div class="text-xl font-black text-white" id="savingsBalanceText">$2,000,000</div>
+            </div>
+
+            <div class="bg-black/40 p-3 rounded-xl border border-slate-800 mb-4">
+                <div class="text-[0.5rem] text-slate-400 font-bold mb-1 uppercase">Slot Balance</div>
+                <div class="text-lg font-bold text-emerald-400" id="bankSlotBalanceText">$1,000</div>
+            </div>
+
+            <div class="space-y-2">
+                <button onclick="transferToSavings()" class="w-full bg-blue-600 py-2.5 rounded-lg text-[0.65rem] font-black shadow-lg hover:bg-blue-500">DEPOSIT ALL TO SAVINGS</button>
+                <button onclick="transferToSlot()" class="w-full bg-slate-800 py-2.5 rounded-lg text-[0.65rem] font-black border border-slate-700 hover:bg-slate-700">WITHDRAW $5,000</button>
+                <button onclick="bankToAid()" class="w-full bg-emerald-900/40 border border-emerald-500/30 py-2.5 rounded-lg text-[0.65rem] font-black text-emerald-400">TRANSFER TO TRADING AID</button>
+            </div>
+
+            <div class="mt-4 p-2 bg-slate-900/50 rounded-lg text-center">
+                <p class="text-[0.45rem] text-slate-500 italic">Transfer speed: Instant via Bank Wire</p>
+            </div>
         </div>
-    </div>
 
-    <!-- Mobile Icon Bank Trigger -->
-    <div class="bank-icon-btn" id="bankTrigger" onclick="toggleBankOnClick()">
-        <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="text-white"><rect width="14" height="20" x="5" y="2" rx="2" ry="2"/><path d="M12 18h.01"/></svg>
-        <span class="bank-label">Mobile Bank</span>
+        <div class="slot-perspective">
+            <div class="machine-body" id="machine">
+                <div class="reel-container"><div class="reel-strip" id="reel0"></div></div>
+                <div class="reel-container"><div class="reel-strip" id="reel1"></div></div>
+                <div class="reel-container"><div class="reel-strip" id="reel2"></div></div>
+                
+                <div id="winDisplay" class="win-overlay">
+                    <div class="text-[0.5rem] text-yellow-500 font-black">WIN TRIGGERED</div>
+                    <h2 class="text-2xl font-black text-white italic">+$0</h2>
+                    <p id="autoAidDeduction" class="text-[0.55rem] text-emerald-400 font-bold mt-2 bg-emerald-950/50 py-1 rounded border border-emerald-500/20"></p>
+                </div>
+            </div>
+        </div>
     </div>
 
     <footer class="game-footer">
-        <div class="flex flex-col gap-1 items-start">
-            <button onclick="toggleAid(true)" class="flex items-center gap-1.5 bg-emerald-900/30 border border-emerald-500/30 px-3 py-1.5 rounded-lg hover:bg-emerald-900/50 transition-colors">
-                <span class="text-lg">🌍</span>
-                <div class="text-left">
-                    <div class="text-[0.5rem] font-black text-emerald-400 leading-none">AID FUND</div>
-                    <div class="text-[0.4rem] text-slate-400 leading-none mt-1">GIVE 2%</div>
-                </div>
+        <div class="flex gap-2">
+            <button onclick="toggleAid(true)" class="flex flex-col items-center justify-center bg-emerald-900/30 border border-emerald-500/30 w-12 h-12 rounded-xl">
+                <span class="text-xs">📈</span>
+                <span class="text-[0.4rem] font-bold text-emerald-400">AID Fund Powerty Slum People</span>
             </button>
-            <span class="text-xl font-mono font-bold text-green-400" id="balanceText">$1,000</span>
+            <button onclick="toggleBank(true)" class="flex flex-col items-center justify-center bg-blue-900/30 border border-blue-500/30 w-12 h-12 rounded-xl">
+                <span class="text-xs"> Mobile Bank </span>
+                <span class="text-[0.4rem] font-bold text-blue-400">Mobile BANK</span>
+            </button>
         </div>
 
-        <button id="spinBtn" class="main-spin-btn">BET</button>
+        <div class="flex flex-col items-center">
+            <span class="text-xl font-mono font-bold text-green-400" id="balanceText">$1,000</span>
+            <button id="spinBtn" class="main-spin-btn mt-1">SPIN</button>
+        </div>
 
-        <div class="flex flex-col gap-1 items-end">
-            <span class="text-[0.6rem] text-slate-500 font-bold uppercase">Wager: <span class="text-white" id="betText">$10</span></span>
+        <div class="flex flex-col items-end">
+            <span class="text-[0.6rem] text-slate-500 font-bold uppercase mb-1">Bet: <span class="text-white" id="betText">$10</span></span>
             <div class="flex gap-1.5">
-                <button id="betDown" class="bg-slate-800 px-3 py-1.5 rounded-lg border border-slate-700 font-bold hover:bg-slate-700">-</button>
-                <button id="betUp" class="bg-slate-800 px-3 py-1.5 rounded-lg border border-slate-700 font-bold hover:bg-slate-700">+</button>
+                <button id="betDown" class="bg-slate-800 px-3 py-1.5 rounded-lg border border-slate-700 font-bold">-</button>
+                <button id="betUp" class="bg-slate-800 px-3 py-1.5 rounded-lg border border-slate-700 font-bold">+</button>
                 <button id="autoBtn" class="bg-slate-800 text-[0.6rem] px-3 py-1.5 rounded-lg border border-slate-700 uppercase font-black">Auto</button>
             </div>
         </div>
     </footer>
 
     <script>
-        const themes = [
-            { name: "Rome", icons: ["🛡️", "🏛️", "⚔️", "🦅"] },
-            { name: "Pharaoh", icons: ["🏺", "⚱️", "🔱", "🕌"] },
-            { name: "Fire", icons: ["🪵", "🔥", "🧨", "🌋"] },
-            { name: "Thunder", icons: ["🔋", "⚡", "🌩️", "📱"] }
-        ];
-
-        let balance = 1000, savings = 5000, currentBet = 10, isSpinning = false, isAutoSpinning = false, currentThemeIndex = 0;
-        let bankTimer = null, timeLeft = 0;
-        let totalDonated = 0, currentAidTarget = "Cameroon";
-        const STRIP_LENGTH = 60;
+        let balance = 1000, savings = 2000000, currentBet = 10, isSpinning = false, isAutoSpinning = false;
+        let aidCommission = 0.02, totalDonated = 0, currentAidTarget = "Palestine";
+        let candleHistory = [];
+        
+        const canvas = document.getElementById('barometerCanvas');
+        const ctx = canvas.getContext('2d');
+        const signalOverlay = document.getElementById('signalOverlay');
 
         function toggleAid(show) {
             document.getElementById('aidGui').classList.toggle('visible', show);
+            if(show) { toggleBank(false); drawBarometer(); }
+        }
+
+        function toggleBank(show) {
+            document.getElementById('bankGui').classList.toggle('visible', show);
+            if(show) toggleAid(false);
+        }
+
+        function updateAidPerc(val) {
+            aidCommission = val / 100;
+            document.getElementById('aidPercLabel').innerText = `${val}%`;
         }
 
         function switchAid(target) {
             currentAidTarget = target;
-            document.getElementById('aidTargetLabel').innerText = `AID ${target.toUpperCase()}`;
+            document.getElementById('aidTargetLabel').innerText = target.toUpperCase();
         }
 
-        function donateToAid() {
-            if (balance < 10) {
-                showTransferAnimation("NOT ENOUGH CHIPS", "bg-red-600");
-                return;
-            }
-            const donation = Math.floor(balance * 0.02);
-            balance -= donation;
-            totalDonated += donation;
-            
-            // Progress visual
-            const prog = Math.min((totalDonated / 1000) * 100, 100);
-            document.getElementById('aidDonatedText').innerText = `$${totalDonated}`;
-            document.getElementById('aidProgress').style.width = `${prog}%`;
-            
-            showTransferAnimation(`$${donation} DONATED TO ${currentAidTarget.toUpperCase()}`, "bg-emerald-600");
-            updateUI();
-        }
-
-        function toggleBankOnClick() {
-            const gui = document.getElementById('bankGui');
-            if (!gui.classList.contains('visible')) {
-                gui.classList.add('visible');
-                resetBankTimer();
-            }
-            updateUI();
-        }
-
-        function closeBankManually() {
-            document.getElementById('bankGui').classList.remove('visible');
-            if (bankTimer) clearInterval(bankTimer);
-        }
-
-        function resetBankTimer() {
-            if (bankTimer) clearInterval(bankTimer);
-            timeLeft = 20;
-            updateTimerDisplay();
-            bankTimer = setInterval(() => {
-                timeLeft--;
-                updateTimerDisplay();
-                if (timeLeft <= 0) {
-                    clearInterval(bankTimer);
-                    document.getElementById('bankGui').classList.remove('visible');
-                }
-            }, 1000);
-        }
-
-        function updateTimerDisplay() {
-            document.getElementById('bankTimerDisplay').innerText = `Window closing in ${timeLeft}s`;
-        }
-
+        // --- Bank Logic ---
         function transferToSavings() {
-            if (balance <= 0) return;
-            const amount = balance;
-            balance = 0;
-            savings += amount;
-            showTransferAnimation(`$${amount.toLocaleString()} DEPOSITED`, "bg-blue-600");
-            resetBankTimer();
-            updateUI();
+            savings += balance; balance = 0; updateUI();
+            showNotice("SAVINGS SECURED +$");
+        }
+        function transferToSlot() {
+            if(savings >= 5000) { savings -= 5000; balance += 5000; updateUI(); }
+        }
+        function bankToAid() {
+            const amount = Math.floor(savings * aidCommission);
+            if(amount > 0) {
+                savings -= amount;
+                totalDonated += amount;
+                addCandle(amount / 1000);
+                showNotice(`BANK AID: $${amount}`, "bg-emerald-600");
+                updateUI();
+            }
         }
 
-        function transferToSlots() {
-            if (savings < 100) return;
-            savings -= 100;
-            balance += 100;
-            showTransferAnimation(`$100 WITHDRAWN`, "bg-blue-600");
-            resetBankTimer();
-            updateUI();
+        // --- Barometer Engine ---
+        function drawBarometer() {
+            const w = canvas.width = canvas.offsetWidth;
+            const h = canvas.height = canvas.offsetHeight;
+            ctx.clearRect(0,0,w,h);
+            const candleW = 8, gap = 4;
+            const maxCandles = Math.floor(w / (candleW + gap));
+            const history = candleHistory.slice(-maxCandles);
+            
+            history.forEach((c, i) => {
+                const x = i * (candleW + gap) + gap;
+                const isUp = c.close >= c.open;
+                const color = isUp ? '#10b981' : '#ef4444';
+                
+                ctx.strokeStyle = color;
+                ctx.lineWidth = 1;
+                ctx.beginPath();
+                ctx.moveTo(x + candleW/2, h - (c.high * 0.8));
+                ctx.lineTo(x + candleW/2, h - (c.low * 0.8));
+                ctx.stroke();
+
+                ctx.fillStyle = color;
+                const bodyY = h - (Math.max(c.open, c.close) * 0.8);
+                const bodyH = Math.max(1, Math.abs(c.open - c.close) * 0.8);
+                ctx.fillRect(x, bodyY, candleW, bodyH);
+
+                ctx.fillStyle = color; // Dot Indicators
+                ctx.beginPath(); ctx.arc(x + candleW/2, bodyY + (isUp ? -3 : bodyH + 3), 1.2, 0, Math.PI*2); ctx.fill();
+            });
         }
 
-        function showTransferAnimation(msg, bgColor = "bg-blue-600") {
-            const notice = document.createElement('div');
-            notice.className = `fixed top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 ${bgColor} text-white px-6 py-3 rounded-2xl font-black text-[0.6rem] z-[200] animate-bounce shadow-2xl border border-white/20 text-center uppercase`;
-            notice.innerText = msg;
-            document.body.appendChild(notice);
-            setTimeout(() => notice.remove(), 1500);
+        function addCandle(impact) {
+            const lastClose = candleHistory.length ? candleHistory[candleHistory.length-1].close : 50;
+            const open = lastClose;
+            const close = Math.max(10, Math.min(100, open + (impact * 0.5) + (Math.random() * 6 - 3)));
+            candleHistory.push({ open, close, high: close + 5, low: close - 5 });
+            if(candleHistory.length > 50) candleHistory.shift();
+            
+            const tag = document.createElement('div');
+            tag.className = `signal-tag ${impact > 0 ? 'bg-emerald-500' : 'bg-red-500'} text-white`;
+            tag.style.left = '80%'; tag.style.top = `${100 - lastClose}%`;
+            tag.innerText = impact > 0 ? '↑ AID' : '↓ SYNC';
+            signalOverlay.appendChild(tag);
+            setTimeout(() => tag.remove(), 1000);
+            drawBarometer();
         }
 
+        function processAid(winAmount) {
+            const donation = Math.floor(winAmount * aidCommission);
+            if (donation > 0) {
+                totalDonated += donation;
+                balance -= donation;
+                addCandle(donation/10);
+                document.getElementById('aidDonatedText').innerText = `$${totalDonated.toLocaleString()}`;
+                return donation;
+            }
+            return 0;
+        }
+
+        function manualAidSync() {
+            const amount = Math.floor(balance * 0.02);
+            if(amount > 0) {
+                balance -= amount; totalDonated += amount;
+                addCandle(2); updateUI();
+                document.getElementById('aidDonatedText').innerText = `$${totalDonated.toLocaleString()}`;
+            }
+        }
+
+        // --- Slots ---
+        const icons = ["💎", "🏆", "🎰", "🔔", "⭐", "🍒", "🍀", "🌍"];
         function initReels() {
             [0,1,2].forEach(idx => {
                 const strip = document.getElementById(`reel${idx}`);
                 strip.innerHTML = '';
-                for (let i = 0; i < STRIP_LENGTH; i++) {
-                    const icon = themes[currentThemeIndex].icons[Math.floor(Math.random() * 4)];
+                for (let i = 0; i < 50; i++) {
                     const div = document.createElement('div');
                     div.className = 'slot-icon';
-                    div.innerHTML = icon;
+                    div.innerHTML = icons[Math.floor(Math.random() * icons.length)];
                     strip.appendChild(div);
                 }
             });
         }
 
         async function spin() {
-            if (isSpinning || balance < currentBet) {
-                isAutoSpinning = false;
-                updateUI();
-                return;
-            }
+            if (isSpinning || balance < currentBet) { isAutoSpinning = false; updateUI(); return; }
             isSpinning = true;
             balance -= currentBet;
+            addCandle(-0.5);
             updateUI();
             
-            const h = 100;
             const results = [[], [], []];
-            const machine = document.getElementById('machine');
-            machine.classList.add('spinning');
-            document.getElementById('winDisplay').style.display = 'none';
-
             const spinPromises = [0,1,2].map(i => new Promise(res => {
                 const strip = document.getElementById(`reel${i}`);
-                const targetIdx = Math.floor(Math.random() * (STRIP_LENGTH - 10)) + 5;
+                const targetIdx = Math.floor(Math.random() * 30) + 10;
                 strip.style.transition = 'none';
                 strip.style.transform = `translateY(0px)`;
                 requestAnimationFrame(() => {
-                    strip.style.transition = `transform ${0.3 + i * 0.1}s cubic-bezier(0.45, 0.05, 0.55, 0.95)`;
-                    strip.style.transform = `translateY(-${targetIdx * h}px)`;
+                    strip.style.transition = `transform ${0.5 + i * 0.2}s cubic-bezier(0.45, 0.05, 0.55, 0.95)`;
+                    strip.style.transform = `translateY(-${targetIdx * 100}px)`;
                 });
-                setTimeout(() => {
-                    results[i] = [strip.children[targetIdx-1].innerText, strip.children[targetIdx].innerText, strip.children[targetIdx+1].innerText];
-                    res();
-                }, 400 + i * 100);
+                setTimeout(() => { results[i] = strip.children[targetIdx].innerText; res(); }, 700 + i * 200);
             }));
 
             await Promise.all(spinPromises);
-            machine.classList.remove('spinning');
             checkWin(results);
             isSpinning = false;
-            if (isAutoSpinning) setTimeout(spin, 100);
+            if (isAutoSpinning) setTimeout(spin, 250);
         }
 
-        function checkWin(matrix) {
-            let winMultiplier = 0;
-            const flat = matrix.flat();
-            const counts = {};
-            flat.forEach(icon => counts[icon] = (counts[icon] || 0) + 1);
+        function checkWin(res) {
+            let winMult = 0;
+            if (res[0] === res[1] && res[1] === res[2]) winMult = 30;
+            else if (res[0] === res[1] || res[1] === res[2]) winMult = 3;
 
-            if (new Set(flat).size === 1) winMultiplier = 1000;
-            else if ((matrix[0][0] === matrix[1][1] && matrix[1][1] === matrix[2][2]) && 
-                     (matrix[0][2] === matrix[1][1] && matrix[1][1] === matrix[2][0])) winMultiplier = 500;
-            else {
-                for (const count of Object.values(counts)) {
-                    if (count >= 3) {
-                        const isLine = [0,1,2].some(r => matrix[0][r] === matrix[1][r] && matrix[1][r] === matrix[2][r]);
-                        winMultiplier += isLine ? 200 : 50;
-                    }
-                }
-            }
-
-            if (winMultiplier > 0) {
-                const totalWin = currentBet * winMultiplier;
-                balance += totalWin;
-                showWin(totalWin);
+            if (winMult > 0) {
+                const winAmt = currentBet * winMult;
+                balance += winAmt;
+                const aidTaken = processAid(winAmt);
+                const overlay = document.getElementById('winDisplay');
+                overlay.querySelector('h2').innerText = `+$${winAmt}`;
+                document.getElementById('autoAidDeduction').innerText = `🌍 AUTO-AID: -$${aidTaken}`;
+                overlay.style.display = 'block';
+                setTimeout(() => overlay.style.display = 'none', 1200);
             }
             updateUI();
-        }
-
-        function showWin(amt) {
-            const overlay = document.getElementById('winDisplay');
-            document.getElementById('winAmountText').innerText = `+$${amt.toLocaleString()}`;
-            overlay.style.display = 'block';
-            setTimeout(() => overlay.style.display = 'none', isAutoSpinning ? 400 : 1500);
         }
 
         function updateUI() {
             document.getElementById('balanceText').innerText = `$${balance.toLocaleString()}`;
             document.getElementById('bankSlotBalanceText').innerText = `$${balance.toLocaleString()}`;
-            document.getElementById('savingsText').innerText = `$${savings.toLocaleString()}`;
+            document.getElementById('savingsBalanceText').innerText = `$${savings.toLocaleString()}`;
             document.getElementById('betText').innerText = `$${currentBet}`;
-            
             const autoBtn = document.getElementById('autoBtn');
-            autoBtn.style.color = isAutoSpinning ? '#ef4444' : '#94a3b8';
-            autoBtn.innerText = isAutoSpinning ? "Stop" : "Auto";
+            autoBtn.innerText = isAutoSpinning ? "STOP" : "AUTO";
+            autoBtn.classList.toggle('bg-red-900', isAutoSpinning);
         }
 
-        document.getElementById('spinBtn').addEventListener('click', () => { isAutoSpinning = false; spin(); });
-        document.getElementById('autoBtn').addEventListener('click', () => { isAutoSpinning = !isAutoSpinning; if(isAutoSpinning) spin(); updateUI(); });
-        document.getElementById('betUp').addEventListener('click', () => { currentBet += 10; updateUI(); });
-        document.getElementById('betDown').addEventListener('click', () => { if(currentBet > 10) currentBet -= 10; updateUI(); });
+        function showNotice(m, c="bg-blue-600") {
+            const n = document.createElement('div');
+            n.className = `fixed top-1/2 left-1/2 -translate-x-1/2 ${c} px-6 py-2 rounded-full font-black text-[0.6rem] z-[300] shadow-xl`;
+            n.innerText = m; document.body.appendChild(n);
+            setTimeout(() => n.remove(), 1200);
+        }
 
-        window.onload = () => { initReels(); updateUI(); };
+        document.getElementById('spinBtn').onclick = () => { isAutoSpinning = false; spin(); };
+        document.getElementById('autoBtn').onclick = () => { isAutoSpinning = !isAutoSpinning; if(isAutoSpinning) spin(); updateUI(); };
+        document.getElementById('betUp').onclick = () => { currentBet += 10; updateUI(); };
+        document.getElementById('betDown').onclick = () => { if(currentBet > 10) currentBet -= 10; updateUI(); };
+
+        window.onload = () => { 
+            initReels(); updateUI(); 
+            for(let i=0; i<15; i++) addCandle(0);
+        };
     </script>
 </body>
 </html>
