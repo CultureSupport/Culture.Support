@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>3D Theme Explorer Slots Pro</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        :root {
+            --machine-gold: #ffd700;
+            --machine-dark: #0f172a;
+            --glass: rgba(255, 255, 255, 0.1);
+            --glass-border: rgba(255, 255, 255, 0.2);
+        }
+
+        body {
+            background: radial-gradient(circle at center, #1e293b 0%, #000000 100%);
+            color: white;
+            overflow: hidden;
+            font-family: 'system-ui', -apple-system, sans-serif;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Top Floating Banner */
+        .top-banner {
+            background: linear-gradient(90deg, transparent, rgba(255, 215, 0, 0.1), transparent);
+            height: 40px;
+            display: flex;
+            align-items: center;
+            overflow: hidden;
+            border-bottom: 1px solid var(--glass-border);
+            backdrop-filter: blur(5px);
+        }
+
+        .marquee {
+            white-space: nowrap;
+            animation: marquee 20s linear infinite;
+            color: var(--machine-gold);
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        @keyframes marquee {
+            0% { transform: translateX(100%); }
+            100% { transform: translateX(-100%); }
+        }
+
+        /* 3D Slot Machine Container */
+        .slot-perspective {
+            perspective: 1500px;
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 10px;
+            margin-top: 10px;
+        }
+
+        .machine-body {
+            position: relative;
+            width: 100%;
+            max-width: 650px;
+            height: 380px;
+            background: linear-gradient(145deg, #1e293b, #020617);
+            border: 4px solid var(--machine-gold);
+            border-radius: 24px;
+            transform-style: preserve-3d;
+            transform: rotateX(8deg);
+            box-shadow: 0 30px 60px rgba(0,0,0,0.9), inset 0 0 40px rgba(255,215,0,0.1);
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            padding: 15px;
+            gap: 10px;
+        }
+
+        .reel-container {
+            flex: 1;
+            height: 100%;
+            background: #000;
+            border-radius: 12px;
+            overflow: hidden;
+            position: relative;
+            border: 1px solid #334155;
+            box-shadow: inset 0 0 40px rgba(0,0,0,0.9);
+        }
+
+        .reel-strip {
+            position: absolute;
+            width: 100%;
+            top: 0;
+            transition: transform 3s cubic-bezier(0.45, 0.05, 0.55, 0.95);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .slot-icon {
+            height: 110px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.8rem;
+            text-align: center;
+            padding: 5px;
+        }
+
+        .icon-label {
+            font-size: 0.65rem;
+            text-transform: uppercase;
+            margin-top: 2px;
+            color: #94a3b8;
+        }
+
+        /* Glassmorphic GUI Elements */
+        .glass-panel {
+            background: var(--glass);
+            backdrop-filter: blur(12px);
+            border: 1px solid var(--glass-border);
+            border-radius: 12px;
+            padding: 8px 12px;
+        }
+
+        .btn-glass {
+            background: var(--glass);
+            backdrop-filter: blur(8px);
+            border: 1px solid var(--glass-border);
+            border-radius: 12px;
+            transition: all 0.2s;
+            cursor: pointer;
+            text-transform: uppercase;
+            font-weight: bold;
+            font-size: 0.75rem;
+        }
+
+        .btn-glass:hover {
+            background: rgba(255,255,255,0.2);
+            border-color: var(--machine-gold);
+        }
+
+        .btn-glass:active {
+            transform: scale(0.95);
+        }
+
+        .btn-active-auto {
+            background: rgba(239, 68, 68, 0.3);
+            border-color: #ef4444;
+            animation: pulse-red 1s infinite alternate;
+        }
+
+        @keyframes pulse-red {
+            from { box-shadow: 0 0 5px #ef4444; }
+            to { box-shadow: 0 0 15px #ef4444; }
+        }
+
+        /* Footer Controls */
+        .game-footer {
+            background: rgba(15, 23, 42, 0.95);
+            border-top: 2px solid var(--glass-border);
+            padding: 10px 15px env(safe-area-inset-bottom);
+            display: grid;
+            grid-template-columns: 1fr auto 1fr;
+            gap: 15px;
+            align-items: center;
+        }
+
+        .spin-btn-container {
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            align-items: center;
+        }
+
+        .main-spin-btn {
+            background: linear-gradient(135deg, #fbbf24, #d97706);
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            border: 4px solid #fff;
+            box-shadow: 0 0 20px rgba(217, 119, 6, 0.5);
+            color: #000;
+            font-weight: 900;
+            font-size: 1.1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: transform 0.1s;
+        }
+
+        .main-spin-btn:active { transform: scale(0.9); }
+        .main-spin-btn:disabled { filter: grayscale(1); opacity: 0.5; }
+
+        @media (max-width: 640px) {
+            .machine-body { height: 320px; }
+            .slot-icon { height: 90px; font-size: 2.2rem; }
+            .main-spin-btn { width: 65px; height: 65px; font-size: 0.9rem; }
+            .game-footer { gap: 5px; padding: 10px 5px; }
+            .marquee { font-size: 0.8rem; }
+        }
+
+        .win-overlay {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0,0,0,0.9);
+            padding: 25px;
+            border-radius: 20px;
+            border: 3px solid var(--machine-gold);
+            text-align: center;
+            display: none;
+            z-index: 100;
+            pointer-events: none;
+        }
+    </style>
+</head>
+<body>
+
+    <header class="top-banner">
+        <div class="marquee" id="marqueeText">
+            🎰 BIG WIN IN AFRICAN SAFARI! • JACKPOT RESET TO $1,000,000 • CHOOSE YOUR THEME AND SPIN TO WIN! • 
+        </div>
+    </header>
+
+    <div class="theme-selector">
+        <select id="themeSelect" class="bg-transparent text-white outline-none cursor-pointer font-bold text-sm">
+            <option value="0">19: African Safari</option>
+            <option value="1">20: Arctic Chill</option>
+            <option value="2">21: Jungle Fever</option>
+            <option value="3">22: Outback Trek</option>
+            <option value="4">23: Serpent’s Temple</option>
+            <option value="5">24: Honey Hive</option>
+        </select>
+    </div>
+
+    <div class="slot-perspective">
+        <div class="machine-body" id="machine">
+            <div class="reel-container"><div class="reel-strip" id="reel0"></div></div>
+            <div class="reel-container"><div class="reel-strip" id="reel1"></div></div>
+            <div class="reel-container"><div class="reel-strip" id="reel2"></div></div>
+
+            <div id="winDisplay" class="win-overlay">
+                <h2 class="text-3xl font-black text-yellow-400 mb-2">JACKPOT!</h2>
+                <p id="winAmountText" class="text-2xl font-bold">+$0</p>
+            </div>
+        </div>
+    </div>
+
+    <footer class="game-footer">
+        <!-- Left Side: Stats -->
+        <div class="flex flex-col gap-2">
+            <div class="glass-panel text-center">
+                <span class="block text-[0.6rem] text-yellow-500 uppercase font-bold">Balance</span>
+                <span class="text-lg font-mono font-bold" id="balanceText">$1,000</span>
+            </div>
+            <button id="autoBtn" class="btn-glass p-2">Auto Spin</button>
+        </div>
+
+        <!-- Center: Main Spin -->
+        <div class="spin-btn-container">
+            <button id="spinBtn" class="main-spin-btn">SPIN</button>
+        </div>
+
+        <!-- Right Side: Bet Controls -->
+        <div class="flex flex-col gap-2">
+            <div class="glass-panel text-center">
+                <span class="block text-[0.6rem] text-yellow-500 uppercase font-bold">Total Bet</span>
+                <div class="flex justify-between items-center px-1">
+                    <button id="betDown" class="text-white hover:text-yellow-500 px-2">-</button>
+                    <span class="text-md font-mono font-bold" id="betText">$10</span>
+                    <button id="betUp" class="text-white hover:text-yellow-500 px-2">+</button>
+                </div>
+            </div>
+            <button id="allLinesBtn" class="btn-glass p-2">Max Bet</button>
+        </div>
+    </footer>
+
+    <script>
+        const themes = [
+            { name: "African Safari", low: [{emoji: "🌳", label: "Acacia"}], high: [{emoji: "🦁", label: "Lion"}, {emoji: "🐘", label: "Elephant"}, {emoji: "🦏", label: "Rhino"}] },
+            { name: "Arctic Chill", low: [{emoji: "❄️", label: "Snowflake"}], high: [{emoji: "🐻‍❄️", label: "Polar Bear"}, {emoji: "🐋", label: "Orca"}, {emoji: "🏠", label: "Igloo"}] },
+            { name: "Jungle Fever", low: [{emoji: "🌿", label: "Leaf"}], high: [{emoji: "🦜", label: "Toucan"}, {emoji: "🐆", label: "Panther"}, {emoji: "🏛️", label: "Temple"}] },
+            { name: "Outback Trek", low: [{emoji: "🪃", label: "Boomerang"}], high: [{emoji: "🦘", label: "Kangaroo"}, {emoji: "🐨", label: "Koala"}, {emoji: "⛰️", label: "Ayers Rock"}] },
+            { name: "Serpent’s Temple", low: [{emoji: "🥚", label: "Snake Egg"}], high: [{emoji: "🐍", label: "Cobra"}, {emoji: "🗿", label: "Golden Idol"}, {emoji: "🎋", label: "Vine"}] },
+            { name: "Honey Hive", low: [{emoji: "🌸", label: "Petal"}], high: [{emoji: "🍯", label: "Honey Jar"}, {emoji: "🐝", label: "Bee Queen"}, {emoji: "🍯", label: "Golden Comb"}] }
+        ];
+
+        let currentThemeIndex = 0;
+        let balance = 1000;
+        let currentBet = 10;
+        let isSpinning = false;
+        let isAutoSpinning = false;
+        
+        const REEL_STRIPS = [document.getElementById('reel0'), document.getElementById('reel1'), document.getElementById('reel2')];
+        const STRIP_SIZE = 30;
+
+        function getIconHeight() {
+            return window.innerWidth < 640 ? 90 : 110;
+        }
+
+        function initReels() {
+            const theme = themes[currentThemeIndex];
+            const allIcons = [...theme.low, ...theme.high];
+            REEL_STRIPS.forEach(strip => {
+                strip.innerHTML = '';
+                for (let i = 0; i < STRIP_SIZE; i++) {
+                    const icon = allIcons[Math.floor(Math.random() * allIcons.length)];
+                    const div = document.createElement('div');
+                    div.className = 'slot-icon';
+                    div.innerHTML = `<span>${icon.emoji}</span><span class="icon-label">${icon.label}</span>`;
+                    strip.appendChild(div);
+                }
+            });
+            document.getElementById('marqueeText').innerText = `🎰 WELCOME TO ${theme.name.toUpperCase()}! • GET 3 HIGH-VALUE SYMBOLS FOR 50X PAYOUT! • `;
+        }
+
+        async function spin() {
+            if (isSpinning || balance < currentBet) {
+                isAutoSpinning = false;
+                updateUI();
+                return;
+            }
+            
+            isSpinning = true;
+            balance -= currentBet;
+            updateUI();
+            
+            document.getElementById('spinBtn').disabled = true;
+            document.getElementById('winDisplay').style.display = 'none';
+
+            const results = [];
+            const iconHeight = getIconHeight();
+
+            const spinPromises = REEL_STRIPS.map((strip, i) => {
+                return new Promise(resolve => {
+                    const targetIdx = Math.floor(Math.random() * (STRIP_SIZE - 5)) + 1;
+                    const stopPos = targetIdx * iconHeight;
+                    
+                    strip.style.transition = 'none';
+                    strip.style.transform = `translateY(0px)`;
+                    
+                    setTimeout(() => {
+                        strip.style.transition = `transform ${1.5 + i * 0.4}s cubic-bezier(0.25, 0.1, 0.25, 1)`;
+                        strip.style.transform = `translateY(-${stopPos}px)`;
+                    }, 50);
+
+                    setTimeout(() => {
+                        results.push(strip.children[targetIdx].querySelector('span').innerText);
+                        resolve();
+                    }, 2000 + i * 400);
+                });
+            });
+
+            await Promise.all(spinPromises);
+            checkWin(results);
+            isSpinning = false;
+            document.getElementById('spinBtn').disabled = false;
+
+            if (isAutoSpinning) {
+                setTimeout(spin, 1000);
+            }
+        }
+
+        function checkWin(results) {
+            let winMultiplier = 0;
+            const theme = themes[currentThemeIndex];
+            const highEmojis = theme.high.map(h => h.emoji);
+
+            if (results[0] === results[1] && results[1] === results[2]) {
+                winMultiplier = highEmojis.includes(results[0]) ? 50 : 10;
+            } else if (results[0] === results[1] || results[1] === results[2]) {
+                winMultiplier = 2;
+            }
+
+            if (winMultiplier > 0) {
+                const win = currentBet * winMultiplier;
+                balance += win;
+                showWin(win);
+            }
+            updateUI();
+        }
+
+        function showWin(amount) {
+            const display = document.getElementById('winDisplay');
+            document.getElementById('winAmountText').innerText = `+$${amount}`;
+            display.style.display = 'block';
+            setTimeout(() => display.style.display = 'none', 2000);
+        }
+
+        function updateUI() {
+            document.getElementById('balanceText').innerText = `$${balance.toLocaleString()}`;
+            document.getElementById('betText').innerText = `$${currentBet}`;
+            const autoBtn = document.getElementById('autoBtn');
+            if (isAutoSpinning) {
+                autoBtn.classList.add('btn-active-auto');
+                autoBtn.innerText = "Stop Auto";
+            } else {
+                autoBtn.classList.remove('btn-active-auto');
+                autoBtn.innerText = "Auto Spin";
+            }
+        }
+
+        // Listeners
+        document.getElementById('spinBtn').addEventListener('click', () => {
+            isAutoSpinning = false;
+            spin();
+        });
+
+        document.getElementById('autoBtn').addEventListener('click', () => {
+            isAutoSpinning = !isAutoSpinning;
+            if (isAutoSpinning) spin();
+            updateUI();
+        });
+
+        document.getElementById('allLinesBtn').addEventListener('click', () => {
+            currentBet = Math.min(balance, 100);
+            updateUI();
+            spin();
+        });
+
+        document.getElementById('betUp').addEventListener('click', () => {
+            if (currentBet + 10 <= balance) currentBet += 10;
+            updateUI();
+        });
+
+        document.getElementById('betDown').addEventListener('click', () => {
+            if (currentBet > 10) currentBet -= 10;
+            updateUI();
+        });
+
+        document.getElementById('themeSelect').addEventListener('change', (e) => {
+            currentThemeIndex = parseInt(e.target.value);
+            initReels();
+        });
+
+        window.addEventListener('resize', initReels);
+        initReels();
+        updateUI();
+    </script>
+</body>
+</html>
