@@ -1,0 +1,563 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Mobile slot Machine</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        :root {
+            --machine-dark: #020617;
+            --glass: rgba(255, 255, 255, 0.03);
+            --glass-border: rgba(255, 255, 255, 0.1);
+            --mega-gold: #fbbf24;
+            --icon-size: 100px;
+        }
+
+        body {
+            background: #000;
+            color: white;
+            overflow: hidden;
+            font-family: 'Inter', system-ui, sans-serif;
+            height: 100dvh;
+            display: flex;
+            flex-direction: column;
+            margin: 0;
+            padding: 0;
+        }
+
+        /* High-Speed Shaking */
+        @keyframes shake {
+            0% { transform: translate(0, 0); }
+            25% { transform: translate(-5px, 5px); }
+            50% { transform: translate(5px, -5px); }
+            75% { transform: translate(-5px, -5px); }
+            100% { transform: translate(5px, 5px); }
+        }
+        .shaking { animation: shake 0.1s linear infinite; }
+
+        .top-banner {
+            background: #020617;
+            height: 28px;
+            display: flex;
+            align-items: center;
+            overflow: hidden;
+            border-bottom: 1px solid var(--glass-border);
+            flex-shrink: 0;
+        }
+
+        .marquee {
+            white-space: nowrap;
+            animation: marquee 10s linear infinite;
+            color: #fbbf24;
+            font-weight: 900;
+            font-size: 0.7rem;
+            text-transform: uppercase;
+        }
+
+        @keyframes marquee {
+            0% { transform: translateX(100%); }
+            100% { transform: translateX(-100%); }
+        }
+
+        .main-layout {
+            display: flex;
+            flex: 1;
+            min-height: 0;
+            position: relative;
+        }
+
+        .slot-perspective {
+            perspective: 1200px;
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 10px;
+            position: relative;
+        }
+
+        .machine-wrapper {
+            position: relative;
+            transform: rotateX(2deg);
+        }
+
+        .machine-body {
+            position: relative;
+            width: 85vw;
+            max-width: 480px;
+            height: calc(var(--icon-size) * 3 + 20px);
+            background: #0f172a;
+            border: 3px solid #334155;
+            border-radius: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px;
+            gap: 8px;
+            z-index: 2;
+            box-shadow: 0 0 40px rgba(0,0,0,0.8);
+            transition: filter 0.3s;
+        }
+
+        .reel-container {
+            flex: 1;
+            height: calc(var(--icon-size) * 3);
+            background: #000;
+            border-radius: 6px;
+            overflow: hidden;
+            position: relative;
+            border: 1px solid #1e293b;
+        }
+
+        .reel-strip {
+            position: absolute;
+            width: 100%;
+            top: 0;
+            display: flex;
+            flex-direction: column;
+            will-change: transform;
+        }
+
+        .slot-icon {
+            height: var(--icon-size);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.8rem;
+        }
+
+        .spinning .slot-icon {
+            filter: blur(8px);
+            opacity: 0.7;
+        }
+
+        /* Mobile Bank GUI Overlay */
+        .mobile-bank-overlay {
+            position: absolute;
+            right: 20px;
+            top: 20px;
+            width: 240px;
+            background: #020617;
+            border: 2px solid #3b82f6;
+            border-radius: 20px;
+            padding: 15px;
+            z-index: 150;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.9), 0 0 30px rgba(59, 130, 246, 0.2);
+            transform: translateX(130%);
+            transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            pointer-events: none;
+        }
+
+        .mobile-bank-overlay.visible {
+            transform: translateX(0);
+            pointer-events: auto;
+        }
+
+        /* Aid Fund Panel */
+        .aid-panel {
+            position: absolute;
+            left: 20px;
+            top: 20px;
+            width: 220px;
+            background: #020617;
+            border: 2px solid #10b981;
+            border-radius: 20px;
+            padding: 12px;
+            z-index: 150;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.9);
+            transform: translateX(-130%);
+            transition: transform 0.4s ease;
+            pointer-events: none;
+        }
+
+        .aid-panel.visible {
+            transform: translateX(0);
+            pointer-events: auto;
+        }
+
+        /* Mobile Bank Trigger Button */
+        .bank-icon-btn {
+            position: fixed;
+            right: 20px;
+            bottom: 110px;
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, #1d4ed8, #1e40af);
+            border-radius: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 8px 20px rgba(29, 78, 216, 0.4);
+            z-index: 160;
+            transition: all 0.3s ease;
+            border: 2px solid rgba(255,255,255,0.2);
+            padding: 8px;
+        }
+
+        .bank-icon-btn:hover { transform: translateY(-5px); background: linear-gradient(135deg, #2563eb, #1d4ed8); }
+
+        .bank-label {
+            font-size: 0.6rem; font-weight: 800; text-transform: uppercase; margin-top: 6px;
+            color: #ffffff; letter-spacing: 0.02em; text-align: center; line-height: 1; white-space: nowrap;
+        }
+
+        .bank-balance-row { display: flex; justify-content: space-between; font-size: 0.75rem; margin-bottom: 12px; color: #94a3b8; }
+
+        .bank-btn {
+            width: 100%; padding: 12px; border-radius: 10px; font-size: 0.75rem; font-weight: 800;
+            margin-top: 8px; text-transform: uppercase; transition: all 0.2s; border: 1px solid transparent;
+        }
+
+        .game-footer {
+            background: #020617;
+            padding: 12px 15px env(safe-area-inset-bottom);
+            display: grid;
+            grid-template-columns: 1fr auto 1fr;
+            align-items: center;
+            border-top: 1px solid #1e293b;
+            z-index: 40;
+            gap: 10px;
+        }
+
+        .main-spin-btn {
+            background: linear-gradient(to bottom, #ef4444, #b91c1c);
+            width: 70px; height: 70px; border-radius: 50%; border: 4px solid #fca5a5;
+            color: white; font-weight: 900; box-shadow: 0 0 20px rgba(239, 68, 68, 0.4);
+            cursor: pointer;
+        }
+
+        .win-overlay {
+            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+            background: rgba(0,0,0,0.95); padding: 25px; border: 2px solid var(--mega-gold);
+            text-align: center; display: none; z-index: 100; border-radius: 15px;
+        }
+
+        .timer-badge { font-size: 0.5rem; color: #3b82f6; margin-top: 10px; text-align: center; font-weight: bold; }
+
+        @media (max-width: 640px) {
+            :root { --icon-size: 80px; }
+            .mobile-bank-overlay, .aid-panel { width: 190px; }
+            .bank-icon-btn { right: 10px; bottom: 130px; width: 65px; height: 65px; }
+        }
+    </style>
+</head>
+<body>
+
+    <header class="top-banner">
+        <div class="marquee">
+            🌍 HELP AFRICA HUNGRY • GIVE 2% TO CAMEROON AID • MOBILE BANK SECURE • Aid 2% of Campaign Gaming Balance • 
+        </div>
+    </header>
+
+    <div class="main-layout" id="dropTarget">
+        <!-- Aid Panel -->
+        <div class="aid-panel" id="aidGui">
+            <div class="flex items-center justify-between mb-2">
+                <span class="text-[0.6rem] font-black text-emerald-400">AID FUND PANEL</span>
+                <button onclick="toggleAid(false)" class="text-slate-500">✕</button>
+            </div>
+            <div class="text-[0.55rem] text-slate-400 mb-3 leading-tight italic">Giving back 2% of your chips to support those in need.</div>
+            
+            <div class="space-y-2">
+                <div class="bg-black/40 p-2 rounded-lg border border-slate-800">
+                    <div class="flex justify-between text-[0.6rem] mb-1">
+                        <span id="aidTargetLabel">AID CAMEROON</span>
+                        <span class="text-emerald-400" id="aidDonatedText">$0</span>
+                    </div>
+                    <div class="w-full bg-slate-900 h-1.5 rounded-full overflow-hidden">
+                        <div id="aidProgress" class="bg-emerald-500 h-full" style="width: 0%"></div>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-2 mt-2">
+                    <button onclick="switchAid('Cameroon')" class="text-[0.5rem] bg-slate-800 p-2 rounded border border-slate-700 font-bold hover:bg-slate-700">CAMEROON</button>
+                    <button onclick="switchAid('Africa')" class="text-[0.5rem] bg-slate-800 p-2 rounded border border-slate-700 font-bold hover:bg-slate-700">AFRICA</button>
+                </div>
+
+                <button onclick="donateToAid()" class="w-full bg-emerald-600 py-2 rounded-lg text-[0.6rem] font-black shadow-lg shadow-emerald-900/20 active:scale-95 transition-transform mt-1">
+                    GIVE 2% BALANCE
+                </button>
+            </div>
+        </div>
+
+        <div class="slot-perspective" id="simArea">
+            <div class="machine-wrapper" id="shakeTarget">
+                <div class="machine-body" id="machine">
+                    <div class="reel-container"><div class="reel-strip" id="reel0"></div></div>
+                    <div class="reel-container"><div class="reel-strip" id="reel1"></div></div>
+                    <div class="reel-container"><div class="reel-strip" id="reel2"></div></div>
+                    
+                    <div id="winDisplay" class="win-overlay">
+                        <div class="text-[0.6rem] text-yellow-500 font-black" id="winTierText">PREMIER STATUS</div>
+                        <h2 class="text-3xl font-black text-white italic" id="winLabelText">JACKPOT</h2>
+                        <p id="winAmountText" class="text-2xl font-bold text-yellow-400">+$0</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Mobile Bank GUI -->
+        <div class="mobile-bank-overlay" id="bankGui">
+            <div class="flex items-center justify-between mb-4">
+                <div class="flex flex-col">
+                    <h3 class="text-xs font-black uppercase text-blue-400 tracking-tighter">Mobile Bank</h3>
+                    <span class="text-[0.5rem] text-slate-500">Secure Session</span>
+                </div>
+                <button onclick="closeBankManually()" class="text-slate-500 hover:text-white">✕</button>
+            </div>
+            
+            <div class="bg-black/50 p-4 rounded-xl border border-slate-800 mb-4">
+                <div class="bank-balance-row">
+                    <span>SAVINGS</span>
+                    <span class="text-white font-black" id="savingsText">$5,000</span>
+                </div>
+                <div class="bank-balance-row !mb-0">
+                    <span>SLOT CHIPS</span>
+                    <span class="text-green-400 font-black" id="bankSlotBalanceText">$1,000</span>
+                </div>
+            </div>
+
+            <button onclick="transferToSavings()" class="bank-btn bg-blue-600 text-white hover:bg-blue-500">Transfer All to Savings</button>
+            <button onclick="transferToSlots()" class="bank-btn bg-slate-800 text-slate-200 mt-2 border-slate-700">Withdraw $100</button>
+            
+            <div id="bankTimerDisplay" class="timer-badge">Session active</div>
+        </div>
+    </div>
+
+    <!-- Mobile Icon Bank Trigger -->
+    <div class="bank-icon-btn" id="bankTrigger" onclick="toggleBankOnClick()">
+        <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="text-white"><rect width="14" height="20" x="5" y="2" rx="2" ry="2"/><path d="M12 18h.01"/></svg>
+        <span class="bank-label">Mobile Bank</span>
+    </div>
+
+    <footer class="game-footer">
+        <div class="flex flex-col gap-1 items-start">
+            <button onclick="toggleAid(true)" class="flex items-center gap-1.5 bg-emerald-900/30 border border-emerald-500/30 px-3 py-1.5 rounded-lg hover:bg-emerald-900/50 transition-colors">
+                <span class="text-lg">🌍</span>
+                <div class="text-left">
+                    <div class="text-[0.5rem] font-black text-emerald-400 leading-none">AID FUND</div>
+                    <div class="text-[0.4rem] text-slate-400 leading-none mt-1">GIVE 2%</div>
+                </div>
+            </button>
+            <span class="text-xl font-mono font-bold text-green-400" id="balanceText">$1,000</span>
+        </div>
+
+        <button id="spinBtn" class="main-spin-btn">BET</button>
+
+        <div class="flex flex-col gap-1 items-end">
+            <span class="text-[0.6rem] text-slate-500 font-bold uppercase">Wager: <span class="text-white" id="betText">$10</span></span>
+            <div class="flex gap-1.5">
+                <button id="betDown" class="bg-slate-800 px-3 py-1.5 rounded-lg border border-slate-700 font-bold hover:bg-slate-700">-</button>
+                <button id="betUp" class="bg-slate-800 px-3 py-1.5 rounded-lg border border-slate-700 font-bold hover:bg-slate-700">+</button>
+                <button id="autoBtn" class="bg-slate-800 text-[0.6rem] px-3 py-1.5 rounded-lg border border-slate-700 uppercase font-black">Auto</button>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        const themes = [
+            { name: "Rome", icons: ["🛡️", "🏛️", "⚔️", "🦅"] },
+            { name: "Pharaoh", icons: ["🏺", "⚱️", "🔱", "🕌"] },
+            { name: "Fire", icons: ["🪵", "🔥", "🧨", "🌋"] },
+            { name: "Thunder", icons: ["🔋", "⚡", "🌩️", "📱"] }
+        ];
+
+        let balance = 1000, savings = 5000, currentBet = 10, isSpinning = false, isAutoSpinning = false, currentThemeIndex = 0;
+        let bankTimer = null, timeLeft = 0;
+        let totalDonated = 0, currentAidTarget = "Cameroon";
+        const STRIP_LENGTH = 60;
+
+        function toggleAid(show) {
+            document.getElementById('aidGui').classList.toggle('visible', show);
+        }
+
+        function switchAid(target) {
+            currentAidTarget = target;
+            document.getElementById('aidTargetLabel').innerText = `AID ${target.toUpperCase()}`;
+        }
+
+        function donateToAid() {
+            if (balance < 10) {
+                showTransferAnimation("NOT ENOUGH CHIPS", "bg-red-600");
+                return;
+            }
+            const donation = Math.floor(balance * 0.02);
+            balance -= donation;
+            totalDonated += donation;
+            
+            // Progress visual
+            const prog = Math.min((totalDonated / 1000) * 100, 100);
+            document.getElementById('aidDonatedText').innerText = `$${totalDonated}`;
+            document.getElementById('aidProgress').style.width = `${prog}%`;
+            
+            showTransferAnimation(`$${donation} DONATED TO ${currentAidTarget.toUpperCase()}`, "bg-emerald-600");
+            updateUI();
+        }
+
+        function toggleBankOnClick() {
+            const gui = document.getElementById('bankGui');
+            if (!gui.classList.contains('visible')) {
+                gui.classList.add('visible');
+                resetBankTimer();
+            }
+            updateUI();
+        }
+
+        function closeBankManually() {
+            document.getElementById('bankGui').classList.remove('visible');
+            if (bankTimer) clearInterval(bankTimer);
+        }
+
+        function resetBankTimer() {
+            if (bankTimer) clearInterval(bankTimer);
+            timeLeft = 20;
+            updateTimerDisplay();
+            bankTimer = setInterval(() => {
+                timeLeft--;
+                updateTimerDisplay();
+                if (timeLeft <= 0) {
+                    clearInterval(bankTimer);
+                    document.getElementById('bankGui').classList.remove('visible');
+                }
+            }, 1000);
+        }
+
+        function updateTimerDisplay() {
+            document.getElementById('bankTimerDisplay').innerText = `Window closing in ${timeLeft}s`;
+        }
+
+        function transferToSavings() {
+            if (balance <= 0) return;
+            const amount = balance;
+            balance = 0;
+            savings += amount;
+            showTransferAnimation(`$${amount.toLocaleString()} DEPOSITED`, "bg-blue-600");
+            resetBankTimer();
+            updateUI();
+        }
+
+        function transferToSlots() {
+            if (savings < 100) return;
+            savings -= 100;
+            balance += 100;
+            showTransferAnimation(`$100 WITHDRAWN`, "bg-blue-600");
+            resetBankTimer();
+            updateUI();
+        }
+
+        function showTransferAnimation(msg, bgColor = "bg-blue-600") {
+            const notice = document.createElement('div');
+            notice.className = `fixed top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 ${bgColor} text-white px-6 py-3 rounded-2xl font-black text-[0.6rem] z-[200] animate-bounce shadow-2xl border border-white/20 text-center uppercase`;
+            notice.innerText = msg;
+            document.body.appendChild(notice);
+            setTimeout(() => notice.remove(), 1500);
+        }
+
+        function initReels() {
+            [0,1,2].forEach(idx => {
+                const strip = document.getElementById(`reel${idx}`);
+                strip.innerHTML = '';
+                for (let i = 0; i < STRIP_LENGTH; i++) {
+                    const icon = themes[currentThemeIndex].icons[Math.floor(Math.random() * 4)];
+                    const div = document.createElement('div');
+                    div.className = 'slot-icon';
+                    div.innerHTML = icon;
+                    strip.appendChild(div);
+                }
+            });
+        }
+
+        async function spin() {
+            if (isSpinning || balance < currentBet) {
+                isAutoSpinning = false;
+                updateUI();
+                return;
+            }
+            isSpinning = true;
+            balance -= currentBet;
+            updateUI();
+            
+            const h = 100;
+            const results = [[], [], []];
+            const machine = document.getElementById('machine');
+            machine.classList.add('spinning');
+            document.getElementById('winDisplay').style.display = 'none';
+
+            const spinPromises = [0,1,2].map(i => new Promise(res => {
+                const strip = document.getElementById(`reel${i}`);
+                const targetIdx = Math.floor(Math.random() * (STRIP_LENGTH - 10)) + 5;
+                strip.style.transition = 'none';
+                strip.style.transform = `translateY(0px)`;
+                requestAnimationFrame(() => {
+                    strip.style.transition = `transform ${0.3 + i * 0.1}s cubic-bezier(0.45, 0.05, 0.55, 0.95)`;
+                    strip.style.transform = `translateY(-${targetIdx * h}px)`;
+                });
+                setTimeout(() => {
+                    results[i] = [strip.children[targetIdx-1].innerText, strip.children[targetIdx].innerText, strip.children[targetIdx+1].innerText];
+                    res();
+                }, 400 + i * 100);
+            }));
+
+            await Promise.all(spinPromises);
+            machine.classList.remove('spinning');
+            checkWin(results);
+            isSpinning = false;
+            if (isAutoSpinning) setTimeout(spin, 100);
+        }
+
+        function checkWin(matrix) {
+            let winMultiplier = 0;
+            const flat = matrix.flat();
+            const counts = {};
+            flat.forEach(icon => counts[icon] = (counts[icon] || 0) + 1);
+
+            if (new Set(flat).size === 1) winMultiplier = 1000;
+            else if ((matrix[0][0] === matrix[1][1] && matrix[1][1] === matrix[2][2]) && 
+                     (matrix[0][2] === matrix[1][1] && matrix[1][1] === matrix[2][0])) winMultiplier = 500;
+            else {
+                for (const count of Object.values(counts)) {
+                    if (count >= 3) {
+                        const isLine = [0,1,2].some(r => matrix[0][r] === matrix[1][r] && matrix[1][r] === matrix[2][r]);
+                        winMultiplier += isLine ? 200 : 50;
+                    }
+                }
+            }
+
+            if (winMultiplier > 0) {
+                const totalWin = currentBet * winMultiplier;
+                balance += totalWin;
+                showWin(totalWin);
+            }
+            updateUI();
+        }
+
+        function showWin(amt) {
+            const overlay = document.getElementById('winDisplay');
+            document.getElementById('winAmountText').innerText = `+$${amt.toLocaleString()}`;
+            overlay.style.display = 'block';
+            setTimeout(() => overlay.style.display = 'none', isAutoSpinning ? 400 : 1500);
+        }
+
+        function updateUI() {
+            document.getElementById('balanceText').innerText = `$${balance.toLocaleString()}`;
+            document.getElementById('bankSlotBalanceText').innerText = `$${balance.toLocaleString()}`;
+            document.getElementById('savingsText').innerText = `$${savings.toLocaleString()}`;
+            document.getElementById('betText').innerText = `$${currentBet}`;
+            
+            const autoBtn = document.getElementById('autoBtn');
+            autoBtn.style.color = isAutoSpinning ? '#ef4444' : '#94a3b8';
+            autoBtn.innerText = isAutoSpinning ? "Stop" : "Auto";
+        }
+
+        document.getElementById('spinBtn').addEventListener('click', () => { isAutoSpinning = false; spin(); });
+        document.getElementById('autoBtn').addEventListener('click', () => { isAutoSpinning = !isAutoSpinning; if(isAutoSpinning) spin(); updateUI(); });
+        document.getElementById('betUp').addEventListener('click', () => { currentBet += 10; updateUI(); });
+        document.getElementById('betDown').addEventListener('click', () => { if(currentBet > 10) currentBet -= 10; updateUI(); });
+
+        window.onload = () => { initReels(); updateUI(); };
+    </script>
+</body>
+</html>
