@@ -1,408 +1,266 @@
 <!DOCTYPE html>
-<html lang="no" class="dark">
+<html lang="no">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DevMatch // Randomization Engine</title>
+    <title>Diagonal Blockchain Social</title>
+    <!-- Tailwind CSS for styling -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
     <style>
         :root {
-            --dracula-bg: #1e1e2e;
-            --dracula-current: #313244;
-            --dracula-fg: #cdd6f4;
-            --dracula-pink: #f5c2e7;
-            --dracula-purple: #cba6f7;
-            --dracula-red: #f38ba8;
-            --dracula-cyan: #89dceb;
-            --dracula-green: #a6e3a1;
-            --dracula-orange: #fab387;
+            --primary: #6366f1;
+            --secondary: #ec4899;
+            --dark: #0f172a;
         }
 
         body {
-            background-color: var(--dracula-bg);
-            color: var(--dracula-fg);
-            font-family: 'Fira Code', monospace;
-            overflow: hidden; 
-            height: 100vh;
-            user-select: none;
+            background-color: var(--dark);
+            color: white;
+            font-family: 'Inter', sans-serif;
+            overflow-x: hidden;
         }
 
-        .glass-panel {
-            background: rgba(49, 50, 68, 0.6);
-            backdrop-filter: blur(12px);
-            border: 1px solid rgba(255, 255, 255, 0.05);
-        }
-
-        .heart-pulse {
-            animation: pulse-heart 1.5s infinite;
-        }
-
-        @keyframes pulse-heart {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.1); }
-            100% { transform: scale(1); }
-        }
-
-        .swipe-left { transform: translateX(-150%) rotate(-30deg) !important; opacity: 0 !important; pointer-events: none; }
-        .swipe-right { transform: translateX(150%) rotate(30deg) !important; opacity: 0 !important; pointer-events: none; }
-
-        .code-snippet {
-            background-color: #11111b;
-            border-radius: 0.75rem;
-            padding: 1rem;
-            font-size: 0.6rem;
-            line-height: 1.4;
-            border-left: 4px solid var(--dracula-purple);
-            max-height: 200px;
-            overflow-y: auto;
+        /* Diagonal Modul Stil */
+        .diagonal-section {
             position: relative;
+            padding: 4rem 2rem;
+            background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+            clip-path: polygon(0 5%, 100% 0%, 100% 95%, 0% 100%);
+            margin-top: -2rem;
         }
 
-        .active-nav { color: var(--dracula-red); border-bottom: 2px solid var(--dracula-red); }
-        
-        .profile-img-container {
-            position: relative;
-            height: 240px;
-            overflow: hidden;
-            background: #11111b;
+        .diagonal-card {
+            transform: skewY(-1deg);
+            transition: transform 0.3s ease;
         }
 
-        .terminal-input-line::before {
-            content: "> ";
-            color: var(--dracula-green);
+        .diagonal-card:hover {
+            transform: skewY(0deg) scale(1.02);
         }
 
-        ::-webkit-scrollbar { width: 4px; }
-        ::-webkit-scrollbar-track { background: transparent; }
-        ::-webkit-scrollbar-thumb { background: var(--dracula-current); border-radius: 10px; }
+        .profile-header {
+            height: 350px;
+            background: linear-gradient(45deg, #4f46e5, #9333ea);
+            clip-path: polygon(0 0, 100% 0, 100% 85%, 0 100%);
+        }
+
+        .glass-effect {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #0f172a;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #334155;
+            border-radius: 10px;
+        }
     </style>
 </head>
-<body class="flex flex-col">
+<body>
 
-    <!-- Header -->
-    <header class="border-b border-gray-800/50 p-4 bg-[#11111b]/80 backdrop-blur-md z-50">
-        <div class="max-w-md mx-auto flex justify-between items-center">
-            <div class="flex items-center space-x-2">
-                <i class="fas fa-heart text-red-400 heart-pulse"></i>
-                <h1 class="text-lg font-bold tracking-tighter italic">DevMatch</h1>
-            </div>
-            <div class="text-[9px] font-mono text-cyan-300 uppercase tracking-widest">
-                <span class="animate-pulse">●</span> <span id="total-count">0</span>_UNIQUE_NODES_LIVE
-            </div>
+    <!-- Navigasjon -->
+    <nav class="fixed top-0 w-full z-50 glass-effect p-4 flex justify-between items-center">
+        <div class="flex items-center gap-2">
+            <i data-lucide="share-2" class="text-indigo-400"></i>
+            <span class="font-bold text-xl tracking-tight">CHAINLINKED</span>
         </div>
-    </header>
-
-    <!-- Main Content -->
-    <main id="main-view" class="flex-grow max-w-md mx-auto w-full relative overflow-hidden flex flex-col p-4 pb-20">
-        
-        <!-- DISCOVERY VIEW -->
-        <div id="view-discovery" class="view-segment h-full flex flex-col transition-all duration-300">
-            <div id="current-card" class="rounded-3xl bg-[#181825] border border-white/5 overflow-hidden shadow-2xl transform transition-all duration-500 flex flex-col h-full relative">
-                
-                <div class="profile-img-container">
-                    <img id="dev-photo" src="" alt="Developer Profile" class="w-full h-full object-cover transition-opacity duration-300">
-                    <div id="match-score" class="absolute top-3 right-3 glass-panel px-3 py-1 rounded-full text-[10px] font-bold text-cyan-200">
-                        <i class="fas fa-bolt mr-1"></i> --%
-                    </div>
-                    <div class="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-[#11111b] to-transparent">
-                        <div class="flex items-center space-x-2">
-                            <h2 id="dev-name" class="text-xl font-bold text-white uppercase tracking-tight">Init...</h2>
-                            <span id="dev-gender-icon" class="text-xs"></span>
-                        </div>
-                        <p id="dev-role" class="text-purple-300 text-[10px] font-mono font-bold uppercase tracking-tight">Booting engine...</p>
-                    </div>
-                </div>
-
-                <div class="p-4 space-y-3 flex-grow overflow-y-auto bg-[#181825]">
-                    <div class="flex justify-between items-center text-[9px] font-mono">
-                        <span id="file-name" class="text-gray-500">source.js</span>
-                        <span id="dev-lang" class="text-purple-400 font-bold tracking-widest uppercase">SYSLOG</span>
-                    </div>
-                    <div id="dev-code" class="code-snippet font-mono text-gray-300"></div>
-                    <div id="dev-bio" class="text-[10px] text-gray-400 leading-relaxed border-l-2 border-purple-500/50 pl-3"></div>
-                    <div id="dev-stack" class="flex flex-wrap gap-1.5 mt-2"></div>
-                </div>
-
-                <!-- Action Bar -->
-                <div class="grid grid-cols-3 border-t border-gray-800 bg-[#11111b]">
-                    <button onclick="swipe('left')" class="p-4 flex flex-col items-center hover:bg-red-500/10 transition-colors group">
-                        <div class="w-10 h-10 flex items-center justify-center mb-1 group-active:scale-90">
-                            <i class="fas fa-times text-gray-500 text-xl group-hover:text-red-400"></i>
-                        </div>
-                        <span class="text-[7px] uppercase font-bold text-gray-500">Discard</span>
-                    </button>
-                    <button onclick="openReview()" class="p-4 border-l border-r border-gray-800 flex flex-col items-center hover:bg-cyan-500/10 transition-colors group">
-                        <div class="w-10 h-10 flex items-center justify-center mb-1 group-active:scale-90">
-                            <i class="fas fa-search text-cyan-400 text-xl"></i>
-                        </div>
-                        <span class="text-[7px] uppercase font-bold text-gray-500">Analyze</span>
-                    </button>
-                    <button onclick="swipe('right')" class="p-4 flex flex-col items-center hover:bg-green-500/10 transition-colors group">
-                        <div class="w-10 h-10 flex items-center justify-center mb-1 group-active:scale-90">
-                            <i class="fas fa-check text-green-500 text-xl"></i>
-                        </div>
-                        <span class="text-[7px] uppercase font-bold text-gray-500">Merge</span>
-                    </button>
-                </div>
-            </div>
+        <div class="hidden md:flex gap-6 text-sm font-medium">
+            <a href="#" class="hover:text-indigo-400 transition">Dashboard</a>
+            <a href="#" class="hover:text-indigo-400 transition">Nettverk (4000+)</a>
+            <a href="#" class="hover:text-indigo-400 transition">Utforsk</a>
         </div>
-
-        <!-- MATCH LIST VIEW -->
-        <div id="view-messages" class="view-segment hidden h-full flex flex-col">
-            <h2 class="text-[10px] font-bold uppercase tracking-widest text-gray-500 mb-4 border-b border-gray-800 pb-2">Stable Connections <span id="match-count" class="ml-2 bg-purple-500 text-white px-2 py-0.5 rounded-full text-[9px]">0</span></h2>
-            <div id="chat-list" class="flex-grow overflow-y-auto space-y-2 pr-1"></div>
-        </div>
-
-        <!-- TERMINAL VIEW -->
-        <div id="view-terminal" class="view-segment hidden h-full flex flex-col">
-            <div class="bg-black/40 rounded-t-xl p-2 border-x border-t border-white/5 flex items-center justify-center">
-                <span id="active-chat-name" class="text-[9px] font-mono text-gray-400">~/terminal/ssh_connect</span>
-            </div>
-            <div id="terminal-content" class="bg-[#11111b] border border-white/5 flex-grow p-4 font-mono text-[10px] overflow-y-auto rounded-b-xl flex flex-col">
-                <div id="chat-history" class="space-y-1 mb-4"></div>
-                <div class="mt-auto flex items-center terminal-input-line">
-                    <input id="terminal-input" type="text" class="bg-transparent border-none outline-none flex-grow text-green-400 ml-1" onkeypress="handleTerminal(event)" placeholder="Execute protocol...">
-                </div>
-            </div>
-        </div>
-
-    </main>
-
-    <!-- Navigation -->
-    <nav class="fixed bottom-0 left-0 right-0 bg-[#11111b]/95 backdrop-blur-xl border-t border-gray-800 p-3 z-50">
-        <div class="max-w-md mx-auto flex justify-around">
-            <button onclick="switchView('discovery')" id="nav-discovery" class="nav-btn flex flex-col items-center active-nav">
-                <i class="fas fa-radar text-lg"></i>
-                <span class="text-[7px] mt-1 font-bold uppercase tracking-widest">Scan</span>
-            </button>
-            <button onclick="switchView('messages')" id="nav-messages" class="nav-btn flex flex-col items-center text-gray-500">
-                <i class="fas fa-network-wired text-lg"></i>
-                <span class="text-[7px] mt-1 font-bold uppercase tracking-widest">Nodes</span>
-            </button>
-            <button onclick="switchView('terminal')" id="nav-terminal" class="nav-btn flex flex-col items-center text-gray-500">
-                <i class="fas fa-terminal text-lg"></i>
-                <span class="text-[7px] mt-1 font-bold uppercase tracking-widest">Exec</span>
-            </button>
+        <div class="flex items-center gap-4">
+            <button class="bg-indigo-600 px-4 py-2 rounded-lg text-sm font-semibold hover:bg-indigo-500 transition">Koble Lommebok</button>
         </div>
     </nav>
 
-    <div id="notification-root" class="fixed top-24 inset-x-0 flex flex-col items-center space-y-2 pointer-events-none z-[100]"></div>
+    <!-- Profil Header -->
+    <header class="profile-header flex flex-col justify-center items-center text-center px-4">
+        <div class="mt-12">
+            <div class="w-32 h-32 rounded-2xl border-4 border-white overflow-hidden mb-4 mx-auto rotate-3 hover:rotate-0 transition-transform duration-500">
+                <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Felix" alt="Profilbilde" class="w-full h-full object-cover bg-slate-200">
+            </div>
+            <h1 class="text-4xl font-black">Alex Blockchain</h1>
+            <p class="text-indigo-200 mt-2 font-mono">0x71C...a4f · Web3 Arkitekt</p>
+        </div>
+    </header>
+
+    <!-- Statistikk Modul -->
+    <section class="max-w-6xl mx-auto -mt-10 px-4 relative z-10">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div class="glass-effect p-6 rounded-2xl diagonal-card">
+                <div class="flex items-center gap-4">
+                    <div class="p-3 bg-indigo-500/20 rounded-lg text-indigo-400">
+                        <i data-lucide="users"></i>
+                    </div>
+                    <div>
+                        <p class="text-gray-400 text-sm">Venneliste</p>
+                        <p class="text-2xl font-bold" id="friend-count">300</p>
+                    </div>
+                </div>
+            </div>
+            <div class="glass-effect p-6 rounded-2xl diagonal-card">
+                <div class="flex items-center gap-4">
+                    <div class="p-3 bg-pink-500/20 rounded-lg text-pink-400">
+                        <i data-lucide="link"></i>
+                    </div>
+                    <div>
+                        <p class="text-gray-400 text-sm">Aktive Nettverk</p>
+                        <p class="text-2xl font-bold">4,000+</p>
+                    </div>
+                </div>
+            </div>
+            <div class="glass-effect p-6 rounded-2xl diagonal-card">
+                <div class="flex items-center gap-4">
+                    <div class="p-3 bg-emerald-500/20 rounded-lg text-emerald-400">
+                        <i data-lucide="zap"></i>
+                    </div>
+                    <div>
+                        <p class="text-gray-400 text-sm">Sosial Score</p>
+                        <p class="text-2xl font-bold">98.2</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Hovedinnhold -->
+    <main class="max-w-6xl mx-auto py-16 px-4">
+        <div class="flex flex-col md:flex-row justify-between items-end mb-8 gap-4">
+            <div>
+                <h2 class="text-3xl font-bold">Dine Forbindelser</h2>
+                <p class="text-gray-400">Verifisert via 4000+ blokkjede-protokoller</p>
+            </div>
+            <div class="flex gap-2">
+                <button onclick="exportJSON()" class="text-xs bg-slate-800 border border-slate-700 px-3 py-2 rounded-md hover:bg-slate-700">
+                    <i data-lucide="download" class="inline-block w-3 h-3 mr-1"></i> Eksporter JSON
+                </button>
+            </div>
+        </div>
+
+        <!-- Venne-grid -->
+        <div id="friends-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            <!-- Venner genereres av JavaScript -->
+        </div>
+
+        <!-- Diagonal Dekorativ Seksjon -->
+        <div class="diagonal-section my-20">
+            <div class="max-w-4xl mx-auto text-center py-10">
+                <h3 class="text-3xl font-black mb-4">Globalt Blockchain Nettverk</h3>
+                <p class="text-gray-400 mb-8">Vi støtter over 4000 lag-1 og lag-2 løsninger for sømløs sosial interaksjon på tvers av kjeder.</p>
+                <div class="flex flex-wrap justify-center gap-4 opacity-50">
+                    <span class="px-4 py-2 border border-white/20 rounded-full text-xs">Ethereum</span>
+                    <span class="px-4 py-2 border border-white/20 rounded-full text-xs">Solana</span>
+                    <span class="px-4 py-2 border border-white/20 rounded-full text-xs">Polygon</span>
+                    <span class="px-4 py-2 border border-white/20 rounded-full text-xs">Arbitrum</span>
+                    <span class="px-4 py-2 border border-white/20 rounded-full text-xs">Avalanche</span>
+                    <span class="px-4 py-2 border border-white/20 rounded-full text-xs">Base</span>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- JSON Modal -->
+    <div id="json-modal" class="fixed inset-0 bg-black/80 hidden z-[100] p-4 flex items-center justify-center">
+        <div class="bg-slate-900 w-full max-w-2xl rounded-2xl overflow-hidden border border-slate-700 flex flex-col max-h-[80vh]">
+            <div class="p-4 border-b border-slate-700 flex justify-between items-center">
+                <h3 class="font-bold">Venne-data (JSON)</h3>
+                <button onclick="closeModal()" class="text-gray-400 hover:text-white"><i data-lucide="x"></i></button>
+            </div>
+            <div class="p-4 overflow-auto bg-black font-mono text-xs text-green-400">
+                <pre id="json-content"></pre>
+            </div>
+            <div class="p-4 bg-slate-800 text-right">
+                <button onclick="closeModal()" class="bg-indigo-600 px-6 py-2 rounded-lg font-bold">Lukk</button>
+            </div>
+        </div>
+    </div>
 
     <script>
-        // Avansert Randomiserings-motor
-        const dictionary = {
-            prefix: ["Cyber", "Quantum", "Hyper", "Neo", "Cloud", "Shadow", "Logic", "Meta", "Binary", "Pixel", "Node", "Flux", "Data", "Bit", "Vector"],
-            suffix: ["Ghost", "Wizard", "Architect", "Ninja", "Soul", "Dev", "Core", "Drift", "Pulse", "Flow", "Frame", "Synth", "Byte", "Link", "Sync"],
-            roles: ["Principal Romance Architect", "Senior Love Validator", "Lead Heartbeat Engineer", "Fullstack Passion Dev", "Head of Emotional Logic", "Security Researcher of Hearts"],
-            techs: ["React", "Rust", "Go", "Docker", "GraphQL", "Three.js", "K8s", "Wasm", "Svelte", "Postgres", "Redis", "Elixir", "Zig", "Astro", "Tailwind"],
-            bios: [
-                "Søker en partner for distribuert lykke.",
-                "Mitt hjerte kjører på en 99.9% oppetid-garanti.",
-                "Spesialisert i dype forbindelser og lav latens.",
-                "Ser etter noen som forstår min private nøkkel.",
-                "Jeg har ingen bugs, bare uforutsette romantiske funksjoner.",
-                "Ekspert på pair-programming under stjernene.",
-                "Hjertet mitt er Open Source - bidra med din kjærlighet."
-            ]
-        };
+        // Initialiser Lucide Ikoner
+        lucide.createIcons();
 
-        const jsGenerators = [
-            (name) => `const ${name.toLowerCase().split(' ')[0]} = {\n  type: "Human",\n  status: "Searching",\n  vibe: 1.0,\n  connect: () => true\n};`,
-            (name) => `function requestMatch() {\n  return fetch('/api/heart/${name}')\n    .then(res => res.love());\n}`,
-            (name) => `export default class Soul {\n  constructor() {\n    this.owner = "${name}";\n    this.locked = false;\n  }\n}`,
-            (name) => `// Heartbeat monitor v2\nsetInterval(() => {\n  pulse("${name}");\n}, 1000);`
+        // Data-generering for 300 venner
+        const purposes = [
+            "Governance Samarbeid", 
+            "NFT Trading", 
+            "DeFi Staking Partner", 
+            "Utvikling", 
+            "DAO Stemmegiving", 
+            "Gaming Squad", 
+            "Alpha Sharing"
         ];
 
-        const jsonGenerators = [
-            (name) => `{\n  "id": "${crypto.randomUUID().slice(0,8)}",\n  "name": "${name}",\n  "objective": "PAIR_BONDING",\n  "version": "2.1.0"\n}`,
-            (name) => `{\n  "profile": {\n    "user": "${name}",\n    "bio": "Extending core romance",\n    "active": true\n  }\n}`
-        ];
+        const friendNames = ["Erik", "Sofia", "Lars", "Ingrid", "Marius", "Hanne", "Ola", "Kari", "Sander", "Thea"];
+        
+        let friendsData = [];
 
-        let profiles = [];
-        let currentIndex = 0;
-        let matches = [];
-        let activeChatIndex = -1;
-
-        // Oppretter 3000 helt unike profiler
-        function bootProfiles() {
-            const count = 3000;
-            const generatedNames = new Set();
-            
-            for (let i = 0; i < count; i++) {
-                let firstName = dictionary.prefix[Math.floor(Math.random() * dictionary.prefix.length)];
-                let lastName = dictionary.suffix[Math.floor(Math.random() * dictionary.suffix.length)];
-                let fullName = `${firstName} ${lastName}`;
+        function generateFriends() {
+            for (let i = 1; i <= 300; i++) {
+                const randomName = friendNames[Math.floor(Math.random() * friendNames.length)];
+                const purpose = purposes[Math.floor(Math.random() * purposes.length)];
+                const networks = Math.floor(Math.random() * 4000) + 1;
                 
-                // Sikre unikhet
-                let attempt = 0;
-                while(generatedNames.has(fullName) && attempt < 100) {
-                    fullName = `${firstName} ${lastName} ${Math.floor(Math.random()*999)}`;
-                    attempt++;
-                }
-                generatedNames.add(fullName);
-
-                const isJson = Math.random() > 0.5;
-                const codeGen = isJson ? jsonGenerators[i % jsonGenerators.length] : jsGenerators[i % jsGenerators.length];
-
-                profiles.push({
+                friendsData.push({
                     id: i,
-                    name: fullName,
-                    role: dictionary.roles[i % dictionary.roles.length],
-                    photo: `https://images.unsplash.com/photo-${1500000000000 + (i * 123456) % 999999999999}?auto=format&fit=crop&q=60&w=500`,
-                    code: codeGen(fullName),
-                    bio: dictionary.bios[i % dictionary.bios.length],
-                    match: (70 + Math.random() * 30).toFixed(1) + "%",
-                    stack: [...dictionary.techs].sort(() => Math.random() - 0.5).slice(0, 3),
-                    file: `node_${i}.${isJson ? 'json' : 'js'}`
+                    name: `${randomName} # ${i}`,
+                    purpose: purpose,
+                    active_networks: networks,
+                    trust_score: (Math.random() * (100 - 80) + 80).toFixed(1),
+                    avatar: `https://api.dicebear.com/7.x/avataaars/svg?seed=${i + 100}`
                 });
             }
-            document.getElementById('total-count').innerText = count;
+            renderFriends(friendsData.slice(0, 12)); // Vis de første 12 som standard
         }
 
-        function switchView(viewName) {
-            document.querySelectorAll('.view-segment').forEach(v => v.classList.add('hidden'));
-            document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active-nav', 'text-gray-500'));
-            document.getElementById(`view-${viewName}`).classList.remove('hidden');
-            document.getElementById(`nav-${viewName}`).classList.add('active-nav');
-            if(viewName === 'messages') renderMatches();
-        }
-
-        function renderCurrent() {
-            const dev = profiles[currentIndex];
-            const card = document.getElementById('current-card');
-            card.classList.remove('swipe-left', 'swipe-right', 'opacity-0');
-            
-            const img = document.getElementById('dev-photo');
-            img.style.opacity = '0';
-            img.src = dev.photo;
-            img.onerror = () => { img.src = "https://images.unsplash.com/photo-1511367461989-f85a21fda167?auto=format&fit=crop&q=80&w=600"; };
-            img.onload = () => img.style.opacity = '1';
-
-            document.getElementById('dev-name').innerText = dev.name;
-            document.getElementById('dev-role').innerText = dev.role;
-            document.getElementById('match-score').innerHTML = `<i class="fas fa-bolt mr-1"></i> ${dev.match}`;
-            document.getElementById('dev-code').innerHTML = `<pre class="whitespace-pre-wrap">${dev.code}</pre>`;
-            document.getElementById('dev-bio').innerText = dev.bio;
-            document.getElementById('file-name').innerText = dev.file;
-            document.getElementById('dev-lang').innerText = dev.file.split('.').pop().toUpperCase();
-            
-            const stack = document.getElementById('dev-stack');
-            stack.innerHTML = '';
-            dev.stack.forEach(s => {
-                const span = document.createElement('span');
-                span.className = "bg-purple-500/10 border border-purple-500/20 px-2 py-0.5 rounded text-[7px] font-bold text-purple-300 uppercase";
-                span.innerText = s;
-                stack.appendChild(span);
-            });
-        }
-
-        function swipe(direction) {
-            const card = document.getElementById('current-card');
-            const dev = profiles[currentIndex];
-            
-            if(direction === 'right') {
-                card.classList.add('swipe-right');
-                notify(`NODE_MERGE_SUCCESS: ${dev.name}`, "green");
-                matches.unshift(dev);
-                document.getElementById('match-count').innerText = matches.length;
-            } else {
-                card.classList.add('swipe-left');
-                notify("CONNECTION_REFUSED", "red");
-            }
-
-            setTimeout(() => {
-                currentIndex = (currentIndex + 1) % profiles.length;
-                renderCurrent();
-                card.style.transition = 'none';
-                card.style.transform = 'scale(0.9)';
-                setTimeout(() => {
-                    card.style.transition = 'all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275)';
-                    card.style.transform = 'scale(1)';
-                }, 50);
-            }, 300);
-        }
-
-        function renderMatches() {
-            const list = document.getElementById('chat-list');
-            list.innerHTML = '';
-            if(matches.length === 0) {
-                list.innerHTML = `<div class="text-center py-20 opacity-20 text-[9px] font-mono">NO STABLE CONNECTIONS FOUND</div>`;
-                return;
-            }
-            matches.forEach((m, idx) => {
-                const div = document.createElement('div');
-                div.className = "glass-panel p-3 rounded-xl flex items-center space-x-3 cursor-pointer hover:bg-white/5 transition-all border-l-2 border-cyan-500 mb-2";
-                div.innerHTML = `
-                    <div class="w-8 h-8 rounded-full bg-gray-900 border border-white/10 flex-shrink-0 overflow-hidden">
-                        <img src="${m.photo}" class="w-full h-full object-cover">
-                    </div>
-                    <div class="flex-grow">
-                        <div class="flex justify-between items-center">
-                            <span class="text-[10px] font-bold text-gray-200">${m.name}</span>
-                            <span class="text-[7px] text-green-400 font-mono animate-pulse">ALIVE</span>
+        function renderFriends(data) {
+            const grid = document.getElementById('friends-grid');
+            grid.innerHTML = data.map(friend => `
+                <div class="glass-effect p-5 rounded-2xl diagonal-card border-l-4 border-indigo-500">
+                    <div class="flex items-start gap-4">
+                        <img src="${friend.avatar}" alt="${friend.name}" class="w-12 h-12 rounded-lg bg-slate-800">
+                        <div class="flex-1">
+                            <h4 class="font-bold text-lg">${friend.name}</h4>
+                            <p class="text-indigo-400 text-xs font-semibold mb-2 italic">"${friend.purpose}"</p>
+                            <div class="flex justify-between items-center text-[10px] text-gray-500 font-mono">
+                                <span>Kabler: ${friend.active_networks}</span>
+                                <span class="text-emerald-400">Tillit: ${friend.trust_score}%</span>
+                            </div>
                         </div>
-                        <p class="text-[8px] text-gray-500 font-mono truncate">Ready for handshake...</p>
                     </div>
-                `;
-                div.onclick = () => openChat(idx);
-                list.appendChild(div);
-            });
+                </div>
+            `).join('');
+            lucide.createIcons();
         }
 
-        function openChat(idx) {
-            activeChatIndex = idx;
-            const dev = matches[idx];
-            document.getElementById('active-chat-name').innerText = `ssh://${dev.name.toLowerCase().replace(' ', '_')}@devmatch.io`;
-            document.getElementById('chat-history').innerHTML = `<div class="text-gray-600 text-[8px]">[SYSTEM] Handshake complete. Encrypted tunnel established.</div>`;
-            switchView('terminal');
+        // JSON Funksjonalitet
+        function exportJSON() {
+            const content = document.getElementById('json-content');
+            content.textContent = JSON.stringify({
+                app_id: "diagonal_chain_v1",
+                total_friends: 300,
+                networks_available: 4000,
+                friends: friendsData
+            }, null, 2);
+            document.getElementById('json-modal').classList.remove('hidden');
         }
 
-        function handleTerminal(e) {
-            if(e.key === 'Enter') {
-                const input = document.getElementById('terminal-input');
-                const text = input.value.trim();
-                if(!text) return;
-
-                const history = document.getElementById('chat-history');
-                history.innerHTML += `<div class="text-cyan-400">user@local:~$ ${text}</div>`;
-                input.value = '';
-                
-                setTimeout(() => {
-                    const dev = matches[activeChatIndex] || {name: "Unknown"};
-                    const responses = [
-                        `Acknowledged. Your logic is sound.`,
-                        `Merging heart.repo... Done.`,
-                        `Error: Too much charm detected in your input.`,
-                        `Shall we initiate a coffee-break.sh?`,
-                        `Protocol: LOVE_CONFIRMED.`
-                    ];
-                    history.innerHTML += `<div class="text-purple-400">${dev.name.toLowerCase()}@remote:~$ ${responses[Math.floor(Math.random() * responses.length)]}</div>`;
-                    const container = document.getElementById('terminal-content');
-                    container.scrollTop = container.scrollHeight;
-                }, 600);
-            }
+        function closeModal() {
+            document.getElementById('json-modal').classList.add('hidden');
         }
 
-        function notify(text, color) {
-            const root = document.getElementById('notification-root');
-            const n = document.createElement('div');
-            const bg = color === 'green' ? "bg-green-600/90" : "bg-red-600/90";
-            n.className = `${bg} text-white text-[8px] font-bold px-4 py-1.5 rounded border border-white/10 shadow-xl z-[200] uppercase`;
-            n.innerText = text;
-            root.appendChild(n);
-            setTimeout(() => n.remove(), 1500);
-        }
-
-        function openReview() { notify("RUNNING DEEP_SCAN...", "green"); }
-
-        window.onload = () => {
-            bootProfiles();
-            renderCurrent();
-        };
+        // Start applikasjonen
+        window.onload = generateFriends;
     </script>
 </body>
 </html>
-
 
