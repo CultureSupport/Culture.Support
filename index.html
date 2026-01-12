@@ -12,6 +12,7 @@
             --glass: rgba(255, 255, 255, 0.05);
             --glass-border: rgba(255, 255, 255, 0.15);
             --spooky-purple: #4c1d95;
+            --mega-gold: #fbbf24;
         }
 
         body {
@@ -26,7 +27,25 @@
             padding: 0;
         }
 
-        /* Optimized Top Floating Banner */
+        /* Machine Shake Animation */
+        @keyframes shake {
+            0% { transform: translate(1px, 1px) rotate(0deg); }
+            10% { transform: translate(-1px, -2px) rotate(-1deg); }
+            20% { transform: translate(-3px, 0px) rotate(1deg); }
+            30% { transform: translate(3px, 2px) rotate(0deg); }
+            40% { transform: translate(1px, -1px) rotate(1deg); }
+            50% { transform: translate(-1px, 2px) rotate(-1deg); }
+            60% { transform: translate(-3px, 1px) rotate(0deg); }
+            70% { transform: translate(3px, 1px) rotate(-1deg); }
+            80% { transform: translate(-1px, -1px) rotate(1deg); }
+            90% { transform: translate(1px, 2px) rotate(0deg); }
+            100% { transform: translate(1px, -2px) rotate(-1deg); }
+        }
+
+        .shaking {
+            animation: shake 0.5s infinite;
+        }
+
         .top-banner {
             background: linear-gradient(90deg, transparent, rgba(76, 29, 149, 0.3), transparent);
             height: 32px;
@@ -46,7 +65,6 @@
             text-transform: uppercase;
             letter-spacing: 1px;
             font-size: 0.75rem;
-            text-shadow: 0 0 10px rgba(167, 139, 250, 0.5);
         }
 
         @keyframes marquee {
@@ -54,7 +72,6 @@
             100% { transform: translateX(-100%); }
         }
 
-        /* 3D Slot Machine Container - Compact */
         .slot-perspective {
             perspective: 2000px;
             flex: 1;
@@ -94,7 +111,6 @@
             z-index: 2;
         }
 
-        /* Lever Container */
         .lever-container {
             width: 30px;
             height: 180px;
@@ -138,9 +154,7 @@
             box-shadow: 0 5px 15px rgba(0,0,0,0.5);
         }
 
-        .lever-arm.pulling {
-            transform: rotateX(70deg);
-        }
+        .lever-arm.pulling { transform: rotateX(70deg); }
 
         .reel-container {
             flex: 1;
@@ -162,7 +176,7 @@
         }
 
         .slot-icon {
-            height: 100px; /* Base height, adjusted by JS */
+            height: 100px;
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -170,7 +184,6 @@
             font-size: 2.8rem;
             text-align: center;
             padding: 2px;
-            filter: drop-shadow(0 0 5px rgba(255,255,255,0.1));
         }
 
         .icon-label {
@@ -181,7 +194,6 @@
             font-weight: 800;
         }
 
-        /* Glassmorphic Compact UI */
         .glass-panel {
             background: var(--glass);
             backdrop-filter: blur(10px);
@@ -206,10 +218,8 @@
         .btn-active-auto {
             background: rgba(239, 68, 68, 0.2);
             border-color: #ef4444;
-            color: #fca5a5;
         }
 
-        /* Footer Controls - Compact height */
         .game-footer {
             background: rgba(2, 6, 23, 0.98);
             border-top: 1px solid #312e81;
@@ -237,6 +247,33 @@
             cursor: pointer;
         }
 
+        /* Win Overlay Enhanced */
+        .win-overlay {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(15, 23, 42, 0.98);
+            padding: 20px 40px;
+            border-radius: 20px;
+            border: 3px solid var(--mega-gold);
+            text-align: center;
+            display: none;
+            z-index: 100;
+            box-shadow: 0 0 100px rgba(251, 191, 36, 0.5);
+            pointer-events: none;
+            min-width: 280px;
+        }
+
+        .win-tier {
+            font-size: 0.75rem;
+            color: var(--mega-gold);
+            text-transform: uppercase;
+            letter-spacing: 4px;
+            font-weight: 900;
+            margin-bottom: 5px;
+        }
+
         @media (max-width: 640px) {
             .machine-body { width: 92vw; height: 50vh; }
             .slot-icon { font-size: 2.2rem; }
@@ -244,29 +281,13 @@
             .game-footer { gap: 6px; padding: 6px; }
             .main-spin-btn { width: 55px; height: 55px; font-size: 0.75rem; }
         }
-
-        .win-overlay {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            background: rgba(15, 23, 42, 0.95);
-            padding: 20px;
-            border-radius: 20px;
-            border: 2px solid #818cf8;
-            text-align: center;
-            display: none;
-            z-index: 100;
-            box-shadow: 0 0 50px rgba(99, 102, 241, 0.5);
-            pointer-events: none;
-        }
     </style>
 </head>
 <body>
 
     <header class="top-banner">
         <div class="marquee" id="marqueeText">
-            💀 SPOOKY SLOTS: ANCIENT CURSES & THUNDER IGNITIONS • DIAGONAL LINES NOW PAYING 100X • BEWARE THE MOON... 💀
+            🎰 TRIPLE JACKPOT: MATCH ENTIRE WINDOW FOR 1000X • EXPLODING JACKPOT: CROSS DIAGONAL HIT SHAKES THE Slot Machine • 🎰
         </div>
     </header>
 
@@ -283,15 +304,16 @@
     </div>
 
     <div class="slot-perspective">
-        <div class="machine-wrapper">
+        <div class="machine-wrapper" id="shakeTarget">
             <div class="machine-body" id="machine">
                 <div class="reel-container"><div class="reel-strip" id="reel0"></div></div>
                 <div class="reel-container"><div class="reel-strip" id="reel1"></div></div>
                 <div class="reel-container"><div class="reel-strip" id="reel2"></div></div>
 
                 <div id="winDisplay" class="win-overlay">
-                    <h2 class="text-2xl font-black text-indigo-400 italic">BIG WIN!</h2>
-                    <p id="winAmountText" class="text-xl font-bold text-white">+$0</p>
+                    <div class="win-tier" id="winTierText">Super Win</div>
+                    <h2 class="text-3xl font-black text-white italic" id="winLabelText">JACKPOT!</h2>
+                    <p id="winAmountText" class="text-2xl font-bold text-yellow-400">+$0</p>
                 </div>
             </div>
             <div class="lever-container">
@@ -336,7 +358,7 @@
             const gain = audioCtx.createGain();
             osc.type = type;
             osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
-            osc.frequency.exponentialRampToValueAtTime(freq / 2, audioCtx.currentTime + duration);
+            osc.frequency.exponentialRampToValueAtTime(freq / 4, audioCtx.currentTime + duration);
             gain.gain.setValueAtTime(0.05, audioCtx.currentTime);
             gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + duration);
             osc.connect(gain);
@@ -355,18 +377,18 @@
             { name: "Celestial Night", low: [{emoji: "☁️", label: "Cloud"}], high: [{emoji: "🌙", label: "Moon"}, {emoji: "🪐", label: "Planet"}, {emoji: "☄️", label: "Comet"}] }
         ];
 
-        let currentThemeIndex = 0;
         let balance = 1000;
         let currentBet = 10;
         let isSpinning = false;
         let isAutoSpinning = false;
+        let currentThemeIndex = 0;
         
         const REEL_STRIPS = [document.getElementById('reel0'), document.getElementById('reel1'), document.getElementById('reel2')];
-        const STRIP_SIZE = 40;
+        const STRIP_SIZE = 50;
 
         function getIconHeight() {
             const machineHeight = document.getElementById('machine').offsetHeight;
-            return machineHeight / 3; // Ensure 3 icons fit exactly in the view
+            return machineHeight / 3;
         }
 
         function initReels() {
@@ -397,17 +419,17 @@
             balance -= currentBet;
             updateUI();
             
-            playSpookySound(100, 'sine', 0.2);
+            playSpookySound(150, 'sine', 0.2);
             document.getElementById('spinBtn').disabled = true;
             document.getElementById('winDisplay').style.display = 'none';
 
             const resultsMatrix = [[], [], []];
-            const iconHeight = getIconHeight();
+            const h = getIconHeight();
 
             const spinPromises = REEL_STRIPS.map((strip, i) => {
                 return new Promise(resolve => {
                     const targetIdx = Math.floor(Math.random() * (STRIP_SIZE - 6)) + 2;
-                    const stopPos = targetIdx * iconHeight;
+                    const stopPos = targetIdx * h;
                     
                     strip.style.transition = 'none';
                     strip.style.transform = `translateY(0px)`;
@@ -423,7 +445,6 @@
                             strip.children[targetIdx].querySelector('span').innerText,
                             strip.children[targetIdx + 1].querySelector('span').innerText
                         ];
-                        playSpookySound(80, 'square', 0.1);
                         resolve();
                     }, 2200 + i * 400);
                 });
@@ -434,55 +455,94 @@
             isSpinning = false;
             document.getElementById('spinBtn').disabled = false;
 
-            if (isAutoSpinning) setTimeout(spin, 1000);
+            if (isAutoSpinning) setTimeout(spin, 1200);
         }
 
         function checkWin(matrix) {
             let winMultiplier = 0;
+            let winType = "Normal Win";
+            let doShake = false;
+
             const theme = themes[currentThemeIndex];
             const highEmojis = theme.high.map(h => h.emoji);
+
+            // Lines: [reel0, reel1, reel2]
             const lines = [
-                [matrix[0][1], matrix[1][1], matrix[2][1]],
-                [matrix[0][0], matrix[1][0], matrix[2][0]],
-                [matrix[0][2], matrix[1][2], matrix[2][2]],
-                [matrix[0][0], matrix[1][1], matrix[2][2]],
-                [matrix[0][2], matrix[1][1], matrix[2][0]]
+                { id: "Mid Hor", icons: [matrix[0][1], matrix[1][1], matrix[2][1]] },
+                { id: "Top Hor", icons: [matrix[0][0], matrix[1][0], matrix[2][0]] },
+                { id: "Bot Hor", icons: [matrix[0][2], matrix[1][2], matrix[2][2]] },
+                { id: "Diag Down", icons: [matrix[0][0], matrix[1][1], matrix[2][2]] },
+                { id: "Diag Up", icons: [matrix[0][2], matrix[1][1], matrix[2][0]] },
+                { id: "Left Vert", icons: [matrix[0][0], matrix[0][1], matrix[0][2]] },
+                { id: "Mid Vert", icons: [matrix[1][0], matrix[1][1], matrix[1][2]] },
+                { id: "Right Vert", icons: [matrix[2][0], matrix[2][1], matrix[2][2]] }
             ];
 
-            lines.forEach((line, index) => {
-                if (line[0] === line[1] && line[1] === line[2]) {
-                    const isHigh = highEmojis.includes(line[0]);
-                    winMultiplier += index >= 3 ? (isHigh ? 100 : 20) : (isHigh ? 50 : 10);
-                }
-            });
+            const winningLines = lines.filter(l => l.icons[0] === l.icons[1] && l.icons[1] === l.icons[2]);
+            
+            // 1. Triple Jackpot Check (Full window identical icons)
+            const allIcons = matrix.flat();
+            const uniqueIcons = new Set(allIcons);
+            if (uniqueIcons.size === 1) {
+                winMultiplier = 1000;
+                winType = "TRIPLE JACKPOT";
+                doShake = true;
+            } 
+            // 2. Exploding Jackpot (Double Cross Diagonals)
+            else if (winningLines.some(l => l.id === "Diag Down") && winningLines.some(l => l.id === "Diag Up")) {
+                winMultiplier = 500;
+                winType = "EXPLODING JACKPOT";
+                doShake = true;
+            }
+            // 3. Mega Jackpot (Full icon line window - same icon on same line across all)
+            else if (winningLines.length >= 3) {
+                winMultiplier = 250;
+                winType = "MEGA JACKPOT";
+            }
+            // 4. Standard Lines
+            else {
+                winningLines.forEach(l => {
+                    const isHigh = highEmojis.includes(l.icons[0]);
+                    if (l.id.includes("Diag")) {
+                        winMultiplier += isHigh ? 100 : 30; // 100x Diagonal High
+                    } else if (l.id.includes("Vert")) {
+                        winMultiplier += isHigh ? 50 : 20;  // 50x Vertical High
+                    } else {
+                        winMultiplier += isHigh ? 200 : 15; // 200x Line Bar Icon specific
+                    }
+                });
+            }
 
             if (winMultiplier > 0) {
                 const win = currentBet * winMultiplier;
                 balance += win;
-                showWin(win);
-                playSpookySound(440, 'triangle', 0.6);
+                showWin(win, winType, doShake);
+                playSpookySound(doShake ? 600 : 440, 'square', doShake ? 1.5 : 0.8);
             }
             updateUI();
         }
 
-        function showWin(amount) {
+        function showWin(amount, type, doShake) {
             const display = document.getElementById('winDisplay');
-            document.getElementById('winAmountText').innerText = `+$${amount}`;
+            const target = document.getElementById('shakeTarget');
+            document.getElementById('winTierText').innerText = type;
+            document.getElementById('winAmountText').innerText = `+$${amount.toLocaleString()}`;
+            
             display.style.display = 'block';
-            setTimeout(() => display.style.display = 'none', 2500);
+            if (doShake) target.classList.add('shaking');
+
+            setTimeout(() => {
+                display.style.display = 'none';
+                target.classList.remove('shaking');
+            }, 3000);
         }
 
         function updateUI() {
             document.getElementById('balanceText').innerText = `$${balance.toLocaleString()}`;
             document.getElementById('betText').innerText = `$${currentBet}`;
             const autoBtn = document.getElementById('autoBtn');
-            if (isAutoSpinning) {
-                autoBtn.classList.add('btn-active-auto');
-                autoBtn.innerText = "Stop";
-            } else {
-                autoBtn.classList.remove('btn-active-auto');
-                autoBtn.innerText = "Auto";
-            }
+            autoBtn.innerText = isAutoSpinning ? "Stop" : "Auto";
+            autoBtn.className = `btn-glass py-1.5 ${isAutoSpinning ? 'btn-active-auto' : ''}`;
         }
 
         const handleLeverPull = () => {
@@ -503,7 +563,7 @@
         document.getElementById('betDown').addEventListener('click', () => { if (currentBet > 10) currentBet -= 10; updateUI(); });
         document.getElementById('themeSelect').addEventListener('change', (e) => { currentThemeIndex = parseInt(e.target.value); initReels(); });
 
-        window.addEventListener('resize', () => { initReels(); });
+        window.addEventListener('resize', initReels);
         initReels();
         updateUI();
     </script>
