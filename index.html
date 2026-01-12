@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Culture.Support / Jesus Christ Slot Game </title>
+    <title>Jesus Christ Aid Slot</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         :root {
@@ -28,18 +28,18 @@
         }
 
         .top-banner {
-            background: #020617;
+            background: #1e1b4b;
             height: 28px;
             display: flex;
             align-items: center;
             overflow: hidden;
-            border-bottom: 1px solid rgba(255,255,255,0.1);
+            border-bottom: 1px solid rgba(251, 191, 36, 0.3);
             flex-shrink: 0;
         }
 
         .marquee {
             white-space: nowrap;
-            animation: marquee 15s linear infinite;
+            animation: marquee 20s linear infinite;
             color: #fbbf24;
             font-weight: 900;
             font-size: 0.7rem;
@@ -98,7 +98,7 @@
             position: absolute;
             font-size: 0.5rem;
             font-weight: 900;
-            padding: 1px 4px;
+            padding: 2px 5px;
             border-radius: 3px;
             text-transform: uppercase;
             animation: pulse-signal 1s infinite;
@@ -124,25 +124,25 @@
             width: 85vw;
             max-width: 480px;
             height: calc(var(--icon-size) * 3 + 20px);
-            background: #0f172a;
-            border: 3px solid #334155;
-            border-radius: 12px;
+            background: linear-gradient(145deg, #1e1b4b, #020617);
+            border: 4px solid #fbbf24;
+            border-radius: 16px;
             display: flex;
             justify-content: space-between;
             align-items: center;
             padding: 10px;
             gap: 8px;
-            box-shadow: 0 0 40px rgba(0,0,0,0.8);
+            box-shadow: 0 0 50px rgba(251, 191, 36, 0.2);
         }
 
         .reel-container {
             flex: 1;
             height: calc(var(--icon-size) * 3);
             background: #000;
-            border-radius: 6px;
+            border-radius: 8px;
             overflow: hidden;
             position: relative;
-            border: 1px solid #1e293b;
+            border: 2px solid rgba(251, 191, 36, 0.2);
         }
 
         .reel-strip {
@@ -157,9 +157,19 @@
         .slot-icon {
             height: var(--icon-size);
             display: flex;
+            flex-direction: column;
             align-items: center;
             justify-content: center;
-            font-size: 2.8rem;
+            font-size: 3rem;
+            text-shadow: 0 0 10px rgba(255,255,255,0.3);
+        }
+
+        .icon-label {
+            font-size: 0.45rem;
+            font-weight: 800;
+            color: #94a3b8;
+            margin-top: -5px;
+            text-transform: uppercase;
         }
 
         input[type=range] {
@@ -173,31 +183,38 @@
         input[type=range]::-webkit-slider-thumb {
             -webkit-appearance: none;
             height: 16px; width: 16px; border-radius: 50%;
-            background: #10b981; cursor: pointer; border: 2px solid white;
+            background: #fbbf24; cursor: pointer; border: 2px solid white;
         }
 
         .game-footer {
             background: #020617;
             padding: 12px 15px env(safe-area-inset-bottom);
             display: grid;
-            grid-template-columns: 1.2fr auto 1.2fr;
+            grid-template-columns: 1fr auto 1fr;
             align-items: center;
-            border-top: 1px solid #1e293b;
+            border-top: 2px solid #fbbf24;
             z-index: 40;
             gap: 10px;
         }
 
         .main-spin-btn {
-            background: linear-gradient(to bottom, #ef4444, #b91c1c);
-            width: 70px; height: 70px; border-radius: 50%; border: 4px solid #fca5a5;
-            color: white; font-weight: 900; box-shadow: 0 0 20px rgba(239, 68, 68, 0.4);
+            background: linear-gradient(to bottom, #fbbf24, #d97706);
+            width: 75px; height: 75px; border-radius: 50%; border: 4px solid #fef3c7;
+            color: #451a03; font-weight: 900; box-shadow: 0 0 25px rgba(251, 191, 36, 0.5);
             cursor: pointer;
+            transition: all 0.1s;
+        }
+
+        .main-spin-btn:active {
+            transform: scale(0.92);
+            box-shadow: 0 0 10px rgba(251, 191, 36, 0.8);
         }
 
         .win-overlay {
             position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
-            background: rgba(0,0,0,0.95); padding: 20px; border: 2px solid var(--mega-gold);
-            text-align: center; display: none; z-index: 100; border-radius: 15px; width: 220px;
+            background: rgba(15, 23, 42, 0.98); padding: 25px; border: 3px solid var(--mega-gold);
+            text-align: center; display: none; z-index: 100; border-radius: 20px; width: 240px;
+            box-shadow: 0 0 100px rgba(251, 191, 36, 0.4);
         }
     </style>
 </head>
@@ -205,7 +222,7 @@
 
     <header class="top-banner">
         <div class="marquee" id="marqueeText">
-            🌍 AUTO-AID: 2% COMMISSION • MOBILE BANK: $2,000,000 Mobile Bank is ACTIVE • Send Also Mobile Fund to Aid Before Start Play Slot Machine • Manage 2 Million in Aid Transfeer and Slot Machine Game From Mobile Bank | Manage Repeat Transfeer  
+           ✨ JESUS CHRIST AID SLOT: SPREADING LOVE THROUGH GIVING • AUTO-AID: 2%-20% ON EVERY WIN • BANK ACCOUNT SECURED WITH $2M • 2026 Donation aid trough Jesus Christ Slott Machine Game Play ✨
         </div>
     </header>
 
@@ -214,8 +231,8 @@
         <div class="side-panel aid-panel" id="aidGui">
             <div class="flex items-center justify-between mb-2">
                 <div class="flex flex-col">
-                    <span class="text-[0.6rem] font-black text-emerald-400">AID BAROMETER</span>
-                    <span class="text-[0.4rem] text-slate-500 uppercase tracking-widest">Global Performance</span>
+                    <span class="text-[0.65rem] font-black text-emerald-400">FAITH BAROMETER</span>
+                    <span class="text-[0.4rem] text-slate-500 uppercase tracking-widest">Charity Performance</span>
                 </div>
                 <button onclick="toggleAid(false)" class="text-slate-500">✕</button>
             </div>
@@ -230,55 +247,51 @@
                     <span id="aidTargetLabel" class="font-bold text-white italic">PALESTINE</span>
                     <span class="text-emerald-400 font-black" id="aidDonatedText">$0</span>
                 </div>
-                <div class="text-[0.45rem] text-slate-400">Total Funds Distributed Globally</div>
+                <div class="text-[0.45rem] text-slate-400">Helping Slum Communities & Refugees</div>
             </div>
 
             <div class="px-1 mb-4">
                 <div class="flex justify-between text-[0.55rem] font-bold text-slate-400 mb-1">
-                    <span>AID COMMISSION (2% - 20%)</span>
+                    <span>GIVING COMMISSION (2% - 20%)</span>
                     <span class="text-emerald-400 bg-emerald-950 px-1 rounded" id="aidPercLabel">2%</span>
                 </div>
                 <input type="range" id="aidSlider" min="2" max="20" value="2" oninput="updateAidPerc(this.value)">
             </div>
 
             <div class="grid grid-cols-4 gap-1 mb-3">
-                <button onclick="switchAid('Palestine')" class="text-[0.4rem] bg-slate-900 border border-slate-800 p-1 rounded hover:bg-slate-800">PALESTINE</button>
-                <button onclick="switchAid('Syria')" class="text-[0.4rem] bg-slate-900 border border-slate-800 p-1 rounded hover:bg-slate-800">SYRIA</button>
-                <button onclick="switchAid('Africa')" class="text-[0.4rem] bg-slate-900 border border-slate-800 p-1 rounded hover:bg-slate-800">AFRICA</button>
-                <button onclick="switchAid('Slovenia')" class="text-[0.4rem] bg-slate-900 border border-slate-800 p-1 rounded hover:bg-slate-800">SLOVENIA</button>
+                <button onclick="switchAid('Palestine')" class="text-[0.4rem] bg-slate-900 border border-slate-800 p-1 rounded">PALESTINE</button>
+                <button onclick="switchAid('Syria')" class="text-[0.4rem] bg-slate-900 border border-slate-800 p-1 rounded">SYRIA</button>
+                <button onclick="switchAid('Africa')" class="text-[0.4rem] bg-slate-900 border border-slate-800 p-1 rounded">AFRICA</button>
+                <button onclick="switchAid('Slovenia')" class="text-[0.4rem] bg-slate-900 border border-slate-800 p-1 rounded">SLOVENIA</button>
             </div>
 
-            <button onclick="manualAidSync()" class="w-full bg-emerald-600 py-2 rounded-lg text-[0.6rem] font-black shadow-lg">MANUAL 2% BAROMETER SYNC</button>
+            <button onclick="manualAidSync()" class="w-full bg-emerald-600 py-2 rounded-lg text-[0.6rem] font-black shadow-lg">MANUAL TITHE SYNC</button>
         </div>
 
         <!-- Mobile Bank Panel -->
         <div class="side-panel bank-panel" id="bankGui">
             <div class="flex items-center justify-between mb-3">
                 <div class="flex flex-col">
-                    <span class="text-[0.6rem] font-black text-blue-400 uppercase">Mobile Bank Fund</span>
-                    <span class="text-[0.4rem] text-slate-500 uppercase tracking-widest">Savings Vault</span>
+                    <span class="text-[0.6rem] font-black text-blue-400 uppercase">MOBILE STEWARDSHIP</span>
+                    <span class="text-[0.4rem] text-slate-500 uppercase tracking-widest">Bank of Prosperity</span>
                 </div>
                 <button onclick="toggleBank(false)" class="text-slate-500">✕</button>
             </div>
 
             <div class="bg-blue-950/30 border border-blue-500/20 p-3 rounded-xl mb-3">
-                <div class="text-[0.5rem] text-blue-400 font-bold mb-1 uppercase">Savings Balance</div>
+                <div class="text-[0.5rem] text-blue-400 font-bold mb-1 uppercase">Vault Savings</div>
                 <div class="text-xl font-black text-white" id="savingsBalanceText">$2,000,000</div>
             </div>
 
             <div class="bg-black/40 p-3 rounded-xl border border-slate-800 mb-4">
-                <div class="text-[0.5rem] text-slate-400 font-bold mb-1 uppercase">Slot Balance</div>
+                <div class="text-[0.5rem] text-slate-400 font-bold mb-1 uppercase">Active Slot Wallet</div>
                 <div class="text-lg font-bold text-emerald-400" id="bankSlotBalanceText">$1,000</div>
             </div>
 
             <div class="space-y-2">
-                <button onclick="transferToSavings()" class="w-full bg-blue-600 py-2.5 rounded-lg text-[0.65rem] font-black shadow-lg hover:bg-blue-500">DEPOSIT ALL TO SAVINGS</button>
-                <button onclick="transferToSlot()" class="w-full bg-slate-800 py-2.5 rounded-lg text-[0.65rem] font-black border border-slate-700 hover:bg-slate-700">WITHDRAW $5,000</button>
-                <button onclick="bankToAid()" class="w-full bg-emerald-900/40 border border-emerald-500/30 py-2.5 rounded-lg text-[0.65rem] font-black text-emerald-400">TRANSFER TO TRADING AID</button>
-            </div>
-
-            <div class="mt-4 p-2 bg-slate-900/50 rounded-lg text-center">
-                <p class="text-[0.45rem] text-slate-500 italic">Transfer speed: Instant via Bank Wire</p>
+                <button onclick="transferToSavings()" class="w-full bg-blue-600 py-2.5 rounded-lg text-[0.65rem] font-black shadow-lg">DEPOSIT TO VAULT</button>
+                <button onclick="transferToSlot()" class="w-full bg-slate-800 py-2.5 rounded-lg text-[0.65rem] font-black border border-slate-700">WITHDRAW $5,000</button>
+                <button onclick="bankToAid()" class="w-full bg-emerald-900/40 border border-emerald-500/30 py-2.5 rounded-lg text-[0.65rem] font-black text-emerald-400 uppercase">Bank Transfer to Aid</button>
             </div>
         </div>
 
@@ -289,9 +302,9 @@
                 <div class="reel-container"><div class="reel-strip" id="reel2"></div></div>
                 
                 <div id="winDisplay" class="win-overlay">
-                    <div class="text-[0.5rem] text-yellow-500 font-black">WIN TRIGGERED</div>
-                    <h2 class="text-2xl font-black text-white italic">+$0</h2>
-                    <p id="autoAidDeduction" class="text-[0.55rem] text-emerald-400 font-bold mt-2 bg-emerald-950/50 py-1 rounded border border-emerald-500/20"></p>
+                    <div class="text-[0.6rem] text-yellow-500 font-black tracking-widest">BLESSED WIN</div>
+                    <h2 class="text-3xl font-black text-white italic py-2">+$0</h2>
+                    <p id="autoAidDeduction" class="text-[0.6rem] text-emerald-400 font-bold bg-emerald-950/50 py-1.5 rounded border border-emerald-500/20"></p>
                 </div>
             </div>
         </div>
@@ -299,32 +312,44 @@
 
     <footer class="game-footer">
         <div class="flex gap-2">
-            <button onclick="toggleAid(true)" class="flex flex-col items-center justify-center bg-emerald-900/30 border border-emerald-500/30 w-12 h-12 rounded-xl">
-                <span class="text-xs">📈</span>
-                <span class="text-[0.4rem] font-bold text-emerald-400">AID Fund Powerty Slum People</span>
+            <button onclick="toggleAid(true)" class="flex flex-col items-center justify-center bg-emerald-900/30 border border-emerald-500/30 w-14 h-14 rounded-xl">
+                <span class="text-lg">📈</span>
+                <span class="text-[0.4rem] font-bold text-emerald-400 text-center uppercase">Aid<br>Barometer</span>
             </button>
-            <button onclick="toggleBank(true)" class="flex flex-col items-center justify-center bg-blue-900/30 border border-blue-500/30 w-12 h-12 rounded-xl">
-                <span class="text-xs"> Mobile Bank </span>
-                <span class="text-[0.4rem] font-bold text-blue-400">Mobile BANK</span>
+            <button onclick="toggleBank(true)" class="flex flex-col items-center justify-center bg-blue-900/30 border border-blue-500/30 w-14 h-14 rounded-xl">
+                <span class="text-lg">🏦</span>
+                <span class="text-[0.4rem] font-bold text-blue-400 text-center uppercase">Mobile<br>Bank</span>
             </button>
         </div>
 
         <div class="flex flex-col items-center">
-            <span class="text-xl font-mono font-bold text-green-400" id="balanceText">$1,000</span>
-            <button id="spinBtn" class="main-spin-btn mt-1">SPIN</button>
+            <span class="text-xl font-mono font-black text-emerald-400 mb-1" id="balanceText">$1,000</span>
+            <button id="spinBtn" class="main-spin-btn">SPIN</button>
         </div>
 
         <div class="flex flex-col items-end">
-            <span class="text-[0.6rem] text-slate-500 font-bold uppercase mb-1">Bet: <span class="text-white" id="betText">$10</span></span>
+            <span class="text-[0.6rem] text-slate-500 font-bold uppercase mb-1">Offering: <span class="text-white" id="betText">$10</span></span>
             <div class="flex gap-1.5">
-                <button id="betDown" class="bg-slate-800 px-3 py-1.5 rounded-lg border border-slate-700 font-bold">-</button>
-                <button id="betUp" class="bg-slate-800 px-3 py-1.5 rounded-lg border border-slate-700 font-bold">+</button>
-                <button id="autoBtn" class="bg-slate-800 text-[0.6rem] px-3 py-1.5 rounded-lg border border-slate-700 uppercase font-black">Auto</button>
+                <button id="betDown" class="bg-slate-800 w-10 h-10 rounded-lg border border-slate-700 font-bold">-</button>
+                <button id="betUp" class="bg-slate-800 w-10 h-10 rounded-lg border border-slate-700 font-bold">+</button>
+                <button id="autoBtn" class="bg-slate-800 text-[0.6rem] px-3 h-10 rounded-lg border border-slate-700 uppercase font-black">Auto</button>
             </div>
         </div>
     </footer>
 
     <script>
+        // --- Religious Icons Configuration ---
+        const holyIcons = [
+            { char: "✝️", label: "Holy Cross" },
+            { char: "📖", label: "The Bible" },
+            { char: "🏆", label: "Holy Grail" },
+            { char: "🍞", label: "Daily Bread" },
+            { char: "🔥", label: "Burning Bush" },
+            { char: "🕊️", label: "Holy Spirit" },
+            { char: "⛪", label: "The Church" },
+            { char: "✨", label: "Jesus Christ" }
+        ];
+
         let balance = 1000, savings = 2000000, currentBet = 10, isSpinning = false, isAutoSpinning = false;
         let aidCommission = 0.02, totalDonated = 0, currentAidTarget = "Palestine";
         let candleHistory = [];
@@ -353,10 +378,10 @@
             document.getElementById('aidTargetLabel').innerText = target.toUpperCase();
         }
 
-        // --- Bank Logic ---
+        // --- Stewardship (Bank) Logic ---
         function transferToSavings() {
             savings += balance; balance = 0; updateUI();
-            showNotice("SAVINGS SECURED +$");
+            showNotice("STEWARDSHIP SECURED +$");
         }
         function transferToSlot() {
             if(savings >= 5000) { savings -= 5000; balance += 5000; updateUI(); }
@@ -364,15 +389,14 @@
         function bankToAid() {
             const amount = Math.floor(savings * aidCommission);
             if(amount > 0) {
-                savings -= amount;
-                totalDonated += amount;
-                addCandle(amount / 1000);
-                showNotice(`BANK AID: $${amount}`, "bg-emerald-600");
+                savings -= amount; totalDonated += amount;
+                addCandle(amount / 500);
+                showNotice(`MISSION SENT: $${amount}`, "bg-emerald-600");
                 updateUI();
             }
         }
 
-        // --- Barometer Engine ---
+        // --- Barometer & Candlesticks ---
         function drawBarometer() {
             const w = canvas.width = canvas.offsetWidth;
             const h = canvas.height = canvas.offsetHeight;
@@ -395,27 +419,31 @@
 
                 ctx.fillStyle = color;
                 const bodyY = h - (Math.max(c.open, c.close) * 0.8);
-                const bodyH = Math.max(1, Math.abs(c.open - c.close) * 0.8);
+                const bodyH = Math.max(2, Math.abs(c.open - c.close) * 0.8);
                 ctx.fillRect(x, bodyY, candleW, bodyH);
 
-                ctx.fillStyle = color; // Dot Indicators
-                ctx.beginPath(); ctx.arc(x + candleW/2, bodyY + (isUp ? -3 : bodyH + 3), 1.2, 0, Math.PI*2); ctx.fill();
+                // Adjustment Dots (Requested)
+                ctx.fillStyle = color;
+                ctx.beginPath(); 
+                ctx.arc(x + candleW/2, bodyY + (isUp ? -3 : bodyH + 3), 1.5, 0, Math.PI*2); 
+                ctx.fill();
             });
         }
 
         function addCandle(impact) {
             const lastClose = candleHistory.length ? candleHistory[candleHistory.length-1].close : 50;
             const open = lastClose;
-            const close = Math.max(10, Math.min(100, open + (impact * 0.5) + (Math.random() * 6 - 3)));
-            candleHistory.push({ open, close, high: close + 5, low: close - 5 });
+            const volatility = Math.random() * 8 - 4;
+            const close = Math.max(5, Math.min(100, open + (impact * 1.2) + volatility));
+            candleHistory.push({ open, close, high: Math.max(open, close) + 5, low: Math.min(open, close) - 5 });
             if(candleHistory.length > 50) candleHistory.shift();
             
             const tag = document.createElement('div');
             tag.className = `signal-tag ${impact > 0 ? 'bg-emerald-500' : 'bg-red-500'} text-white`;
-            tag.style.left = '80%'; tag.style.top = `${100 - lastClose}%`;
-            tag.innerText = impact > 0 ? '↑ AID' : '↓ SYNC';
+            tag.style.left = '75%'; tag.style.top = `${100 - lastClose}%`;
+            tag.innerText = impact > 0 ? '↑ HOLY AID' : '↓ SYNC';
             signalOverlay.appendChild(tag);
-            setTimeout(() => tag.remove(), 1000);
+            setTimeout(() => tag.remove(), 1200);
             drawBarometer();
         }
 
@@ -424,7 +452,7 @@
             if (donation > 0) {
                 totalDonated += donation;
                 balance -= donation;
-                addCandle(donation/10);
+                addCandle(donation/20);
                 document.getElementById('aidDonatedText').innerText = `$${totalDonated.toLocaleString()}`;
                 return donation;
             }
@@ -435,56 +463,68 @@
             const amount = Math.floor(balance * 0.02);
             if(amount > 0) {
                 balance -= amount; totalDonated += amount;
-                addCandle(2); updateUI();
+                addCandle(3); updateUI();
                 document.getElementById('aidDonatedText').innerText = `$${totalDonated.toLocaleString()}`;
             }
         }
 
-        // --- Slots ---
-        const icons = ["💎", "🏆", "🎰", "🔔", "⭐", "🍒", "🍀", "🌍"];
+        // --- Slot Engine ---
         function initReels() {
             [0,1,2].forEach(idx => {
                 const strip = document.getElementById(`reel${idx}`);
                 strip.innerHTML = '';
-                for (let i = 0; i < 50; i++) {
+                for (let i = 0; i < 60; i++) {
+                    const iconData = holyIcons[Math.floor(Math.random() * holyIcons.length)];
                     const div = document.createElement('div');
                     div.className = 'slot-icon';
-                    div.innerHTML = icons[Math.floor(Math.random() * icons.length)];
+                    div.innerHTML = `<span>${iconData.char}</span><span class="icon-label">${iconData.label}</span>`;
                     strip.appendChild(div);
                 }
             });
         }
 
         async function spin() {
-            if (isSpinning || balance < currentBet) { isAutoSpinning = false; updateUI(); return; }
+            if (isSpinning || balance < currentBet) { 
+                isAutoSpinning = false; 
+                if(balance < currentBet) showNotice("NEED FUNDS - WITHDRAW FROM BANK", "bg-red-600");
+                updateUI(); 
+                return; 
+            }
             isSpinning = true;
             balance -= currentBet;
-            addCandle(-0.5);
+            addCandle(-0.2);
             updateUI();
             
             const results = [[], [], []];
             const spinPromises = [0,1,2].map(i => new Promise(res => {
                 const strip = document.getElementById(`reel${i}`);
-                const targetIdx = Math.floor(Math.random() * 30) + 10;
+                const targetIdx = Math.floor(Math.random() * 30) + 15;
                 strip.style.transition = 'none';
                 strip.style.transform = `translateY(0px)`;
                 requestAnimationFrame(() => {
-                    strip.style.transition = `transform ${0.5 + i * 0.2}s cubic-bezier(0.45, 0.05, 0.55, 0.95)`;
+                    strip.style.transition = `transform ${0.8 + i * 0.3}s cubic-bezier(0.1, 0, 0.1, 1)`;
                     strip.style.transform = `translateY(-${targetIdx * 100}px)`;
                 });
-                setTimeout(() => { results[i] = strip.children[targetIdx].innerText; res(); }, 700 + i * 200);
+                setTimeout(() => { 
+                    results[i] = strip.children[targetIdx].querySelector('span').innerText; 
+                    res(); 
+                }, 1000 + i * 300);
             }));
 
             await Promise.all(spinPromises);
             checkWin(results);
             isSpinning = false;
-            if (isAutoSpinning) setTimeout(spin, 250);
+            if (isAutoSpinning) setTimeout(spin, 400);
         }
 
         function checkWin(res) {
             let winMult = 0;
-            if (res[0] === res[1] && res[1] === res[2]) winMult = 30;
-            else if (res[0] === res[1] || res[1] === res[2]) winMult = 3;
+            // High payout for Crosses or Jesus
+            if (res[0] === res[1] && res[1] === res[2]) {
+                winMult = (res[0] === '✝️' || res[0] === '✨') ? 50 : 25;
+            } else if (res[0] === res[1] || res[1] === res[2]) {
+                winMult = 5;
+            }
 
             if (winMult > 0) {
                 const winAmt = currentBet * winMult;
@@ -492,28 +532,29 @@
                 const aidTaken = processAid(winAmt);
                 const overlay = document.getElementById('winDisplay');
                 overlay.querySelector('h2').innerText = `+$${winAmt}`;
-                document.getElementById('autoAidDeduction').innerText = `🌍 AUTO-AID: -$${aidTaken}`;
+                document.getElementById('autoAidDeduction').innerText = `🌍 GLORY GIVING: -$${aidTaken}`;
                 overlay.style.display = 'block';
-                setTimeout(() => overlay.style.display = 'none', 1200);
+                setTimeout(() => overlay.style.display = 'none', 1500);
             }
             updateUI();
         }
 
         function updateUI() {
-            document.getElementById('balanceText').innerText = `$${balance.toLocaleString()}`;
-            document.getElementById('bankSlotBalanceText').innerText = `$${balance.toLocaleString()}`;
+            const bText = balance.toLocaleString();
+            document.getElementById('balanceText').innerText = `$${bText}`;
+            document.getElementById('bankSlotBalanceText').innerText = `$${bText}`;
             document.getElementById('savingsBalanceText').innerText = `$${savings.toLocaleString()}`;
             document.getElementById('betText').innerText = `$${currentBet}`;
             const autoBtn = document.getElementById('autoBtn');
             autoBtn.innerText = isAutoSpinning ? "STOP" : "AUTO";
-            autoBtn.classList.toggle('bg-red-900', isAutoSpinning);
+            autoBtn.classList.toggle('bg-red-700', isAutoSpinning);
         }
 
         function showNotice(m, c="bg-blue-600") {
             const n = document.createElement('div');
-            n.className = `fixed top-1/2 left-1/2 -translate-x-1/2 ${c} px-6 py-2 rounded-full font-black text-[0.6rem] z-[300] shadow-xl`;
+            n.className = `fixed top-1/2 left-1/2 -translate-x-1/2 ${c} px-8 py-3 rounded-full font-black text-[0.7rem] z-[300] shadow-2xl border border-white/20`;
             n.innerText = m; document.body.appendChild(n);
-            setTimeout(() => n.remove(), 1200);
+            setTimeout(() => n.remove(), 1500);
         }
 
         document.getElementById('spinBtn').onclick = () => { isAutoSpinning = false; spin(); };
