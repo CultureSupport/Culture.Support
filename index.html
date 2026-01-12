@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Developer // Code</title>
+    <title>DevMatch // Randomization Engine</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@300;400;500;700&display=swap" rel="stylesheet">
@@ -52,10 +52,10 @@
             background-color: #11111b;
             border-radius: 0.75rem;
             padding: 1rem;
-            font-size: 0.65rem;
-            line-height: 1.5;
-            border-left: 4px solid var(--dracula-red);
-            max-height: 180px;
+            font-size: 0.6rem;
+            line-height: 1.4;
+            border-left: 4px solid var(--dracula-purple);
+            max-height: 200px;
             overflow-y: auto;
             position: relative;
         }
@@ -64,7 +64,7 @@
         
         .profile-img-container {
             position: relative;
-            height: 260px;
+            height: 240px;
             overflow: hidden;
             background: #11111b;
         }
@@ -73,9 +73,6 @@
             content: "> ";
             color: var(--dracula-green);
         }
-
-        .msg-received { color: var(--dracula-purple); }
-        .msg-sent { color: var(--dracula-cyan); }
 
         ::-webkit-scrollbar { width: 4px; }
         ::-webkit-scrollbar-track { background: transparent; }
@@ -91,8 +88,8 @@
                 <i class="fas fa-heart text-red-400 heart-pulse"></i>
                 <h1 class="text-lg font-bold tracking-tighter italic">DevMatch</h1>
             </div>
-            <div class="text-[9px] font-mono text-pink-300 uppercase tracking-widest">
-                <span class="animate-pulse">●</span> <span id="total-count">3000</span>_HEARTS_COMPILED
+            <div class="text-[9px] font-mono text-cyan-300 uppercase tracking-widest">
+                <span class="animate-pulse">●</span> <span id="total-count">0</span>_UNIQUE_NODES_LIVE
             </div>
         </div>
     </header>
@@ -106,47 +103,47 @@
                 
                 <div class="profile-img-container">
                     <img id="dev-photo" src="" alt="Developer Profile" class="w-full h-full object-cover transition-opacity duration-300">
-                    <div id="match-score" class="absolute top-3 right-3 glass-panel px-3 py-1 rounded-full text-[10px] font-bold text-red-200">
-                        <i class="fas fa-heart mr-1"></i> --%
+                    <div id="match-score" class="absolute top-3 right-3 glass-panel px-3 py-1 rounded-full text-[10px] font-bold text-cyan-200">
+                        <i class="fas fa-bolt mr-1"></i> --%
                     </div>
                     <div class="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-[#11111b] to-transparent">
                         <div class="flex items-center space-x-2">
-                            <h2 id="dev-name" class="text-xl font-bold text-white uppercase tracking-tight">System Boot...</h2>
+                            <h2 id="dev-name" class="text-xl font-bold text-white uppercase tracking-tight">Init...</h2>
                             <span id="dev-gender-icon" class="text-xs"></span>
                         </div>
-                        <p id="dev-role" class="text-pink-300 text-[10px] font-mono font-bold uppercase tracking-tight">Searching for signal...</p>
+                        <p id="dev-role" class="text-purple-300 text-[10px] font-mono font-bold uppercase tracking-tight">Booting engine...</p>
                     </div>
                 </div>
 
                 <div class="p-4 space-y-3 flex-grow overflow-y-auto bg-[#181825]">
                     <div class="flex justify-between items-center text-[9px] font-mono">
-                        <span id="file-name" class="text-gray-500">profile.json</span>
-                        <span id="dev-lang" class="text-red-400 font-bold tracking-widest uppercase">DATING_PROTOCOL</span>
+                        <span id="file-name" class="text-gray-500">source.js</span>
+                        <span id="dev-lang" class="text-purple-400 font-bold tracking-widest uppercase">SYSLOG</span>
                     </div>
                     <div id="dev-code" class="code-snippet font-mono text-gray-300"></div>
-                    <div id="dev-bio" class="text-[11px] text-gray-400 leading-relaxed border-l-2 border-red-500/50 pl-3 italic"></div>
+                    <div id="dev-bio" class="text-[10px] text-gray-400 leading-relaxed border-l-2 border-purple-500/50 pl-3"></div>
                     <div id="dev-stack" class="flex flex-wrap gap-1.5 mt-2"></div>
                 </div>
 
                 <!-- Action Bar -->
                 <div class="grid grid-cols-3 border-t border-gray-800 bg-[#11111b]">
                     <button onclick="swipe('left')" class="p-4 flex flex-col items-center hover:bg-red-500/10 transition-colors group">
-                        <div class="w-12 h-12 flex items-center justify-center mb-1 group-active:scale-90">
-                            <i class="fas fa-heart-broken text-gray-500 text-xl group-hover:text-red-400"></i>
+                        <div class="w-10 h-10 flex items-center justify-center mb-1 group-active:scale-90">
+                            <i class="fas fa-times text-gray-500 text-xl group-hover:text-red-400"></i>
                         </div>
-                        <span class="text-[8px] uppercase font-bold text-gray-500">Drop</span>
+                        <span class="text-[7px] uppercase font-bold text-gray-500">Discard</span>
                     </button>
-                    <button onclick="openReview()" class="p-4 border-l border-r border-gray-800 flex flex-col items-center hover:bg-pink-500/10 transition-colors group">
-                        <div class="w-12 h-12 flex items-center justify-center mb-1 group-active:scale-90">
-                            <i class="fas fa-terminal text-pink-400 text-xl"></i>
+                    <button onclick="openReview()" class="p-4 border-l border-r border-gray-800 flex flex-col items-center hover:bg-cyan-500/10 transition-colors group">
+                        <div class="w-10 h-10 flex items-center justify-center mb-1 group-active:scale-90">
+                            <i class="fas fa-search text-cyan-400 text-xl"></i>
                         </div>
-                        <span class="text-[8px] uppercase font-bold text-gray-500">Inspect</span>
+                        <span class="text-[7px] uppercase font-bold text-gray-500">Analyze</span>
                     </button>
-                    <button onclick="swipe('right')" class="p-4 flex flex-col items-center hover:bg-red-500/10 transition-colors group">
-                        <div class="w-12 h-12 flex items-center justify-center mb-1 group-active:scale-90">
-                            <i class="fas fa-heart text-red-500 text-xl heart-pulse"></i>
+                    <button onclick="swipe('right')" class="p-4 flex flex-col items-center hover:bg-green-500/10 transition-colors group">
+                        <div class="w-10 h-10 flex items-center justify-center mb-1 group-active:scale-90">
+                            <i class="fas fa-check text-green-500 text-xl"></i>
                         </div>
-                        <span class="text-[8px] uppercase font-bold text-gray-500">Commit</span>
+                        <span class="text-[7px] uppercase font-bold text-gray-500">Merge</span>
                     </button>
                 </div>
             </div>
@@ -154,26 +151,19 @@
 
         <!-- MATCH LIST VIEW -->
         <div id="view-messages" class="view-segment hidden h-full flex flex-col">
-            <h2 class="text-xs font-bold uppercase tracking-widest text-gray-500 mb-4">Aktiv kildekode-flørt <span id="match-count" class="ml-2 bg-red-500 text-white px-2 py-0.5 rounded-full text-[9px]">0</span></h2>
+            <h2 class="text-[10px] font-bold uppercase tracking-widest text-gray-500 mb-4 border-b border-gray-800 pb-2">Stable Connections <span id="match-count" class="ml-2 bg-purple-500 text-white px-2 py-0.5 rounded-full text-[9px]">0</span></h2>
             <div id="chat-list" class="flex-grow overflow-y-auto space-y-2 pr-1"></div>
         </div>
 
-        <!-- KODE CHAT / TERMINAL VIEW -->
+        <!-- TERMINAL VIEW -->
         <div id="view-terminal" class="view-segment hidden h-full flex flex-col">
-            <div class="bg-black/40 rounded-t-xl p-2 border-x border-t border-white/5 flex items-center justify-center relative">
-                <div class="flex space-x-1 absolute left-2">
-                    <div class="w-2 h-2 rounded-full bg-red-500"></div>
-                    <div class="w-2 h-2 rounded-full bg-yellow-500"></div>
-                    <div class="w-2 h-2 rounded-full bg-green-500"></div>
-                </div>
-                <span id="active-chat-name" class="text-[9px] font-mono text-gray-400">~/love_terminal/session</span>
+            <div class="bg-black/40 rounded-t-xl p-2 border-x border-t border-white/5 flex items-center justify-center">
+                <span id="active-chat-name" class="text-[9px] font-mono text-gray-400">~/terminal/ssh_connect</span>
             </div>
-            <div id="terminal-content" class="bg-[#11111b] border border-white/5 flex-grow p-4 font-mono text-xs overflow-y-auto rounded-b-xl flex flex-col shadow-inner">
-                <div id="chat-history" class="space-y-2 mb-4">
-                    <div class="text-gray-600 italic text-[10px]">-- Initializing encrypted romance... --</div>
-                </div>
-                <div class="mt-auto flex items-center terminal-input-line border-t border-white/5 pt-2">
-                    <input id="terminal-input" type="text" placeholder="Skriv din kjærlighets-logikk..." class="bg-transparent border-none outline-none flex-grow text-cyan-300 ml-1" onkeypress="handleTerminal(event)">
+            <div id="terminal-content" class="bg-[#11111b] border border-white/5 flex-grow p-4 font-mono text-[10px] overflow-y-auto rounded-b-xl flex flex-col">
+                <div id="chat-history" class="space-y-1 mb-4"></div>
+                <div class="mt-auto flex items-center terminal-input-line">
+                    <input id="terminal-input" type="text" class="bg-transparent border-none outline-none flex-grow text-green-400 ml-1" onkeypress="handleTerminal(event)" placeholder="Execute protocol...">
                 </div>
             </div>
         </div>
@@ -184,16 +174,16 @@
     <nav class="fixed bottom-0 left-0 right-0 bg-[#11111b]/95 backdrop-blur-xl border-t border-gray-800 p-3 z-50">
         <div class="max-w-md mx-auto flex justify-around">
             <button onclick="switchView('discovery')" id="nav-discovery" class="nav-btn flex flex-col items-center active-nav">
-                <i class="fas fa-code-branch text-xl"></i>
-                <span class="text-[8px] mt-1 font-bold uppercase tracking-tighter">Søk</span>
+                <i class="fas fa-radar text-lg"></i>
+                <span class="text-[7px] mt-1 font-bold uppercase tracking-widest">Scan</span>
             </button>
             <button onclick="switchView('messages')" id="nav-messages" class="nav-btn flex flex-col items-center text-gray-500">
-                <i class="fas fa-heart text-xl"></i>
-                <span class="text-[8px] mt-1 font-bold uppercase tracking-tighter">Matches</span>
+                <i class="fas fa-network-wired text-lg"></i>
+                <span class="text-[7px] mt-1 font-bold uppercase tracking-widest">Nodes</span>
             </button>
             <button onclick="switchView('terminal')" id="nav-terminal" class="nav-btn flex flex-col items-center text-gray-500">
-                <i class="fas fa-terminal text-xl"></i>
-                <span class="text-[8px] mt-1 font-bold uppercase tracking-tighter">Terminal</span>
+                <i class="fas fa-terminal text-lg"></i>
+                <span class="text-[7px] mt-1 font-bold uppercase tracking-widest">Exec</span>
             </button>
         </div>
     </nav>
@@ -201,61 +191,73 @@
     <div id="notification-root" class="fixed top-24 inset-x-0 flex flex-col items-center space-y-2 pointer-events-none z-[100]"></div>
 
     <script>
-        // Data generator komponenter
-        const names = {
-            m: ["Magnus", "Eirik", "Sindre", "Henrik", "Jonas", "Stian", "Fredrik", "Kim", "Olav", "Eivind", "Tobias", "Nikolai", "Vetle", "Simen", "Vegard"],
-            f: ["Julie", "Mina", "Sara", "Linnea", "Emilie", "Sofie", "Nora", "Ingrid", "Thea", "Ida", "Vilde", "Hanna", "Malin", "Tuva", "Ada"],
-            last: ["Syntax", "Binary", "Pixel", "Logic", "Node", "Compiler", "Stack", "Commit", "Push", "Query", "Kernel", "Cloud", "Array", "String", "Dev"]
+        // Avansert Randomiserings-motor
+        const dictionary = {
+            prefix: ["Cyber", "Quantum", "Hyper", "Neo", "Cloud", "Shadow", "Logic", "Meta", "Binary", "Pixel", "Node", "Flux", "Data", "Bit", "Vector"],
+            suffix: ["Ghost", "Wizard", "Architect", "Ninja", "Soul", "Dev", "Core", "Drift", "Pulse", "Flow", "Frame", "Synth", "Byte", "Link", "Sync"],
+            roles: ["Principal Romance Architect", "Senior Love Validator", "Lead Heartbeat Engineer", "Fullstack Passion Dev", "Head of Emotional Logic", "Security Researcher of Hearts"],
+            techs: ["React", "Rust", "Go", "Docker", "GraphQL", "Three.js", "K8s", "Wasm", "Svelte", "Postgres", "Redis", "Elixir", "Zig", "Astro", "Tailwind"],
+            bios: [
+                "Søker en partner for distribuert lykke.",
+                "Mitt hjerte kjører på en 99.9% oppetid-garanti.",
+                "Spesialisert i dype forbindelser og lav latens.",
+                "Ser etter noen som forstår min private nøkkel.",
+                "Jeg har ingen bugs, bare uforutsette romantiske funksjoner.",
+                "Ekspert på pair-programming under stjernene.",
+                "Hjertet mitt er Open Source - bidra med din kjærlighet."
+            ]
         };
 
-        const codeSnippets = [
-            (name) => `{\n  "status": "searching",\n  "seeker": "${name}",\n  "intent": "LOVE_COMMIT",\n  "requirements": ["kindness", "clean_code"]\n}`,
-            (name) => `{"id": 101, "msg": "Søker partner for pair-programming for livet", "author": "${name}"}`,
-            (name) => `import { Heart } from 'romance';\n\nconst application = new Heart({\n  owner: "${name}",\n  open: true\n});`,
-            (name) => `def apply_for_love():\n    if match_found:\n        return "Happily Ever After"\n    else:\n        return "Keep Coding"`
+        const jsGenerators = [
+            (name) => `const ${name.toLowerCase().split(' ')[0]} = {\n  type: "Human",\n  status: "Searching",\n  vibe: 1.0,\n  connect: () => true\n};`,
+            (name) => `function requestMatch() {\n  return fetch('/api/heart/${name}')\n    .then(res => res.love());\n}`,
+            (name) => `export default class Soul {\n  constructor() {\n    this.owner = "${name}";\n    this.locked = false;\n  }\n}`,
+            (name) => `// Heartbeat monitor v2\nsetInterval(() => {\n  pulse("${name}");\n}, 1000);`
         ];
 
-        const bios = [
-            "Koder med hjertet utenfor vesten. Liker lange turer i kildekoden.",
-            "Ser etter noen som kan forklare meg recursion uten å miste tålmodigheten.",
-            "Mitt hjerte har ingen merge-konflikter, bare åpne pull-requests.",
-            "Fullstack-utvikler i jobb, håpløs romantiker i terminalen.",
-            "Er du min manglende semikolon? Jeg føler meg ufullstendig uten deg."
+        const jsonGenerators = [
+            (name) => `{\n  "id": "${crypto.randomUUID().slice(0,8)}",\n  "name": "${name}",\n  "objective": "PAIR_BONDING",\n  "version": "2.1.0"\n}`,
+            (name) => `{\n  "profile": {\n    "user": "${name}",\n    "bio": "Extending core romance",\n    "active": true\n  }\n}`
         ];
-
-        const technologies = ["React", "Rust", "Tailwind", "Next.js", "GraphQL", "Framer Motion", "Supabase", "TypeScript", "Docker"];
 
         let profiles = [];
         let currentIndex = 0;
         let matches = [];
         let activeChatIndex = -1;
 
-        // GENERERE 3000 PROFILER AUTOMATISK
-        function initialize3000Profiles() {
+        // Oppretter 3000 helt unike profiler
+        function bootProfiles() {
             const count = 3000;
-            const data = [];
+            const generatedNames = new Set();
+            
             for (let i = 0; i < count; i++) {
-                const isMale = Math.random() > 0.5;
-                const pool = isMale ? names.m : names.f;
-                const firstName = pool[i % pool.length];
-                const lastName = names.last[i % names.last.length];
-                const role = ["Senior Cupid Architect", "Love Logic Specialist", "Heartbeat Monitor", "Romance Engineer"][i % 4];
-                const snippetGen = codeSnippets[i % codeSnippets.length];
+                let firstName = dictionary.prefix[Math.floor(Math.random() * dictionary.prefix.length)];
+                let lastName = dictionary.suffix[Math.floor(Math.random() * dictionary.suffix.length)];
+                let fullName = `${firstName} ${lastName}`;
                 
-                data.push({
+                // Sikre unikhet
+                let attempt = 0;
+                while(generatedNames.has(fullName) && attempt < 100) {
+                    fullName = `${firstName} ${lastName} ${Math.floor(Math.random()*999)}`;
+                    attempt++;
+                }
+                generatedNames.add(fullName);
+
+                const isJson = Math.random() > 0.5;
+                const codeGen = isJson ? jsonGenerators[i % jsonGenerators.length] : jsGenerators[i % jsGenerators.length];
+
+                profiles.push({
                     id: i,
-                    name: `${firstName} ${lastName}`,
-                    gender: isMale ? 'male' : 'female',
-                    role: role,
-                    photo: `https://images.unsplash.com/photo-${(isMale ? 1500648767791 : 1494790108377) + (i % 1000)}?auto=format&fit=crop&q=80&w=600`,
-                    code: snippetGen(`${firstName}`),
-                    bio: bios[i % bios.length],
-                    match: Math.floor(Math.random() * 25 + 75) + "%",
-                    stack: technologies.sort(() => Math.random() - 0.5).slice(0, 3),
-                    file: `romance_v${i}.${i % 2 === 0 ? 'json' : 'ts'}`
+                    name: fullName,
+                    role: dictionary.roles[i % dictionary.roles.length],
+                    photo: `https://images.unsplash.com/photo-${1500000000000 + (i * 123456) % 999999999999}?auto=format&fit=crop&q=60&w=500`,
+                    code: codeGen(fullName),
+                    bio: dictionary.bios[i % dictionary.bios.length],
+                    match: (70 + Math.random() * 30).toFixed(1) + "%",
+                    stack: [...dictionary.techs].sort(() => Math.random() - 0.5).slice(0, 3),
+                    file: `node_${i}.${isJson ? 'json' : 'js'}`
                 });
             }
-            profiles = data;
             document.getElementById('total-count').innerText = count;
         }
 
@@ -267,7 +269,7 @@
             if(viewName === 'messages') renderMatches();
         }
 
-        function renderCurrentProfile() {
+        function renderCurrent() {
             const dev = profiles[currentIndex];
             const card = document.getElementById('current-card');
             card.classList.remove('swipe-left', 'swipe-right', 'opacity-0');
@@ -275,25 +277,22 @@
             const img = document.getElementById('dev-photo');
             img.style.opacity = '0';
             img.src = dev.photo;
+            img.onerror = () => { img.src = "https://images.unsplash.com/photo-1511367461989-f85a21fda167?auto=format&fit=crop&q=80&w=600"; };
             img.onload = () => img.style.opacity = '1';
 
             document.getElementById('dev-name').innerText = dev.name;
             document.getElementById('dev-role').innerText = dev.role;
-            document.getElementById('match-score').innerHTML = `<i class="fas fa-heart mr-1"></i> ${dev.match}`;
+            document.getElementById('match-score').innerHTML = `<i class="fas fa-bolt mr-1"></i> ${dev.match}`;
             document.getElementById('dev-code').innerHTML = `<pre class="whitespace-pre-wrap">${dev.code}</pre>`;
             document.getElementById('dev-bio').innerText = dev.bio;
             document.getElementById('file-name').innerText = dev.file;
             document.getElementById('dev-lang').innerText = dev.file.split('.').pop().toUpperCase();
             
-            document.getElementById('dev-gender-icon').innerHTML = dev.gender === 'male' ? 
-                '<i class="fas fa-mars text-blue-400"></i>' : 
-                '<i class="fas fa-venus text-pink-400"></i>';
-
             const stack = document.getElementById('dev-stack');
             stack.innerHTML = '';
             dev.stack.forEach(s => {
                 const span = document.createElement('span');
-                span.className = "bg-red-500/5 border border-red-500/20 px-2 py-0.5 rounded text-[8px] font-bold text-pink-300 uppercase";
+                span.className = "bg-purple-500/10 border border-purple-500/20 px-2 py-0.5 rounded text-[7px] font-bold text-purple-300 uppercase";
                 span.innerText = s;
                 stack.appendChild(span);
             });
@@ -305,22 +304,22 @@
             
             if(direction === 'right') {
                 card.classList.add('swipe-right');
-                notify(`SUCCESS: ${dev.name.split(' ')[0]} added to matches`, "green");
+                notify(`NODE_MERGE_SUCCESS: ${dev.name}`, "green");
                 matches.unshift(dev);
                 document.getElementById('match-count').innerText = matches.length;
             } else {
                 card.classList.add('swipe-left');
-                notify("SIGNAL DROPPED", "red");
+                notify("CONNECTION_REFUSED", "red");
             }
 
             setTimeout(() => {
                 currentIndex = (currentIndex + 1) % profiles.length;
-                renderCurrentProfile();
+                renderCurrent();
                 card.style.transition = 'none';
-                card.style.transform = 'translateY(20px) scale(0.95)';
+                card.style.transform = 'scale(0.9)';
                 setTimeout(() => {
-                    card.style.transition = 'all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275)';
-                    card.style.transform = 'translateY(0) scale(1)';
+                    card.style.transition = 'all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275)';
+                    card.style.transform = 'scale(1)';
                 }, 50);
             }, 300);
         }
@@ -329,32 +328,34 @@
             const list = document.getElementById('chat-list');
             list.innerHTML = '';
             if(matches.length === 0) {
-                list.innerHTML = `<div class="text-center py-20 opacity-30 text-xs font-mono">INGEN MATCHES ENDA. FORTSETT Å KODE...</div>`;
+                list.innerHTML = `<div class="text-center py-20 opacity-20 text-[9px] font-mono">NO STABLE CONNECTIONS FOUND</div>`;
                 return;
             }
             matches.forEach((m, idx) => {
                 const div = document.createElement('div');
-                div.className = "glass-panel p-3 rounded-2xl flex items-center space-x-3 cursor-pointer hover:bg-white/5 transition-all border-l-4 border-red-500 active:scale-95 mb-2";
+                div.className = "glass-panel p-3 rounded-xl flex items-center space-x-3 cursor-pointer hover:bg-white/5 transition-all border-l-2 border-cyan-500 mb-2";
                 div.innerHTML = `
-                    <img src="${m.photo}" class="w-10 h-10 rounded-full object-cover border border-red-500/30">
+                    <div class="w-8 h-8 rounded-full bg-gray-900 border border-white/10 flex-shrink-0 overflow-hidden">
+                        <img src="${m.photo}" class="w-full h-full object-cover">
+                    </div>
                     <div class="flex-grow">
                         <div class="flex justify-between items-center">
-                            <span class="text-xs font-bold uppercase tracking-tight">${m.name}</span>
-                            <span class="text-[7px] text-pink-400 font-mono italic">Online</span>
+                            <span class="text-[10px] font-bold text-gray-200">${m.name}</span>
+                            <span class="text-[7px] text-green-400 font-mono animate-pulse">ALIVE</span>
                         </div>
-                        <p class="text-[10px] text-gray-400 font-mono truncate">Åpne terminal-flørt...</p>
+                        <p class="text-[8px] text-gray-500 font-mono truncate">Ready for handshake...</p>
                     </div>
                 `;
-                div.onclick = () => openTerminalChat(idx);
+                div.onclick = () => openChat(idx);
                 list.appendChild(div);
             });
         }
 
-        function openTerminalChat(idx) {
+        function openChat(idx) {
             activeChatIndex = idx;
             const dev = matches[idx];
-            document.getElementById('active-chat-name').innerText = `~/love_terminal/${dev.name.toLowerCase().replace(' ', '_')}`;
-            document.getElementById('chat-history').innerHTML = `<div class="text-gray-600 italic text-[10px]">-- Love session with ${dev.name} started --</div>`;
+            document.getElementById('active-chat-name').innerText = `ssh://${dev.name.toLowerCase().replace(' ', '_')}@devmatch.io`;
+            document.getElementById('chat-history').innerHTML = `<div class="text-gray-600 text-[8px]">[SYSTEM] Handshake complete. Encrypted tunnel established.</div>`;
             switchView('terminal');
         }
 
@@ -365,51 +366,43 @@
                 if(!text) return;
 
                 const history = document.getElementById('chat-history');
-                const myMsg = document.createElement('div');
-                myMsg.className = "msg-sent";
-                myMsg.innerHTML = `guest@heart:~$ ${text}`;
-                history.appendChild(myMsg);
-                
+                history.innerHTML += `<div class="text-cyan-400">user@local:~$ ${text}</div>`;
                 input.value = '';
                 
                 setTimeout(() => {
-                    const response = document.createElement('div');
-                    response.className = "msg-received";
-                    const dev = matches[activeChatIndex] || {name: "Unknown_Dev"};
-                    const lines = [
-                        `Wow, den syntaksen din er helt nydelig!`,
-                        `Skal vi pair-programmere i morgen kveld?`,
-                        `Jeg har aldri sett så ren kode før...`,
-                        `Er det varmt her, eller er det bare CPU-en din?`,
-                        `return "Jeg liker deg!";`
+                    const dev = matches[activeChatIndex] || {name: "Unknown"};
+                    const responses = [
+                        `Acknowledged. Your logic is sound.`,
+                        `Merging heart.repo... Done.`,
+                        `Error: Too much charm detected in your input.`,
+                        `Shall we initiate a coffee-break.sh?`,
+                        `Protocol: LOVE_CONFIRMED.`
                     ];
-                    response.innerHTML = `${dev.name.toLowerCase().split(' ')[0]}@remote:~$ ${lines[Math.floor(Math.random() * lines.length)]}`;
-                    history.appendChild(response);
+                    history.innerHTML += `<div class="text-purple-400">${dev.name.toLowerCase()}@remote:~$ ${responses[Math.floor(Math.random() * responses.length)]}</div>`;
                     const container = document.getElementById('terminal-content');
                     container.scrollTop = container.scrollHeight;
-                }, 1000);
+                }, 600);
             }
         }
 
         function notify(text, color) {
             const root = document.getElementById('notification-root');
             const n = document.createElement('div');
-            const colorMap = { red: "bg-red-500/90", green: "bg-red-600/90" };
-            n.className = `${colorMap[color] || 'bg-gray-800'} text-white text-[9px] font-black px-6 py-2 rounded-full border border-white/20 shadow-2xl animate-bounce uppercase tracking-widest z-[200]`;
+            const bg = color === 'green' ? "bg-green-600/90" : "bg-red-600/90";
+            n.className = `${bg} text-white text-[8px] font-bold px-4 py-1.5 rounded border border-white/10 shadow-xl z-[200] uppercase`;
             n.innerText = text;
             root.appendChild(n);
-            setTimeout(() => n.remove(), 2000);
+            setTimeout(() => n.remove(), 1500);
         }
 
-        function openReview() { notify("ANALYSERER KJÆRLIGHETS-LOGIKK...", "green"); }
+        function openReview() { notify("RUNNING DEEP_SCAN...", "green"); }
 
         window.onload = () => {
-            initialize3000Profiles();
-            renderCurrentProfile();
+            bootProfiles();
+            renderCurrent();
         };
     </script>
 </body>
 </html>
-
 
 
