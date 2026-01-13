@@ -285,7 +285,7 @@
     </footer>
 
     <script>
-        const logContainer = document.getElementById('main-log');
+ const logContainer = document.getElementById('main-log');
         const logCountDisplay = document.getElementById('log-count');
         const personCountDisplay = document.getElementById('person-count');
         const latestEventDisplay = document.getElementById('latest-event');
@@ -298,26 +298,37 @@
         let isPaused = false;
         let countdown = 12.0;
 
+        const locations = [
+            "Barer/Nattklubber", "Fester", "Skoler", "Ute-miljø", "Boliger", 
+            "Nettsamfunn", "Online Forum", "Butikker", "Politistasjonen", 
+            "Festivaler", "Universiteter", "Politiske Arenaer", "Utdanningssteder", 
+            "Barnehager", "Parkeringsplasser", "Kommunehus", "Byer", "Landsted", 
+            "Tettbygde strøk", "Øde bosted", "Busser", "Taxi", "Politibiler", 
+            "Transportmidler", "Trafikken", "Flyplasser", "Kinoer", "Sykehus", 
+            "Brannstasjoner", "Politiske stemmelokaler"
+        ];
+
         const alarmTypes = [
-            { type: 'ALARM', color: 'text-red-400', msg: 'Indikasjon på psykotisk gjennombrudd. Anmodning om vern.' },
-            { type: 'VARSEL', color: 'text-yellow-500', msg: 'Trussel om selvskading registrert. Sone overvåkes.' },
-            { type: 'KRITISK', color: 'text-red-600 font-bold', msg: 'Verifisert voldsrisiko mot tredjepart. Blitz aktivert.' },
-            { type: 'LOGG', color: 'text-slate-400', msg: 'Scanning av merket person ferdigstilt. Ingen avvik.' },
-            { type: 'INN-MELD', color: 'text-white font-bold', msg: 'Ny person innmeldt i alarmlogg for gransking.' },
-            { type: 'VOLD', color: 'text-orange-500', msg: 'Psykisk vold detektert via språkanalyse. Gransking startet.' },
-            { type: 'SKADE', color: 'text-red-700', msg: 'Eskalering av trussel mot andre. Innsendingsordre generert.' }
+            { type: 'PLANLEGGING', color: 'text-red-400', action: 'Planlegger farlig handling rettet mot' },
+            { type: 'VARSEL', color: 'text-yellow-500', action: 'Innmeldt person observert med avvikende atferd ved' },
+            { type: 'TRUSSEL', color: 'text-red-600 font-bold', action: 'Eksplisitt trussel fremmet mot personell/lokasjon:' },
+            { type: 'INN-MELD', color: 'text-white font-bold', action: 'Ny person registrert i trussel-logg for' },
+            { type: 'GRANSKING', color: 'text-slate-400', action: 'Løpende analyse av mistenkelig planlegging ved' },
+            { type: 'ONLINE', color: 'text-orange-500', action: 'Koordinering av farlig aktivitet detektert i online forum for' },
+            { type: 'KRITISK', color: 'text-red-700 font-black', action: 'Høyt skadepotensial bekreftet. Tiltak iverksettes ved' }
         ];
 
         function addLogEntry() {
             if (isPaused || logEntries >= 1200) return;
 
             const alarm = alarmTypes[Math.floor(Math.random() * alarmTypes.length)];
+            const location = locations[Math.floor(Math.random() * locations.length)];
             const time = new Date().toLocaleTimeString('no-NO', { hour12: false });
             const id = Math.floor(100 + Math.random() * 900);
             
             const entry = document.createElement('div');
             entry.className = `log-entry ${alarm.color}`;
-            entry.innerHTML = `<span class="opacity-50">[${time}]</span> <span class="font-bold">[${alarm.type}]</span> ID-${id}: ${alarm.msg}`;
+            entry.innerHTML = `<span class="opacity-50 font-mono">[${time}]</span> <span class="font-black">[${alarm.type}]</span> ID-${id}: Innmeldt person: ${alarm.action} <strong>${location}</strong>.`;
             
             if (logEntries === 0) logContainer.innerHTML = '';
             logContainer.prepend(entry);
@@ -329,24 +340,20 @@
                 progressBar.style.width = Math.min(100, (personsInscribed / 50) * 100) + '%';
             }
 
-            if (alarm.type === 'KRITISK' || alarm.type === 'SKADE' || alarm.type === 'ALARM') {
-                latestEventDisplay.innerText = `ID-${id}: ${alarm.msg}`;
+            if (alarm.type === 'KRITISK' || alarm.type === 'TRUSSEL' || alarm.type === 'PLANLEGGING') {
+                latestEventDisplay.innerText = `${id}: ${location}`;
             }
 
-            logCountDisplay.innerText = `LOG-SYNC: ${logEntries}/1200`;
-
-            if (logContainer.childNodes.length > 1200) {
-                logContainer.removeChild(logContainer.lastChild);
-            }
+            logCountDisplay.innerText = `BATCH-PROSESSER: ${logEntries}/1200`;
         }
 
         function clearLog() {
-            logContainer.innerHTML = '<div class="p-8 text-center text-slate-500 italic text-sm">Logg nullstilt...</div>';
+            logContainer.innerHTML = '<div class="p-8 text-center text-slate-500 italic text-sm">Logg nullstilt. Initialiserer ny skanning...</div>';
             logEntries = 0;
             personsInscribed = 0;
             personCountDisplay.innerText = '0';
             progressBar.style.width = '0%';
-            logCountDisplay.innerText = 'LOG-SYNC: 0/1200';
+            logCountDisplay.innerText = 'BATCH-PROSESSER: 0/1200';
             countdown = 12.0;
         }
 
@@ -356,7 +363,6 @@
             pauseBtn.classList.toggle('bg-red-900', isPaused);
         }
 
-        // Timer for 12 sekunder intervall
         setInterval(() => {
             if (!isPaused) {
                 countdown -= 0.1;
