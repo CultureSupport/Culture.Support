@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="no">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Skogens Rop - 3D Psykose Simulator</title>
+    <style>
+        body { margin: 0; background-color: #000; overflow: hidden; font-family: 'Courier New', Courier, monospace; touch-action: none; }
+        
+        #overlay {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            pointer-events: none;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 10;
+        }
+
+        #message {
+            color: rgba(255, 0, 0, 0.9);
+            font-size: clamp(1.5rem, 5vw, 3rem);
+            text-align: center;
+            text-shadow: 0 0 15px #f00;
+            opacity: 0;
+            transition: opacity 0.05s;
+            font-weight: bold;
+        }
+
+        #chapter-ui {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            color: #4a5a4a;
+            z-index: 11;
+            background: rgba(0,0,0,0.4);
+            padding: 10px;
+            border-radius: 8px;
+            backdrop-filter: blur(4px);
+        }
+
+        /* Glassmorphic Joystick Styles */
+        #joystick-container {
+            position: absolute;
+            bottom: 40px;
+            left: 40px;
+            width: 120px;
+            height: 120px;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 50%;
+            z-index: 100;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            touch-action: none;
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.8);
+        }
+
+        #joystick-knob {
+            width: 50px;
+            height: 50px;
+            background: rgba(255, 255, 255, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            border-radius: 50%;
+            transition: transform 0.1s ease-out;
+            box-shadow: inset 0 0 10px rgba(255,255,255,0.2);
+        }
+
+        #visual-pulse {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: radial-gradient(circle, rgba(255,0,0,0.15) 0%, rgba(0,0,0,0) 70%);
+            pointer-events: none;
+            z-index: 5;
+            opacity: 0;
+        }
+
+        canvas { display: block; }
+    </style>
+</head>
+<body>
+
+    <div id="visual-pulse"></div>
+    
+    <div id="overlay">
+        <div id="message"></div>
+    </div>
+
+    <div id="chapter-ui">
+        <div id="chapter-text">Kapittel 1: De som venter</div>
+        <div style="font-size: 0.7rem; opacity: 0.7;">WASD/Joystick: Gå | Dra skjerm: Se</div>
+    </div>
+
+    <!-- Joystick for mobil -->
+    <div id="joystick-container">
+        <div id="joystick-knob"></div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script>
+        let scene, camera, renderer, flashLight, clock;
+        let trees = [];
+        let shadows = [];
+        let moveForward = 0, moveBackward = 0, moveLeft = 0, moveRight = 0;
+        let yaw = 0, pitch = 0;
+        
+        // Joystick state
+        let joystickActive = false;
+        let joystickData = { x: 0, y: 0 };
+        const joystickMaxDist = 50;
+
+        const messages = [
+            "HJELP MEG", "ER DU DER?", "IKKE GÅ", "DE SER DEG", 
+            "JEG ER FAST", "REDD MEG", "HVORFOR SER DU IKKE?",
+            "HJELP...", "ER DET NOEN DER?"
+        ];
+
+        function init() {
+            scene = new THREE.Scene();
+            scene.background = new THREE.Color(0x000100);
+            scene.fog = new THREE.FogExp2(0x000300, 0.12);
+
+            camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+            
+            renderer = new THREE.WebGLRenderer({ antialias: true });
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            renderer.setPixelRatio(window.devicePixelRatio);
+            document.body.appendChild(renderer.domElement);
+
+            clock = new THREE.Clock();
+
+            // Lys - Spillerens lommelykt
+            flashLight = new THREE.SpotLight(0xffffff, 2.5, 45, Math.PI / 5, 0.6);
+            flashLight.castShadow = true;
+            scene.add(flashLight);
+            scene.add(flashLight.target);
+
+            const ambient = new THREE.AmbientLight(0x050505, 0.2);
+            scene.add(ambient);
+
+            // Bakke (Mørk mose/jord)
+            const groundGeo = new THREE.PlaneGeometry(1000, 1000);
+            const groundMat = new THREE.MeshStandardMaterial({ color: 0x020502 });
+            const ground = new THREE.Mesh(groundGeo, groundMat);
+            ground.rotation.x = -Math.PI / 2;
+            scene.add(ground);
+
+            // Generer skog
+            for(let i=0; i<250; i++) {
+                createTree(
+                    (Math.random() - 0.5) * 200,
+                    (Math.random() - 0.5) * 200
+                );
+            }
+
+            // Menneskeskygger
+            for(let i=0; i<20; i++) {
+                createShadowPerson(
+                    (Math.random() - 0.5) * 120,
+                    (Math.random() - 0.5) * 120
+                );
+            }
+
+            setupControls();
+            animate();
+        }
+
+        function createTree(x, z) {
+            const group = new THREE.Group();
+            const h = 6 + Math.random() * 6;
+            
+            const trunkGeo = new THREE.CylinderGeometry(0.15, 0.3, h, 6);
+            const trunkMat = new THREE.MeshStandardMaterial({ color: 0x0a0600 });
+            const trunk = new THREE.Mesh(trunkGeo, trunkMat);
+            trunk.position.y = h/2;
+            group.add(trunk);
+
+            const leavesGeo = new THREE.ConeGeometry(1.5, 5, 5);
+            const leavesMat = new THREE.MeshStandardMaterial({ color: 0x020802 });
+            const leaves = new THREE.Mesh(leavesGeo, leavesMat);
+            leaves.position.y = h;
+            group.add(leaves);
+
+            group.position.set(x, 0, z);
+            scene.add(group);
+        }
+
+        function createShadowPerson(x, z) {
+            const group = new THREE.Group();
+            const mat = new THREE.MeshBasicMaterial({ color: 0x000000, transparent: true, opacity: 0.9 });
+            
+            // Kropp
+            const body = new THREE.Mesh(new THREE.CylinderGeometry(0.25, 0.2, 1.5, 6), mat);
+            body.position.y = 0.75;
+            group.add(body);
+
+            // Hode
+            const head = new THREE.Mesh(new THREE.SphereGeometry(0.22, 8, 8), mat);
+            head.position.y = 1.7;
+            group.add(head);
+
+            // Armer (litt for lange for nifs effekt)
+            const armGeo = new THREE.CylinderGeometry(0.05, 0.05, 1.2, 4);
+            const leftArm = new THREE.Mesh(armGeo, mat);
+            leftArm.position.set(-0.35, 1.1, 0);
+            leftArm.rotation.z = 0.1;
+            group.add(leftArm);
+
+            const rightArm = new THREE.Mesh(armGeo, mat);
+            rightArm.position.set(0.35, 1.1, 0);
+            rightArm.rotation.z = -0.1;
+            group.add(rightArm);
+
+            group.position.set(x, 0, z);
+            scene.add(group);
+            shadows.push(group);
+        }
+
+        function setupControls() {
+            // Tastatur
+            document.addEventListener('keydown', (e) => {
+                if(e.code === 'KeyW') moveForward = 1;
+                if(e.code === 'KeyS') moveBackward = 1;
+                if(e.code === 'KeyA') moveLeft = 1;
+                if(e.code === 'KeyD') moveRight = 1;
+            });
+            document.addEventListener('keyup', (e) => {
+                if(e.code === 'KeyW') moveForward = 0;
+                if(e.code === 'KeyS') moveBackward = 0;
+                if(e.code === 'KeyA') moveLeft = 0;
+                if(e.code === 'KeyD') moveRight = 0;
+            });
+
+            // Mus / Touch for å se seg rundt
+            let lastX, lastY;
+            const handleLook = (dx, dy) => {
+                yaw -= dx * 0.003;
+                pitch -= dy * 0.003;
+                pitch = Math.max(-Math.PI/2.4, Math.min(Math.PI/2.4, pitch));
+            };
+
+            renderer.domElement.addEventListener('mousemove', (e) => {
+                if (document.pointerLockElement === renderer.domElement) {
+                    handleLook(e.movementX, e.movementY);
+                }
+            });
+
+            renderer.domElement.addEventListener('touchmove', (e) => {
+                const touch = e.touches[0];
+                if (lastX !== undefined) {
+                    // Sjekk om vi ikke trykker på joysticken
+                    if (touch.clientX > 200) { 
+                        handleLook((touch.clientX - lastX) * 2, (touch.clientY - lastY) * 2);
+                    }
+                }
+                lastX = touch.clientX;
+                lastY = touch.clientY;
+            }, { passive: false });
+
+            renderer.domElement.addEventListener('touchend', () => { lastX = undefined; lastY = undefined; });
+            renderer.domElement.addEventListener('click', () => renderer.domElement.requestPointerLock());
+
+            // Joystick logikk
+            const container = document.getElementById('joystick-container');
+            const knob = document.getElementById('joystick-knob');
+
+            const handleJoystick = (e) => {
+                e.preventDefault();
+                const touch = e.touches ? e.touches[0] : e;
+                const rect = container.getBoundingClientRect();
+                const centerX = rect.left + rect.width / 2;
+                const centerY = rect.top + rect.height / 2;
+                
+                let dx = touch.clientX - centerX;
+                let dy = touch.clientY - centerY;
+                const dist = Math.sqrt(dx*dx + dy*dy);
+                
+                if (dist > joystickMaxDist) {
+                    dx = (dx / dist) * joystickMaxDist;
+                    dy = (dy / dist) * joystickMaxDist;
+                }
+
+                knob.style.transform = `translate(${dx}px, ${dy}px)`;
+                joystickData.x = dx / joystickMaxDist;
+                joystickData.y = dy / joystickMaxDist;
+            };
+
+            container.addEventListener('touchstart', (e) => { joystickActive = true; handleJoystick(e); });
+            window.addEventListener('touchmove', (e) => { if(joystickActive) handleJoystick(e); }, { passive: false });
+            window.addEventListener('touchend', () => {
+                joystickActive = false;
+                knob.style.transform = `translate(0,0)`;
+                joystickData = { x: 0, y: 0 };
+            });
+        }
+
+        function updatePsychosis(dt) {
+            const msgEl = document.getElementById('message');
+            const pulseEl = document.getElementById('visual-pulse');
+            
+            if (Math.random() < 0.008) {
+                msgEl.innerText = messages[Math.floor(Math.random() * messages.length)];
+                msgEl.style.opacity = 1;
+                pulseEl.style.opacity = 1;
+                
+                setTimeout(() => {
+                    msgEl.style.opacity = 0;
+                    pulseEl.style.opacity = 0;
+                }, 700);
+            }
+
+            shadows.forEach(s => {
+                s.lookAt(camera.position.x, 0, camera.position.z);
+                const dist = s.position.distanceTo(camera.position);
+                if (dist < 12) {
+                    s.position.lerp(camera.position, 0.005);
+                }
+            });
+            
+            // Subtile fargeglitch i tåken
+            if(Math.random() < 0.02) {
+                scene.fog.color.setHex(Math.random() < 0.5 ? 0x110000 : 0x000300);
+            }
+        }
+
+        function animate() {
+            requestAnimationFrame(animate);
+            const dt = clock.getDelta();
+
+            // Bevegelsesvektorer
+            const speed = 6;
+            const dir = new THREE.Vector3();
+            camera.getWorldDirection(dir);
+            dir.y = 0;
+            dir.normalize();
+            const side = new THREE.Vector3().crossVectors(camera.up, dir).normalize();
+
+            // Kombiner tastatur og joystick
+            let finalForward = (moveForward - moveBackward) || -joystickData.y;
+            let finalSide = (moveLeft - moveRight) || -joystickData.x;
+
+            if (finalForward !== 0) camera.position.addScaledVector(dir, finalForward * speed * dt);
+            if (finalSide !== 0) camera.position.addScaledVector(side, finalSide * speed * dt);
+
+            // Head bobbing (psykose/stress-følelse)
+            if (finalForward !== 0 || finalSide !== 0) {
+                camera.position.y = 1.6 + Math.sin(Date.now() * 0.01) * 0.05;
+            }
+
+            camera.quaternion.setFromEuler(new THREE.Euler(pitch, yaw, 0, 'YXZ'));
+
+            flashLight.position.copy(camera.position);
+            const targetPos = new THREE.Vector3(0, 0, -1).applyQuaternion(camera.quaternion).add(camera.position);
+            flashLight.target.position.copy(targetPos);
+
+            updatePsychosis(dt);
+            renderer.render(scene, camera);
+        }
+
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        });
+
+        window.onload = init;
+    </script>
+</body>
+</html>
