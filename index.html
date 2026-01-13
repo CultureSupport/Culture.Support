@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="no">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HMS Portal - Sikkerhet og Vern</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @keyframes pulse-bg {
+            0% { background-color: rgba(15, 23, 42, 1); }
+            50% { background-color: rgba(45, 10, 10, 1); }
+            100% { background-color: rgba(15, 23, 42, 1); }
+        }
+
+        @keyframes alarm-blink {
+            0%, 100% { opacity: 0.2; transform: scale(1); }
+            50% { opacity: 0.5; transform: scale(1.05); }
+        }
+
+        body {
+            background-color: #0f172a;
+            color: #f8fafc;
+            font-family: 'Inter', sans-serif;
+            overflow-x: hidden;
+            animation: pulse-bg 8s infinite ease-in-out;
+        }
+
+        .alarm-glow {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            width: 15px;
+            height: 15px;
+            background-color: #ef4444;
+            border-radius: 50%;
+            box-shadow: 0 0 20px #ef4444;
+            animation: alarm-blink 3s infinite;
+            z-index: 50;
+        }
+
+        .glass-card {
+            background: rgba(30, 41, 59, 0.7);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 1rem;
+        }
+
+        .section-hover:hover {
+            border-color: rgba(239, 68, 68, 0.4);
+            transition: all 0.3s ease;
+        }
+    </style>
+</head>
+<body class="min-h-screen">
+
+    <div class="alarm-glow"></div>
+
+    <nav class="p-6 border-b border-white/10 glass-card m-4">
+        <div class="container mx-auto flex justify-between items-center">
+            <h1 class="text-2xl font-bold tracking-tighter flex items-center gap-2">
+                <span class="text-red-500 text-3xl">🛡️</span> HMS-PORTAL
+            </h1>
+            <div class="hidden md:flex gap-6 text-sm font-medium">
+                <a href="#risiko" class="hover:text-red-400 transition">Risikovurdering</a>
+                <a href="#tiltak" class="hover:text-red-400 transition">Sikkerhetstiltak</a>
+                <a href="#beredskap" class="hover:text-red-400 transition">Beredskap</a>
+            </div>
+        </div>
+    </nav>
+
+    <main class="container mx-auto px-4 py-12">
+        <!-- Hero Section -->
+        <section class="text-center mb-20">
+            <h2 class="text-5xl font-extrabold mb-6 bg-clip-text text-transparent bg-gradient-to-r from-white to-slate-400">
+                Sikkerhet på arbeidsplassen
+            </h2>
+            <p class="text-xl text-slate-400 max-w-2xl mx-auto">
+                Håndtering av farlig atferd og personlighetsforstyrrelser krever kunnskap, årvåkenhet og riktige verktøy.
+            </p>
+        </section>
+
+        <div class="grid md:grid-cols-2 gap-8">
+            <!-- Risikovurdering -->
+            <div id="risiko" class="glass-card p-8 section-hover">
+                <h3 class="text-xl font-bold mb-4 flex items-center gap-2 text-red-400">
+                    🔍 Risikoprofiler
+                </h3>
+                <ul class="space-y-4 text-slate-300">
+                    <li class="flex items-start gap-2">
+                        <span class="text-red-500">•</span>
+                        <span><strong>Mangel på empati:</strong> Manglende evne til å forstå andres grenser.</span>
+                    </li>
+                    <li class="flex items-start gap-2">
+                        <span class="text-red-500">•</span>
+                        <span><strong>Impulsivitet:</strong> Handlinger uten refleksjon over konsekvenser.</span>
+                    </li>
+                    <li class="flex items-start gap-2">
+                        <span class="text-red-500">•</span>
+                        <span><strong>Manipulasjon:</strong> Bruk av sjarm eller trusler for kontroll.</span>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- Sikkerhetstiltak -->
+            <div id="tiltak" class="glass-card p-8 section-hover border-l-4 border-red-500">
+                <h3 class="text-xl font-bold mb-4 flex items-center gap-2 text-red-400">
+                    🛡️ Forebyggende Tiltak
+                </h3>
+                <div class="space-y-4">
+                    <div class="p-4 bg-white/5 rounded-lg">
+                        <h4 class="font-bold mb-1">Besøksforbud & OVA</h4>
+                        <p class="text-sm text-slate-400">Bruk av omvendt voldsalarm for å sikre trygge soner.</p>
+                    </div>
+                    <div class="p-4 bg-white/5 rounded-lg">
+                        <h4 class="font-bold mb-1">Dokumentasjonsplikt</h4>
+                        <p class="text-sm text-slate-400">Loggfør alle grenseoverskridende hendelser umiddelbart.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Akutt Handling -->
+        <section id="beredskap" class="mt-12 glass-card p-10 text-center border-2 border-red-500/20">
+            <h3 class="text-2xl font-bold mb-4">Nødssituasjon?</h3>
+            <p class="mb-8 text-slate-400">Ved akutt fare for liv og helse, nøl aldri med å varsle nødetatene.</p>
+            <div class="flex justify-center gap-4">
+                <a href="tel:112" class="bg-red-600 hover:bg-red-700 px-8 py-4 rounded-full font-bold transition flex items-center gap-2">
+                    📞 Ring Politi (112)
+                </a>
+                <button onclick="document.getElementById('emergency-modal').style.display='flex'" class="bg-slate-700 hover:bg-slate-600 px-8 py-4 rounded-full font-bold transition">
+                    Intern Prosedyre
+                </button>
+            </div>
+        </section>
+    </main>
+
+    <!-- Enkel Modal (erstatning for alert) -->
+    <div id="emergency-modal" class="fixed inset-0 bg-black/80 hidden items-center justify-center z-[100] p-4">
+        <div class="glass-card p-8 max-w-md w-full text-center">
+            <h4 class="text-2xl font-bold mb-4">Intern Varsling</h4>
+            <p class="text-slate-400 mb-6">Følg bedriftens retningslinjer for evakuering og varsle nærmeste leder etter at nødetatene er kontaktet.</p>
+            <button onclick="document.getElementById('emergency-modal').style.display='none'" class="bg-red-600 w-full py-3 rounded-lg font-bold">Lukk</button>
+        </div>
+    </div>
+
+    <footer class="text-center py-10 text-slate-500 text-sm">
+        &copy; 2026 HMS Portal - Fokus på sikkerhet og forebygging
+    </footer>
+
+</body>
+</html>
