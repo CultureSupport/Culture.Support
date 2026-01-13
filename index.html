@@ -6,179 +6,356 @@
     <title>HMS Portal - Sikkerhet og Vern</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        @keyframes pulse-bg {
-            0% { background-color: rgba(15, 23, 42, 1); }
-            50% { background-color: rgba(45, 10, 10, 1); }
-            100% { background-color: rgba(15, 23, 42, 1); }
+        /* Bakgrunns-puls som flasher impulsivt */
+        @keyframes flash-bg {
+            0%, 100% { background-color: rgba(15, 23, 42, 1); }
+            10% { background-color: rgba(60, 10, 10, 1); }
+            15% { background-color: rgba(90, 0, 0, 1); }
+            20% { background-color: rgba(15, 23, 42, 1); }
+            85% { background-color: rgba(50, 5, 5, 1); }
         }
 
-        @keyframes alarm-blink {
-            0%, 100% { opacity: 0.2; transform: scale(1); }
-            50% { opacity: 0.5; transform: scale(1.1); }
+        /* Blitz-effekt for overvåking */
+        @keyframes blitz-border {
+            0%, 100% { box-shadow: 0 0 5px rgba(239, 68, 68, 0.1); }
+            48% { box-shadow: 0 0 40px rgba(239, 68, 68, 0.6); }
+            50% { box-shadow: 0 0 80px rgba(255, 255, 255, 0.9), inset 0 0 20px rgba(255, 255, 255, 0.5); }
+            52% { box-shadow: 0 0 40px rgba(239, 68, 68, 0.6); }
+        }
+
+        /* Alarm-blink med ekstrem frekvens */
+        @keyframes alarm-critical {
+            0%, 100% { background-color: #ff0000; box-shadow: 0 0 10px #ff0000; }
+            50% { background-color: #ffffff; box-shadow: 0 0 40px #ffffff; }
+        }
+
+        /* Strømmende animasjon */
+        @keyframes stream-glow {
+            0% { text-shadow: 0 0 5px rgba(239, 68, 68, 0.5); color: #f8fafc; }
+            50% { text-shadow: 0 0 20px rgba(239, 68, 68, 1), 0 0 35px rgba(255, 255, 255, 0.8); color: #ffffff; }
+            100% { text-shadow: 0 0 5px rgba(239, 68, 68, 0.5); color: #f8fafc; }
+        }
+
+        @keyframes scan-line {
+            0% { transform: translateY(-100%); }
+            100% { transform: translateY(100%); }
+        }
+
+        @keyframes new-entry-fade {
+            from { background-color: rgba(239, 68, 68, 0.3); transform: translateX(-10px); }
+            to { background-color: transparent; transform: translateX(0); }
         }
 
         body {
-            background-color: #0f172a;
+            background-color: #020617;
             color: #f8fafc;
             font-family: 'Inter', sans-serif;
             overflow-x: hidden;
-            animation: pulse-bg 8s infinite ease-in-out;
+            animation: flash-bg 4s infinite ease-in-out;
         }
 
         .alarm-glow {
             position: fixed;
-            top: 20px;
-            right: 20px;
-            width: 15px;
-            height: 15px;
-            background-color: #ef4444;
+            top: 25px;
+            right: 25px;
+            width: 25px;
+            height: 25px;
             border-radius: 50%;
-            box-shadow: 0 0 20px #ef4444;
-            animation: alarm-blink 3s infinite;
-            z-index: 50;
+            animation: alarm-critical 0.8s infinite;
+            z-index: 100;
         }
 
         .glass-card {
-            background: rgba(30, 41, 59, 0.6);
-            backdrop-filter: blur(16px);
+            background: rgba(15, 23, 42, 0.85);
+            backdrop-filter: blur(25px);
             border: 1px solid rgba(255, 255, 255, 0.1);
             border-radius: 1rem;
+            animation: blitz-border 3s infinite;
+            position: relative;
+            overflow: hidden;
         }
 
-        .section-hover:hover {
-            border-color: rgba(239, 68, 68, 0.4);
-            transform: translateY(-2px);
-            transition: all 0.3s ease;
+        .glass-card::before {
+            content: "";
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 2px;
+            background: linear-gradient(90deg, transparent, #ef4444, transparent);
+            animation: scan-line 2s linear infinite;
+            opacity: 0.3;
+        }
+
+        .streaming-text {
+            animation: stream-glow 1.5s infinite;
+        }
+
+        /* Forsterket logg-container for 1200+ meldinger */
+        .log-container {
+            font-family: 'Courier New', Courier, monospace;
+            background: rgba(0, 0, 0, 0.6);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            border-radius: 0.5rem;
+            height: 450px;
+            overflow-y: scroll;
+            scrollbar-width: thin;
+            scrollbar-color: #ef4444 transparent;
+        }
+
+        .log-container::-webkit-scrollbar { width: 6px; }
+        .log-container::-webkit-scrollbar-thumb { background: #ef4444; border-radius: 3px; }
+
+        .log-entry {
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            padding: 8px 12px;
+            font-size: 11px;
+            line-height: 1.4;
+            animation: new-entry-fade 1s ease-out;
         }
 
         .footer-glass {
-            background: rgba(15, 23, 42, 0.8);
-            backdrop-filter: blur(20px);
-            border-top: 1px solid rgba(239, 68, 68, 0.2);
+            background: rgba(2, 6, 23, 0.95);
+            backdrop-filter: blur(40px);
+            border-top: 3px solid #b91c1c;
         }
     </style>
 </head>
 <body class="min-h-screen flex flex-col">
 
-    <div class="alarm-glow"></div>
+    <div class="alarm-glow shadow-[0_0_50px_rgba(255,0,0,1)]"></div>
 
     <nav class="p-6 border-b border-white/10 glass-card m-4">
         <div class="container mx-auto flex justify-between items-center">
-            <h1 class="text-2xl font-bold tracking-tighter flex items-center gap-2 text-white">
-                <span class="text-red-500 text-3xl">🛡️</span> HMS-PORTAL
+            <h1 class="text-2xl font-black tracking-tighter flex items-center gap-3 text-white">
+                <span class="text-red-600 text-3xl animate-pulse italic">🚨</span> HMS Personlighet SIKKERHET
             </h1>
-            <div class="hidden md:flex gap-6 text-sm font-medium">
-                <a href="#risiko" class="hover:text-red-400 transition">Risikovurdering</a>
-                <a href="#tiltak" class="hover:text-red-400 transition">Sikkerhetstiltak</a>
-                <a href="#beredskap" class="hover:text-red-400 transition">Beredskap</a>
+            <div class="hidden md:flex gap-6 text-xs font-black uppercase tracking-[0.3em]">
+                <a href="#alarmsentral" class="hover:text-red-500 transition">Alarmsentral</a>
+                <a href="#gransking" class="hover:text-red-500 transition">Personanalyse</a>
+                <a href="#tiltak" class="hover:text-red-500 transition">Vernet Behandling</a>
             </div>
         </div>
     </nav>
 
-    <main class="container mx-auto px-4 py-12 flex-grow">
-        <!-- Hero Section -->
-        <section class="text-center mb-16">
-            <h2 class="text-4xl md:text-5xl font-extrabold mb-6 bg-clip-text text-transparent bg-gradient-to-r from-white to-slate-400">
-                Samfunnssikkerhet og Forebygging
+    <main class="container mx-auto px-4 py-8 flex-grow">
+        <!-- Main Alert Status -->
+        <section class="mb-12 text-center">
+            <div class="inline-block px-4 py-1 border border-red-500 text-red-500 text-[10px] font-black uppercase tracking-widest mb-4 animate-pulse">
+                Systemstatus: Operativ Gransking Aktivert | Logg-intervall: 12.0s
+            </div>
+            <h2 class="text-5xl md:text-7xl font-black mb-4 uppercase italic streaming-text tracking-tighter">
+                Sanntids Alarmlogg
             </h2>
-            <p class="text-xl text-slate-400 max-w-2xl mx-auto">
-                Implementering av betryggende tiltak for kontroll og overvåkning av høyrisikoatferd.
+            <p class="text-lg text-slate-400 max-w-3xl mx-auto italic">
+                Systematisk overvåkning og kontroll av innmeldte personer med kritiske personlighetsavvik.
             </p>
         </section>
 
-        <div class="grid md:grid-cols-2 gap-8">
-            <!-- Risikovurdering -->
-            <div id="risiko" class="glass-card p-8 section-hover">
-                <h3 class="text-xl font-bold mb-4 flex items-center gap-2 text-red-400">
-                    🔍 Risikoprofiler & Overvåkning
-                </h3>
-                <ul class="space-y-4 text-slate-300">
-                    <li class="flex items-start gap-2">
-                        <span class="text-red-500">•</span>
-                        <span><strong>Mangel på empati:</strong> Kontinuerlig monitorering av antisosiale trekk.</span>
-                    </li>
-                    <li class="flex items-start gap-2">
-                        <span class="text-red-500">•</span>
-                        <span><strong>Organisert kontroll:</strong> Behov for strukturerte rammer rundt krevende individer.</span>
-                    </li>
-                    <li class="flex items-start gap-2">
-                        <span class="text-red-500">•</span>
-                        <span><strong>Grenseoverskridelse:</strong> Nulltoleranse for brudd på samfunnssikkerheten.</span>
-                    </li>
-                </ul>
+        <!-- Alarm and Log Section -->
+        <div id="alarmsentral" class="grid lg:grid-cols-4 gap-8 mb-12">
+            <!-- Expanded Alarm Feed -->
+            <div class="lg:col-span-3 glass-card p-6">
+                <div class="flex justify-between items-center mb-4 border-b border-red-950 pb-2">
+                    <h3 class="font-black uppercase text-red-500 tracking-wider flex items-center gap-2">
+                        <span class="w-2 h-2 bg-red-600 rounded-full animate-ping"></span>
+                        Kontrollert Alarmlogg (12s Intervall)
+                    </h3>
+                    <div id="log-count" class="text-[10px] font-mono text-red-400">LOG-SYNC: 0/1200</div>
+                </div>
+                <div id="main-log" class="log-container">
+                    <div class="p-8 text-center text-slate-500 italic text-sm">Initialiserer sekvensiell loggføring...</div>
+                </div>
+                <div class="mt-4 flex gap-4">
+                    <button onclick="clearLog()" class="text-[10px] bg-red-950 text-red-500 px-4 py-1 border border-red-500/30 uppercase font-black hover:bg-red-600 hover:text-white transition-all">Nullstill Logg</button>
+                    <button onclick="pauseLog()" id="pause-btn" class="text-[10px] bg-slate-800 text-slate-400 px-4 py-1 border border-white/10 uppercase font-black transition-all">Pause Stream</button>
+                </div>
             </div>
 
-            <!-- Sikkerhetstiltak -->
-            <div id="tiltak" class="glass-card p-8 section-hover border-l-4 border-red-500">
-                <h3 class="text-xl font-bold mb-4 flex items-center gap-2 text-red-400">
-                    🛡️ Vernet Behandling
-                </h3>
-                <div class="space-y-4">
-                    <div class="p-4 bg-white/5 rounded-lg border border-white/10">
-                        <h4 class="font-bold mb-1">Livslangt Vern</h4>
-                        <p class="text-sm text-slate-400">Sikring av samfunnet gjennom institusjonalisert langtidsbehandling.</p>
+            <!-- Rapid Action Stats -->
+            <div class="glass-card p-6 border-t-4 border-red-600">
+                <h3 class="font-black uppercase text-white mb-6 text-sm tracking-widest">Global Status</h3>
+                <div class="space-y-6">
+                    <div>
+                        <div class="flex justify-between items-end mb-1">
+                            <span class="text-[10px] text-slate-400 uppercase">Innmeldte Personer</span>
+                            <span id="person-count" class="text-red-500 font-bold font-mono">0</span>
+                        </div>
+                        <div class="w-full bg-slate-800 h-1">
+                            <div id="bar-1" class="bg-red-600 h-full w-[0%] transition-all duration-500"></div>
+                        </div>
                     </div>
-                    <div class="p-4 bg-white/5 rounded-lg border border-white/10">
-                        <h4 class="font-bold mb-1">Strukturert Monitorering</h4>
-                        <p class="text-sm text-slate-400">Tilknyttet behov for organisert overvåkning av potensielt farlige personer.</p>
+                    <div class="p-4 bg-red-600/10 border border-red-500/20 rounded">
+                        <h4 class="text-[10px] font-black text-red-500 uppercase mb-2">Neste Analyse-Melding</h4>
+                        <div id="countdown" class="text-xl font-mono text-white text-center">12.0s</div>
+                    </div>
+                    <div class="p-4 bg-slate-900 border border-white/5 rounded">
+                        <h4 class="text-[10px] font-black text-slate-500 uppercase mb-2 italic">Siste Hendelse</h4>
+                        <p id="latest-event" class="text-[9px] text-slate-300 font-mono italic">Venter på logg-sekvens...</p>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- Akutt Handling -->
-        <section id="beredskap" class="mt-12 glass-card p-10 text-center border-2 border-red-500/20">
-            <h3 class="text-2xl font-bold mb-4">Varsling og Beredskap</h3>
-            <p class="mb-8 text-slate-400">Ved mistanke om trusler mot samfunnssikkerheten, aktiver umiddelbar varsling.</p>
-            <div class="flex flex-wrap justify-center gap-4">
-                <a href="tel:112" class="bg-red-600 hover:bg-red-700 px-8 py-4 rounded-full font-bold transition flex items-center gap-2 text-white">
-                    📞 Nødnummer Politi (112)
-                </a>
-                <button onclick="document.getElementById('emergency-modal').style.display='flex'" class="bg-slate-700 hover:bg-slate-600 px-8 py-4 rounded-full font-bold transition text-white">
-                    Se Retningslinjer
-                </button>
+        <!-- Person Analyse & Gransking -->
+        <div id="gransking" class="grid md:grid-cols-2 gap-8">
+            <div class="glass-card p-8 section-hover">
+                <h3 class="text-xl font-black mb-6 flex items-center gap-2 text-red-500 italic uppercase">
+                    Gransking & Analyse
+                </h3>
+                <div class="space-y-4">
+                    <div class="p-4 bg-red-600/5 border border-red-500/20">
+                        <h4 class="font-bold text-white mb-1 text-sm">Voldstrender (Psykisk/Fysisk)</h4>
+                        <p class="text-slate-400 text-[10px] leading-relaxed">
+                            Observasjon av mønstre for manipulasjon og emosjonell ustabilitet. Loggføres med 12 sekunders mellomrom for grundig operatør-vurdering.
+                        </p>
+                    </div>
+                    <div class="p-4 bg-red-600/5 border border-red-500/20">
+                        <h4 class="font-bold text-white mb-1 text-sm">Selvskading & Samfunnstrussel</h4>
+                        <p class="text-slate-400 text-[10px] leading-relaxed">
+                            Kategorisering av trusler mot seg selv eller andre. Sikrer at ingen kritiske data overses i den visuelle loggen.
+                        </p>
+                    </div>
+                </div>
             </div>
-        </section>
+
+            <div id="tiltak" class="glass-card p-8 border-l-4 border-red-600">
+                <h3 class="text-xl font-black mb-6 flex items-center gap-2 text-red-500 italic uppercase">
+                    Vernet Behandling Status
+                </h3>
+                <p class="text-slate-300 text-xs mb-6 font-medium leading-relaxed">
+                    Personer identifisert med alarmerende avvik overføres til vernet behandling på livstid. Loggen dokumenterer behovet for permanent samfunnssikkerhet.
+                </p>
+                <div class="grid grid-cols-2 gap-3">
+                    <button class="py-3 bg-red-950/50 border border-red-600 text-red-500 font-black uppercase text-[9px] hover:bg-red-600 hover:text-white transition-all">
+                        Innsendings-ordre
+                    </button>
+                    <button class="py-3 bg-slate-800/50 border border-slate-600 text-slate-300 font-black uppercase text-[9px] hover:bg-slate-600 hover:text-white transition-all">
+                        Arkiver Logg
+                    </button>
+                </div>
+            </div>
+        </div>
     </main>
 
-    <!-- Glassmorphic Footer med spesifikke tiltak -->
-    <footer class="footer-glass mt-20 px-6 py-12">
+    <!-- Glassmorphic Footer -->
+    <footer class="footer-glass mt-16 px-6 py-16">
         <div class="container mx-auto">
-            <div class="grid md:grid-cols-3 gap-12 mb-8">
+            <div class="grid md:grid-cols-3 gap-12 mb-12">
                 <div class="md:col-span-2">
-                    <h4 class="text-red-500 font-bold uppercase tracking-wider mb-4">Samfunnssikkerhet og Organisert Overvåkning</h4>
-                    <p class="text-slate-300 leading-relaxed text-sm md:text-base mb-4">
-                        For å sikre en tryggere fremtid implementeres det her betryggende tiltak som sikrer organisert overvåkning av krevende personer med potensielle personlighetsforstyrrelser som truer samfunnssikkerheten. 
+                    <h4 class="text-red-500 font-black uppercase tracking-[0.3em] mb-6 text-xl italic">Loggføring for Samfunnsvern</h4>
+                    <p class="text-slate-200 leading-relaxed mb-6 font-light text-sm md:text-base">
+                        Systemet prosesserer 1200 sanntidsmeldinger i et kontrollert intervall på 12 sekunder per linje. Dette sikrer full lesbarhet og operatørkontroll over personer med psykotiske personlighetsforstyrrelser.
                     </p>
-                    <p class="text-slate-400 italic text-sm border-l-2 border-red-500 pl-4">
-                        Ved å søke disse individene inn på vernet behandling på livstid, oppnår samfunnet en mer forutsigbar og trygg behandling. Dette øker den kollektive tryggheten ved å fjerne risikoen fra det offentlige rom og sikre profesjonell kontroll i lukkede, trygge rammer.
-                    </p>
-                </div>
-                <div class="flex flex-col gap-4">
-                    <h4 class="text-white font-bold mb-2">Sikkerhetsstatus</h4>
-                    <div class="flex items-center gap-3 bg-red-950/30 p-3 rounded-lg border border-red-500/20">
-                        <div class="w-3 h-3 bg-red-500 rounded-full animate-pulse"></div>
-                        <span class="text-xs uppercase font-semibold text-red-400">Aktiv Overvåkning</span>
+                    <div class="p-6 bg-red-900/10 border-l-4 border-red-600 backdrop-blur-xl">
+                        <p class="text-white font-bold italic text-sm text-justify">
+                            Ved organisert overvåkning og gransking av personanalyser detekteres vold, psykisk vold og trusselbilder. Innsending til livslang vernet behandling garanterer økt trygghet for samfunnet og fjerner permanente trusler.
+                        </p>
                     </div>
-                    <p class="text-xs text-slate-500">
-                        All aktivitet logges og rapporteres i samsvar med gjeldende HMS-protokoller for samfunnsvern.
-                    </p>
+                </div>
+                <div class="flex flex-col gap-6">
+                    <div class="p-6 glass-card border-red-600 bg-red-950/20">
+                        <h4 class="text-white font-black mb-4 uppercase text-[10px] tracking-widest">Alarmlogg Status</h4>
+                        <div class="flex items-center gap-4 mb-4">
+                            <div class="w-3 h-3 bg-red-600 rounded-full animate-ping"></div>
+                            <span class="text-xs font-black text-red-500 uppercase tracking-tighter">BATCH-PROSESSERING: AKTIV</span>
+                        </div>
+                        <p class="text-[9px] text-slate-500 leading-tight uppercase font-bold italic">
+                            1200 sanntidsmeldinger logges sekvensielt. Gransking pågår for vold, psykisk vold og skadepotensial.
+                        </p>
+                    </div>
                 </div>
             </div>
-            <div class="pt-8 border-t border-white/5 text-center text-slate-600 text-xs">
-                &copy; 2026 HMS-PORTAL | Seksjon for Samfunnsvern og Vernet Behandling
+            <div class="pt-8 border-t border-white/10 text-center">
+                <span class="text-slate-700 text-[9px] font-black uppercase tracking-[0.8em]">
+                    &copy; 2026 HMS-PORTAL | BATCH SIKKERHET | 12s LOGG-SEKVENS
+                </span>
             </div>
         </div>
     </footer>
 
-    <!-- Modal -->
-    <div id="emergency-modal" class="fixed inset-0 bg-black/80 hidden items-center justify-center z-[100] p-4">
-        <div class="glass-card p-8 max-w-md w-full text-center border-t-4 border-red-600">
-            <h4 class="text-2xl font-bold mb-4 text-white">Intern Varsling</h4>
-            <p class="text-slate-400 mb-6 text-sm">Følg bedriftens retningslinjer for evakuering og rapportering av mistenkelig atferd direkte til sikkerhetskoordinator.</p>
-            <button onclick="document.getElementById('emergency-modal').style.display='none'" class="bg-red-600 hover:bg-red-700 text-white w-full py-3 rounded-lg font-bold transition">Forstått</button>
-        </div>
-    </div>
+    <script>
+        const logContainer = document.getElementById('main-log');
+        const logCountDisplay = document.getElementById('log-count');
+        const personCountDisplay = document.getElementById('person-count');
+        const latestEventDisplay = document.getElementById('latest-event');
+        const progressBar = document.getElementById('bar-1');
+        const pauseBtn = document.getElementById('pause-btn');
+        const countdownDisplay = document.getElementById('countdown');
+
+        let logEntries = 0;
+        let personsInscribed = 0;
+        let isPaused = false;
+        let countdown = 12.0;
+
+        const alarmTypes = [
+            { type: 'ALARM', color: 'text-red-400', msg: 'Indikasjon på psykotisk gjennombrudd. Anmodning om vern.' },
+            { type: 'VARSEL', color: 'text-yellow-500', msg: 'Trussel om selvskading registrert. Sone overvåkes.' },
+            { type: 'KRITISK', color: 'text-red-600 font-bold', msg: 'Verifisert voldsrisiko mot tredjepart. Blitz aktivert.' },
+            { type: 'LOGG', color: 'text-slate-400', msg: 'Scanning av merket person ferdigstilt. Ingen avvik.' },
+            { type: 'INN-MELD', color: 'text-white font-bold', msg: 'Ny person innmeldt i alarmlogg for gransking.' },
+            { type: 'VOLD', color: 'text-orange-500', msg: 'Psykisk vold detektert via språkanalyse. Gransking startet.' },
+            { type: 'SKADE', color: 'text-red-700', msg: 'Eskalering av trussel mot andre. Innsendingsordre generert.' }
+        ];
+
+        function addLogEntry() {
+            if (isPaused || logEntries >= 1200) return;
+
+            const alarm = alarmTypes[Math.floor(Math.random() * alarmTypes.length)];
+            const time = new Date().toLocaleTimeString('no-NO', { hour12: false });
+            const id = Math.floor(100 + Math.random() * 900);
+            
+            const entry = document.createElement('div');
+            entry.className = `log-entry ${alarm.color}`;
+            entry.innerHTML = `<span class="opacity-50">[${time}]</span> <span class="font-bold">[${alarm.type}]</span> ID-${id}: ${alarm.msg}`;
+            
+            if (logEntries === 0) logContainer.innerHTML = '';
+            logContainer.prepend(entry);
+            logEntries++;
+
+            if (alarm.type === 'INN-MELD') {
+                personsInscribed++;
+                personCountDisplay.innerText = personsInscribed;
+                progressBar.style.width = Math.min(100, (personsInscribed / 50) * 100) + '%';
+            }
+
+            if (alarm.type === 'KRITISK' || alarm.type === 'SKADE' || alarm.type === 'ALARM') {
+                latestEventDisplay.innerText = `ID-${id}: ${alarm.msg}`;
+            }
+
+            logCountDisplay.innerText = `LOG-SYNC: ${logEntries}/1200`;
+
+            if (logContainer.childNodes.length > 1200) {
+                logContainer.removeChild(logContainer.lastChild);
+            }
+        }
+
+        function clearLog() {
+            logContainer.innerHTML = '<div class="p-8 text-center text-slate-500 italic text-sm">Logg nullstilt...</div>';
+            logEntries = 0;
+            personsInscribed = 0;
+            personCountDisplay.innerText = '0';
+            progressBar.style.width = '0%';
+            logCountDisplay.innerText = 'LOG-SYNC: 0/1200';
+            countdown = 12.0;
+        }
+
+        function pauseLog() {
+            isPaused = !isPaused;
+            pauseBtn.innerText = isPaused ? 'Start Stream' : 'Pause Stream';
+            pauseBtn.classList.toggle('bg-red-900', isPaused);
+        }
+
+        // Timer for 12 sekunder intervall
+        setInterval(() => {
+            if (!isPaused) {
+                countdown -= 0.1;
+                if (countdown <= 0) {
+                    addLogEntry();
+                    countdown = 12.0;
+                }
+                countdownDisplay.innerText = countdown.toFixed(1) + 's';
+            }
+        }, 100);
+
+    </script>
 
 </body>
 </html>
