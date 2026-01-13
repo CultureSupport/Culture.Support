@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FBI Report & Asset Protection Manager</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .loading-bar {
+            height: 4px;
+            background: #1e293b;
+            position: relative;
+            overflow: hidden;
+            border-radius: 2px;
+        }
+        .loading-progress {
+            position: absolute;
+            height: 100%;
+            background: #ef4444;
+            width: 0%;
+            transition: width 0.3s linear;
+        }
+        .glow-red {
+            box-shadow: 0 0 15px rgba(239, 68, 68, 0.4);
+        }
+        .terminal-text {
+            font-family: 'Courier New', Courier, monospace;
+        }
+        @keyframes pulse-border {
+            0% { border-color: rgba(239, 68, 68, 0.5); }
+            50% { border-color: rgba(239, 68, 68, 1); }
+            100% { border-color: rgba(239, 68, 68, 0.5); }
+        }
+        .active-process {
+            animation: pulse-border 2s infinite;
+        }
+    </style>
+</head>
+<body class="bg-slate-950 text-slate-200 min-h-screen">
+
+    <!-- MAIN INTERFACE -->
+    <div id="main-interface" class="max-w-4xl mx-auto p-6">
+        <header class="mb-8 border-b border-slate-800 pb-4 flex justify-between items-end">
+            <div>
+                <h1 class="text-xl font-black tracking-widest text-red-500">FBI CASE MANAGER</h1>
+                <p class="text-xs text-slate-500 uppercase">Transnational Wire Fraud Reporting System</p>
+            </div>
+            <div class="text-right">
+                <span id="system-status" class="text-[10px] bg-green-900/30 text-green-400 px-2 py-1 rounded border border-green-800">ENCRYPTED CONNECTION</span>
+            </div>
+        </header>
+
+        <div class="grid gap-6">
+            <!-- Report Section -->
+            <div class="bg-slate-900 border border-slate-800 p-6 rounded-lg shadow-xl">
+                <h2 class="text-lg font-bold mb-4 text-white">1. Incident Summary</h2>
+                <div class="space-y-4">
+                    <input id="report-title" type="text" placeholder="Case Subject: e.g., Insider Swindle & Investor Crimes" class="w-full bg-slate-950 border border-slate-700 p-3 rounded text-sm outline-none focus:border-red-500">
+                    <textarea id="report-body" rows="4" placeholder="Detail the transnational wire activities and asset steering..." class="w-full bg-slate-950 border border-slate-700 p-3 rounded text-sm outline-none focus:border-red-500"></textarea>
+                    <button onclick="startReportingSequence()" class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-3 rounded transition uppercase tracking-wider">
+                        Submit Report to FBI Manager
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- OVERLAY: FBI DELIVERY PROGRESS -->
+    <div id="fbi-overlay" class="hidden fixed inset-0 bg-slate-950/95 z-50 flex items-center justify-center p-6">
+        <div class="max-w-md w-full text-center space-y-6">
+            <div class="mx-auto w-16 h-16 border-4 border-red-600 border-t-transparent rounded-full animate-spin"></div>
+            <h2 class="text-2xl font-black text-white italic">DELIVERING TO FBI MANAGER...</h2>
+            <div class="loading-bar">
+                <div id="fbi-progress" class="loading-progress"></div>
+            </div>
+            <div id="fbi-logs" class="text-left text-[10px] terminal-text text-slate-500 h-24 overflow-hidden border border-slate-800 p-2 bg-black">
+                <div>> Initializing secure tunnel...</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- OVERLAY: SUPPORT PROTECTION SETTLEMENT (20 SECONDS) -->
+    <div id="protection-overlay" class="hidden fixed inset-0 bg-slate-950 z-[60] flex items-center justify-center p-6">
+        <div class="max-w-2xl w-full bg-slate-900 border-2 border-red-600 p-8 rounded-xl active-process glow-red">
+            <div class="flex justify-between items-start mb-8">
+                <div>
+                    <h2 class="text-3xl font-black text-white">SUPPORT PROTECTION</h2>
+                    <p class="text-red-500 font-bold uppercase tracking-widest text-sm">Asset Settlement Protocol Active</p>
+                </div>
+                <div id="timer" class="text-4xl font-mono text-red-500">20.0s</div>
+            </div>
+
+            <div class="space-y-4 mb-8">
+                <div class="flex items-center justify-between text-xs font-bold uppercase text-slate-400">
+                    <span>Protection Shielding</span>
+                    <span id="shield-percent">0%</span>
+                </div>
+                <div class="loading-bar">
+                    <div id="shield-progress" class="loading-progress !bg-blue-500"></div>
+                </div>
+            </div>
+
+            <div id="settlement-logs" class="bg-black/50 p-4 rounded border border-slate-800 h-48 overflow-y-auto font-mono text-xs text-green-500 leading-relaxed">
+                <!-- Logs populated by JS -->
+            </div>
+
+            <div id="final-actions" class="hidden mt-6 pt-6 border-t border-slate-800 flex justify-center">
+                <button onclick="location.reload()" class="bg-blue-600 px-8 py-3 rounded font-bold text-white hover:bg-blue-700">
+                    RETURN TO SECURE DASHBOARD
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const fbiLogs = [
+            "Syncing with federal relay...",
+            "Encrypting packet with AES-256...",
+            "Routing through secure DC gateway...",
+            "Verifying manager credentials...",
+            "Bypassing internal swindle filters...",
+            "Handshake confirmed by FBI-NODE-09.",
+            "Report packet delivered successfully."
+        ];
+
+        const protectionLogs = [
+            "Initiating Support Protection Protocol...",
+            "Locking transnational assets in escrow...",
+            "Freezing swindle-commissioned accounts...",
+            "Deploying legal firewall (Section 204.b)...",
+            "Notifying global financial regulators...",
+            "Shielding investor financing channels...",
+            "Neutralizing insider steering attempts...",
+            "Verifying parole condition compliance...",
+            "Securing internal data board integrity...",
+            "Compiling asset recovery roadmap...",
+            "Settlement finalized for 2024 fiscal cycle.",
+            "PROTECTION FULLY DEPLOYED."
+        ];
+
+        function startReportingSequence() {
+            const title = document.getElementById('report-title').value;
+            if(!title) return alert("Please enter a report subject.");
+
+            document.getElementById('fbi-overlay').classList.remove('hidden');
+            let progress = 0;
+            const bar = document.getElementById('fbi-progress');
+            const logBox = document.getElementById('fbi-logs');
+
+            const interval = setInterval(() => {
+                progress += 2;
+                bar.style.width = progress + '%';
+                
+                if (progress % 14 === 0) {
+                    const log = fbiLogs[Math.floor(progress / 15)];
+                    if(log) logBox.innerHTML += `<div>> ${log}</div>`;
+                    logBox.scrollTop = logBox.scrollHeight;
+                }
+
+                if (progress >= 100) {
+                    clearInterval(interval);
+                    setTimeout(() => {
+                        document.getElementById('fbi-overlay').classList.add('hidden');
+                        startProtectionSettlement();
+                    }, 1000);
+                }
+            }, 50);
+        }
+
+        function startProtectionSettlement() {
+            document.getElementById('protection-overlay').classList.remove('hidden');
+            let timeLeft = 20.0;
+            const timerEl = document.getElementById('timer');
+            const shieldBar = document.getElementById('shield-progress');
+            const shieldText = document.getElementById('shield-percent');
+            const logBox = document.getElementById('settlement-logs');
+
+            const countdown = setInterval(() => {
+                timeLeft -= 0.1;
+                timerEl.innerText = timeLeft.toFixed(1) + 's';
+                
+                const percent = ((20 - timeLeft) / 20) * 100;
+                shieldBar.style.width = percent + '%';
+                shieldText.innerText = Math.floor(percent) + '%';
+
+                // Add logs periodically
+                if (Math.floor(timeLeft * 10) % 15 === 0) {
+                    const logIndex = Math.floor((20 - timeLeft) / 1.6);
+                    if(protectionLogs[logIndex]) {
+                        logBox.innerHTML += `<div class="mb-1 text-blue-400 font-bold">[SECURE] ${protectionLogs[logIndex]}</div>`;
+                        logBox.scrollTop = logBox.scrollHeight;
+                    }
+                }
+
+                if (timeLeft <= 0) {
+                    clearInterval(countdown);
+                    timerEl.innerText = "COMPLETE";
+                    timerEl.classList.add('text-green-500');
+                    document.getElementById('final-actions').classList.remove('hidden');
+                    logBox.innerHTML += `<div class="mt-4 p-2 bg-green-900/40 text-green-300 border border-green-500 text-center uppercase font-black">Success: Assets Shielded & Report Filed</div>`;
+                }
+            }, 100);
+        }
+    </script>
+</body>
+</html>
+
