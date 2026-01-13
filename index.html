@@ -2,372 +2,149 @@
 <html lang="no">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Kosemonster Landevei FPS</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mental Helse Simulator</title>
     <style>
         :root {
-            --ui-bg: rgba(255, 255, 255, 0.2);
-            --ui-border: rgba(255, 255, 255, 0.4);
-        }
-        body {
-            margin: 0;
-            overflow: hidden;
-            background: #87CEEB; /* Himmelblå */
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            touch-action: none;
+            --dark-bg: #0a0a0a;
         }
 
-        #game-container {
-            position: relative;
+        body, html {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            background-color: var(--dark-bg);
+            color: white;
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            overflow: hidden;
+        }
+
+        /* Psykose Simulator Lag */
+        #simulator-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
             width: 100vw;
             height: 100vh;
-            overflow: hidden;
+            z-index: 1;
+            filter: blur(2px) contrast(150%) saturate(200%);
+            animation: breathe 10s infinite alternate;
+            transition: filter 0.5s ease;
         }
 
-        /* Bakgrunnsanimasjon for landevei */
-        #road {
-            position: absolute;
-            bottom: 0;
-            width: 100%;
-            height: 50%;
-            background: #555;
-            overflow: hidden;
-        }
-        .road-line {
-            position: absolute;
-            left: 50%;
-            width: 10px;
-            height: 50px;
-            background: white;
-            transform: translateX(-50%);
-            animation: moveRoad 1s linear infinite;
-        }
-        @keyframes moveRoad {
-            0% { top: -100px; transform: translateX(-50%) scale(0.5); opacity: 0; }
-            100% { top: 100%; transform: translateX(-50%) scale(2); opacity: 1; }
-        }
-
-        /* Sikte (Crosshair) */
-        #crosshair {
-            position: absolute;
-            width: 40px;
-            height: 40px;
-            border: 3px solid #ff69b4;
-            border-radius: 50%;
-            left: 50%;
-            top: 50%;
-            transform: translate(-50%, -50%);
-            pointer-events: none;
-            z-index: 100;
-        }
-        #crosshair::after, #crosshair::before {
-            content: '';
-            position: absolute;
-            background: #ff69b4;
-        }
-        #crosshair::after { width: 2px; height: 100%; left: 50%; transform: translateX(-50%); }
-        #crosshair::before { height: 2px; width: 100%; top: 50%; transform: translateY(-50%); }
-
-        /* UI Elementer */
-        .glass-ui {
-            background: var(--ui-bg);
-            backdrop-filter: blur(8px);
-            border: 1px solid var(--ui-border);
-            border-radius: 20px;
-            color: white;
-            padding: 15px;
-            position: absolute;
-            z-index: 200;
-        }
-
-        #score-panel { top: 20px; left: 20px; min-width: 120px; text-align: center; font-weight: bold; font-size: 20px; }
-
-        #controls-right { bottom: 30px; right: 30px; display: flex; flex-direction: column; gap: 15px; }
-
-        .action-btn {
-            width: 80px;
-            height: 80px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 30px;
-            cursor: pointer;
-            transition: transform 0.1s;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
-        }
-        .action-btn:active { transform: scale(0.9); }
-        .hug-btn { background: #ff69b4; }
-
-        /* Joystick */
-        #joystick-area {
-            position: absolute;
-            bottom: 40px;
-            left: 40px;
-            width: 150px;
-            height: 150px;
-            background: var(--ui-bg);
-            border-radius: 50%;
-            border: 2px solid var(--ui-border);
-            z-index: 200;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        #joystick-stick {
-            width: 60px;
-            height: 60px;
-            background: rgba(255, 255, 255, 0.6);
-            border-radius: 50%;
-            cursor: pointer;
-        }
-
-        /* Monstre */
-        .monster {
+        .hallucination {
             position: absolute;
             pointer-events: none;
-            transition: transform 0.2s linear;
-            z-index: 50;
-            font-size: 100px;
-            filter: drop-shadow(0 5px 15px rgba(0,0,0,0.3));
+            opacity: 0;
+            transition: opacity 1s ease, transform 4s linear;
+            font-size: 2.5rem;
+            color: rgba(255, 255, 255, 0.15);
+            z-index: 2;
+            white-space: nowrap;
         }
 
-        #start-screen {
+        @keyframes breathe {
+            from { transform: scale(1); }
+            to { transform: scale(1.05); }
+        }
+
+        .tunnel-vision {
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.7);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            z-index: 1000;
-            color: white;
-            text-align: center;
-        }
-
-        .start-btn {
-            background: #ff69b4;
-            color: white;
-            border: none;
-            padding: 20px 50px;
-            font-size: 24px;
-            border-radius: 50px;
-            cursor: pointer;
-            margin-top: 20px;
-            font-weight: bold;
-        }
-
-        .heart {
-            position: absolute;
-            font-size: 40px;
+            background: radial-gradient(circle, transparent 20%, black 80%);
+            z-index: 5;
+            opacity: 0.8;
             pointer-events: none;
-            animation: floatUp 1s ease-out forwards;
-            z-index: 150;
-        }
-        @keyframes floatUp {
-            0% { transform: translateY(0) scale(1); opacity: 1; }
-            100% { transform: translateY(-100px) scale(2); opacity: 0; }
         }
     </style>
 </head>
 <body>
 
-    <div id="game-container">
-        <!-- Landeveien -->
-        <div id="road">
-            <div class="road-line" style="animation-delay: 0s"></div>
-            <div class="road-line" style="animation-delay: 0.2s"></div>
-            <div class="road-line" style="animation-delay: 0.4s"></div>
-            <div class="road-line" style="animation-delay: 0.6s"></div>
-            <div class="road-line" style="animation-delay: 0.8s"></div>
-        </div>
-
-        <div id="crosshair"></div>
-
-        <div id="score-panel" class="glass-ui">
-            KOS: <span id="score-val">0</span>
-        </div>
-
-        <div id="joystick-area">
-            <div id="joystick-stick"></div>
-        </div>
-
-        <div id="controls-right">
-            <div id="hug-btn" class="action-btn hug-btn">💖</div>
-        </div>
-
-        <div id="start-screen">
-            <h1>KOSEMONSTER FPS</h1>
-            <p>Styr siktet med joysticken.<br>Gi monstrene en klem med hjerteknappen!</p>
-            <button class="start-btn" onclick="startGame()">START SPILLET</button>
-        </div>
+    <div id="simulator-canvas">
+        <div id="objects-container"></div>
     </div>
+    <div class="tunnel-vision"></div>
 
     <script>
-        const monsterEmojis = ['🐙', '🦄', '🦁', '🐨', '🐼', '🦖', '🤖'];
-        let score = 0;
-        let gameActive = false;
-        let crosshairPos = { x: window.innerWidth/2, y: window.innerHeight/2 };
-        let joystickPos = { x: 0, y: 0 };
-        let monsters = [];
+        const container = document.getElementById('objects-container');
+        
+        const whispers = [
+            "Gjemnes Psykose.",
+      "Jeg hører stemmer i Gjemnes.",
+       "Gjemnes Psykose.",
+      "Jeg hører stemmer i Gjemnes.",
+      "Jeg ser farger som ikke eksisterer i dette landskapet.",
+       "Gjemnes Psykose.",
+      "Jeg hører stemmer i Gjemnes.",
+       "Gjemnes Psykose.",
+      "Jeg hører stemmer i Gjemnes.",
+       "Gjemnes Psykose.",
+      "Jeg hører stemmer i Gjemnes.",
+       "Gjemnes Psykose.",
+      "Jeg hører stemmer i Gjemnes.",
+      "Jeg har oppdaget den skjulte koden i naboens hage.",
+      "Kroppen min er i ferd med å bli gjennomsiktig.",
+      "De døde snakker til meg gjennom røttene i skogen."
+        ];
 
-        // Joystick Logikk
-        const stick = document.getElementById('joystick-stick');
-        const area = document.getElementById('joystick-area');
-        let isDragging = false;
+        function startHallucinations() {
+            setInterval(() => {
+                const h = document.createElement('div');
+                h.className = 'hallucination';
+                h.innerText = whispers[Math.floor(Math.random() * whispers.length)];
+                
+                // Startposisjon i sentrum
+                const startX = window.innerWidth / 2;
+                const startY = window.innerHeight / 2;
+                
+                // Destinasjon (tilfeldig retning utover)
+                const angle = Math.random() * Math.PI * 2;
+                const distance = 400 + Math.random() * 300;
+                const destX = startX + Math.cos(angle) * distance;
+                const destY = startY + Math.sin(angle) * distance;
+                
+                h.style.left = startX + "px";
+                h.style.top = startY + "px";
+                h.style.transform = "translate(-50%, -50%) scale(0.3)";
+                
+                container.appendChild(h);
+                
+                // Animer utover
+                setTimeout(() => { 
+                    h.style.opacity = 1; 
+                    h.style.transform = `translate(${(destX - startX)}px, ${(destY - startY)}px) scale(2) rotate(${Math.random() * 60 - 30}deg)`;
+                }, 50);
 
-        function handleJoystick(e) {
-            if(!isDragging && e.type !== 'touchstart') return;
-            const rect = area.getBoundingClientRect();
-            const centerX = rect.left + rect.width / 2;
-            const centerY = rect.top + rect.height / 2;
-            const clientX = e.touches ? e.touches[0].clientX : e.clientX;
-            const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+                setTimeout(() => {
+                    h.style.opacity = 0;
+                    setTimeout(() => h.remove(), 1000);
+                }, 3500);
+            }, 800); // Litt hyppigere ord for en mer intens effekt
+        }
 
-            let dx = clientX - centerX;
-            let dy = clientY - centerY;
-            const dist = Math.sqrt(dx*dx + dy*dy);
-            const maxRadius = 45;
-
-            if (dist > maxRadius) {
-                dx *= maxRadius / dist;
-                dy *= maxRadius / dist;
+        // Bakgrunns-animasjon (statiske svevende partikler)
+        function createBackground() {
+            const canvas = document.getElementById('simulator-canvas');
+            for(let i=0; i<50; i++) {
+                const dot = document.createElement('div');
+                dot.style.position = 'absolute';
+                dot.style.width = '2px';
+                dot.style.height = '2px';
+                dot.style.background = 'white';
+                dot.style.borderRadius = '50%';
+                dot.style.left = Math.random() * 100 + '%';
+                dot.style.top = Math.random() * 100 + '%';
+                dot.style.opacity = Math.random() * 0.5;
+                canvas.appendChild(dot);
             }
-
-            stick.style.transform = `translate(${dx}px, ${dy}px)`;
-            joystickPos.x = dx / maxRadius;
-            joystickPos.y = dy / maxRadius;
         }
 
-        area.addEventListener('mousedown', () => isDragging = true);
-        window.addEventListener('mousemove', handleJoystick);
-        window.addEventListener('mouseup', () => {
-            isDragging = false;
-            stick.style.transform = 'translate(0,0)';
-            joystickPos = { x: 0, y: 0 };
-        });
-
-        area.addEventListener('touchstart', (e) => { e.preventDefault(); isDragging = true; });
-        window.addEventListener('touchmove', (e) => { if(isDragging) handleJoystick(e); });
-        window.addEventListener('touchend', () => {
-            isDragging = false;
-            stick.style.transform = 'translate(0,0)';
-            joystickPos = { x: 0, y: 0 };
-        });
-
-        // Skyte (Kose) logikk
-        document.getElementById('hug-btn').addEventListener('click', () => {
-            if(!gameActive) return;
-            createHeartEffect(crosshairPos.x, crosshairPos.y);
-            checkHit();
-        });
-
-        function createHeartEffect(x, y) {
-            const h = document.createElement('div');
-            h.className = 'heart';
-            h.innerHTML = '✨';
-            h.style.left = (x - 20) + 'px';
-            h.style.top = (y - 20) + 'px';
-            document.getElementById('game-container').appendChild(h);
-            setTimeout(() => h.remove(), 1000);
-        }
-
-        function checkHit() {
-            monsters.forEach((m, index) => {
-                const rect = m.element.getBoundingClientRect();
-                const mx = rect.left + rect.width/2;
-                const my = rect.top + rect.height/2;
-                const dist = Math.sqrt(Math.pow(mx - crosshairPos.x, 2) + Math.pow(my - crosshairPos.y, 2));
-
-                if(dist < 60) {
-                    score++;
-                    document.getElementById('score-val').innerText = score;
-                    m.element.innerHTML = '🥰';
-                    m.element.style.transform += ' scale(1.5)';
-                    m.element.style.opacity = '0';
-                    setTimeout(() => {
-                        m.element.remove();
-                        monsters.splice(index, 1);
-                    }, 500);
-                }
-            });
-        }
-
-        // Monster håndtering
-        function spawnMonster() {
-            if(!gameActive) return;
-            const el = document.createElement('div');
-            el.className = 'monster';
-            el.innerHTML = monsterEmojis[Math.floor(Math.random() * monsterEmojis.length)];
-            
-            const startX = Math.random() * window.innerWidth;
-            const startY = window.innerHeight * 0.45; // Horisonten
-            
-            el.style.left = startX + 'px';
-            el.style.top = startY + 'px';
-            el.style.transform = 'scale(0.1)';
-            
-            document.getElementById('game-container').appendChild(el);
-            
-            const monster = {
-                element: el,
-                x: startX,
-                y: startY,
-                scale: 0.1,
-                vx: (Math.random() - 0.5) * 2,
-                vy: Math.random() * 2 + 1
-            };
-            monsters.push(monster);
-            
-            setTimeout(spawnMonster, 1000 + Math.random() * 2000);
-        }
-
-        function update() {
-            if(!gameActive) return;
-
-            // Oppdater sikte basert på joystick
-            const speed = 8;
-            crosshairPos.x += joystickPos.x * speed;
-            crosshairPos.y += joystickPos.y * speed;
-
-            // Hold sikte innenfor skjermen
-            crosshairPos.x = Math.max(50, Math.min(window.innerWidth - 50, crosshairPos.x));
-            crosshairPos.y = Math.max(50, Math.min(window.innerHeight - 50, crosshairPos.y));
-
-            const ch = document.getElementById('crosshair');
-            ch.style.left = crosshairPos.x + 'px';
-            ch.style.top = crosshairPos.y + 'px';
-
-            // Oppdater monstre (de kommer "mot" deg)
-            monsters.forEach((m, index) => {
-                m.scale += 0.005;
-                m.y += m.vy * (m.scale * 2);
-                m.x += m.vx * (m.scale * 2);
-
-                m.element.style.left = m.x + 'px';
-                m.element.style.top = m.y + 'px';
-                m.element.style.transform = `scale(${m.scale})`;
-
-                // Fjern monstre som går ut av skjermen
-                if(m.y > window.innerHeight + 100) {
-                    m.element.remove();
-                    monsters.splice(index, 1);
-                }
-            });
-
-            requestAnimationFrame(update);
-        }
-
-        function startGame() {
-            document.getElementById('start-screen').style.display = 'none';
-            gameActive = true;
-            spawnMonster();
-            update();
-        }
-
-        window.addEventListener('resize', () => {
-            crosshairPos = { x: window.innerWidth/2, y: window.innerHeight/2 };
-        });
+        // Start alt ved lasting
+        window.onload = () => {
+            createBackground();
+            startHallucinations();
+        };
     </script>
 </body>
 </html>
