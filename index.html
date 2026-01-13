@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html lang="no">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HMS Portal - Sikkerhet og Vern</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Bakgrunns-puls som flasher impulsivt */
+        @keyframes flash-bg {
+            0%, 100% { background-color: rgba(15, 23, 42, 1); }
+            10% { background-color: rgba(60, 10, 10, 1); }
+            15% { background-color: rgba(90, 0, 0, 1); }
+            20% { background-color: rgba(15, 23, 42, 1); }
+            85% { background-color: rgba(50, 5, 5, 1); }
+        }
+
+        /* Blitz-effekt for overvåking */
+        @keyframes blitz-border {
+            0%, 100% { box-shadow: 0 0 5px rgba(239, 68, 68, 0.1); }
+            48% { box-shadow: 0 0 40px rgba(239, 68, 68, 0.6); }
+            50% { box-shadow: 0 0 80px rgba(255, 255, 255, 0.9), inset 0 0 20px rgba(255, 255, 255, 0.5); }
+            52% { box-shadow: 0 0 40px rgba(239, 68, 68, 0.6); }
+        }
+
+        @keyframes alarm-critical {
+            0%, 100% { background-color: #ff0000; box-shadow: 0 0 10px #ff0000; }
+            50% { background-color: #ffffff; box-shadow: 0 0 40px #ffffff; }
+        }
+
+        @keyframes stream-glow {
+            0% { text-shadow: 0 0 5px rgba(239, 68, 68, 0.5); color: #f8fafc; }
+            50% { text-shadow: 0 0 20px rgba(239, 68, 68, 1), 0 0 35px rgba(255, 255, 255, 0.8); color: #ffffff; }
+            100% { text-shadow: 0 0 5px rgba(239, 68, 68, 0.5); color: #f8fafc; }
+        }
+
+        @keyframes new-entry-fade {
+            from { background-color: rgba(239, 68, 68, 0.3); transform: translateX(-10px); opacity: 0; }
+            to { background-color: transparent; transform: translateX(0); opacity: 1; }
+        }
+
+        body {
+            background-color: #020617;
+            color: #f8fafc;
+            font-family: 'Inter', sans-serif;
+            overflow-x: hidden;
+            animation: flash-bg 4s infinite ease-in-out;
+        }
+
+        .alarm-glow {
+            position: fixed;
+            top: 25px;
+            right: 25px;
+            width: 25px;
+            height: 25px;
+            border-radius: 50%;
+            animation: alarm-critical 0.8s infinite;
+            z-index: 100;
+        }
+
+        .glass-card {
+            background: rgba(15, 23, 42, 0.85);
+            backdrop-filter: blur(25px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 1rem;
+            animation: blitz-border 3s infinite;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .streaming-text {
+            animation: stream-glow 1.5s infinite;
+        }
+
+        .log-container {
+            font-family: 'Courier New', Courier, monospace;
+            background: rgba(0, 0, 0, 0.6);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            border-radius: 0.5rem;
+            height: 400px;
+            overflow-y: scroll;
+            scrollbar-width: thin;
+            scrollbar-color: #ef4444 transparent;
+        }
+
+        .log-entry {
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            padding: 10px 14px;
+            font-size: 11px;
+            line-height: 1.5;
+            animation: new-entry-fade 1s ease-out forwards;
+        }
+
+        /* Barometer-spesifikk styling */
+        .barometer-radial {
+            position: relative;
+            width: 80px;
+            height: 80px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .barometer-circle {
+            fill: none;
+            stroke-width: 10;
+            stroke-linecap: round;
+            transform: rotate(-90deg);
+            transform-origin: 50% 50%;
+            transition: stroke-dashoffset 1s ease-out;
+        }
+
+        .bg-circle { stroke: rgba(255, 255, 255, 0.05); }
+        .val-circle { stroke: #ef4444; filter: drop-shadow(0 0 5px #ef4444); }
+
+    </style>
+</head>
+<body class="min-h-screen flex flex-col">
+
+    <div class="alarm-glow shadow-[0_0_50px_rgba(255,0,0,1)]"></div>
+
+    <nav class="p-6 border-b border-white/10 glass-card m-4">
+        <div class="container mx-auto flex justify-between items-center">
+            <h1 class="text-2xl font-black tracking-tighter flex items-center gap-3 text-white">
+                <span class="text-red-600 text-3xl animate-pulse italic">🚨</span> HMS BATCH-SIKKERHET
+            </h1>
+            <div class="hidden md:flex gap-6 text-xs font-black uppercase tracking-[0.3em]">
+                <a href="#alarmsentral" class="hover:text-red-500 transition">Alarmsentral</a>
+                <a href="#barometer-grid" class="hover:text-red-500 transition">Barometer-måling</a>
+                <a href="#oversikt" class="hover:text-red-500 transition">Status</a>
+            </div>
+        </div>
+    </nav>
+
+    <main class="container mx-auto px-4 py-8 flex-grow">
+        <section class="mb-12 text-center">
+            <div class="inline-block px-4 py-1 border border-red-500 text-red-500 text-[10px] font-black uppercase tracking-widest mb-4 animate-pulse">
+                Systemstatus: Global Overvåkning Aktiv | Full Synkronisering: PÅ
+            </div>
+            <h2 class="text-5xl md:text-7xl font-black mb-4 uppercase italic streaming-text tracking-tighter">
+                Sikkerhetsbarometer
+            </h2>
+            <p class="text-lg text-slate-400 max-w-3xl mx-auto italic">
+                Nøyaktig sporing av innmeldte personer, skader og farlige hendelser i sanntid.
+            </p>
+        </section>
+
+        <!-- UTVIDET BAROMETER GRID -->
+        <div id="barometer-grid" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 mb-12">
+            
+            <!-- 1. Hendelser -->
+            <div class="glass-card p-4 flex flex-col items-center text-center">
+                <h4 class="text-[9px] font-black text-red-500 uppercase mb-3 tracking-tighter">Innmeldte Hendelser</h4>
+                <div class="barometer-radial">
+                    <svg viewBox="0 0 100 100" class="w-full h-full">
+                        <circle class="barometer-circle bg-circle" cx="50" cy="50" r="40" />
+                        <circle id="circle-hendelser" class="barometer-circle val-circle" cx="50" cy="50" r="40" stroke-dasharray="251.2" stroke-dashoffset="251.2" />
+                    </svg>
+                    <div id="text-hendelser" class="absolute text-sm font-mono font-bold text-white">0</div>
+                </div>
+            </div>
+
+            <!-- 2. Personer (Batch) -->
+            <div class="glass-card p-4 flex flex-col items-center text-center border-t-2 border-white/20">
+                <h4 class="text-[9px] font-black text-white uppercase mb-3 tracking-tighter">Innmeldte Personer</h4>
+                <div class="barometer-radial">
+                    <svg viewBox="0 0 100 100" class="w-full h-full">
+                        <circle class="barometer-circle bg-circle" cx="50" cy="50" r="40" />
+                        <circle id="circle-batch" class="barometer-circle val-circle" cx="50" cy="50" r="40" stroke-dasharray="251.2" stroke-dashoffset="251.2" style="stroke: #ffffff;" />
+                    </svg>
+                    <div id="text-batch" class="absolute text-sm font-mono font-bold text-white">0</div>
+                </div>
+            </div>
+
+            <!-- 3. Granskninger -->
+            <div class="glass-card p-4 flex flex-col items-center text-center">
+                <h4 class="text-[9px] font-black text-red-500 uppercase mb-3 tracking-tighter">Innmeldte Granskninger</h4>
+                <div class="barometer-radial">
+                    <svg viewBox="0 0 100 100" class="w-full h-full">
+                        <circle class="barometer-circle bg-circle" cx="50" cy="50" r="40" />
+                        <circle id="circle-gransking" class="barometer-circle val-circle" cx="50" cy="50" r="40" stroke-dasharray="251.2" stroke-dashoffset="251.2" style="stroke: #7f1d1d;" />
+                    </svg>
+                    <div id="text-gransking" class="absolute text-sm font-mono font-bold text-white">0</div>
+                </div>
+            </div>
+
+            <!-- 4. Risikopersoner -->
+            <div class="glass-card p-4 flex flex-col items-center text-center bg-red-950/20">
+                <h4 class="text-[9px] font-black text-orange-500 uppercase mb-3 tracking-tighter">Risiko Personer</h4>
+                <div class="barometer-radial">
+                    <svg viewBox="0 0 100 100" class="w-full h-full">
+                        <circle class="barometer-circle bg-circle" cx="50" cy="50" r="40" />
+                        <circle id="circle-risiko" class="barometer-circle val-circle" cx="50" cy="50" r="40" stroke-dasharray="251.2" stroke-dashoffset="251.2" style="stroke: #f97316;" />
+                    </svg>
+                    <div id="text-risiko" class="absolute text-sm font-mono font-bold text-white">0</div>
+                </div>
+            </div>
+
+            <!-- 5. Skader -->
+            <div class="glass-card p-4 flex flex-col items-center text-center">
+                <h4 class="text-[9px] font-black text-red-600 uppercase mb-3 tracking-tighter">Innmeldte Skader</h4>
+                <div class="barometer-radial">
+                    <svg viewBox="0 0 100 100" class="w-full h-full">
+                        <circle class="barometer-circle bg-circle" cx="50" cy="50" r="40" />
+                        <circle id="circle-skader" class="barometer-circle val-circle" cx="50" cy="50" r="40" stroke-dasharray="251.2" stroke-dashoffset="251.2" style="stroke: #dc2626;" />
+                    </svg>
+                    <div id="text-skader" class="absolute text-sm font-mono font-bold text-white">0</div>
+                </div>
+            </div>
+
+            <!-- 6. Farlige Hendelser -->
+            <div class="glass-card p-4 flex flex-col items-center text-center border-b-2 border-red-600">
+                <h4 class="text-[9px] font-black text-red-400 uppercase mb-3 tracking-tighter">Farlige Hendelser</h4>
+                <div class="barometer-radial">
+                    <svg viewBox="0 0 100 100" class="w-full h-full">
+                        <circle class="barometer-circle bg-circle" cx="50" cy="50" r="40" />
+                        <circle id="circle-farlig" class="barometer-circle val-circle" cx="50" cy="50" r="40" stroke-dasharray="251.2" stroke-dashoffset="251.2" style="stroke: #f87171;" />
+                    </svg>
+                    <div id="text-farlig" class="absolute text-sm font-mono font-bold text-white">0</div>
+                </div>
+            </div>
+
+        </div>
+
+        <div id="alarmsentral" class="grid lg:grid-cols-4 gap-8 mb-12">
+            <div class="lg:col-span-3 glass-card p-6">
+                <div class="flex justify-between items-center mb-4 border-b border-red-950 pb-2">
+                    <h3 class="font-black uppercase text-red-500 tracking-wider flex items-center gap-2 text-sm">
+                        <span class="w-2 h-2 bg-red-600 rounded-full animate-ping"></span>
+                        Synkronisert Operatørlogg
+                    </h3>
+                    <div id="countdown" class="text-xs font-mono text-white bg-red-900/50 px-3 py-1 rounded">Neste synk: 12.0s</div>
+                </div>
+                <div id="main-log" class="log-container">
+                    <div class="p-8 text-center text-slate-500 italic text-sm">Venter på HMS-data...</div>
+                </div>
+                <div class="mt-4 flex gap-4">
+                    <button onclick="clearLog()" class="text-[10px] bg-red-950 text-red-500 px-4 py-1 border border-red-500/30 uppercase font-black hover:bg-red-600 hover:text-white transition-all">Nullstill System</button>
+                    <button onclick="pauseLog()" id="pause-btn" class="text-[10px] bg-slate-800 text-slate-400 px-4 py-1 border border-white/10 uppercase font-black transition-all">Pause Overvåkning</button>
+                </div>
+            </div>
+
+            <div class="glass-card p-6 flex flex-col">
+                <h3 class="font-black uppercase text-white mb-6 text-sm tracking-widest border-b border-white/10 pb-2">Status Oversikt</h3>
+                <div id="latest-info" class="space-y-4 flex-grow">
+                    <div class="p-4 bg-slate-900 border border-white/5 rounded">
+                        <h4 class="text-[10px] font-black text-red-500 uppercase mb-1">Siste Aktive Arena</h4>
+                        <p id="latest-loc" class="text-xs text-white font-mono italic">-</p>
+                    </div>
+                    <div class="p-4 bg-slate-900 border border-white/5 rounded">
+                        <h4 class="text-[10px] font-black text-slate-500 uppercase mb-1">Siste ID-Referanse</h4>
+                        <p id="latest-id" class="text-xs text-white font-mono">-</p>
+                    </div>
+                    <div class="p-4 bg-red-900/10 border border-red-500/20 rounded">
+                        <h4 class="text-[10px] font-black text-red-500 uppercase mb-1">Trussel-nivå</h4>
+                        <p id="threat-level" class="text-xs text-red-500 font-bold uppercase">Moderat</p>
+                    </div>
+                </div>
+                <div class="mt-6 pt-4 border-t border-white/10">
+                    <span class="text-[10px] text-slate-500 uppercase block mb-2">Integritets-feed</span>
+                    <div class="w-full bg-slate-800 h-1">
+                        <div id="bar-integritet" class="bg-red-600 h-full w-[100%]"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer class="footer-glass mt-16 px-6 py-12">
+        <div class="container mx-auto text-center">
+            <h4 class="text-red-500 font-black uppercase tracking-[0.3em] mb-4 italic text-sm">Batch Barometer & HMS Synkronisering</h4>
+            <p class="text-slate-400 text-[10px] max-w-2xl mx-auto mb-8 uppercase tracking-widest leading-loose">
+                Monitorering av busser, skoler, politistasjoner, taxi, flyplasser, sykehus og politiske arenaer. 1200 enheter per sekvens.
+            </p>
+            <div class="pt-8 border-t border-white/10">
+                <span class="text-slate-700 text-[9px] font-black uppercase tracking-[0.8em]">
+                    &copy; 2026 HMS-PORTAL | BATCH SYNC
+                </span>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        const logContainer = document.getElementById('main-log');
+        const countdownDisplay = document.getElementById('countdown');
+        const pauseBtn = document.getElementById('pause-btn');
+        
+        // Barometer elementer
+        const circleHendelser = document.getElementById('circle-hendelser');
+        const circleBatch = document.getElementById('circle-batch');
+        const circleGransking = document.getElementById('circle-gransking');
+        const circleRisiko = document.getElementById('circle-risiko');
+        const circleSkader = document.getElementById('circle-skader');
+        const circleFarlig = document.getElementById('circle-farlig');
+
+        const textHendelser = document.getElementById('text-hendelser');
+        const textBatch = document.getElementById('text-batch');
+        const textGransking = document.getElementById('text-gransking');
+        const textRisiko = document.getElementById('text-risiko');
+        const textSkader = document.getElementById('text-skader');
+        const textFarlig = document.getElementById('text-farlig');
+        
+        // Info elementer
+        const latestLoc = document.getElementById('latest-loc');
+        const latestId = document.getElementById('latest-id');
+        const threatLevel = document.getElementById('threat-level');
+
+        let logEntries = 0;
+        let batchCount = 0;
+        let hendelserCount = 0;
+        let granskingCount = 0;
+        let risikoCount = 0;
+        let skaderCount = 0;
+        let farligCount = 0;
+        
+        let isPaused = false;
+        let countdown = 12.0;
+
+        const circumference = 2 * Math.PI * 40;
+
+        const locations = [
+            "Barer", "Fester", "Skoler", "Ute-miljø", "Boliger", "Nettsamfunn", "Forum", 
+            "Butikker", "Politistasjonen", "Festivaler", "Universiteter", "Politiske Arenaer", 
+            "Barnehager", "Parkeringsplasser", "Kommunehus", "Byer", "Busser", "Taxi", 
+            "Flyplasser", "Kinoer", "Sykehus", "Brannstasjoner", "Stemmelokaler", "Trafikken", "Tettbygde strøk"
+        ];
+
+        const alarmTypes = [
+            { type: 'PLANLEGGING', color: 'text-red-400', action: 'Farlig planlegging detektert ved' },
+            { type: 'TRUSSEL', color: 'text-red-600 font-bold', action: 'Direkte trussel registrert:' },
+            { type: 'INN-MELD', color: 'text-white font-black bg-red-600/10', action: 'Person innmeldt fra' },
+            { type: 'GRANSKING', color: 'text-slate-400', action: 'Løpende granskning pågår ved' },
+            { type: 'KRITISK', color: 'text-red-700 font-black underline', action: 'Kritisk hendelse identifisert:' },
+            { type: 'SKADE', color: 'text-red-500 italic', action: 'Innmeldt skade rapportert fra' },
+            { type: 'RISIKO', color: 'text-orange-500 font-bold', action: 'Risikoperson observert ved' }
+        ];
+
+        function setProgress(circle, text, value, max) {
+            const offset = circumference - (Math.min(value, max) / max) * circumference;
+            circle.style.strokeDashoffset = offset;
+            text.innerText = Math.floor(value);
+        }
+
+        function addLogEntry() {
+            if (isPaused || logEntries >= 1200) return;
+
+            const alarm = alarmTypes[Math.floor(Math.random() * alarmTypes.length)];
+            const location = locations[Math.floor(Math.random() * locations.length)];
+            const time = new Date().toLocaleTimeString('no-NO', { hour12: false });
+            const id = Math.floor(1000 + Math.random() * 8999);
+            
+            const entry = document.createElement('div');
+            entry.className = `log-entry ${alarm.color}`;
+            entry.innerHTML = `<span class="opacity-40">[${time}]</span> <span class="font-black">[${alarm.type}]</span> ID-${id}: ${alarm.action} <strong>${location}</strong>.`;
+            
+            if (logEntries === 0) logContainer.innerHTML = '';
+            logContainer.prepend(entry);
+            logEntries++;
+
+            // Oppdater tellere og barometere
+            batchCount = logEntries;
+            
+            if (alarm.type === 'PLANLEGGING' || alarm.type === 'TRUSSEL' || alarm.type === 'KRITISK') {
+                hendelserCount++;
+            }
+            if (alarm.type === 'GRANSKING') {
+                granskingCount++;
+            }
+            if (alarm.type === 'RISIKO') {
+                risikoCount++;
+            }
+            if (alarm.type === 'SKADE') {
+                skaderCount++;
+            }
+            if (alarm.type === 'KRITISK' || alarm.type === 'TRUSSEL') {
+                farligCount++;
+            }
+
+            setProgress(circleBatch, textBatch, batchCount, 1200);
+            setProgress(circleHendelser, textHendelser, hendelserCount, 400);
+            setProgress(circleGransking, textGransking, granskingCount, 400);
+            setProgress(circleRisiko, textRisiko, risikoCount, 300);
+            setProgress(circleSkader, textSkader, skaderCount, 200);
+            setProgress(circleFarlig, textFarlig, farligCount, 200);
+
+            latestLoc.innerText = location;
+            latestId.innerText = `ID-${id}`;
+            
+            // Oppdater trussel-nivå visuelt
+            if (farligCount > 10) threatLevel.innerText = "HØY";
+            if (farligCount > 30) threatLevel.innerText = "KRITISK";
+        }
+
+        function clearLog() {
+            logContainer.innerHTML = '<div class="p-8 text-center text-slate-500 italic text-sm">System tømt. Venter på ny batch...</div>';
+            logEntries = 0;
+            batchCount = 0;
+            hendelserCount = 0;
+            granskingCount = 0;
+            risikoCount = 0;
+            skaderCount = 0;
+            farligCount = 0;
+            
+            [circleBatch, circleHendelser, circleGransking, circleRisiko, circleSkader, circleFarlig].forEach(c => c.style.strokeDashoffset = circumference);
+            [textBatch, textHendelser, textGransking, textRisiko, textSkader, textFarlig].forEach(t => t.innerText = "0");
+            
+            countdown = 12.0;
+            threatLevel.innerText = "Moderat";
+        }
+
+        function pauseLog() {
+            isPaused = !isPaused;
+            pauseBtn.innerText = isPaused ? 'Gjenoppta Overvåkning' : 'Pause Overvåkning';
+            pauseBtn.classList.toggle('bg-red-900', isPaused);
+        }
+
+        setInterval(() => {
+            if (!isPaused && logEntries < 1200) {
+                countdown -= 0.1;
+                if (countdown <= 0) {
+                    addLogEntry();
+                    countdown = 12.0;
+                }
+                countdownDisplay.innerText = `Neste synk: ${countdown.toFixed(1)}s`;
+            }
+        }, 100);
+
+    </script>
+
+</body>
+</html>
