@@ -3,166 +3,204 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Report</title>
+    <title>Global Crime Registry & Manual</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;700&display=swap');
-        
-        body { background-color: #020617; color: #10b981; font-family: 'Fira Code', monospace; }
-        
-        .cursor { display: inline-block; width: 10px; height: 1.2em; background: #10b981; animation: blink 1s infinite; vertical-align: middle; }
-        @keyframes blink { 0%, 50% { opacity: 1; } 51%, 100% { opacity: 0; } }
-        
-        .progress-bar { height: 4px; transition: width 1s linear; }
-        .log-entry { font-size: 0.75rem; line-height: 1rem; margin-bottom: 2px; }
-        .text-glow { text-shadow: 0 0 10px rgba(16, 185, 129, 0.5); }
-        .terminal-window { background: rgba(15, 23, 42, 0.9); border: 1px solid #1e293b; height: 300px; overflow-y: hidden; }
-        
-        .status-badge { animation: pulse-red 2s infinite; }
-        @keyframes pulse-red { 0% { opacity: 0.4; } 50% { opacity: 1; } 100% { opacity: 0.4; } }
+        .manual-section { border-left: 4px solid #1e293b; transition: all 0.3s ease; }
+        .manual-section:hover { border-left-color: #3b82f6; background-color: #f8fafc; }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+        .loading-shimmer {
+            background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+            background-size: 200% 100%;
+            animation: shimmer 2s infinite;
+        }
+        @keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
     </style>
 </head>
-<body class="p-4 md:p-10 flex flex-col items-center justify-center min-h-screen">
+<body class="bg-gray-50 text-slate-900 font-sans min-h-screen">
 
-    <div class="max-w-4xl w-full">
-        <!-- Main Animated Title -->
-        <div class="mb-8 text-center">
-            <h1 id="main-title" class="text-2xl md:text-3xl font-bold text-white mb-2 text-glow italic uppercase">
-                <!-- Typed by JS -->
-            </h1>
-            <div class="h-1 w-full bg-slate-800 rounded-full overflow-hidden">
-                <div id="loading-progress" class="progress-bar bg-red-600 w-0"></div>
-            </div>
-            <div class="flex justify-between mt-2 text-[10px] uppercase tracking-widest text-slate-500 font-bold">
-                <span>System Initializing</span>
-                <span id="percent-display">0%</span>
-                <span>Transnational Trace</span>
-            </div>
-        </div>
-
-        <!-- Dashboard Layout -->
-        <div class="grid md:grid-cols-3 gap-4 mb-6">
-            <div class="bg-slate-900 border border-slate-700 p-4 rounded col-span-2">
-                <div class="flex justify-between items-center mb-2 border-b border-slate-700 pb-2">
-                    <span class="text-xs font-bold text-slate-400">CRIME_REPORT_LOG_BASH</span>
-                    <span class="text-[10px] text-green-500 bg-green-950 px-2 py-0.5 rounded status-badge">ACTIVE_TRACE</span>
+    <!-- Initial 60s Loading Overlay -->
+    <div id="loader-overlay" class="fixed inset-0 z-[100] bg-slate-900 flex flex-col items-center justify-center p-6 text-center">
+        <div class="max-w-md w-full">
+            <div class="mb-8">
+                <div class="inline-block p-4 rounded-full bg-blue-600/20 mb-4">
+                    <svg class="w-12 h-12 text-blue-500 animate-spin" fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
                 </div>
-                <div id="terminal-bash" class="terminal-window p-4 flex flex-col-reverse">
-                    <!-- Logs will appear here -->
-                    <div class="log-entry text-white">READY_FOR_COMMANDS... <span class="cursor"></span></div>
-                </div>
+                <h2 class="text-white text-2xl font-bold uppercase tracking-widest">Accessing Registry</h2>
+                <p class="text-slate-400 mt-2 text-sm italic">Synchronizing with FBI, INTERPOL, and EUROPOL Databases...</p>
             </div>
-
-            <div class="bg-slate-900 border border-slate-700 p-4 rounded">
-                <h3 class="text-xs font-bold text-slate-400 mb-4 border-b border-slate-700 pb-2">ASSET_SEIZURE_GRAPH</h3>
-                <div class="flex flex-col gap-4 h-full">
-                    <div class="flex-1 flex items-end gap-2 px-2">
-                        <div id="bar-1" class="bg-red-500 w-full rounded-t transition-all duration-500" style="height: 10%"></div>
-                        <div id="bar-2" class="bg-red-600 w-full rounded-t transition-all duration-500" style="height: 30%"></div>
-                        <div id="bar-3" class="bg-red-700 w-full rounded-t transition-all duration-500" style="height: 20%"></div>
-                        <div id="bar-4" class="bg-white w-full rounded-t transition-all duration-500" style="height: 50%"></div>
-                    </div>
-                    <div class="text-[10px] text-slate-500 mt-2">
-                        <div class="flex justify-between"><span>SWIFT:</span> <span class="text-white">ENCRYPTED</span></div>
-                        <div class="flex justify-between"><span>PAROLE:</span> <span class="text-red-500 uppercase">VIOLATED</span></div>
-                        <div class="flex justify-between"><span>ASSETS:</span> <span class="text-green-500 font-bold">STEERING...</span></div>
-                    </div>
-                </div>
+            <div class="w-full bg-slate-800 rounded-full h-2 mb-2">
+                <div id="loader-bar" class="bg-blue-500 h-2 rounded-full w-0 transition-all duration-1000"></div>
             </div>
-        </div>
-
-        <div id="final-status" class="hidden bg-green-900/20 border border-green-500 p-4 rounded text-center text-green-400 text-sm font-bold uppercase tracking-widest">
-            ✅ 60 Commands Executed: Report Delivered to Økokrim & Interpol
+            <div class="flex justify-between text-[10px] text-slate-500 font-mono">
+                <span id="loader-status">CONNECTING_SECURE_NODE</span>
+                <span id="loader-percent">0%</span>
+            </div>
         </div>
     </div>
 
+    <!-- Main Content (Hidden during loading) -->
+    <div id="main-content" class="opacity-0 transition-opacity duration-1000">
+        <header class="bg-slate-900 text-white shadow-lg">
+            <div class="max-w-7xl mx-auto px-4 py-6 flex flex-col md:flex-row justify-between items-center gap-4">
+                <div class="flex items-center gap-3">
+                    <span class="text-3xl">📁</span>
+                    <div>
+                        <h1 class="text-xl font-bold uppercase tracking-tight">Transnational Crime Registry</h1>
+                        <p class="text-xs text-slate-400">Reporting Manual for Finance & Support Crimes</p>
+                    </div>
+                </div>
+                <nav class="flex gap-2">
+                    <button onclick="switchTab('manual')" class="tab-btn px-4 py-2 bg-blue-600 rounded text-sm font-bold" id="btn-manual">Manual</button>
+                    <button onclick="switchTab('registry')" class="tab-btn px-4 py-2 bg-slate-800 rounded text-sm font-bold" id="btn-registry">Registry</button>
+                </nav>
+            </div>
+        </header>
+
+        <main class="max-w-7xl mx-auto px-4 py-8">
+            
+            <!-- Tab: Manual -->
+            <div id="tab-manual" class="tab-content active space-y-8">
+                <section class="bg-white p-6 rounded-xl shadow-sm border border-slate-200">
+                    <h2 class="text-2xl font-bold text-slate-800 mb-6 flex items-center gap-2">
+                        <span class="text-blue-600">📖</span> Reporting Protocol Manual
+                    </h2>
+                    
+                    <div class="grid md:grid-cols-2 gap-8">
+                        <div class="space-y-6">
+                            <div class="manual-section p-4 bg-white rounded">
+                                <h3 class="font-bold text-blue-700 uppercase text-sm mb-2">Step 1: Entity Identification</h3>
+                                <p class="text-sm text-slate-600">Identify the "Support Company" or "Finance Entity" involved. Document organization numbers, registered addresses in Molde, Ålesund, or Kristiansund, and suspected insider contacts.</p>
+                            </div>
+                            <div class="manual-section p-4 bg-white rounded">
+                                <h3 class="font-bold text-blue-700 uppercase text-sm mb-2">Step 2: SWIFT & Wire Trace</h3>
+                                <p class="text-sm text-slate-600">Aggregate all transaction logs. For FBI (IC3) reports, include IP addresses used during the swindle. For Europol, flag any cross-border VAT or finance fraud triggers.</p>
+                            </div>
+                        </div>
+                        <div class="space-y-6">
+                            <div class="manual-section p-4 bg-white rounded">
+                                <h3 class="font-bold text-blue-700 uppercase text-sm mb-2">Step 3: Agency Submission</h3>
+                                <ul class="text-sm space-y-2 text-slate-600">
+                                    <li><strong>FBI (IC3):</strong> Used for US-linked wire fraud and cyber swindles.</li>
+                                    <li><strong>INTERPOL (I-24/7):</strong> For transnational serial fraud and parole violators.</li>
+                                    <li><strong>EUROPOL (EC3):</strong> Specialized in European finance crimes and asset steering.</li>
+                                </ul>
+                            </div>
+                            <div class="manual-section p-4 bg-white rounded">
+                                <h3 class="font-bold text-blue-700 uppercase text-sm mb-2">Step 4: Asset Recovery Protocol</h3>
+                                <p class="text-sm text-slate-600">Engage the "Condition Settle" protocol. Request a "Freeze Order" on all accounts linked to the swindle commission to prevent asset dissipation.</p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+
+            <!-- Tab: Registry -->
+            <div id="tab-registry" class="tab-content space-y-8">
+                <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+                    <div class="p-6 border-b border-slate-100 flex justify-between items-center bg-slate-50">
+                        <h2 class="text-xl font-bold">Detected Support Swindle Registry</h2>
+                        <span class="px-3 py-1 bg-red-100 text-red-700 text-xs font-bold rounded-full">LIVE_DATABASE</span>
+                    </div>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left">
+                            <thead class="bg-slate-50 text-slate-400 text-[10px] uppercase font-bold">
+                                <tr>
+                                    <th class="px-6 py-4">Registry ID</th>
+                                    <th class="px-6 py-4">Location (Norway)</th>
+                                    <th class="px-6 py-4">Crime Category</th>
+                                    <th class="px-6 py-4">Agency Status</th>
+                                    <th class="px-6 py-4">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-slate-100 text-sm">
+                                <tr>
+                                    <td class="px-6 py-4 font-mono text-xs">NO-MOL-992</td>
+                                    <td class="px-6 py-4">Molde</td>
+                                    <td class="px-6 py-4">Finance Fraud / Insider Swindle</td>
+                                    <td class="px-6 py-4"><span class="text-blue-600 font-bold">FBI_LOGGED</span></td>
+                                    <td class="px-6 py-4"><button class="text-xs font-bold text-red-600 underline">VIEW_EVIDENCE</button></td>
+                                </tr>
+                                <tr>
+                                    <td class="px-6 py-4 font-mono text-xs">NO-ALE-441</td>
+                                    <td class="px-6 py-4">Ålesund</td>
+                                    <td class="px-6 py-4">Business Swindle / Asset Theft</td>
+                                    <td class="px-6 py-4"><span class="text-green-600 font-bold">EUROPOL_TRACE</span></td>
+                                    <td class="px-6 py-4"><button class="text-xs font-bold text-red-600 underline">VIEW_EVIDENCE</button></td>
+                                </tr>
+                                <tr>
+                                    <td class="px-6 py-4 font-mono text-xs">NO-KRI-210</td>
+                                    <td class="px-6 py-4">Kristiansund</td>
+                                    <td class="px-6 py-4">Support Crime / Finance Fraud</td>
+                                    <td class="px-6 py-4"><span class="text-amber-600 font-bold">INTERPOL_ALERT</span></td>
+                                    <td class="px-6 py-4"><button class="text-xs font-bold text-red-600 underline">VIEW_EVIDENCE</button></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+        </main>
+    </div>
+
     <script>
-        const terminal = document.getElementById('terminal-bash');
-        const progress = document.getElementById('loading-progress');
-        const percentTxt = document.getElementById('percent-display');
-        const titleEl = document.getElementById('main-title');
-        const finalStatus = document.getElementById('final-status');
-        
-        const titleText = "We always report support Crimes and Assets Swindlers";
-        let titleIdx = 0;
+        // Loader Logic
+        let seconds = 0;
+        const totalSeconds = 60;
+        const bar = document.getElementById('loader-bar');
+        const percent = document.getElementById('loader-percent');
+        const status = document.getElementById('loader-status');
+        const overlay = document.getElementById('loader-overlay');
+        const main = document.getElementById('main-content');
 
-        // Typewriter Effect for Title
-        function typeTitle() {
-            if (titleIdx < titleText.length) {
-                titleEl.textContent += titleText.charAt(titleIdx);
-                titleIdx++;
-                setTimeout(typeTitle, 50);
-            }
-        }
-
-        const reportCommands = [
-            "init_trace --target=transnational_wire_fraud",
-            "verify_parole_status --serial_id=99283-NO",
-            "detect_insider_swindle --entity=support_corp_01",
-            "scan_investor_financing --source=illicit_corruption",
-            "locate_criminal_assets --geo=Norway",
-            "analyze_swindle_commission --threshold=1000000_NOK",
-            "intercept_call_station --freq=enc_voice",
-            "monitor_labor_market_abuse --false_entity=detected",
-            "trigger_asset_seizure --protocol=condition_settle",
-            "mapping_recidivist_network --rings=active",
-            "bypass_evasion_shield --method=deep_scan",
-            "log_asset_theft --victim=household_6",
-            "identify_shadow_investors --auth=high",
-            "isolate_wire_fraud_nodes --global=true",
-            "block_outward_swift --reason=fraud_alert",
-            "check_investor_crimes --docket=pending",
-            "steering_assets_from_criminals --direction=recovery",
-            "execute_corrupt_entity_shutdown --force=true",
-            "flag_parole_violation --notify=police_central",
-            "finalizing_60_command_batch --status=reporting"
+        const statuses = [
+            "INITIALIZING_REGISTRY",
+            "CONNECTING_FBI_GATEWAY",
+            "INTERPOL_DATABASE_SYNC",
+            "EUROPOL_HANDSHAKE_ACTIVE",
+            "TRACING_NORWAY_ASSETS",
+            "DECRYPTING_SWINDLE_LOGS",
+            "MAPPING_MØRE_OG_ROMSDAL",
+            "FINALIZING_MANUAL_ACCESS"
         ];
 
-        // Generate 60 commands (looping the key ones with variations)
-        let allCommands = [];
-        for(let i=0; i<60; i++) {
-            const cmd = reportCommands[i % reportCommands.length];
-            allCommands.push(`[${new Date().toLocaleTimeString()}] CMD_${i+1}: ${cmd}`);
-        }
-
-        let currentStep = 0;
-        const totalSteps = 60; // 60 seconds
-
-        function updateSimulation() {
-            if (currentStep <= totalSteps) {
-                // Update Progress
-                const p = (currentStep / totalSteps) * 100;
-                progress.style.width = p + "%";
-                percentTxt.innerText = Math.floor(p) + "%";
-
-                // Add Terminal Command
-                const entry = document.createElement('div');
-                entry.className = 'log-entry';
-                entry.innerHTML = `<span class="text-slate-500">root@norway_police:~$</span> ${allCommands[currentStep] || 'sys_idle_process_wait...'}`;
-                terminal.prepend(entry);
-
-                // Update Graph Bars randomly
-                document.getElementById('bar-1').style.height = Math.random() * 100 + "%";
-                document.getElementById('bar-2').style.height = Math.random() * 100 + "%";
-                document.getElementById('bar-3').style.height = Math.random() * 100 + "%";
-                document.getElementById('bar-4').style.height = Math.random() * 100 + "%";
-
-                currentStep++;
-                
-                if(currentStep === totalSteps + 1) {
-                    finalStatus.classList.remove('hidden');
-                } else {
-                    setTimeout(updateSimulation, 1000); // 1 command per second for 60 seconds
-                }
+        const timer = setInterval(() => {
+            seconds++;
+            const p = (seconds / totalSeconds) * 100;
+            bar.style.width = p + "%";
+            percent.innerText = Math.floor(p) + "%";
+            
+            if (seconds % 8 === 0) {
+                status.innerText = statuses[Math.floor(seconds/8) % statuses.length];
             }
-        }
 
-        window.onload = () => {
-            typeTitle();
-            setTimeout(updateSimulation, 1000);
-        };
+            if (seconds >= totalSeconds) {
+                clearInterval(timer);
+                overlay.style.display = 'none';
+                main.classList.remove('opacity-0');
+            }
+        }, 1000);
+
+        // Tab Logic
+        function switchTab(tab) {
+            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(b => {
+                b.classList.remove('bg-blue-600');
+                b.classList.add('bg-slate-800');
+            });
+
+            document.getElementById('tab-' + tab).classList.add('active');
+            document.getElementById('btn-' + tab).classList.remove('bg-slate-800');
+            document.getElementById('btn-' + tab).classList.add('bg-blue-600');
+        }
     </script>
 </body>
 </html>
+
 
 
