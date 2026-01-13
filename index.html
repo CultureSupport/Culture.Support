@@ -3,301 +3,164 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Global Crime Reporting & Protection System</title>
+    <title>Police Asset Recovery Monitor</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        .loading-pulse { animation: pulse 1.5s cubic-bezier(0.4, 0, 0.6, 1) infinite; }
-        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: .5; } }
-        .terminal-scroll::-webkit-scrollbar { width: 4px; }
-        .terminal-scroll::-webkit-scrollbar-track { background: #0f172a; }
-        .terminal-scroll::-webkit-scrollbar-thumb { background: #334155; border-radius: 2px; }
-        .case-entry { border-left: 3px solid #ef4444; transition: all 0.2s; }
-        .case-entry:hover { border-left-width: 8px; background: rgba(255, 255, 255, 0.05); }
+        @import url('https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;700&display=swap');
+        
+        body { background-color: #020617; color: #10b981; font-family: 'Fira Code', monospace; }
+        
+        .cursor { display: inline-block; width: 10px; height: 1.2em; background: #10b981; animation: blink 1s infinite; vertical-align: middle; }
+        @keyframes blink { 0%, 50% { opacity: 1; } 51%, 100% { opacity: 0; } }
+        
+        .progress-bar { height: 4px; transition: width 1s linear; }
+        .log-entry { font-size: 0.75rem; line-height: 1rem; margin-bottom: 2px; }
+        .text-glow { text-shadow: 0 0 10px rgba(16, 185, 129, 0.5); }
+        .terminal-window { background: rgba(15, 23, 42, 0.9); border: 1px solid #1e293b; height: 300px; overflow-y: hidden; }
+        
+        .status-badge { animation: pulse-red 2s infinite; }
+        @keyframes pulse-red { 0% { opacity: 0.4; } 50% { opacity: 1; } 100% { opacity: 0.4; } }
     </style>
 </head>
-<body class="bg-slate-950 text-slate-200 min-h-screen font-sans selection:bg-red-500/30">
+<body class="p-4 md:p-10 flex flex-col items-center justify-center min-h-screen">
 
-    <div id="app-container" class="max-w-6xl mx-auto p-4 md:p-8">
-        
-        <!-- Header -->
-        <header class="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4 border-b border-slate-800 pb-6">
-            <div>
-                <h1 class="text-3xl font-black text-white tracking-tighter">GLOBAL CRIME <span class="text-red-600">REPORTING UNIT</span></h1>
-                <p class="text-slate-400 text-sm font-mono uppercase tracking-widest">Protocol: RICO / AML / ANTI-TERROR / PROTECTION</p>
+    <div class="max-w-4xl w-full">
+        <!-- Main Animated Title -->
+        <div class="mb-8 text-center">
+            <h1 id="main-title" class="text-2xl md:text-3xl font-bold text-white mb-2 text-glow italic uppercase">
+                <!-- Typed by JS -->
+            </h1>
+            <div class="h-1 w-full bg-slate-800 rounded-full overflow-hidden">
+                <div id="loading-progress" class="progress-bar bg-red-600 w-0"></div>
             </div>
-            <div class="flex items-center gap-3">
-                <div class="text-right">
-                    <p class="text-[10px] text-slate-500 uppercase">System Integrity</p>
-                    <p class="text-xs font-bold text-green-500">SECURE: AES-256</p>
-                </div>
-                <div class="h-10 w-10 bg-slate-900 rounded-full border border-slate-700 flex items-center justify-center">
-                    <div class="h-2 w-2 bg-green-500 rounded-full loading-pulse"></div>
-                </div>
+            <div class="flex justify-between mt-2 text-[10px] uppercase tracking-widest text-slate-500 font-bold">
+                <span>System Initializing</span>
+                <span id="percent-display">0%</span>
+                <span>Transnational Trace</span>
             </div>
-        </header>
+        </div>
 
-        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
-            
-            <!-- Left: Category Selection -->
-            <div class="lg:col-span-4 space-y-4">
-                <h3 class="text-xs font-black text-slate-500 uppercase tracking-widest px-1">Select Crime Vector</h3>
-                <div class="grid grid-cols-1 gap-2 overflow-y-auto max-h-[600px] pr-2 terminal-scroll">
-                    <!-- Crime Buttons -->
-                    <button onclick="selectCrime('Financial Bribery')" class="case-entry bg-slate-900 p-4 text-left hover:bg-slate-800 rounded-r-lg group">
-                        <span class="block text-xs text-slate-500 group-hover:text-red-400 transition">FIN-01</span>
-                        <span class="font-bold text-sm">Financial Bribery</span>
-                    </button>
-                    <button onclick="selectCrime('White Washing / AML')" class="case-entry bg-slate-900 p-4 text-left hover:bg-slate-800 rounded-r-lg group">
-                        <span class="block text-xs text-slate-500 group-hover:text-red-400 transition">FIN-02</span>
-                        <span class="font-bold text-sm">White Washing</span>
-                    </button>
-                    <button onclick="selectCrime('Scams / Consumer Fraud')" class="case-entry bg-slate-900 p-4 text-left hover:bg-slate-800 rounded-r-lg group">
-                        <span class="block text-xs text-slate-500 group-hover:text-red-400 transition">GEN-03</span>
-                        <span class="font-bold text-sm">Scams</span>
-                    </button>
-                    <button onclick="selectCrime('IT Support Fraud Norway')" class="case-entry bg-slate-900 p-4 text-left hover:bg-slate-800 rounded-r-lg group !border-blue-500">
-                        <span class="block text-xs text-slate-500 group-hover:text-blue-400 transition">CYB-04</span>
-                        <span class="font-bold text-sm">Support IT Fraud (Norway)</span>
-                    </button>
-                    <button onclick="selectCrime('IT Support Crimes')" class="case-entry bg-slate-900 p-4 text-left hover:bg-slate-800 rounded-r-lg group">
-                        <span class="block text-xs text-slate-500 group-hover:text-red-400 transition">CYB-05</span>
-                        <span class="font-bold text-sm">IT Support Crimes</span>
-                    </button>
-                    <button onclick="selectCrime('Family Support Crimes')" class="case-entry bg-slate-900 p-4 text-left hover:bg-slate-800 rounded-r-lg group">
-                        <span class="block text-xs text-slate-500 group-hover:text-red-400 transition">SOC-06</span>
-                        <span class="font-bold text-sm">Family Support Crimes</span>
-                    </button>
-                    <button onclick="selectCrime('Surveilance Support Fraud')" class="case-entry bg-slate-900 p-4 text-left hover:bg-slate-800 rounded-r-lg group">
-                        <span class="block text-xs text-slate-500 group-hover:text-red-400 transition">SEC-07</span>
-                        <span class="font-bold text-sm">Surveillance Support Fraud</span>
-                    </button>
-                    <button onclick="selectCrime('Casino / Gambling Fraud')" class="case-entry bg-slate-900 p-4 text-left hover:bg-slate-800 rounded-r-lg group">
-                        <span class="block text-xs text-slate-500 group-hover:text-red-400 transition">FIN-08</span>
-                        <span class="font-bold text-sm">Casino Fraud</span>
-                    </button>
-                    <button onclick="selectCrime('Support Worker Fraud')" class="case-entry bg-slate-900 p-4 text-left hover:bg-slate-800 rounded-r-lg group">
-                        <span class="block text-xs text-slate-500 group-hover:text-red-400 transition">EMP-09</span>
-                        <span class="font-bold text-sm">Support Worker Fraud</span>
-                    </button>
-                    <button onclick="selectCrime('Terror Support Crimes')" class="case-entry bg-slate-900 p-4 text-left hover:bg-slate-800 rounded-r-lg group !border-yellow-600">
-                        <span class="block text-xs text-slate-500 group-hover:text-yellow-400 transition">TER-10</span>
-                        <span class="font-bold text-sm uppercase">Terror Support Crimes</span>
-                    </button>
-                    <button onclick="selectCrime('RICO Act Violations')" class="case-entry bg-slate-900 p-4 text-left hover:bg-slate-800 rounded-r-lg group">
-                        <span class="block text-xs text-slate-500 group-hover:text-red-400 transition">FED-11</span>
-                        <span class="font-bold text-sm uppercase italic">RICO Act Violations</span>
-                    </button>
-                    <button onclick="selectCrime('Extortion / Blackmail')" class="case-entry bg-slate-900 p-4 text-left hover:bg-slate-800 rounded-r-lg group">
-                        <span class="block text-xs text-slate-500 group-hover:text-red-400 transition">CRM-12</span>
-                        <span class="font-bold text-sm">Extortion Crimes</span>
-                    </button>
-                    <button onclick="selectCrime('Support Stalking')" class="case-entry bg-slate-900 p-4 text-left hover:bg-slate-800 rounded-r-lg group">
-                        <span class="block text-xs text-slate-500 group-hover:text-red-400 transition">CRM-13</span>
-                        <span class="font-bold text-sm">Support Stalking</span>
-                    </button>
+        <!-- Dashboard Layout -->
+        <div class="grid md:grid-cols-3 gap-4 mb-6">
+            <div class="bg-slate-900 border border-slate-700 p-4 rounded col-span-2">
+                <div class="flex justify-between items-center mb-2 border-b border-slate-700 pb-2">
+                    <span class="text-xs font-bold text-slate-400">CRIME_REPORT_LOG_BASH</span>
+                    <span class="text-[10px] text-green-500 bg-green-950 px-2 py-0.5 rounded status-badge">ACTIVE_TRACE</span>
+                </div>
+                <div id="terminal-bash" class="terminal-window p-4 flex flex-col-reverse">
+                    <!-- Logs will appear here -->
+                    <div class="log-entry text-white">READY_FOR_COMMANDS... <span class="cursor"></span></div>
                 </div>
             </div>
 
-            <!-- Middle: Data Entry -->
-            <div class="lg:col-span-8 space-y-6">
-                <div class="bg-slate-900 border border-slate-800 p-6 rounded-xl shadow-2xl">
-                    <div class="flex justify-between items-center mb-6">
-                        <h2 id="active-category" class="text-xl font-bold text-red-500 uppercase tracking-tighter italic">Select Category to Start</h2>
-                        <span class="text-xs font-mono text-slate-600">REF: CASE_TMP_99</span>
+            <div class="bg-slate-900 border border-slate-700 p-4 rounded">
+                <h3 class="text-xs font-bold text-slate-400 mb-4 border-b border-slate-700 pb-2">ASSET_SEIZURE_GRAPH</h3>
+                <div class="flex flex-col gap-4 h-full">
+                    <div class="flex-1 flex items-end gap-2 px-2">
+                        <div id="bar-1" class="bg-red-500 w-full rounded-t transition-all duration-500" style="height: 10%"></div>
+                        <div id="bar-2" class="bg-red-600 w-full rounded-t transition-all duration-500" style="height: 30%"></div>
+                        <div id="bar-3" class="bg-red-700 w-full rounded-t transition-all duration-500" style="height: 20%"></div>
+                        <div id="bar-4" class="bg-white w-full rounded-t transition-all duration-500" style="height: 50%"></div>
                     </div>
-
-                    <div class="space-y-4">
-                        <div class="grid grid-cols-2 gap-4">
-                            <div>
-                                <label class="text-[10px] uppercase font-bold text-slate-500 mb-1 block tracking-widest">Primary Suspect/Entity</label>
-                                <input type="text" id="suspect" class="w-full bg-slate-950 border border-slate-700 p-3 rounded text-sm focus:border-red-500 outline-none transition" placeholder="Organization or Individual">
-                            </div>
-                            <div>
-                                <label class="text-[10px] uppercase font-bold text-slate-500 mb-1 block tracking-widest">Jurisdiction</label>
-                                <input type="text" id="location" class="w-full bg-slate-950 border border-slate-700 p-3 rounded text-sm focus:border-red-500 outline-none transition" placeholder="e.g. Oslo, Norway / Global">
-                            </div>
-                        </div>
-
-                        <div>
-                            <label class="text-[10px] uppercase font-bold text-slate-500 mb-1 block tracking-widest">Evidence Narrative</label>
-                            <textarea id="narrative" rows="8" class="w-full bg-slate-950 border border-slate-700 p-4 rounded text-sm font-mono focus:border-red-500 outline-none transition" placeholder="Document specific instances of extortion, stalking, or financial laundering..."></textarea>
-                        </div>
-
-                        <button onclick="submitToFBI()" class="w-full bg-red-600 hover:bg-red-700 text-white font-black py-4 rounded-lg transition-all transform active:scale-95 shadow-lg shadow-red-900/20">
-                            TRANSMIT REPORT TO FBI MANAGER
-                        </button>
+                    <div class="text-[10px] text-slate-500 mt-2">
+                        <div class="flex justify-between"><span>SWIFT:</span> <span class="text-white">ENCRYPTED</span></div>
+                        <div class="flex justify-between"><span>PAROLE:</span> <span class="text-red-500 uppercase">VIOLATED</span></div>
+                        <div class="flex justify-between"><span>ASSETS:</span> <span class="text-green-500 font-bold">STEERING...</span></div>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
 
-    <!-- FBI LOADING OVERLAY -->
-    <div id="fbi-overlay" class="hidden fixed inset-0 bg-black/95 z-[100] flex items-center justify-center p-6 backdrop-blur-sm">
-        <div class="max-w-md w-full">
-            <div class="mb-8 text-center">
-                <div class="inline-block p-4 border-2 border-red-600 rounded-full mb-4">
-                    <svg class="w-12 h-12 text-red-600 animate-spin" fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                    </svg>
-                </div>
-                <h2 class="text-2xl font-black text-white italic tracking-tighter">DELIVERING TO FBI MANAGER</h2>
-                <p class="text-xs text-slate-500 uppercase mt-2">Bypassing internal support filters...</p>
-            </div>
-            
-            <div class="bg-slate-900 border border-slate-800 p-4 rounded h-40 overflow-hidden font-mono text-[10px] text-green-500" id="fbi-logs">
-                <div>> Initializing Secure Protocol...</div>
-            </div>
-            
-            <div class="mt-4 h-1 w-full bg-slate-800 rounded-full overflow-hidden">
-                <div id="fbi-bar" class="h-full bg-red-600 w-0 transition-all duration-300"></div>
-            </div>
-        </div>
-    </div>
-
-    <!-- PROTECTION LOADING OVERLAY (20 SECONDS) -->
-    <div id="protection-overlay" class="hidden fixed inset-0 bg-slate-950 z-[110] flex items-center justify-center p-6">
-        <div class="max-w-3xl w-full bg-slate-900 border-t-4 border-blue-500 rounded-xl p-8 shadow-2xl">
-            <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8">
-                <div>
-                    <h2 class="text-4xl font-black text-white tracking-tighter">SUPPORT PROTECTION</h2>
-                    <p class="text-blue-500 font-bold uppercase text-xs tracking-[0.2em]">Asset Settlement & Forensic Shielding</p>
-                </div>
-                <div id="timer" class="text-5xl font-mono text-blue-500 font-black">20.0s</div>
-            </div>
-
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div class="bg-black/40 p-6 rounded-lg border border-slate-800">
-                    <h3 class="text-xs font-bold text-slate-500 uppercase mb-4 tracking-widest">Active Settlement Processes</h3>
-                    <div id="protection-logs" class="space-y-2 text-[10px] font-mono text-slate-400">
-                        <!-- Populated by JS -->
-                    </div>
-                </div>
-                <div class="space-y-6">
-                    <div class="p-6 bg-blue-900/10 border border-blue-900/30 rounded-lg">
-                        <div class="flex justify-between text-xs mb-2">
-                            <span class="text-blue-400 font-bold">SYSTEM HARDENING</span>
-                            <span id="shield-val" class="text-white">0%</span>
-                        </div>
-                        <div class="h-2 w-full bg-slate-800 rounded-full overflow-hidden">
-                            <div id="shield-bar" class="h-full bg-blue-500 w-0 transition-all duration-300"></div>
-                        </div>
-                    </div>
-                    <div class="p-4 bg-slate-950 border border-slate-800 rounded">
-                        <p class="text-[10px] text-slate-500 leading-relaxed italic">"Assets are being settled via the Forensic Ledger. Corruption steering is locked. Terror support financing channels are under global watch. Protection protocol 2026-A1 active."</p>
-                    </div>
-                </div>
-            </div>
-            
-            <div id="completion-actions" class="hidden mt-8 text-center">
-                <button onclick="location.reload()" class="bg-white text-black font-black px-12 py-4 rounded-lg hover:bg-blue-500 hover:text-white transition-all">
-                    RETURN TO DASHBOARD (REPORT FILED)
-                </button>
-            </div>
+        <div id="final-status" class="hidden bg-green-900/20 border border-green-500 p-4 rounded text-center text-green-400 text-sm font-bold uppercase tracking-widest">
+            ✅ 60 Commands Executed: Report Delivered to Økokrim & Interpol
         </div>
     </div>
 
     <script>
-        let currentCrime = "";
+        const terminal = document.getElementById('terminal-bash');
+        const progress = document.getElementById('loading-progress');
+        const percentTxt = document.getElementById('percent-display');
+        const titleEl = document.getElementById('main-title');
+        const finalStatus = document.getElementById('final-status');
+        
+        const titleText = "We always report support Crimes and Assets Swindlers";
+        let titleIdx = 0;
 
-        function selectCrime(category) {
-            currentCrime = category;
-            document.getElementById('active-category').innerText = category;
-            document.getElementById('narrative').value = `RE: ${category}\n----------------------------------\nDetailed investigation notes regarding ${category} in relation to Support Assets...`;
+        // Typewriter Effect for Title
+        function typeTitle() {
+            if (titleIdx < titleText.length) {
+                titleEl.textContent += titleText.charAt(titleIdx);
+                titleIdx++;
+                setTimeout(typeTitle, 50);
+            }
         }
 
-        function submitToFBI() {
-            if(!currentCrime) return alert("Please select a crime vector first.");
-            
-            const fbiOverlay = document.getElementById('fbi-overlay');
-            const logs = document.getElementById('fbi-logs');
-            const bar = document.getElementById('fbi-bar');
-            
-            fbiOverlay.classList.remove('hidden');
-            
-            const messages = [
-                "Establishing secure gateway to FBI-NODE-NOR...",
-                "Bypassing local support worker firewall...",
-                "Injecting case metadata into federal database...",
-                "Verifying RICO Act violation parameters...",
-                "Encrypting narrative payload...",
-                "Handshake confirmed. Delivery in progress...",
-                "MAIL DELIVERED TO FBI MANAGER."
-            ];
+        const reportCommands = [
+            "init_trace --target=transnational_wire_fraud",
+            "verify_parole_status --serial_id=99283-NO",
+            "detect_insider_swindle --entity=support_corp_01",
+            "scan_investor_financing --source=illicit_corruption",
+            "locate_criminal_assets --geo=Norway",
+            "analyze_swindle_commission --threshold=1000000_NOK",
+            "intercept_call_station --freq=enc_voice",
+            "monitor_labor_market_abuse --false_entity=detected",
+            "trigger_asset_seizure --protocol=condition_settle",
+            "mapping_recidivist_network --rings=active",
+            "bypass_evasion_shield --method=deep_scan",
+            "log_asset_theft --victim=household_6",
+            "identify_shadow_investors --auth=high",
+            "isolate_wire_fraud_nodes --global=true",
+            "block_outward_swift --reason=fraud_alert",
+            "check_investor_crimes --docket=pending",
+            "steering_assets_from_criminals --direction=recovery",
+            "execute_corrupt_entity_shutdown --force=true",
+            "flag_parole_violation --notify=police_central",
+            "finalizing_60_command_batch --status=reporting"
+        ];
 
-            let progress = 0;
-            const interval = setInterval(() => {
-                progress += 2;
-                bar.style.width = progress + "%";
+        // Generate 60 commands (looping the key ones with variations)
+        let allCommands = [];
+        for(let i=0; i<60; i++) {
+            const cmd = reportCommands[i % reportCommands.length];
+            allCommands.push(`[${new Date().toLocaleTimeString()}] CMD_${i+1}: ${cmd}`);
+        }
+
+        let currentStep = 0;
+        const totalSteps = 60; // 60 seconds
+
+        function updateSimulation() {
+            if (currentStep <= totalSteps) {
+                // Update Progress
+                const p = (currentStep / totalSteps) * 100;
+                progress.style.width = p + "%";
+                percentTxt.innerText = Math.floor(p) + "%";
+
+                // Add Terminal Command
+                const entry = document.createElement('div');
+                entry.className = 'log-entry';
+                entry.innerHTML = `<span class="text-slate-500">root@norway_police:~$</span> ${allCommands[currentStep] || 'sys_idle_process_wait...'}`;
+                terminal.prepend(entry);
+
+                // Update Graph Bars randomly
+                document.getElementById('bar-1').style.height = Math.random() * 100 + "%";
+                document.getElementById('bar-2').style.height = Math.random() * 100 + "%";
+                document.getElementById('bar-3').style.height = Math.random() * 100 + "%";
+                document.getElementById('bar-4').style.height = Math.random() * 100 + "%";
+
+                currentStep++;
                 
-                if(progress % 14 === 0) {
-                    const msg = messages[Math.floor(progress/15)];
-                    if(msg) logs.innerHTML += `<div>> ${msg}</div>`;
-                    logs.scrollTop = logs.scrollHeight;
+                if(currentStep === totalSteps + 1) {
+                    finalStatus.classList.remove('hidden');
+                } else {
+                    setTimeout(updateSimulation, 1000); // 1 command per second for 60 seconds
                 }
-
-                if(progress >= 100) {
-                    clearInterval(interval);
-                    setTimeout(() => {
-                        fbiOverlay.classList.add('hidden');
-                        startProtection();
-                    }, 800);
-                }
-            }, 50);
+            }
         }
 
-        function startProtection() {
-            const overlay = document.getElementById('protection-overlay');
-            const timerEl = document.getElementById('timer');
-            const logBox = document.getElementById('protection-logs');
-            const shieldBar = document.getElementById('shield-bar');
-            const shieldVal = document.getElementById('shield-val');
-            
-            overlay.classList.remove('hidden');
-            
-            const logs = [
-                "Settling White Washing Ledger...",
-                "Locking Casino Fraud conduits...",
-                "Freezing IT Support offshore nodes...",
-                "Deploying Anti-Stalking protection...",
-                "Isolating Terror Support assets...",
-                "Neutralizing Extortion channels...",
-                "Verifying Family Support safety...",
-                "Compiling RICO asset recovery map...",
-                "Finalizing Forensic Settlement..."
-            ];
-
-            let timeLeft = 20.0;
-            const step = 0.1;
-            
-            const timer = setInterval(() => {
-                timeLeft -= step;
-                timerEl.innerText = timeLeft.toFixed(1) + "s";
-                
-                const progress = ((20 - timeLeft) / 20) * 100;
-                shieldBar.style.width = progress + "%";
-                shieldVal.innerText = Math.floor(progress) + "%";
-
-                if(Math.floor(timeLeft * 10) % 20 === 0) {
-                    const log = logs[Math.floor((20-timeLeft)/2.2)];
-                    if(log) {
-                        logBox.innerHTML += `<div class="flex items-center gap-2"><span class="h-1 w-1 bg-blue-500 rounded-full"></span>${log}</div>`;
-                        logBox.scrollTop = logBox.scrollHeight;
-                    }
-                }
-
-                if(timeLeft <= 0) {
-                    clearInterval(timer);
-                    timerEl.innerText = "SETTLED";
-                    timerEl.classList.replace('text-blue-500', 'text-green-500');
-                    document.getElementById('completion-actions').classList.remove('hidden');
-                }
-            }, 100);
-        }
-
-        // Auto-select first category
-        window.onload = () => selectCrime('Financial Bribery');
+        window.onload = () => {
+            typeTitle();
+            setTimeout(updateSimulation, 1000);
+        };
     </script>
 </body>
 </html>
