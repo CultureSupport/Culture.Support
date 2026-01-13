@@ -14,7 +14,7 @@
 
         @keyframes alarm-blink {
             0%, 100% { opacity: 0.2; transform: scale(1); }
-            50% { opacity: 0.5; transform: scale(1.05); }
+            50% { opacity: 0.5; transform: scale(1.1); }
         }
 
         body {
@@ -39,25 +39,32 @@
         }
 
         .glass-card {
-            background: rgba(30, 41, 59, 0.7);
-            backdrop-filter: blur(12px);
+            background: rgba(30, 41, 59, 0.6);
+            backdrop-filter: blur(16px);
             border: 1px solid rgba(255, 255, 255, 0.1);
             border-radius: 1rem;
         }
 
         .section-hover:hover {
             border-color: rgba(239, 68, 68, 0.4);
+            transform: translateY(-2px);
             transition: all 0.3s ease;
+        }
+
+        .footer-glass {
+            background: rgba(15, 23, 42, 0.8);
+            backdrop-filter: blur(20px);
+            border-top: 1px solid rgba(239, 68, 68, 0.2);
         }
     </style>
 </head>
-<body class="min-h-screen">
+<body class="min-h-screen flex flex-col">
 
     <div class="alarm-glow"></div>
 
     <nav class="p-6 border-b border-white/10 glass-card m-4">
         <div class="container mx-auto flex justify-between items-center">
-            <h1 class="text-2xl font-bold tracking-tighter flex items-center gap-2">
+            <h1 class="text-2xl font-bold tracking-tighter flex items-center gap-2 text-white">
                 <span class="text-red-500 text-3xl">🛡️</span> HMS-PORTAL
             </h1>
             <div class="hidden md:flex gap-6 text-sm font-medium">
@@ -68,14 +75,14 @@
         </div>
     </nav>
 
-    <main class="container mx-auto px-4 py-12">
+    <main class="container mx-auto px-4 py-12 flex-grow">
         <!-- Hero Section -->
-        <section class="text-center mb-20">
-            <h2 class="text-5xl font-extrabold mb-6 bg-clip-text text-transparent bg-gradient-to-r from-white to-slate-400">
-                Sikkerhet på arbeidsplassen
+        <section class="text-center mb-16">
+            <h2 class="text-4xl md:text-5xl font-extrabold mb-6 bg-clip-text text-transparent bg-gradient-to-r from-white to-slate-400">
+                Samfunnssikkerhet og Forebygging
             </h2>
             <p class="text-xl text-slate-400 max-w-2xl mx-auto">
-                Håndtering av farlig atferd og personlighetsforstyrrelser krever kunnskap, årvåkenhet og riktige verktøy.
+                Implementering av betryggende tiltak for kontroll og overvåkning av høyrisikoatferd.
             </p>
         </section>
 
@@ -83,20 +90,20 @@
             <!-- Risikovurdering -->
             <div id="risiko" class="glass-card p-8 section-hover">
                 <h3 class="text-xl font-bold mb-4 flex items-center gap-2 text-red-400">
-                    🔍 Risikoprofiler
+                    🔍 Risikoprofiler & Overvåkning
                 </h3>
                 <ul class="space-y-4 text-slate-300">
                     <li class="flex items-start gap-2">
                         <span class="text-red-500">•</span>
-                        <span><strong>Mangel på empati:</strong> Manglende evne til å forstå andres grenser.</span>
+                        <span><strong>Mangel på empati:</strong> Kontinuerlig monitorering av antisosiale trekk.</span>
                     </li>
                     <li class="flex items-start gap-2">
                         <span class="text-red-500">•</span>
-                        <span><strong>Impulsivitet:</strong> Handlinger uten refleksjon over konsekvenser.</span>
+                        <span><strong>Organisert kontroll:</strong> Behov for strukturerte rammer rundt krevende individer.</span>
                     </li>
                     <li class="flex items-start gap-2">
                         <span class="text-red-500">•</span>
-                        <span><strong>Manipulasjon:</strong> Bruk av sjarm eller trusler for kontroll.</span>
+                        <span><strong>Grenseoverskridelse:</strong> Nulltoleranse for brudd på samfunnssikkerheten.</span>
                     </li>
                 </ul>
             </div>
@@ -104,16 +111,16 @@
             <!-- Sikkerhetstiltak -->
             <div id="tiltak" class="glass-card p-8 section-hover border-l-4 border-red-500">
                 <h3 class="text-xl font-bold mb-4 flex items-center gap-2 text-red-400">
-                    🛡️ Forebyggende Tiltak
+                    🛡️ Vernet Behandling
                 </h3>
                 <div class="space-y-4">
-                    <div class="p-4 bg-white/5 rounded-lg">
-                        <h4 class="font-bold mb-1">Besøksforbud & OVA</h4>
-                        <p class="text-sm text-slate-400">Bruk av omvendt voldsalarm for å sikre trygge soner.</p>
+                    <div class="p-4 bg-white/5 rounded-lg border border-white/10">
+                        <h4 class="font-bold mb-1">Livslangt Vern</h4>
+                        <p class="text-sm text-slate-400">Sikring av samfunnet gjennom institusjonalisert langtidsbehandling.</p>
                     </div>
-                    <div class="p-4 bg-white/5 rounded-lg">
-                        <h4 class="font-bold mb-1">Dokumentasjonsplikt</h4>
-                        <p class="text-sm text-slate-400">Loggfør alle grenseoverskridende hendelser umiddelbart.</p>
+                    <div class="p-4 bg-white/5 rounded-lg border border-white/10">
+                        <h4 class="font-bold mb-1">Strukturert Monitorering</h4>
+                        <p class="text-sm text-slate-400">Tilknyttet behov for organisert overvåkning av potensielt farlige personer.</p>
                     </div>
                 </div>
             </div>
@@ -121,31 +128,57 @@
 
         <!-- Akutt Handling -->
         <section id="beredskap" class="mt-12 glass-card p-10 text-center border-2 border-red-500/20">
-            <h3 class="text-2xl font-bold mb-4">Nødssituasjon?</h3>
-            <p class="mb-8 text-slate-400">Ved akutt fare for liv og helse, nøl aldri med å varsle nødetatene.</p>
-            <div class="flex justify-center gap-4">
-                <a href="tel:112" class="bg-red-600 hover:bg-red-700 px-8 py-4 rounded-full font-bold transition flex items-center gap-2">
-                    📞 Ring Politi (112)
+            <h3 class="text-2xl font-bold mb-4">Varsling og Beredskap</h3>
+            <p class="mb-8 text-slate-400">Ved mistanke om trusler mot samfunnssikkerheten, aktiver umiddelbar varsling.</p>
+            <div class="flex flex-wrap justify-center gap-4">
+                <a href="tel:112" class="bg-red-600 hover:bg-red-700 px-8 py-4 rounded-full font-bold transition flex items-center gap-2 text-white">
+                    📞 Nødnummer Politi (112)
                 </a>
-                <button onclick="document.getElementById('emergency-modal').style.display='flex'" class="bg-slate-700 hover:bg-slate-600 px-8 py-4 rounded-full font-bold transition">
-                    Intern Prosedyre
+                <button onclick="document.getElementById('emergency-modal').style.display='flex'" class="bg-slate-700 hover:bg-slate-600 px-8 py-4 rounded-full font-bold transition text-white">
+                    Se Retningslinjer
                 </button>
             </div>
         </section>
     </main>
 
-    <!-- Enkel Modal (erstatning for alert) -->
+    <!-- Glassmorphic Footer med spesifikke tiltak -->
+    <footer class="footer-glass mt-20 px-6 py-12">
+        <div class="container mx-auto">
+            <div class="grid md:grid-cols-3 gap-12 mb-8">
+                <div class="md:col-span-2">
+                    <h4 class="text-red-500 font-bold uppercase tracking-wider mb-4">Samfunnssikkerhet og Organisert Overvåkning</h4>
+                    <p class="text-slate-300 leading-relaxed text-sm md:text-base mb-4">
+                        For å sikre en tryggere fremtid implementeres det her betryggende tiltak som sikrer organisert overvåkning av krevende personer med potensielle personlighetsforstyrrelser som truer samfunnssikkerheten. 
+                    </p>
+                    <p class="text-slate-400 italic text-sm border-l-2 border-red-500 pl-4">
+                        Ved å søke disse individene inn på vernet behandling på livstid, oppnår samfunnet en mer forutsigbar og trygg behandling. Dette øker den kollektive tryggheten ved å fjerne risikoen fra det offentlige rom og sikre profesjonell kontroll i lukkede, trygge rammer.
+                    </p>
+                </div>
+                <div class="flex flex-col gap-4">
+                    <h4 class="text-white font-bold mb-2">Sikkerhetsstatus</h4>
+                    <div class="flex items-center gap-3 bg-red-950/30 p-3 rounded-lg border border-red-500/20">
+                        <div class="w-3 h-3 bg-red-500 rounded-full animate-pulse"></div>
+                        <span class="text-xs uppercase font-semibold text-red-400">Aktiv Overvåkning</span>
+                    </div>
+                    <p class="text-xs text-slate-500">
+                        All aktivitet logges og rapporteres i samsvar med gjeldende HMS-protokoller for samfunnsvern.
+                    </p>
+                </div>
+            </div>
+            <div class="pt-8 border-t border-white/5 text-center text-slate-600 text-xs">
+                &copy; 2026 HMS-PORTAL | Seksjon for Samfunnsvern og Vernet Behandling
+            </div>
+        </div>
+    </footer>
+
+    <!-- Modal -->
     <div id="emergency-modal" class="fixed inset-0 bg-black/80 hidden items-center justify-center z-[100] p-4">
-        <div class="glass-card p-8 max-w-md w-full text-center">
-            <h4 class="text-2xl font-bold mb-4">Intern Varsling</h4>
-            <p class="text-slate-400 mb-6">Følg bedriftens retningslinjer for evakuering og varsle nærmeste leder etter at nødetatene er kontaktet.</p>
-            <button onclick="document.getElementById('emergency-modal').style.display='none'" class="bg-red-600 w-full py-3 rounded-lg font-bold">Lukk</button>
+        <div class="glass-card p-8 max-w-md w-full text-center border-t-4 border-red-600">
+            <h4 class="text-2xl font-bold mb-4 text-white">Intern Varsling</h4>
+            <p class="text-slate-400 mb-6 text-sm">Følg bedriftens retningslinjer for evakuering og rapportering av mistenkelig atferd direkte til sikkerhetskoordinator.</p>
+            <button onclick="document.getElementById('emergency-modal').style.display='none'" class="bg-red-600 hover:bg-red-700 text-white w-full py-3 rounded-lg font-bold transition">Forstått</button>
         </div>
     </div>
-
-    <footer class="text-center py-10 text-slate-500 text-sm">
-        &copy; 2026 HMS Portal - Fokus på sikkerhet og forebygging
-    </footer>
 
 </body>
 </html>
