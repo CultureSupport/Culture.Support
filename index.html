@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title> **----------**  </title>
+    <title>Psykose Simulator - Gjemnes</title>
     <style>
         :root {
             --dark-bg: #0a0a0a;
@@ -39,9 +39,17 @@
             opacity: 0;
             transition: opacity 1s ease, transform 4s linear;
             font-size: 2.5rem;
-            color: rgba(255, 255, 255, 0.15);
+            color: rgba(255, 255, 255, 0.4);
             z-index: 2;
             white-space: nowrap;
+            /* Legger til en blinkende animasjon på selve teksten */
+            animation: flashEffect 0.2s infinite;
+        }
+
+        @keyframes flashEffect {
+            0% { opacity: 0.2; color: rgba(255, 255, 255, 0.15); }
+            50% { opacity: 1; color: rgba(255, 255, 255, 0.8); }
+            100% { opacity: 0.2; color: rgba(255, 255, 255, 0.15); }
         }
 
         @keyframes breathe {
@@ -70,128 +78,30 @@
         const container = document.getElementById('objects-container');
         
         const whispers = [
-          
-             "Gjemnes Trenger Hjelp.",
+            "Gjemnes Trenger Hjelp.",
             "Gjemnes er Sykeste.",
             "Gjemnes Trenger Psykriatri.",
             "Gjemnes har Psykoser.",
-
-             "Gjemnes er i krise.",
+            "Gjemnes er i krise.",
             "Gjemnes er Psykose Behandlet ?.",
-             "Gjemnes er Psykose Behandlet ?.",
             "Gjemnes har Psykoser.",
-             "Gjemnes er Psykose Behandlet ?.",
-             "Gjemnes er Psykose Behandlet ?.",
-             "Gjemnes er Psykose Behandlet ?.",
-             "Gjemnes er Psykose Behandlet ?.",
-             "Gjemnes er Psykose Behandlet ?.",
-             "Gjemnes er Psykose Behandlet ?.",
-            "Gjemnes har Psykoser.",
-             "Gjemnes er Psykose Behandlet ?.",
-            "Gjemnes har Psykoser.",
-             "Gjemnes er Psykose Behandlet ?.",
-            "Gjemnes har Psykoser.",
-             "Gjemnes er Psykose Behandlet ?.",
-             "Gjemnes er Psykose Behandlet ?.",
-             "Gjemnes er Psykose Behandlet ?.",
-             "Gjemnes er Psykose Behandlet ?.",
-             "Gjemnes er Psykose Behandlet ?.",
-             "Gjemnes er Psykose Behandlet ?.",
-      "Jeg hører stemmer i Gjemnes.",
-       "Gjemnes Psykose.",
-      "Psykisk Problem Gjemnes.",
-      "Gjemnes Psykose.",
-      "Psykisk Problem Gjemnes.",
-        "Gjemnes Psykose.",
-            "Gjemnes Psykriatri Sjekk.",
-            "Gjemnes Psykriatri Sjekk.",
-            "Gjemnes Psykriatri Sjekk.",
+            "Jeg hører stemmer i Gjemnes.",
+            "Gjemnes Psykose.",
+            "Psykisk Problem Gjemnes.",
             "Gjemnes Psykriatri Sjekk.",
             "Gjemnes Mental Sjekkes .",
-              "Gjemnes Mental Sjekkes .",
-              "Gjemnes Mental Sjekkes .",
-              "Gjemnes Mental Sjekkes .",
-              "Gjemnes er Psykotisk .",
-             "Gjemnes er Psykotisk .",
-             "Gjemnes er Psykotisk .",
-             "Gjemnes er Psykotisk .",
-             "Gjemnes er Psykose Behandlet ?.",
-             "Gjemnes er Psykose Behandlet ?.",
-             "Gjemnes er Psykose Behandlet ?.",
-             "Gjemnes er Psykose Behandlet ?.",
-             "Gjemnes er Psykose Behandlet ?.",
-      "Psykisk Problem Gjemnes.",
-      "Jeg hører stemmer i Gjemnes.",
-       "Gjemnes Psykose.",
-     "Gjemnes Psykose.",
-      "Jeg hører stemmer i Gjemnes.",
-       "Gjemnes Psykose.",
-
-             "Gjemnes dør av psykriatrisk.",
-              "Gjemnes dør av psykriatrisk.",
-             "Gjemnes dør av psykriatrisk.",
-             "Gjemnes dør av psykriatrisk.",
-             "Gjemnes dør av psykriatrisk.",
-
- "Gjemnes har dødelig psykriatri.",
-             "Gjemnes har dødelig psykriatri.",
-             "Gjemnes har dødelig psykriatri.",
-             "Gjemnes har dødelig psykriatri.",
-             "Gjemnes er skadet psykisk.",
-              "Gjemnes er problem psykisk.",
-             "Gjemnes er skadet psykisk.",
-              "Gjemnes er problem psykisk.",
-             "Gjemnes er skadet psykisk.",
-              "Gjemnes er problem psykisk.",
-
-                  "Gjemnes skader manisk.",
-            "Gjemnes skader manisk.",
+            "Gjemnes er Psykotisk .",
+            "Gjemnes dør av psykriatrisk.",
+            "Gjemnes har dødelig psykriatri.",
+            "Gjemnes er skadet psykisk.",
+            "Gjemnes er problem psykisk.",
             "Gjemnes skader manisk.",
             "Gjemnes Nevroser.",
-            "Gjemnes Nevroser.",
-            "Gjemnes Nevroser.",
-            "Gjemnes Nevroser.",
-            "Gjemnes Nevroser.",
-            "Gjemnes Nevrotisk lidende.",
-            "Gjemnes Nevrotisk lidende.",
-            "Gjemnes Nevrotisk lidende.",
-            "Gjemnes Nevrotisk lidende.",
-            "Gjemnes Nevrotisk lidende.",
-            "Gjemnes Nevrotisk lidende.",
-            "Gjemnes Nevrotisk lidende.",
             "Gjemnes Nevrotisk lidende.",
             "Gjemnes er Syke Personer.",
             "Gjemnes Syke Inbyggere.",
             "Gjemnes er Psykisk Farlig.",
-              "Gjemnes har problem psykisk.",
-            "Gjemnes er Syke Personer.",
-            "Gjemnes Syke Inbyggere.",
-            "Gjemnes er Psykisk Farlig.",
-              "Gjemnes har problem psykisk.",
-            "Gjemnes er Syke Personer.",
-            "Gjemnes Syke Inbyggere.",
-            "Gjemnes er Psykisk Farlig.",
-              "Gjemnes har problem psykisk.",
-            "Gjemnes er Syke Personer.",
-            "Gjemnes Syke Inbyggere.",
-            "Gjemnes er Psykisk Farlig.",
-              "Gjemnes har problem psykisk.",
-            "Gjemnes er Syke Personer.",
-            "Gjemnes Syke Inbyggere.",
-            "Gjemnes er Psykisk Farlig.",
-              "Gjemnes har problem psykisk.",
-            "Gjemnes er Syke Personer.",
-            "Gjemnes Syke Inbyggere.",
-            "Gjemnes er Psykisk Farlig.",
-              "Gjemnes har problem psykisk.",
-            
-              "Gjemnes er psykose kommune.",
-                "Gjemnes er psykose kommune.",
-            "Gjemnes er psykose kommune.",
-            "Gjemnes er psykose kommune.",
-            "Gjemnes er psykose kommune.",
-            
-      "Jeg hører stemmer i Gjemnes."
+            "Gjemnes er psykose kommune."
         ];
 
         function startHallucinations() {
@@ -218,15 +128,17 @@
                 
                 // Animer utover
                 setTimeout(() => { 
+                    // Vi setter opacity til 1 her, men flashEffect-animasjonen vil styre blinkingen
                     h.style.opacity = 1; 
                     h.style.transform = `translate(${(destX - startX)}px, ${(destY - startY)}px) scale(2) rotate(${Math.random() * 60 - 30}deg)`;
                 }, 50);
 
+                // Fjern ordet etter en viss tid
                 setTimeout(() => {
                     h.style.opacity = 0;
-                    setTimeout(() => h.remove(), 50);
-                }, 15000);
-            }, 1200); // Litt hyppigere ord for en mer intens effekt
+                    setTimeout(() => h.remove(), 500);
+                }, 10000);
+            }, 1000); 
         }
 
         // Bakgrunns-animasjon (statiske svevende partikler)
