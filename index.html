@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="no">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sikkerhetsportal: Beskyttelse mot Arbeidsmarkedssvindel</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap');
+        body { font-family: 'Inter', sans-serif; }
+        .danger-gradient { background: linear-gradient(135deg, #450a0a 0%, #7f1d1d 100%); }
+        .card-hover:hover { transform: translateY(-5px); transition: all 0.3s ease; }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-900">
+
+    <!-- Hero Section -->
+    <header class="danger-gradient text-white py-16 px-4">
+        <div class="max-w-6xl mx-auto text-center">
+            <div class="inline-block bg-red-600 text-xs font-bold px-3 py-1 rounded-full mb-4 uppercase tracking-widest">Sikkerhetsvarsel 2026</div>
+            <h1 class="text-4xl md:text-6xl font-bold mb-6">Arbeidsmarkedssvindel under lupen</h1>
+            <p class="text-xl text-red-100 max-w-2xl mx-auto">Fra identitetstyveri av bedrifter til avansert konsulentsvindel – lær hvordan du gjenkjenner de sofistikerte angrepene.</p>
+        </div>
+    </header>
+
+    <main class="max-w-6xl mx-auto py-12 px-4">
+        
+        <!-- Svindeltyper Grid -->
+        <div class="grid md:grid-cols-3 gap-8 mb-16">
+            
+            <!-- Hvitvasking av Arbeidssted -->
+            <div class="bg-white p-8 rounded-2xl shadow-sm border border-slate-200 card-hover">
+                <div class="w-12 h-12 bg-red-100 rounded-lg flex items-center justify-center mb-6">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                    </svg>
+                </div>
+                <h3 class="text-2xl font-bold mb-4">Hvitvasking av arbeidssted</h3>
+                <p class="text-slate-600 mb-4">Svindlere stjeler identiteten til ekte, norske firmaer for å opprette "falske kontorer" eller prosjekter. Dette brukes som fasade for hvitvasking av penger eller ulovlig import.</p>
+                <ul class="text-sm space-y-2 text-slate-500 italic">
+                    <li>• Firmaet eksisterer i Brønnøysund, men adressen i annonsen er en co-working space eller Airbnb.</li>
+                    <li>• Kontaktpersonen kan ikke nås via sentralbordet til det ekte firmaet.</li>
+                </ul>
+            </div>
+
+            <!-- Targeted Arbeidsplass Svindel -->
+            <div class="bg-white p-8 rounded-2xl shadow-sm border border-slate-200 card-hover">
+                <div class="w-12 h-12 bg-orange-100 rounded-lg flex items-center justify-center mb-6">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-orange-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                    </svg>
+                </div>
+                <h3 class="text-2xl font-bold mb-4">Målrettet (Targeted) svindel</h3>
+                <p class="text-slate-600 mb-4">Også kjent som "Spear Phishing". Svindleren studerer din LinkedIn-profil og sender deg et skreddersydd jobbtilbud som virker perfekt for din karrierevei.</p>
+                <ul class="text-sm space-y-2 text-slate-500 italic">
+                    <li>• Inkluderer detaljer om dine tidligere prosjekter for å bygge tillit.</li>
+                    <li>• Ber om utfylling av "sikkerhetsskjema" som i realiteten er BankID-phishing.</li>
+                </ul>
+            </div>
+
+            <!-- Konsulentsvindel -->
+            <div class="bg-white p-8 rounded-2xl shadow-sm border border-slate-200 card-hover">
+                <div class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center mb-6">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                    </svg>
+                </div>
+                <h3 class="text-2xl font-bold mb-4">Konsulentsvindel</h3>
+                <p class="text-slate-600 mb-4">Retter seg mot selvstendig næringsdrivende. Svindlere tilbyr lukrative oppdrag, men krever "administrasjonsgebyr" eller bruk av falske faktureringssystemer.</p>
+                <ul class="text-sm space-y-2 text-slate-500 italic">
+                    <li>• Krav om innkjøp av spesifikk programvare via deres "godkjente leverandør".</li>
+                    <li>• Kontrakter som ser juridisk bindende ut, men som mangler org.nr.</li>
+                </ul>
+            </div>
+
+        </div>
+
+        <!-- Deep Dive Section -->
+        <section class="bg-slate-900 text-white rounded-3xl p-8 md:p-12 mb-16">
+            <h2 class="text-3xl font-bold mb-8 text-center">Anatomi av et sofistikert angrep</h2>
+            <div class="space-y-6">
+                <div class="flex items-start gap-4">
+                    <div class="bg-red-500 text-white font-bold rounded-full h-8 w-8 flex items-center justify-center flex-shrink-0">1</div>
+                    <div>
+                        <h4 class="font-bold text-lg">Infiltrasjon via sosiale medier</h4>
+                        <p class="text-slate-400">Svindleren kontakter deg på LinkedIn eller via en kryptert meldingstjeneste (Signal/Telegram). De utgir seg for å være en senior rekrutterer fra et velkjent selskap som Equinor, DNB eller Yara.</p>
+                    </div>
+                </div>
+                <div class="flex items-start gap-4">
+                    <div class="bg-red-500 text-white font-bold rounded-full h-8 w-8 flex items-center justify-center flex-shrink-0">2</div>
+                    <div>
+                        <h4 class="font-bold text-lg">Digitalt intervju uten video</h4>
+                        <p class="text-slate-400">Intervjuet foregår kun skriftlig eller via en "egenutviklet portal". De unngår ansikt-til-ansikt kontakt for å skjule bruk av KI-stemmer eller for å operere fra utlandet.</p>
+                    </div>
+                </div>
+                <div class="flex items-start gap-4">
+                    <div class="bg-red-500 text-white font-bold rounded-full h-8 w-8 flex items-center justify-center flex-shrink-0">3</div>
+                    <div>
+                        <h4 class="font-bold text-lg">Onboarding-fellen</h4>
+                        <p class="text-slate-400">Du får "jobben". For å starte onboarding-prosessen må du logge inn med BankID på en side som ser identisk ut som Altinn eller Postens signeringsportal.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Sjekkliste -->
+        <div class="max-w-3xl mx-auto">
+            <h2 class="text-3xl font-bold mb-8 text-center">Sjekkliste for verifisering</h2>
+            <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200">
+                <div class="space-y-4">
+                    <label class="flex items-center gap-3 p-3 hover:bg-slate-50 rounded-lg cursor-pointer">
+                        <input type="checkbox" class="h-5 w-5 text-red-600 rounded">
+                        <span>Har jeg sjekket at e-postdomenet stemmer eksakt med firmaets nettside? (f.eks. @telenor.no vs @telenor-careers.com)</span>
+                    </label>
+                    <label class="flex items-center gap-3 p-3 hover:bg-slate-50 rounded-lg cursor-pointer">
+                        <input type="checkbox" class="h-5 w-5 text-red-600 rounded">
+                        <span>Har jeg ringt selskapets offisielle sentralbord for å få bekreftet kontaktpersonen?</span>
+                    </label>
+                    <label class="flex items-center gap-3 p-3 hover:bg-slate-50 rounded-lg cursor-pointer">
+                        <input type="checkbox" class="h-5 w-5 text-red-600 rounded">
+                        <span>Er stillingen lyst ut på offisielle kanaler som FINN.no eller bedriftens egne sider?</span>
+                    </label>
+                    <label class="flex items-center gap-3 p-3 hover:bg-slate-50 rounded-lg cursor-pointer">
+                        <input type="checkbox" class="h-5 w-5 text-red-600 rounded">
+                        <span>Blir jeg bedt om å installere programvare eller utvidelser i nettleseren for å "se kontrakten"?</span>
+                    </label>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <footer class="bg-slate-100 border-t border-slate-200 py-12 px-4">
+        <div class="max-w-6xl mx-auto text-center">
+            <p class="font-bold text-red-600 mb-4 uppercase tracking-wider">Mistenker du svindel?</p>
+            <div class="flex flex-wrap justify-center gap-4">
+                <a href="#" class="bg-white border border-slate-300 px-6 py-2 rounded-full text-sm font-semibold hover:bg-slate-50">Tips Politiet</a>
+                <a href="#" class="bg-white border border-slate-300 px-6 py-2 rounded-full text-sm font-semibold hover:bg-slate-50">Tips NAV</a>
+                <a href="#" class="bg-white border border-slate-300 px-6 py-2 rounded-full text-sm font-semibold hover:bg-slate-50">Rapporter til NorSIS</a>
+            </div>
+            <p class="mt-8 text-slate-500 text-sm italic">Denne siden er kun til informasjonsformål for å øke bevisstheten rundt digital sikkerhet.</p>
+        </div>
+    </footer>
+
+</body>
+</html>
