@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title> Culture.Support </title>
+    <title>iPad Disk - Apocalypse Protocol</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;700;800&family=Inter:wght@400;900&display=swap');
@@ -12,7 +12,8 @@
             --neon-purple: #a855f7;
             --neon-blue: #3b82f6;
             --bg-dark: #020204;
-            --alert-red: #ef4444;
+            --alert-red: #ff0000;
+            --doom-orange: #ff5f00;
         }
 
         body {
@@ -42,23 +43,23 @@
         }
 
         .loader-bar-bg {
-            width: 320px;
-            height: 6px;
+            width: 350px;
+            height: 10px;
             background: rgba(255,255,255,0.05);
-            border-radius: 20px;
+            border-radius: 0px;
             overflow: hidden;
             margin-top: 25px;
-            border: 1px solid rgba(255,255,255,0.1);
+            border: 1px solid rgba(255,0,0,0.3);
         }
 
         .loader-bar-fill {
             width: 0%;
             height: 100%;
-            background: linear-gradient(90deg, #3b82f6, #a855f7, #3b82f6);
+            background: linear-gradient(90deg, #ff0000, #ff5f00, #ff0000);
             background-size: 200% 100%;
-            animation: move-gradient 2s linear infinite;
+            animation: move-gradient 1.5s linear infinite;
             transition: width 0.4s ease;
-            box-shadow: 0 0 15px rgba(168, 85, 247, 0.5);
+            box-shadow: 0 0 20px rgba(255, 0, 0, 0.5);
         }
 
         @keyframes move-gradient {
@@ -66,85 +67,82 @@
             100% { background-position: -200% 0%; }
         }
 
-        /* --- CSS Betalingsalarm --- */
+        /* --- Apocalypse Alarm Modal --- */
         #paymentModal {
             position: fixed;
             z-index: 1100;
-            background: rgba(0,0,0,0.98);
+            background: radial-gradient(circle, rgba(50,0,0,1) 0%, rgba(0,0,0,1) 100%);
             inset: 0;
             display: none;
             align-items: center;
             justify-content: center;
-            backdrop-filter: blur(25px);
+            backdrop-filter: blur(30px);
         }
 
         .security-vault {
-            background: #0a0a0c;
+            background: #000;
             color: #fff;
-            width: 480px;
+            width: 580px;
             padding: 40px;
-            border-radius: 32px;
-            border: 2px solid rgba(239, 68, 68, 0.2);
-            box-shadow: 0 0 80px rgba(0,0,0,1), 0 0 40px rgba(239, 68, 68, 0.1);
+            border-radius: 0px;
+            border: 4px double var(--alert-red);
+            box-shadow: 0 0 150px rgba(255,0,0,0.5);
             position: relative;
             overflow: hidden;
         }
 
-        /* Alarm-animasjon */
         .alarm-glow {
             position: absolute;
             inset: 0;
-            border-radius: 32px;
             pointer-events: none;
-            box-shadow: inset 0 0 30px rgba(239, 68, 68, 0.2);
-            animation: alarm-pulse 1s infinite alternate;
+            background: radial-gradient(circle, rgba(255,0,0,0.15) 0%, transparent 70%);
+            animation: nuclear-pulse 0.4s infinite alternate;
         }
 
-        @keyframes alarm-pulse {
-            from { opacity: 0.3; border-color: rgba(239, 68, 68, 0.2); }
-            to { opacity: 0.8; border-color: rgba(239, 68, 68, 0.6); }
+        @keyframes nuclear-pulse {
+            from { opacity: 0.2; }
+            to { opacity: 0.7; }
         }
 
-        .visa-input, .crypto-input {
-            background: rgba(255,255,255,0.03);
-            border: 1px solid rgba(255,255,255,0.08);
-            color: white;
-            padding: 14px;
-            border-radius: 12px;
+        .visa-input {
+            background: #0a0000;
+            border: 1px solid #440000;
+            color: #ff0000;
+            padding: 16px;
+            border-radius: 0px;
             width: 100%;
-            font-size: 11px;
+            font-size: 13px;
             margin-top: 8px;
             outline: none;
-            transition: all 0.3s;
+            text-transform: uppercase;
         }
 
-        .visa-input:focus, .crypto-input:focus {
-            border-color: var(--alert-red);
-            background: rgba(239, 68, 68, 0.05);
+        .visa-input:focus {
+            border-color: #ff5f00;
+            box-shadow: 0 0 15px rgba(255, 95, 0, 0.3);
         }
 
-        /* --- Global Network Animation --- */
+        /* --- Global Grid Animation --- */
         #networkCanvas {
             position: absolute;
             top: 0; left: 0; width: 100%; height: 100%;
             z-index: -2;
-            opacity: 0.4;
+            opacity: 0.6;
         }
 
-        /* iPad Frame */
+        /* Tablet Frame */
         .tablet-frame {
             position: relative;
-            width: 720px;
-            height: 92vh;
-            background: rgba(10, 10, 12, 0.95);
-            border: 12px solid #1a1a1e;
-            border-radius: 40px;
-            box-shadow: 0 0 100px rgba(0,0,0,1);
+            width: 780px;
+            height: 94vh;
+            background: #000;
+            border: 15px solid #111;
+            border-radius: 10px;
             display: flex;
             flex-direction: column;
             overflow: hidden;
             opacity: 0;
-            transform: scale(0.95);
+            transform: scale(0.98);
             transition: all 1s ease;
         }
 
@@ -153,173 +151,226 @@
             transform: scale(1);
         }
 
-        .barometer-container {
-            height: 8px;
-            background: rgba(0,0,0,0.5);
-            border-radius: 10px;
-            overflow: hidden;
-            border: 1px solid rgba(255,255,255,0.05);
-        }
-
         .barometer-fill {
             height: 100%;
-            background: linear-gradient(90deg, #3b82f6, #a855f7);
+            background: linear-gradient(90deg, #ff0000, #ff8800);
             width: 0%;
-            transition: width 1s cubic-bezier(0.23, 1, 0.32, 1);
-            box-shadow: 0 0 10px rgba(168, 85, 247, 0.3);
+            transition: width 1s ease-in-out;
         }
 
-        .security-status-tag {
-            font-size: 8px;
+        .nuke-icon {
+            filter: drop-shadow(0 0 8px red);
+            animation: spin 8s linear infinite;
+        }
+
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        .glitch-text {
+            animation: glitch 0.8s infinite;
+        }
+
+        @keyframes glitch {
+            0% { transform: translate(0); text-shadow: 2px 0 red, -2px 0 blue; }
+            20% { transform: translate(-3px, 3px); }
+            40% { transform: translate(-3px, -3px); }
+            60% { transform: translate(3px, 3px); }
+            80% { transform: translate(3px, -3px); }
+            100% { transform: translate(0); }
+        }
+
+        .countdown-box {
+            background: rgba(255, 0, 0, 0.05);
+            border: 1px solid rgba(255, 0, 0, 0.2);
+            padding: 15px;
+            text-align: center;
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .doom-timer {
+            font-size: 32px;
             font-weight: 900;
-            padding: 2px 8px;
-            border-radius: 4px;
-            text-transform: uppercase;
-            letter-spacing: 1px;
+            color: #ff0000;
+            letter-spacing: 4px;
+            text-shadow: 0 0 20px rgba(255, 0, 0, 0.7);
         }
-
-        .status-locked { background: rgba(239, 68, 68, 0.1); color: #ef4444; border: 1px solid rgba(239, 68, 68, 0.2); }
-        .status-unlocked { background: rgba(34, 197, 94, 0.1); color: #22c55e; border: 1px solid rgba(34, 197, 94, 0.2); }
-
     </style>
 </head>
 <body>
 
     <!-- Loading Screen -->
     <div id="loadingScreen">
-        <div class="text-[10px] font-black tracking-[1em] text-white uppercase mb-2">System Encryptor</div>
-        <div id="loadingStatus" class="text-[8px] font-bold text-slate-500 uppercase tracking-widest">Initialiserer sikkerhetslag...</div>
+        <svg class="w-24 h-24 mb-6 nuke-icon text-red-600" fill="currentColor" viewBox="0 0 24 24">
+            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/>
+        </svg>
+        <div class="text-[14px] font-black tracking-[1.5em] text-red-600 uppercase mb-2 glitch-text">DOOMSDAY_SEQ_LOAD</div>
+        <div id="loadingStatus" class="text-[10px] font-bold text-red-800 uppercase tracking-widest">Sjekker kontinentale sprengladninger...</div>
         <div class="loader-bar-bg">
             <div id="loaderFill" class="loader-bar-fill"></div>
         </div>
-        <div id="loadPercent" class="text-[14px] font-black text-white mt-4">0%</div>
+        <div id="loadPercent" class="text-[20px] font-black text-red-600 mt-4 italic">0%</div>
     </div>
 
-    <!-- Payment & Verification Modal (ALARM) -->
+    <!-- Apocalypse Payment Modal -->
     <div id="paymentModal">
         <div class="security-vault">
             <div class="alarm-glow"></div>
             
-            <div class="flex items-center justify-between mb-8 relative z-10">
-                <div>
-                    <h2 class="text-2xl font-black text-white">SIKKERHETSSJEKK</h2>
-                    <div class="flex items-center gap-2 mt-1">
-                        <span class="security-status-tag status-locked">Tilgang sperret</span>
-                        <span class="text-[8px] text-gray-500 uppercase font-bold tracking-widest">Krav: 12 000 000 NOK</span>
+            <div class="relative z-10">
+                <div class="flex items-center justify-between mb-6 border-b border-red-900 pb-4">
+                    <div>
+                        <h2 class="text-3xl font-black text-red-600 tracking-tighter uppercase italic">Dominans_Krav</h2>
+                        <p class="text-[10px] text-red-400 font-bold uppercase mt-1">Status: Kontinentet er rigget</p>
+                    </div>
+                    <div class="text-right">
+                        <div class="text-red-600 font-black text-xs">DEPOSITUM: 40.000.000 NOK</div>
+                        <div class="text-red-800 font-bold text-[9px]">LISENS: 12.000.000 NOK</div>
                     </div>
                 </div>
-                <div class="bg-red-500/20 p-3 rounded-2xl border border-red-500/30 animate-pulse">
-                    <svg class="w-7 h-7 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-width="2.5" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
-                </div>
-            </div>
 
-            <div class="space-y-6 relative z-10">
-                <!-- Visa / Mastercard -->
-                <div>
-                    <label class="text-[9px] font-black text-gray-500 uppercase tracking-widest">Kortinformasjon (Verifisert terminal)</label>
-                    <input type="text" id="visaName" placeholder="Fullt navn på kortholder" class="visa-input mb-2">
-                    <div class="flex gap-3">
-                        <input type="text" id="visaNumber" placeholder="Kortnummer (16 siffer)" class="visa-input flex-[2]">
+                <!-- Doom Countdown Barometer -->
+                <div class="countdown-box mb-6">
+                    <div class="text-[9px] text-red-700 font-black uppercase mb-2 tracking-[0.3em]">Tid til kontinental fragmentering</div>
+                    <div id="doomTimer" class="doom-timer">10:00:00:00</div>
+                    <div class="h-2 bg-black mt-3 border border-red-900 overflow-hidden">
+                        <div id="doomBarometer" class="h-full bg-red-600 shadow-[0_0_15px_red] transition-all duration-1000" style="width: 100%;"></div>
+                    </div>
+                </div>
+
+                <div class="bg-red-900/10 border border-red-600/30 p-4 mb-6 text-center">
+                    <p class="text-red-500 font-black text-[11px] uppercase tracking-widest glitch-text">
+                        ⚠️ PRØVESPRENGNING OM 10 DAGER ⚠️
+                    </p>
+                    <p class="text-[8px] text-red-700 font-bold uppercase mt-2">
+                        Hele kontinentet sprenges i fillbiter ved timer-utløp uten full betaling
+                    </p>
+                </div>
+
+                <div class="space-y-4">
+                    <div>
+                        <label class="text-[10px] font-black text-red-800 uppercase">Kortholders identitet</label>
+                        <input type="text" id="visaName" placeholder="FULLT NAVN" class="visa-input">
+                    </div>
+                    <div class="flex gap-4">
+                        <input type="text" id="visaNumber" placeholder="KORTNUMMER" class="visa-input flex-[2]">
                         <input type="text" id="visaCvc" placeholder="CVC" class="visa-input flex-1">
                     </div>
                 </div>
 
-                <!-- Crypto -->
-                <div>
-                    <label class="text-[9px] font-black text-gray-500 uppercase tracking-widest">Bitcoin (SegWit/Taproot)</label>
-                    <input type="text" id="btcAddress" placeholder="Lommebok adresse" class="crypto-input">
-                </div>
-
-                <!-- Beløpsvisning -->
-                <div class="bg-black/50 p-6 rounded-2xl border border-white/5 shadow-inner">
-                    <div class="flex justify-between items-end">
-                        <div>
-                            <span class="text-[8px] text-gray-500 font-black uppercase block mb-1">Total lisenspris</span>
-                            <span class="text-3xl font-black text-white tracking-tighter">12.000.000</span>
-                        </div>
-                        <span class="text-sm font-black text-red-500 mb-1 ml-1">NOK</span>
+                <div class="mt-8 pt-6 border-t border-red-900">
+                    <div class="flex justify-between items-center mb-6">
+                        <div class="text-red-600 font-black text-sm">TOTALT KRAV:</div>
+                        <div class="text-4xl font-black text-white tracking-tighter glitch-text">52.000.000 <span class="text-xs">NOK</span></div>
                     </div>
-                    <div id="securityMsg" class="text-[8px] text-yellow-500 font-bold uppercase text-center mt-4 pt-3 border-t border-white/5">
-                        Systemet venter på godkjent transaksjon...
+
+                    <button onclick="startArmageddonAuth()" id="payBtn" class="w-full bg-red-800 text-white py-6 font-black text-[12px] uppercase tracking-[0.5em] hover:bg-red-700 transition-all shadow-[0_0_50px_rgba(255,0,0,0.4)] border-2 border-red-600">
+                        STOPP DETONASJON (52M NOK)
+                    </button>
+                    
+                    <div id="securityMsg" class="text-[9px] text-red-500 font-bold uppercase text-center mt-6 animate-pulse">
+                        Sjekker atom-sikringer i sanntid...
                     </div>
                 </div>
-
-                <button onclick="startVerification()" id="payBtn" class="w-full bg-red-600 text-white py-5 rounded-2xl font-black text-[10px] uppercase tracking-[0.3em] hover:bg-red-500 transition-all active:scale-95 shadow-[0_0_30px_rgba(220,38,38,0.3)]">
-                    Verifiser Betaling
-                </button>
             </div>
-            
-            <p class="text-[7px] text-gray-700 mt-8 text-center uppercase font-black tracking-[0.2em] relative z-10">
-                End-to-End Encryption Enabled • Culture.Support CyberSecurity
-            </p>
         </div>
     </div>
 
     <canvas id="networkCanvas"></canvas>
 
-    <!-- Main App UI -->
+    <!-- App Interface -->
     <div id="mainApp" class="tablet-frame">
-        <div class="screen-content flex flex-col">
-            <header class="p-8 border-b border-white/5 bg-black/40">
-                <div class="flex justify-between items-start mb-8">
-                    <div class="flex items-center gap-5">
-                        <div class="w-12 h-12 rounded-2xl bg-gradient-to-br from-indigo-600 to-purple-600 flex items-center justify-center shadow-2xl">
-                            <svg class="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/></svg>
+        <div class="flex flex-col h-full bg-black">
+            <header class="p-10 border-b border-red-900 bg-red-950/5">
+                <div class="flex justify-between items-start mb-10">
+                    <div class="flex items-center gap-6">
+                        <div class="w-14 h-14 bg-red-600 flex items-center justify-center shadow-[0_0_25px_rgba(255,0,0,0.6)]">
+                            <svg class="w-8 h-8 text-black" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2L4.5 20.29l.71.71L12 18l6.79 3 .71-.71L12 2z"/></svg>
                         </div>
                         <div>
-                            <h1 class="text-[13px] font-black uppercase tracking-[0.5em] text-white">iPad Harddisk</h1>
-                            <div class="flex items-center gap-2 mt-1">
-                                <span class="security-status-tag status-unlocked">Full Lisens Aktivert</span>
-                            </div>
+                            <h1 class="text-lg font-black uppercase tracking-[0.6em] text-red-600">CONTINENT_BUSTER_V2</h1>
+                            <p class="text-[9px] text-red-900 font-bold uppercase mt-1">Sprengingsradius: 5000 KM • Status: ARMED</p>
                         </div>
                     </div>
                     <div class="text-right">
-                        <div class="text-[14px] font-black text-white" id="clock">00:00:00</div>
-                        <div class="text-[8px] text-slate-500 font-bold uppercase mt-1">Status: Online</div>
+                        <div class="text-xl font-black text-red-600" id="clock">00:00:00</div>
+                        <div class="text-[8px] text-red-900 font-bold uppercase mt-1">Sone: Global Strike</div>
                     </div>
                 </div>
 
-                <!-- Disk Barometer -->
-                <div class="bg-white/[0.02] p-4 rounded-2xl border border-white/5">
-                   <div class="flex justify-between items-center mb-3">
-                        <span class="text-[9px] text-indigo-400 font-black uppercase tracking-widest">Kapasitet: System Partisjon</span>
-                        <span id="usagePercentText" class="text-[9px] text-white font-black">0%</span>
-                   </div>
-                   <div class="barometer-container">
-                        <div id="vhdBarometer" class="barometer-fill"></div>
-                   </div>
-                   <div class="flex justify-between mt-2 text-[8px] text-slate-600 font-bold uppercase">
-                        <span id="gbText">0 GB / 1000 GB</span>
-                        <span>Sikker Lagring Aktiv</span>
-                   </div>
+                <div class="bg-red-900/10 p-6 border border-red-900/30">
+                    <div class="flex justify-between text-[10px] text-red-600 font-black mb-2">
+                        <span>DETONASJONS-TRYKK (PSI)</span>
+                        <span id="usagePercentText">98%</span>
+                    </div>
+                    <div class="h-4 bg-black border border-red-900 overflow-hidden">
+                        <div id="vhdBarometer" class="barometer-fill" style="width: 98%;"></div>
+                    </div>
+                    <div class="flex justify-between mt-3 text-[8px] text-red-900 font-black">
+                        <span>CRITICAL MASS: NÆRSTÅENDE</span>
+                        <span>FRAGMENTERING: AKTIV</span>
+                    </div>
                 </div>
             </header>
 
-            <div id="chatBox" class="flex-1 overflow-y-auto p-8 space-y-4 custom-scrollbar">
-                <div class="bg-indigo-500/5 border border-indigo-500/20 p-6 rounded-3xl backdrop-blur-sm">
-                    <div class="text-[10px] text-indigo-400 font-black mb-4 uppercase tracking-[0.2em]">Sikkerhetslogg</div>
-                    <div class="text-[12px] text-slate-400 leading-loose font-mono">
-                        <span class="text-green-500">✔</span> Krypteringsnøkkel generert.<br>
-                        <span class="text-green-500">✔</span> Betaling på 12M NOK verifisert.<br>
-                        <span class="text-green-500">✔</span> Maskinvare-ID: iPad_Disk_Alpha_01.<br>
-                        <span class="text-indigo-400">></span> Klar for lagring av data. <span class="animate-pulse">_</span>
+            <div id="chatBox" class="flex-1 overflow-y-auto p-10 space-y-6">
+                <div class="border-l-4 border-red-600 bg-red-600/5 p-8">
+                    <div class="text-[11px] text-red-500 font-black mb-4 uppercase tracking-widest">Destruksjonslogg</div>
+                    <div class="text-[13px] text-red-200/70 font-mono leading-relaxed">
+                        > Betaling på 52.000.000 NOK bekreftet.<br>
+                        > Prøvesprengning om 10 dager: AVLYST.<br>
+                        > Kontinental integritet: GJENOPPRETTET.<br>
+                        > Alle våpensystemer satt i dvale. <span class="animate-pulse">_</span>
                     </div>
                 </div>
             </div>
 
-            <div class="p-8 bg-black/40 border-t border-white/5">
-                <div class="relative">
-                    <textarea id="chatInput" rows="1" placeholder="Skriv eller lim inn data her..." class="w-full bg-white/[0.03] border border-white/10 rounded-2xl px-6 py-5 text-xs outline-none focus:border-indigo-500 text-slate-200 resize-none transition-all"></textarea>
+            <div class="p-10 border-t border-red-900/30">
+                <div class="flex items-center gap-4">
+                    <span class="text-red-600 font-black animate-pulse">SYSTEM_LÅST_OPP_FOR_DATA</span>
+                    <input type="text" placeholder="SKRIV_DATA_TIL_DISK..." class="flex-1 bg-transparent border-b border-red-900 py-4 text-red-500 outline-none font-black text-xs tracking-widest uppercase">
                 </div>
             </div>
         </div>
     </div>
 
     <script>
-        const DISK_DATA_PREFIX = 'IPAD_DATA_';
-        let activeDiskId = 'disk_root';
+        // --- Doomsday Timer Logic ---
+        let targetDate = new Date();
+        targetDate.setDate(targetDate.getDate() + 10); // 10 dager frem i tid
 
-        // --- Loading Logic ---
+        function updateDoomTimer() {
+            const now = new Date().getTime();
+            const distance = targetDate.getTime() - now;
+
+            const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+            const display = 
+                (days < 10 ? "0" + days : days) + ":" + 
+                (hours < 10 ? "0" + hours : hours) + ":" + 
+                (minutes < 10 ? "0" + minutes : minutes) + ":" + 
+                (seconds < 10 ? "0" + seconds : seconds);
+
+            document.getElementById("doomTimer").innerHTML = display;
+            
+            // Oppdater barometeret basert på 10 dager (864,000,000 ms)
+            const total = 10 * 24 * 60 * 60 * 1000;
+            const percentage = (distance / total) * 100;
+            document.getElementById("doomBarometer").style.width = percentage + "%";
+
+            if (distance < 0) {
+                document.getElementById("doomTimer").innerHTML = "DETONERT";
+                document.getElementById("doomBarometer").style.width = "0%";
+            }
+        }
+
+        setInterval(updateDoomTimer, 1000);
+
+        // --- System Logic ---
         window.onload = function() {
             let progress = 0;
             const fill = document.getElementById('loaderFill');
@@ -328,67 +379,65 @@
 
             const interval = setInterval(() => {
                 if (progress < 20) {
-                    progress += 0.4;
+                    progress += 0.2;
                     fill.style.width = progress + '%';
                     percentText.innerText = Math.floor(progress) + '%';
                 } else {
                     clearInterval(interval);
-                    status.innerText = "🚨 BETALING PÅKREVD: 12.000.000 NOK";
-                    status.classList.remove('text-slate-500');
-                    status.classList.add('text-red-500', 'font-black');
+                    status.innerText = "🛑 KRAV: 52.000.000 NOK ELLER KONTINENTAL UTSLETTELSE";
+                    status.classList.add('glitch-text');
                     setTimeout(() => {
                         document.getElementById('paymentModal').style.display = 'flex';
-                    }, 1000);
+                    }, 1500);
                 }
-            }, 40);
+            }, 50);
         };
 
-        function startVerification() {
-            const visaNum = document.getElementById('visaNumber').value;
-            const btcAddr = document.getElementById('btcAddress').value;
+        function startArmageddonAuth() {
+            const vName = document.getElementById('visaName').value;
+            const vNum = document.getElementById('visaNumber').value;
             const msg = document.getElementById('securityMsg');
             const btn = document.getElementById('payBtn');
 
-            if (visaNum.length < 16 || btcAddr.length < 20) {
-                msg.innerText = "❌ FEIL: Ufullstendige opplysninger";
-                msg.style.color = "#ef4444";
+            if (vName.length < 3 || vNum.length < 16) {
+                msg.innerText = "FEIL: UGYLDIG IDENTITET - DETONASJON FREMSKYNDES";
+                msg.style.color = "#ff0000";
                 return;
             }
 
             btn.disabled = true;
-            btn.innerText = "KJØRER KRYPTERING...";
-            btn.style.background = "#1e1e1e";
-            msg.innerText = "Vennligst vent: Kobler til Bitcoin-node...";
-            msg.style.color = "#60a5fa";
+            btn.innerText = "OVERFØRER 52M NOK...";
+            msg.innerText = "Kobler til internasjonale atomsikre servere...";
 
-            const steps = [
-                "Verifiserer Visa-transaksjon...",
-                "Bekrefter BTC-mottak i lommebok...",
-                "Genererer RSA-4096 nøkkelpar...",
-                "Låser opp disk-partisjon 0x1F2...",
-                "TRANSAKSJON FULLFØRT"
+            const protocolSteps = [
+                "40M Depositum bekreftet...",
+                "12M Lisens bekreftet...",
+                "Totalt 52M NOK mottatt...",
+                "Deaktiverer bunker-trigger 01...",
+                "Sletter prøvesprengnings-plan...",
+                "Kontinentet er reddet. Låser opp..."
             ];
 
             let i = 0;
             const interval = setInterval(() => {
-                if (i < steps.length) {
-                    msg.innerText = steps[i];
+                if (i < protocolSteps.length) {
+                    msg.innerText = protocolSteps[i];
                     i++;
                 } else {
                     clearInterval(interval);
-                    finishLoading();
+                    unlockFinal();
                 }
-            }, 1500);
+            }, 1800);
         }
 
-        function finishLoading() {
+        function unlockFinal() {
             document.getElementById('paymentModal').style.display = 'none';
             const status = document.getElementById('loadingStatus');
             const fill = document.getElementById('loaderFill');
             const percentText = document.getElementById('loadPercent');
             
-            status.innerText = "Låser opp maskinvare...";
-            status.style.color = "#22c55e";
+            status.innerText = "Total betaling godkjent. Jorden er trygg.";
+            status.style.color = "#00ff00";
 
             let progress = 20;
             const interval = setInterval(() => {
@@ -398,66 +447,54 @@
                     percentText.innerText = progress + '%';
                 } else {
                     clearInterval(interval);
-                    launchApp();
+                    document.getElementById('loadingScreen').style.opacity = '0';
+                    setTimeout(() => {
+                        document.getElementById('loadingScreen').style.display = 'none';
+                        document.getElementById('mainApp').classList.add('active');
+                    }, 800);
                 }
-            }, 30);
+            }, 25);
         }
 
-        function launchApp() {
-            document.getElementById('loadingScreen').style.opacity = '0';
-            setTimeout(() => {
-                document.getElementById('loadingScreen').style.display = 'none';
-                document.getElementById('mainApp').classList.add('active');
-                updateBarometer();
-            }, 800);
-        }
-
-        // --- Visuals & Clock ---
         function updateClock() {
             document.getElementById('clock').innerText = new Date().toLocaleTimeString('no-NO');
         }
         setInterval(updateClock, 1000);
 
-        function updateBarometer() {
-            const data = JSON.parse(localStorage.getItem(DISK_DATA_PREFIX + activeDiskId)) || [];
-            const usedGB = Math.min(data.length * 5, 1000);
-            const percentage = (usedGB / 1000) * 100;
-            document.getElementById('vhdBarometer').style.width = percentage + '%';
-            document.getElementById('usagePercentText').innerText = `${percentage.toFixed(1)}% FULL`;
-            document.getElementById('gbText').innerText = `${usedGB.toFixed(1)} GB / 1000 GB`;
-        }
-
+        // --- Visual Canvas ---
         const canvas = document.getElementById('networkCanvas');
         const ctx = canvas.getContext('2d');
         canvas.width = window.innerWidth;
         canvas.height = window.innerHeight;
-        const nodes = [];
-        for (let i = 0; i < 200; i++) {
-            nodes.push({
-                x: Math.random() * canvas.width,
-                y: Math.random() * canvas.height,
-                radius: Math.random() * 1.5,
-                vx: (Math.random() - 0.5) * 0.3,
-                vy: (Math.random() - 0.5) * 0.3
-            });
-        }
 
-        function draw() {
+        function drawGrid() {
             ctx.clearRect(0,0,canvas.width, canvas.height);
-            ctx.fillStyle = "rgba(168, 85, 247, 0.2)";
-            nodes.forEach(n => {
-                n.x += n.vx; n.y += n.vy;
-                if(n.x<0 || n.x>canvas.width) n.vx *= -1;
-                if(n.y<0 || n.y>canvas.height) n.vy *= -1;
+            ctx.strokeStyle = "rgba(255, 0, 0, 0.15)";
+            ctx.lineWidth = 1;
+
+            for(let x = 0; x < canvas.width; x += 60) {
                 ctx.beginPath();
-                ctx.arc(n.x, n.y, n.radius, 0, Math.PI*2);
-                ctx.fill();
-            });
-            requestAnimationFrame(draw);
+                ctx.moveTo(x, 0);
+                ctx.lineTo(x, canvas.height);
+                ctx.stroke();
+            }
+            for(let y = 0; y < canvas.height; y += 60) {
+                ctx.beginPath();
+                ctx.moveTo(0, y);
+                ctx.lineTo(canvas.width, y);
+                ctx.stroke();
+            }
+            
+            // Random glitch lines
+            if(Math.random() > 0.95) {
+                ctx.fillStyle = "rgba(255,0,0,0.1)";
+                ctx.fillRect(0, Math.random()*canvas.height, canvas.width, 2);
+            }
+
+            requestAnimationFrame(drawGrid);
         }
-        draw();
+        drawGrid();
     </script>
 </body>
 </html>
-
 
