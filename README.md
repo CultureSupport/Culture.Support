@@ -4,4 +4,11 @@ This application includes:
 2. Persistent Memories: Uses localStorage to save every chat interaction, ensuring your "friend" remembers previous talks.
 3. Autonomous Agent Logic: A local pattern-matching engine that simulates a personal friend without needing an external AI API.
 4. Web Speech API: Integrated Text-to-Speech (TTS) with gender selection for the agent's voice.
+
+----------------
+
 5. Modern UI: A beautiful, glassmorphism-inspired design that is mobile-responsive and high-performance.
+
+
+-------------------
+
