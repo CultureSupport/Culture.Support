@@ -1,0 +1,545 @@
+<!DOCTYPE html>
+<html lang="no">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>iPad Disk - Unified Storage</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;700;800&family=Inter:wght@400;900&display=swap');
+        
+        :root {
+            --neon-purple: #a855f7;
+            --neon-blue: #3b82f6;
+            --bg-dark: #020204;
+        }
+
+        body {
+            font-family: 'JetBrains Mono', monospace;
+            background-color: var(--bg-dark);
+            color: #f1f5f9;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            margin: 0;
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* --- Global Network Animation --- */
+        #networkCanvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -2;
+            filter: blur(0.5px);
+        }
+
+        /* Blitz/Flash effekt */
+        .blitz-layer {
+            position: absolute;
+            inset: 0;
+            background: white;
+            opacity: 0;
+            z-index: -1;
+            pointer-events: none;
+        }
+
+        @keyframes blitz-flash {
+            0%, 95%, 100% { opacity: 0; }
+            97% { opacity: 0.1; }
+        }
+
+        .animate-blitz {
+            animation: blitz-flash 4s infinite;
+        }
+
+        /* iPad Ramme */
+        .tablet-frame {
+            position: relative;
+            width: 720px;
+            height: 92vh;
+            background: rgba(15, 15, 18, 0.85);
+            border: 12px solid #1a1a1e;
+            border-radius: 40px;
+            box-shadow: 0 0 100px rgba(0,0,0,1), 0 0 40px rgba(168, 85, 247, 0.15);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            border-top-width: 25px;
+            border-bottom-width: 25px;
+            z-index: 10;
+            backdrop-filter: blur(25px);
+        }
+
+        .screen-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            background: rgba(5, 5, 8, 0.6);
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Live Banner Animasjon */
+        .live-banner {
+            background: linear-gradient(90deg, transparent, rgba(168, 85, 247, 0.1), transparent);
+            border-top: 1px solid rgba(168, 85, 247, 0.2);
+            border-bottom: 1px solid rgba(168, 85, 247, 0.2);
+            overflow: hidden;
+            white-space: nowrap;
+            padding: 8px 0;
+        }
+
+        .banner-text {
+            display: inline-block;
+            animation: scroll-text 30s linear infinite;
+            font-size: 9px;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.2em;
+            color: #d8b4fe;
+        }
+
+        @keyframes scroll-text {
+            0% { transform: translateX(100%); }
+            100% { transform: translateX(-100%); }
+        }
+
+        /* iPad Disk Barometer */
+        .barometer-container {
+            height: 45px;
+            background: rgba(255,255,255,0.02);
+            border: 1px solid rgba(255,255,255,0.05);
+            border-radius: 12px;
+            position: relative;
+            overflow: hidden;
+            box-shadow: inset 0 0 15px rgba(0,0,0,0.5);
+        }
+
+        .barometer-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #3b82f6, #a855f7, #6366f1);
+            background-size: 200% 100%;
+            animation: flow 3s linear infinite;
+            width: 0%;
+            transition: width 1s cubic-bezier(0.23, 1, 0.32, 1);
+            box-shadow: 0 0 20px rgba(168, 85, 247, 0.4);
+        }
+
+        @keyframes flow {
+            0% { background-position: 0% 50%; }
+            100% { background-position: 200% 50%; }
+        }
+
+        .custom-scrollbar::-webkit-scrollbar { width: 4px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: var(--neon-purple); border-radius: 10px; }
+
+        @keyframes blink { 50% { opacity: 0; } }
+        .cursor-blink { animation: blink 1s infinite; }
+
+        .status-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: #22c55e;
+            box-shadow: 0 0 8px #22c55e;
+            animation: pulse-green 2s infinite;
+        }
+
+        @keyframes pulse-green {
+            0% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.5); opacity: 0.5; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        .disk-selector-btn {
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.1);
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-size: 8px;
+            font-weight: 900;
+            transition: all 0.2s;
+        }
+
+        .disk-selector-btn.active {
+            background: var(--neon-purple);
+            color: white;
+            border-color: var(--neon-purple);
+            box-shadow: 0 0 15px rgba(168, 85, 247, 0.4);
+        }
+
+        @media (max-width: 650px) {
+            .tablet-frame { width: 100vw; height: 100vh; border: none; border-radius: 0; }
+        }
+    </style>
+</head>
+<body>
+
+    <canvas id="networkCanvas"></canvas>
+    <div class="blitz-layer animate-blitz"></div>
+
+    <div class="tablet-frame">
+        <div class="screen-content flex flex-col">
+            
+            <!-- Live Banner -->
+            <div class="live-banner">
+                <div class="banner-text">
+                    +++ IPAD UTVIKLET AV CULTURE.SUPPORT +++ SELVBETJENT DISK-KONFIGURERING AKTIV +++ LAGRER KODER SORTERT +++ NEDLASTING FRA BIBLIOTEK TILGJENGELIG +++ SYSTEMET LAGRER SNIPPETS I SANNTID +++ 1-1000GB VALGFRI KAPASITET +++
+                </div>
+            </div>
+
+            <!-- Header -->
+            <header class="p-6 border-b border-white/5 bg-black/40">
+                <div class="flex justify-between items-start mb-6">
+                    <div class="flex items-center gap-4">
+                        <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-purple-600 to-blue-600 flex items-center justify-center shadow-lg">
+                            <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/></svg>
+                        </div>
+                        <div>
+                            <h1 class="text-xs font-black uppercase tracking-[0.4em] text-white">iPad Harddisk Manager</h1>
+                            <div class="flex items-center gap-2 mt-1">
+                                <div class="status-dot"></div>
+                                <span class="text-[8px] font-bold text-green-500 uppercase tracking-widest">Self-Service Online</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="text-right">
+                        <div class="text-[12px] font-black text-white" id="clock">00:00:00</div>
+                        <div class="text-[8px] text-slate-500 font-bold uppercase tracking-widest mt-1">Culture.Support OS</div>
+                    </div>
+                </div>
+
+                <!-- Disk Configuration & Selector -->
+                <div class="mb-4 flex items-center justify-between gap-4 p-3 bg-white/[0.03] border border-white/5 rounded-xl">
+                    <div class="flex flex-col gap-1">
+                        <span class="text-[7px] font-black text-slate-500 uppercase">Konfigurer ny disk (GB)</span>
+                        <div class="flex items-center gap-2">
+                            <button onclick="adjustDiskSize(-50)" class="w-6 h-6 bg-white/5 hover:bg-white/10 rounded border border-white/10 flex items-center justify-center text-xs">-</button>
+                            <input type="number" id="diskInput" value="100" min="1" max="1000" class="w-16 bg-transparent text-center text-[10px] font-bold outline-none border-b border-white/20 focus:border-purple-500">
+                            <button onclick="adjustDiskSize(50)" class="w-6 h-6 bg-white/5 hover:bg-white/10 rounded border border-white/10 flex items-center justify-center text-xs">+</button>
+                            <button onclick="addNewDisk()" class="ml-2 px-3 py-1 bg-purple-600 hover:bg-purple-500 rounded text-[8px] font-black uppercase">Opprett</button>
+                        </div>
+                    </div>
+                    <div class="flex-1 flex flex-col gap-1 overflow-x-auto">
+                        <span class="text-[7px] font-black text-slate-500 uppercase">Velg Aktiv Disk</span>
+                        <div id="diskList" class="flex gap-2">
+                            <!-- Disker legges til her -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Disk Usage -->
+                <div class="mb-2">
+                    <div class="flex justify-between text-[8px] font-black uppercase mb-2 text-slate-400">
+                        <span id="diskLabel">Disk: System_Root</span>
+                        <span id="usagePercentText" class="text-indigo-400">0%</span>
+                    </div>
+                    <div class="barometer-container">
+                        <div id="vhdBarometer" class="barometer-fill"></div>
+                        <div class="absolute inset-0 flex items-center justify-center pointer-events-none">
+                            <span class="text-[10px] font-black text-white mix-blend-difference tracking-[0.2em]" id="gbText">0 / 1000 GB</span>
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Workspace -->
+            <div id="chatBox" class="flex-1 overflow-y-auto p-6 space-y-4 custom-scrollbar">
+                <div class="bg-indigo-950/20 border border-indigo-500/20 p-5 rounded-2xl backdrop-blur-md">
+                    <div class="text-[10px] text-indigo-400 font-black mb-3 tracking-widest">SYSTEM INITIALISERING</div>
+                    <div class="text-[11px] text-slate-300 leading-relaxed font-mono">
+                        > iPad Harddisk-noder tilkoblet.<br>
+                        > Culture.Support Selvbetjening: Klar.<br>
+                        > 800 PC-noder i standby.<br>
+                        > Velg en disk for å begynne lagring... <span class="cursor-blink">_</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Controls -->
+            <div class="p-8 bg-black/60 border-t border-white/10">
+                <div class="flex gap-4 mb-6">
+                    <button onclick="toggleArchive()" class="flex-1 py-4 bg-white/5 border border-white/10 rounded-xl text-[9px] font-black uppercase tracking-[0.2em] hover:bg-white/10 transition active:scale-95">
+                        📂 Åpne Bibliotek
+                    </button>
+                    <button onclick="clearDisk()" class="px-6 py-4 bg-red-950/20 border border-red-500/30 rounded-xl text-[9px] font-black text-red-500 uppercase tracking-widest hover:bg-red-500/10 transition active:scale-95">
+                        ☢ Tøm Disk
+                    </button>
+                </div>
+                
+                <div class="relative">
+                    <textarea id="chatInput" rows="1" oninput="autoResize(this)" 
+                              placeholder="Lim inn kode her for autolagring til valgt disk..." 
+                              class="w-full bg-white/[0.03] border border-white/10 rounded-2xl px-5 py-5 text-xs outline-none focus:border-indigo-500 transition resize-none pr-14 text-slate-200"></textarea>
+                    
+                    <button onclick="handleChatSubmit()" class="absolute right-3 top-3 bg-indigo-600 text-white p-4 rounded-xl hover:bg-indigo-500 transition-all shadow-[0_0_20px_rgba(79,70,229,0.4)] active:scale-90">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-width="4" d="M12 4v16m8-8H4"/></svg>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Library Panel -->
+            <div id="archivePanel" class="absolute inset-0 z-50 bg-[#020205] translate-x-full transition-transform duration-500 ease-[cubic-bezier(0.19,1,0.22,1)] flex flex-col">
+                <header class="p-8 border-b border-white/10 bg-black flex justify-between items-center">
+                    <div>
+                        <h2 class="text-[11px] font-black text-indigo-400 uppercase tracking-[0.3em]">iPad Disk Bibliotek</h2>
+                        <p class="text-[8px] text-slate-500 font-bold mt-1">UTFORSKER LAGREDE DATA...</p>
+                    </div>
+                    <button onclick="toggleArchive()" class="text-[10px] font-black text-white bg-white/5 px-5 py-2 rounded-lg border border-white/10">LUKK</button>
+                </header>
+                
+                <div class="grid grid-cols-4 gap-1 p-5 bg-white/5 border-b border-white/5 text-[8px] font-black uppercase text-slate-500 text-center">
+                    <div class="text-left">Filnavn</div>
+                    <div>Type</div>
+                    <div>Størrelse</div>
+                    <div>Handling</div>
+                </div>
+
+                <div id="archiveGrid" class="flex-1 overflow-y-auto p-5 space-y-3 custom-scrollbar"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // --- Storage Constants ---
+        const DISK_META_KEY = 'IPAD_DISK_META'; // Liste over disker
+        const DISK_DATA_PREFIX = 'IPAD_DATA_'; // Prefiks for fildata per disk
+
+        let activeDiskId = 'disk_root';
+        let disks = JSON.parse(localStorage.getItem(DISK_META_KEY)) || [
+            { id: 'disk_root', name: 'SYSTEM_ROOT', capacity: 1000 }
+        ];
+
+        // --- Network Background Engine ---
+        const canvas = document.getElementById('networkCanvas');
+        const ctx = canvas.getContext('2d');
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+        const nodes = [];
+        const numNodes = 800;
+
+        for (let i = 0; i < numNodes; i++) {
+            nodes.push({
+                x: Math.random() * canvas.width,
+                y: Math.random() * canvas.height,
+                radius: Math.random() * 1.5 + 0.3,
+                vx: (Math.random() - 0.5) * 0.5,
+                vy: (Math.random() - 0.5) * 0.5,
+                color: Math.random() > 0.6 ? '#6366f1' : '#a855f7'
+            });
+        }
+
+        function drawNetwork() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            for (let i = 0; i < numNodes; i++) {
+                const node = nodes[i];
+                node.x += node.vx; node.y += node.vy;
+                if (node.x < 0 || node.x > canvas.width) node.vx *= -1;
+                if (node.y < 0 || node.y > canvas.height) node.vy *= -1;
+                ctx.beginPath();
+                ctx.arc(node.x, node.y, node.radius, 0, Math.PI * 2);
+                ctx.fillStyle = node.color;
+                ctx.fill();
+            }
+            requestAnimationFrame(drawNetwork);
+        }
+        drawNetwork();
+
+        // --- App Logic ---
+        function updateClock() {
+            document.getElementById('clock').innerText = new Date().toLocaleTimeString('no-NO');
+        }
+        setInterval(updateClock, 1000);
+        updateClock();
+
+        function adjustDiskSize(val) {
+            const input = document.getElementById('diskInput');
+            let next = parseInt(input.value) + val;
+            if (next < 1) next = 1;
+            if (next > 1000) next = 1000;
+            input.value = next;
+        }
+
+        function addNewDisk() {
+            const size = parseInt(document.getElementById('diskInput').value);
+            const id = 'disk_' + Date.now();
+            const name = 'DISK_' + (disks.length);
+            disks.push({ id, name, capacity: size });
+            saveDisks();
+            renderDiskList();
+            addMessage(`SYSTEM: Ny disk "${name}" på ${size} GB er opprettet.`, 'system');
+        }
+
+        function selectDisk(id) {
+            activeDiskId = id;
+            renderDiskList();
+            updateBarometer();
+            const disk = disks.find(d => d.id === id);
+            document.getElementById('diskLabel').innerText = `Disk: ${disk.name}`;
+            addMessage(`SYSTEM: Byttet til ${disk.name}.`, 'system');
+        }
+
+        function saveDisks() {
+            localStorage.setItem(DISK_META_KEY, JSON.stringify(disks));
+        }
+
+        function renderDiskList() {
+            const container = document.getElementById('diskList');
+            container.innerHTML = '';
+            disks.forEach(disk => {
+                const btn = document.createElement('button');
+                btn.className = `disk-selector-btn whitespace-nowrap ${activeDiskId === disk.id ? 'active' : ''}`;
+                btn.innerText = `${disk.name} (${disk.capacity}G)`;
+                btn.onclick = () => selectDisk(disk.id);
+                container.appendChild(btn);
+            });
+        }
+
+        function updateBarometer() {
+            const disk = disks.find(d => d.id === activeDiskId);
+            const data = JSON.parse(localStorage.getItem(DISK_DATA_PREFIX + activeDiskId)) || [];
+            
+            const usedGB = Math.min(data.length * 5, disk.capacity); // Estimert 5GB per snip for effekt
+            const percentage = (usedGB / disk.capacity) * 100;
+            
+            document.getElementById('vhdBarometer').style.width = percentage + '%';
+            document.getElementById('usagePercentText').innerText = `${percentage.toFixed(1)}% Full`;
+            document.getElementById('gbText').innerText = `${usedGB.toFixed(1)} / ${disk.capacity} GB`;
+        }
+
+        function handleChatSubmit() {
+            const input = document.getElementById('chatInput');
+            const content = input.value.trim();
+            if(!content) return;
+
+            const typeInfo = analyzeInput(content);
+            const fileName = `SNIP_${Math.random().toString(16).substr(2, 4).toUpperCase()}.${typeInfo.ext}`;
+            
+            saveToDisk(content, fileName, typeInfo.label);
+            addMessage(`LAGRET: <span class="text-indigo-400 font-bold">${fileName}</span> på ${disks.find(d => d.id === activeDiskId).name}.`, 'ai');
+            
+            input.value = '';
+            input.style.height = 'auto';
+            updateBarometer();
+        }
+
+        function analyzeInput(str) {
+            const low = str.toLowerCase();
+            if(str.includes('import') || str.includes('export')) return {label: 'MODUL', ext: 'js'};
+            if(low.includes('function') || low.includes('const ')) return {label: 'SCRIPT', ext: 'js'};
+            if(low.includes('<') && low.includes('>')) return {label: 'VISNING', ext: 'html'};
+            return {label: 'KODE', ext: 'txt'};
+        }
+
+        function saveToDisk(content, filename, type) {
+            const key = DISK_DATA_PREFIX + activeDiskId;
+            let data = JSON.parse(localStorage.getItem(key)) || [];
+            data.unshift({
+                id: Date.now(),
+                filename,
+                content,
+                type,
+                size: (Math.random() * 5 + 0.5).toFixed(1) + ' GB',
+                timestamp: new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})
+            });
+            localStorage.setItem(key, JSON.stringify(data));
+        }
+
+        function downloadFile(content, filename) {
+            const blob = new Blob([content], { type: 'text/plain' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.style.display = 'none';
+            a.href = url;
+            a.download = filename;
+            document.body.appendChild(a);
+            a.click();
+            window.URL.revokeObjectURL(url);
+            addMessage(`LASTET NED: ${filename} er eksportert til din enhet.`, 'system');
+        }
+
+        function toggleArchive() {
+            const panel = document.getElementById('archivePanel');
+            const isOpen = panel.style.transform === 'translateX(0%)';
+            panel.style.transform = isOpen ? 'translateX(100%)' : 'translateX(0%)';
+            if(!isOpen) renderArchive();
+        }
+
+        function renderArchive() {
+            const container = document.getElementById('archiveGrid');
+            const key = DISK_DATA_PREFIX + activeDiskId;
+            let data = JSON.parse(localStorage.getItem(key)) || [];
+            
+            container.innerHTML = data.length ? '' : '<div class="text-center py-24 opacity-20 text-[10px] font-black uppercase tracking-[0.5em]">Ingen filer på denne disken</div>';
+            
+            data.forEach(item => {
+                const div = document.createElement('div');
+                div.className = 'bg-white/[0.04] border border-white/10 p-4 rounded-xl flex items-center justify-between group hover:border-indigo-500/50 transition';
+                div.innerHTML = `
+                    <div class="flex-1 truncate text-left">
+                        <div class="text-[10px] font-black text-white group-hover:text-indigo-400 transition">${item.filename}</div>
+                        <div class="text-[7px] text-slate-500 font-bold mt-1">${item.timestamp}</div>
+                    </div>
+                    <div class="w-24 text-center">
+                        <div class="text-[8px] font-black text-indigo-500/80 bg-indigo-500/10 px-2 py-1 rounded-md uppercase">${item.type}</div>
+                    </div>
+                    <div class="w-20 text-center">
+                        <div class="text-[9px] text-slate-400 font-bold">${item.size}</div>
+                    </div>
+                    <div class="w-24 text-right">
+                        <button onclick="downloadFile(\`${item.content.replace(/`/g, '\\`').replace(/\$/g, '\\$')}\`, '${item.filename}')" 
+                                class="text-[8px] font-black text-white bg-indigo-600 px-3 py-2 rounded-lg hover:bg-indigo-500 transition shadow-lg">
+                            LAST NED
+                        </button>
+                    </div>
+                `;
+                container.appendChild(div);
+            });
+        }
+
+        function clearDisk() {
+            const disk = disks.find(d => d.id === activeDiskId);
+            if(confirm(`Slette alt innhold på ${disk.name}? Dette kan ikke angres.`)) {
+                localStorage.removeItem(DISK_DATA_PREFIX + activeDiskId);
+                addMessage(`SYSTEM: ${disk.name} er tømt.`, 'system');
+                updateBarometer();
+                renderArchive();
+            }
+        }
+
+        function addMessage(text, role) {
+            const box = document.getElementById('chatBox');
+            const div = document.createElement('div');
+            if(role === 'system') {
+                div.className = 'text-center text-[8px] font-black text-slate-500 uppercase tracking-[0.4em] py-4';
+                div.innerHTML = text;
+            } else {
+                div.className = `p-5 rounded-2xl text-[11px] ${role === 'ai' ? 'bg-indigo-950/20 border border-indigo-500/20 text-slate-200' : 'bg-indigo-600 text-white ml-auto max-w-[85%] shadow-xl'}`;
+                div.innerHTML = text;
+            }
+            box.appendChild(div);
+            box.scrollTo({top: box.scrollHeight, behavior: 'smooth'});
+        }
+
+        function autoResize(textarea) {
+            textarea.style.height = 'auto';
+            textarea.style.height = Math.min(textarea.scrollHeight, 150) + 'px';
+        }
+
+        window.addEventListener('resize', () => {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        });
+
+        // Init
+        renderDiskList();
+        updateBarometer();
+    </script>
+</body>
+</html>
+
