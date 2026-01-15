@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!DOCTYPE html><!DOCTYPE html>
 <html lang="no">
 <head>
     <meta charset="UTF-8">
@@ -6,495 +6,305 @@
     <title>Kjerne Fysisk Lagring</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;700;800&family=Inter:wght@400;900&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700;800&display=swap');
         
         :root {
-            --neon-purple: #a855f7;
-            --neon-blue: #3b82f6;
-            --bg-dark: #020204;
             --alert-red: #ff0000;
-            --doom-orange: #ff5f00;
+            --nuclear-orange: #ff6600;
+            --bg-dark: #080000;
         }
 
+        /* Setter webside høyde til 2000px */
         body {
             font-family: 'JetBrains Mono', monospace;
-            background-color: var(--bg-dark);
+            background-color: #000;
             color: #f1f5f9;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            min-height: 100vh;
-            margin: 0;
-            overflow: hidden;
-            position: relative;
-        }
-
-        /* --- Loading Overlay --- */
-        #loadingScreen {
-            position: fixed;
-            inset: 0;
-            background: #000;
-            z-index: 1000;
             display: flex;
             flex-direction: column;
             align-items: center;
-            justify-content: center;
-            transition: opacity 0.8s ease;
+            min-height: 2000px;
+            margin: 0;
+            padding: 40px 0;
+            overflow-y: auto;
         }
 
-        .loader-bar-bg {
-            width: 350px;
-            height: 10px;
-            background: rgba(255,255,255,0.05);
-            border-radius: 0px;
-            overflow: hidden;
-            margin-top: 25px;
-            border: 1px solid rgba(255,0,0,0.3);
-        }
-
-        .loader-bar-fill {
-            width: 0%;
-            height: 100%;
-            background: linear-gradient(90deg, #ff0000, #ff5f00, #ff0000);
-            background-size: 200% 100%;
-            animation: move-gradient 1.5s linear infinite;
-            transition: width 0.4s ease;
-            box-shadow: 0 0 20px rgba(255, 0, 0, 0.5);
-        }
-
-        @keyframes move-gradient {
-            0% { background-position: 0% 0%; }
-            100% { background-position: -200% 0%; }
-        }
-
-        /* --- Apocalypse Alarm Modal --- */
-        #paymentModal {
-            position: fixed;
-            z-index: 1100;
-            background: radial-gradient(circle, rgba(50,0,0,1) 0%, rgba(0,0,0,1) 100%);
-            inset: 0;
-            display: none;
-            align-items: center;
-            justify-content: center;
-            backdrop-filter: blur(30px);
-        }
-
-        .security-vault {
-            background: #000;
-            color: #fff;
-            width: 580px;
-            padding: 40px;
-            border-radius: 0px;
-            border: 4px double var(--alert-red);
-            box-shadow: 0 0 150px rgba(255,0,0,0.5);
+        /* iPad Mini Frame med tvungen høyde for scrolling internt */
+        .ipad-mini {
             position: relative;
-            overflow: hidden;
+            width: 480px;
+            min-height: 1800px;
+            background: var(--bg-dark);
+            border: 12px solid #1a1a1a;
+            border-radius: 35px;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 0 100px rgba(255, 0, 0, 0.4);
+            border: 2px solid #440000;
+            margin-bottom: 100px;
         }
 
-        .alarm-glow {
+        /* Visualisering av Padding/Margin */
+        .debug-overlay {
             position: absolute;
-            inset: 0;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 20px;
+            background: rgba(255, 0, 0, 0.2);
+            border-bottom: 1px dashed red;
+            font-size: 8px;
+            color: red;
+            padding-left: 5px;
+            z-index: 1000;
             pointer-events: none;
-            background: radial-gradient(circle, rgba(255,0,0,0.15) 0%, transparent 70%);
-            animation: nuclear-pulse 0.4s infinite alternate;
         }
 
-        @keyframes nuclear-pulse {
-            from { opacity: 0.2; }
-            to { opacity: 0.7; }
-        }
-
-        .visa-input {
-            background: #0a0000;
-            border: 1px solid #440000;
-            color: #ff0000;
-            padding: 16px;
-            border-radius: 0px;
-            width: 100%;
-            font-size: 13px;
-            margin-top: 8px;
-            outline: none;
+        .debug-margin-label {
+            position: absolute;
+            left: -40px;
+            top: 50%;
+            transform: rotate(-90deg);
+            color: #444;
+            font-size: 10px;
             text-transform: uppercase;
         }
 
-        .visa-input:focus {
-            border-color: #ff5f00;
-            box-shadow: 0 0 15px rgba(255, 95, 0, 0.3);
-        }
-
-        /* --- Global Grid Animation --- */
-        #networkCanvas {
-            position: absolute;
-            top: 0; left: 0; width: 100%; height: 100%;
-            z-index: -2;
-            opacity: 0.6;
-        }
-
-        /* Tablet Frame */
-        .tablet-frame {
-            position: relative;
-            width: 780px;
-            height: 94vh;
+        /* --- Strategisk Animasjons-vindu --- */
+        #mapDisplay {
+            height: 300px;
             background: #000;
-            border: 15px solid #111;
-            border-radius: 10px;
+            position: relative;
+            border-bottom: 2px solid #330000;
+            overflow: hidden;
+        }
+
+        .truck {
+            position: absolute;
+            width: 8px;
+            height: 4px;
+            background: #ff0000;
+            border-radius: 1px;
+            box-shadow: 0 0 5px #ff0000;
+        }
+
+        .missile-silo {
+            position: absolute;
+            width: 30px;
+            height: 30px;
+            border: 1px solid #ff6600;
+            border-radius: 50%;
+            animation: pulse-silo 2.5s infinite;
+        }
+
+        @keyframes pulse-silo {
+            0% { transform: scale(1); opacity: 1; }
+            100% { transform: scale(3); opacity: 0; }
+        }
+
+        /* --- Kontroll Panel Modal (Låst til toppen av iPad) --- */
+        #paymentModal {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            background: rgba(10, 0, 0, 0.95);
             display: flex;
             flex-direction: column;
-            overflow: hidden;
-            opacity: 0;
-            transform: scale(0.98);
-            transition: all 1s ease;
+            padding: 25px;
+            border-bottom: 4px solid var(--alert-red);
         }
 
-        .tablet-frame.active {
-            opacity: 1;
-            transform: scale(1);
+        .glitch {
+            animation: glitch-anim 0.2s infinite;
+        }
+
+        @keyframes glitch-anim {
+            0% { transform: translate(0); }
+            25% { transform: translate(1px, -1px); }
+            50% { transform: translate(-1px, 1px); }
+            100% { transform: translate(0); }
+        }
+
+        .visa-input {
+            background: #150000;
+            border: 1px solid #660000;
+            color: #ff3333;
+            padding: 12px;
+            width: 100%;
+            font-size: 11px;
+            margin-top: 6px;
+            outline: none;
+        }
+
+        .tektonisk-barometer {
+            height: 12px;
+            background: #220000;
+            border: 1px solid #440000;
         }
 
         .barometer-fill {
             height: 100%;
-            background: linear-gradient(90deg, #ff0000, #ff8800);
+            background: linear-gradient(90deg, #ff0000, #ffcc00);
             width: 0%;
-            transition: width 1s ease-in-out;
+            transition: width 1s linear;
         }
 
-        .nuke-icon {
-            filter: drop-shadow(0 0 8px red);
-            animation: spin 8s linear infinite;
-        }
-
-        @keyframes spin {
-            from { transform: rotate(0deg); }
-            to { transform: rotate(360deg); }
-        }
-
-        .glitch-text {
-            animation: glitch 0.8s infinite;
-        }
-
-        @keyframes glitch {
-            0% { transform: translate(0); text-shadow: 2px 0 red, -2px 0 blue; }
-            20% { transform: translate(-3px, 3px); }
-            40% { transform: translate(-3px, -3px); }
-            60% { transform: translate(3px, 3px); }
-            80% { transform: translate(3px, -3px); }
-            100% { transform: translate(0); }
-        }
-
-        .countdown-box {
-            background: rgba(255, 0, 0, 0.05);
-            border: 1px solid rgba(255, 0, 0, 0.2);
-            padding: 15px;
-            text-align: center;
-            font-family: 'JetBrains Mono', monospace;
-        }
-
-        .doom-timer {
-            font-size: 32px;
-            font-weight: 900;
-            color: #ff0000;
-            letter-spacing: 4px;
-            text-shadow: 0 0 20px rgba(255, 0, 0, 0.7);
+        .long-content-section {
+            padding: 20px;
+            border-top: 1px solid #220;
+            background: linear-gradient(to bottom, #080000, #110000);
         }
     </style>
 </head>
 <body>
 
-    <!-- Loading Screen -->
-    <div id="loadingScreen">
-        <svg class="w-24 h-24 mb-6 nuke-icon text-red-600" fill="currentColor" viewBox="0 0 24 24">
-            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/>
-        </svg>
-        <div class="text-[14px] font-black tracking-[1.5em] text-red-600 uppercase mb-2 glitch-text">DOOMSDAY_SEQ_LOAD</div>
-        <div id="loadingStatus" class="text-[10px] font-bold text-red-800 uppercase tracking-widest">Sjekker kontinentale sprengladninger...</div>
-        <div class="loader-bar-bg">
-            <div id="loaderFill" class="loader-bar-fill"></div>
+    <div class="debug-margin-label">Margin-Top 40px</div>
+
+    <div class="ipad-mini">
+        <div class="debug-overlay">Padding-Top 12px (Frame Border)</div>
+        
+        <!-- Sticky Kontroll Panel -->
+        <div id="paymentModal">
+            <div class="text-center mb-4">
+                <h1 class="text-2xl font-black text-red-600 glitch">Atom Bombe Kontroll Panel</h1>
+                <p class="text-[9px] text-white font-bold tracking-widest uppercase">9 MILLIARDER USD - KONTINENTAL TERMINERING</p>
+            </div>
+
+            <div class="bg-red-950/40 border-2 border-red-600 p-4 mb-4 text-center">
+                <div id="doomTimer" class="text-4xl font-black text-white font-mono">10:00:00:00</div>
+                <div class="tektonisk-barometer mt-4">
+                    <div id="doomBar" class="barometer-fill"></div>
+                </div>
+            </div>
+
+            <button onclick="processPayment()" id="payBtn" class="w-full bg-red-800 hover:bg-red-700 text-white py-5 font-black text-[12px] uppercase tracking-[0.4em] border-2 border-red-500 shadow-[0_0_40px_rgba(255,0,0,0.6)]">
+                BETAL 9 MRD USD NÅ
+            </button>
         </div>
-        <div id="loadPercent" class="text-[20px] font-black text-red-600 mt-4 italic">0%</div>
-    </div>
 
-    <!-- Apocalypse Payment Modal -->
-    <div id="paymentModal">
-        <div class="security-vault">
-            <div class="alarm-glow"></div>
-            
-            <div class="relative z-10">
-                <div class="flex items-center justify-between mb-6 border-b border-red-900 pb-4">
-                    <div>
-                        <h2 class="text-3xl font-black text-red-600 tracking-tighter uppercase italic">Dominans_Krav</h2>
-                        <p class="text-[10px] text-red-400 font-bold uppercase mt-1">Status: Kontinentet er rigget</p>
+        <!-- Kartvisning -->
+        <div id="mapDisplay">
+            <div id="truckContainer"></div>
+            <!-- Gruvesentre -->
+            <div class="missile-silo" style="top: 30%; left: 20%;"></div>
+            <div class="missile-silo" style="top: 70%; left: 80%;"></div>
+            <div class="absolute bottom-2 right-2 text-[8px] text-red-600 font-bold bg-black px-2">SAT-LINK: PAKISTAN SECTOR</div>
+        </div>
+
+        <!-- Utvidet Innhold -->
+        <div class="long-content-section flex-1">
+            <h3 class="text-red-600 font-black uppercase text-xs mb-4">Strategisk Injekjson-logg (300 Enheter)</h3>
+            <div id="logData" class="space-y-4 font-mono text-[10px] text-red-400">
+                <div class="p-2 border-l-2 border-red-900 bg-red-900/10">
+                    [00:01] 300 lastebiler har krysset grensen til Pakistan.<br>
+                    [00:05] Injeksjons-rør ført 12km ned i tektoniske sprekker.<br>
+                    [00:12] Hydrogen-kjerner klargjort for trykksetting.
+                </div>
+            </div>
+
+            <div class="mt-20 border-t border-red-900 pt-10">
+                <h3 class="text-red-600 font-black uppercase text-xs mb-4">Geologisk Rapport: Tektoniske Plater</h3>
+                <div class="grid grid-cols-2 gap-4">
+                    <div class="h-40 bg-red-950/20 border border-red-900 flex items-center justify-center text-[8px] text-center p-4">
+                        [TABELL 1: KART OVER DYP-GRUVER I ØSTEN]
                     </div>
-                    <div class="text-right">
-                        <div class="text-red-600 font-black text-xs">DEPOSITUM: 40.000.000 NOK</div>
-                        <div class="text-red-800 font-bold text-[9px]">LISENS: 12.000.000 NOK</div>
+                    <div class="h-40 bg-red-950/20 border border-red-900 flex items-center justify-center text-[8px] text-center p-4">
+                        [TABELL 2: TRYKKPUNKTER FOR KONTINENTAL SPLIT]
                     </div>
                 </div>
+            </div>
 
-                <!-- Doom Countdown Barometer -->
-                <div class="countdown-box mb-6">
-                    <div class="text-[9px] text-red-700 font-black uppercase mb-2 tracking-[0.3em]">Tid til kontinental fragmentering</div>
-                    <div id="doomTimer" class="doom-timer">10:00:00:00</div>
-                    <div class="h-2 bg-black mt-3 border border-red-900 overflow-hidden">
-                        <div id="doomBarometer" class="h-full bg-red-600 shadow-[0_0_15px_red] transition-all duration-1000" style="width: 100%;"></div>
-                    </div>
-                </div>
-
-                <div class="bg-red-900/10 border border-red-600/30 p-4 mb-6 text-center">
-                    <p class="text-red-500 font-black text-[11px] uppercase tracking-widest glitch-text">
-                        ⚠️ PRØVESPRENGNING OM 10 DAGER ⚠️
-                    </p>
-                    <p class="text-[8px] text-red-700 font-bold uppercase mt-2">
-                        Hele kontinentet sprenges i fillbiter ved timer-utløp uten full betaling
-                    </p>
-                </div>
-
-                <div class="space-y-4">
-                    <div>
-                        <label class="text-[10px] font-black text-red-800 uppercase">Kortholders identitet</label>
-                        <input type="text" id="visaName" placeholder="FULLT NAVN" class="visa-input">
-                    </div>
-                    <div class="flex gap-4">
-                        <input type="text" id="visaNumber" placeholder="KORTNUMMER" class="visa-input flex-[2]">
-                        <input type="text" id="visaCvc" placeholder="CVC" class="visa-input flex-1">
-                    </div>
-                </div>
-
-                <div class="mt-8 pt-6 border-t border-red-900">
-                    <div class="flex justify-between items-center mb-6">
-                        <div class="text-red-600 font-black text-sm">TOTALT KRAV:</div>
-                        <div class="text-4xl font-black text-white tracking-tighter glitch-text">52.000.000 <span class="text-xs">NOK</span></div>
-                    </div>
-
-                    <button onclick="startArmageddonAuth()" id="payBtn" class="w-full bg-red-800 text-white py-6 font-black text-[12px] uppercase tracking-[0.5em] hover:bg-red-700 transition-all shadow-[0_0_50px_rgba(255,0,0,0.4)] border-2 border-red-600">
-                        STOPP DETONASJON (52M NOK)
-                    </button>
-                    
-                    <div id="securityMsg" class="text-[9px] text-red-500 font-bold uppercase text-center mt-6 animate-pulse">
-                        Sjekker atom-sikringer i sanntid...
-                    </div>
-                </div>
+            <div class="mt-40 border-t border-red-900 pt-10 pb-20">
+                <h3 class="text-red-600 font-black uppercase text-xs mb-4">Sikkerhetssone: Bunker-01 Status</h3>
+                <p class="text-[9px] text-red-800 leading-relaxed">
+                    Dette systemet opererer uavhengig av det globale nettet. Ved manglende betaling av 9 milliarder USD, vil hydrogen-bombene utløses i rekkefølge for å maksimere kjerne-skaden. Jorden vil åpnes fra innsiden.
+                </p>
             </div>
         </div>
     </div>
 
-    <canvas id="networkCanvas"></canvas>
-
-    <!-- App Interface -->
-    <div id="mainApp" class="tablet-frame">
-        <div class="flex flex-col h-full bg-black">
-            <header class="p-10 border-b border-red-900 bg-red-950/5">
-                <div class="flex justify-between items-start mb-10">
-                    <div class="flex items-center gap-6">
-                        <div class="w-14 h-14 bg-red-600 flex items-center justify-center shadow-[0_0_25px_rgba(255,0,0,0.6)]">
-                            <svg class="w-8 h-8 text-black" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2L4.5 20.29l.71.71L12 18l6.79 3 .71-.71L12 2z"/></svg>
-                        </div>
-                        <div>
-                            <h1 class="text-lg font-black uppercase tracking-[0.6em] text-red-600">CONTINENT_BUSTER_V2</h1>
-                            <p class="text-[9px] text-red-900 font-bold uppercase mt-1">Sprengingsradius: 5000 KM • Status: ARMED</p>
-                        </div>
-                    </div>
-                    <div class="text-right">
-                        <div class="text-xl font-black text-red-600" id="clock">00:00:00</div>
-                        <div class="text-[8px] text-red-900 font-bold uppercase mt-1">Sone: Global Strike</div>
-                    </div>
-                </div>
-
-                <div class="bg-red-900/10 p-6 border border-red-900/30">
-                    <div class="flex justify-between text-[10px] text-red-600 font-black mb-2">
-                        <span>DETONASJONS-TRYKK (PSI)</span>
-                        <span id="usagePercentText">98%</span>
-                    </div>
-                    <div class="h-4 bg-black border border-red-900 overflow-hidden">
-                        <div id="vhdBarometer" class="barometer-fill" style="width: 98%;"></div>
-                    </div>
-                    <div class="flex justify-between mt-3 text-[8px] text-red-900 font-black">
-                        <span>CRITICAL MASS: NÆRSTÅENDE</span>
-                        <span>FRAGMENTERING: AKTIV</span>
-                    </div>
-                </div>
-            </header>
-
-            <div id="chatBox" class="flex-1 overflow-y-auto p-10 space-y-6">
-                <div class="border-l-4 border-red-600 bg-red-600/5 p-8">
-                    <div class="text-[11px] text-red-500 font-black mb-4 uppercase tracking-widest">Destruksjonslogg</div>
-                    <div class="text-[13px] text-red-200/70 font-mono leading-relaxed">
-                        > Betaling på 52.000.000 NOK bekreftet.<br>
-                        > Prøvesprengning om 10 dager: AVLYST.<br>
-                        > Kontinental integritet: GJENOPPRETTET.<br>
-                        > Alle våpensystemer satt i dvale. <span class="animate-pulse">_</span>
-                    </div>
-                </div>
-            </div>
-
-            <div class="p-10 border-t border-red-900/30">
-                <div class="flex items-center gap-4">
-                    <span class="text-red-600 font-black animate-pulse">SYSTEM_LÅST_OPP_FOR_DATA</span>
-                    <input type="text" placeholder="SKRIV_DATA_TIL_DISK..." class="flex-1 bg-transparent border-b border-red-900 py-4 text-red-500 outline-none font-black text-xs tracking-widest uppercase">
-                </div>
-            </div>
-        </div>
+    <!-- Bunn-markering -->
+    <div class="w-full text-center py-10 border-t border-red-900/30 text-[10px] text-gray-800 uppercase font-bold">
+        SLUTT PÅ WEBSIDE (CA 2000PX DYBDE)
     </div>
 
     <script>
-        // --- Doomsday Timer Logic ---
+        // Animasjon av Trucks
+        const truckContainer = document.getElementById('truckContainer');
+        const trucks = [];
+
+        function createTrucks() {
+            for (let i = 0; i < 50; i++) {
+                const t = document.createElement('div');
+                t.className = 'truck';
+                truckContainer.appendChild(t);
+                trucks.push({
+                    el: t,
+                    x: Math.random() * 480,
+                    y: Math.random() * 300,
+                    targetX: Math.random() * 480,
+                    targetY: Math.random() * 300,
+                    speed: 0.1 + Math.random() * 0.4
+                });
+            }
+        }
+
+        function animateTrucks() {
+            trucks.forEach(t => {
+                const dx = t.targetX - t.x;
+                const dy = t.targetY - t.y;
+                const dist = Math.sqrt(dx*dx + dy*dy);
+                if (dist < 2) {
+                    t.targetX = Math.random() * 480;
+                    t.targetY = Math.random() * 300;
+                } else {
+                    t.x += (dx/dist) * t.speed;
+                    t.y += (dy/dist) * t.speed;
+                }
+                t.el.style.left = t.x + 'px';
+                t.el.style.top = t.y + 'px';
+            });
+            requestAnimationFrame(animateTrucks);
+        }
+
+        // Timer
         let targetDate = new Date();
-        targetDate.setDate(targetDate.getDate() + 10); // 10 dager frem i tid
+        targetDate.setDate(targetDate.getDate() + 10);
 
-        function updateDoomTimer() {
+        function updateTimer() {
             const now = new Date().getTime();
-            const distance = targetDate.getTime() - now;
+            const diff = targetDate - now;
+            const d = Math.floor(diff / (1000 * 60 * 60 * 24));
+            const h = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const m = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+            const s = Math.floor((diff % (1000 * 60)) / 1000);
 
-            const days = Math.floor(distance / (1000 * 60 * 60 * 24));
-            const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-            const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
-            const seconds = Math.floor((distance % (1000 * 60)) / 1000);
-
-            const display = 
-                (days < 10 ? "0" + days : days) + ":" + 
-                (hours < 10 ? "0" + hours : hours) + ":" + 
-                (minutes < 10 ? "0" + minutes : minutes) + ":" + 
-                (seconds < 10 ? "0" + seconds : seconds);
-
-            document.getElementById("doomTimer").innerHTML = display;
+            document.getElementById('doomTimer').innerText = 
+                `${d < 10 ? '0'+d : d}:${h < 10 ? '0'+h : h}:${m < 10 ? '0'+m : m}:${s < 10 ? '0'+s : s}`;
             
-            // Oppdater barometeret basert på 10 dager (864,000,000 ms)
             const total = 10 * 24 * 60 * 60 * 1000;
-            const percentage = (distance / total) * 100;
-            document.getElementById("doomBarometer").style.width = percentage + "%";
-
-            if (distance < 0) {
-                document.getElementById("doomTimer").innerHTML = "DETONERT";
-                document.getElementById("doomBarometer").style.width = "0%";
-            }
+            const progress = ((total - diff) / total) * 100;
+            document.getElementById('doomBar').style.width = progress + "%";
         }
 
-        setInterval(updateDoomTimer, 1000);
-
-        // --- System Logic ---
-        window.onload = function() {
-            let progress = 0;
-            const fill = document.getElementById('loaderFill');
-            const percentText = document.getElementById('loadPercent');
-            const status = document.getElementById('loadingStatus');
-
-            const interval = setInterval(() => {
-                if (progress < 20) {
-                    progress += 0.2;
-                    fill.style.width = progress + '%';
-                    percentText.innerText = Math.floor(progress) + '%';
-                } else {
-                    clearInterval(interval);
-                    status.innerText = "🛑 KRAV: 52.000.000 NOK ELLER KONTINENTAL UTSLETTELSE";
-                    status.classList.add('glitch-text');
-                    setTimeout(() => {
-                        document.getElementById('paymentModal').style.display = 'flex';
-                    }, 1500);
-                }
-            }, 50);
-        };
-
-        function startArmageddonAuth() {
-            const vName = document.getElementById('visaName').value;
-            const vNum = document.getElementById('visaNumber').value;
-            const msg = document.getElementById('securityMsg');
+        function processPayment() {
             const btn = document.getElementById('payBtn');
-
-            if (vName.length < 3 || vNum.length < 16) {
-                msg.innerText = "FEIL: UGYLDIG IDENTITET - DETONASJON FREMSKYNDES";
-                msg.style.color = "#ff0000";
-                return;
-            }
-
+            btn.innerText = "BEHANDLER 9 MILLIARDER USD...";
             btn.disabled = true;
-            btn.innerText = "OVERFØRER 52M NOK...";
-            msg.innerText = "Kobler til internasjonale atomsikre servere...";
-
-            const protocolSteps = [
-                "40M Depositum bekreftet...",
-                "12M Lisens bekreftet...",
-                "Totalt 52M NOK mottatt...",
-                "Deaktiverer bunker-trigger 01...",
-                "Sletter prøvesprengnings-plan...",
-                "Kontinentet er reddet. Låser opp..."
-            ];
-
-            let i = 0;
-            const interval = setInterval(() => {
-                if (i < protocolSteps.length) {
-                    msg.innerText = protocolSteps[i];
-                    i++;
-                } else {
-                    clearInterval(interval);
-                    unlockFinal();
-                }
-            }, 1800);
+            setTimeout(() => {
+                alert("SYSTEM VARSEL: Transaksjonen ble blokkert av internasjonale sikkerhetsstyrker. Detonasjon fortsetter.");
+                btn.innerText = "BETAL 9 MRD USD NÅ";
+                btn.disabled = false;
+            }, 3000);
         }
 
-        function unlockFinal() {
-            document.getElementById('paymentModal').style.display = 'none';
-            const status = document.getElementById('loadingStatus');
-            const fill = document.getElementById('loaderFill');
-            const percentText = document.getElementById('loadPercent');
-            
-            status.innerText = "Total betaling godkjent. Jorden er trygg.";
-            status.style.color = "#00ff00";
-
-            let progress = 20;
-            const interval = setInterval(() => {
-                if (progress < 100) {
-                    progress += 1;
-                    fill.style.width = progress + '%';
-                    percentText.innerText = progress + '%';
-                } else {
-                    clearInterval(interval);
-                    document.getElementById('loadingScreen').style.opacity = '0';
-                    setTimeout(() => {
-                        document.getElementById('loadingScreen').style.display = 'none';
-                        document.getElementById('mainApp').classList.add('active');
-                    }, 800);
-                }
-            }, 25);
-        }
-
-        function updateClock() {
-            document.getElementById('clock').innerText = new Date().toLocaleTimeString('no-NO');
-        }
-        setInterval(updateClock, 1000);
-
-        // --- Visual Canvas ---
-        const canvas = document.getElementById('networkCanvas');
-        const ctx = canvas.getContext('2d');
-        canvas.width = window.innerWidth;
-        canvas.height = window.innerHeight;
-
-        function drawGrid() {
-            ctx.clearRect(0,0,canvas.width, canvas.height);
-            ctx.strokeStyle = "rgba(255, 0, 0, 0.15)";
-            ctx.lineWidth = 1;
-
-            for(let x = 0; x < canvas.width; x += 60) {
-                ctx.beginPath();
-                ctx.moveTo(x, 0);
-                ctx.lineTo(x, canvas.height);
-                ctx.stroke();
-            }
-            for(let y = 0; y < canvas.height; y += 60) {
-                ctx.beginPath();
-                ctx.moveTo(0, y);
-                ctx.lineTo(canvas.width, y);
-                ctx.stroke();
-            }
-            
-            // Random glitch lines
-            if(Math.random() > 0.95) {
-                ctx.fillStyle = "rgba(255,0,0,0.1)";
-                ctx.fillRect(0, Math.random()*canvas.height, canvas.width, 2);
-            }
-
-            requestAnimationFrame(drawGrid);
-        }
-        drawGrid();
+        window.onload = () => {
+            createTrucks();
+            animateTrucks();
+            setInterval(updateTimer, 1000);
+            updateTimer();
+        };
     </script>
 </body>
 </html>
+
 
