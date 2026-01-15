@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title> Culture.Support </title>
+    <title>Kode Dagbok - v5.1</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Fira+Code:wght@400;500&display=swap');
@@ -21,7 +21,7 @@
             border: 1px solid rgba(255, 255, 255, 0.03);
         }
 
-        /* Fargeindikatorer v5 */
+        /* Fargeindikatorer */
         .code-card-python { border-top: 3px solid #3776ab; }
         .code-card-javascript { border-top: 3px solid #f7df1e; }
         .code-card-php { border-top: 3px solid #777bb4; }
@@ -34,8 +34,6 @@
         .code-card-yaml { border-top: 3px solid #cb171e; }
         .code-card-json { border-top: 3px solid #29b5e8; }
         .code-card-jsonl { border-top: 3px solid #ff9500; }
-        
-        /* Nye Kategorier v5 */
         .code-card-flutter { border-top: 3px solid #02569b; }
         .code-card-kotlin { border-top: 3px solid #7f52ff; }
         .code-card-bash { border-top: 3px solid #4eaa25; }
@@ -73,6 +71,11 @@
             transform: translateY(-4px);
             box-shadow: 0 10px 30px -10px rgba(0,0,0,0.5);
         }
+        
+        .info-panel {
+            background: linear-gradient(145deg, rgba(30, 41, 59, 0.4), rgba(15, 23, 42, 0.4));
+            border: 1px border rgba(255, 255, 255, 0.05);
+        }
     </style>
 </head>
 <body class="h-screen flex flex-col md:flex-row">
@@ -81,15 +84,18 @@
     <aside class="w-full md:w-72 glass p-6 flex flex-col gap-6 z-20 border-r border-white/5">
         <div class="shrink-0">
             <h1 class="text-2xl font-black tracking-tighter bg-gradient-to-r from-blue-400 to-indigo-500 bg-clip-text text-transparent italic">
-                Kode Dagbok
+                KODE DAGBOK
             </h1>
-            <p class="text-[9px] text-slate-500 font-bold tracking-[0.3em] uppercase mt-1">Universal Library Hub</p>
+            <p class="text-[9px] text-slate-500 font-bold tracking-[0.3em] uppercase mt-1">Universal Bibliotek</p>
         </div>
 
         <nav class="flex-1 flex flex-col gap-1 overflow-y-auto custom-scrollbar pr-2">
-            <p class="text-[10px] font-bold text-slate-600 uppercase mb-2 px-3 tracking-widest">Generelt</p>
+            <p class="text-[10px] font-bold text-slate-600 uppercase mb-2 px-3 tracking-widest">Hoved</p>
             <button onclick="setGlobalFilter('all')" id="btn-all" class="nav-btn active-tab flex items-center gap-3 p-3 rounded-xl transition text-sm">
                 <span>📂</span> Alt Innhold
+            </button>
+            <button onclick="showInfo()" id="btn-info" class="nav-btn flex items-center gap-3 p-3 rounded-xl hover:bg-white/5 transition text-sm text-slate-400">
+                <span>ℹ️</span> Slik lagres koden
             </button>
 
             <p class="text-[10px] font-bold text-slate-600 uppercase mt-4 mb-2 px-3 tracking-widest">Web & Backend</p>
@@ -113,45 +119,11 @@
             <button onclick="setGlobalFilter('kotlin')" id="btn-kotlin" class="nav-btn flex items-center gap-3 p-3 rounded-xl hover:bg-white/5 transition text-sm text-slate-400">
                 <span>🤖</span> Kotlin
             </button>
-            <button onclick="setGlobalFilter('java')" id="btn-java" class="nav-btn flex items-center gap-3 p-3 rounded-xl hover:bg-white/5 transition text-sm text-slate-400">
-                <span>☕</span> Java
-            </button>
-            <button onclick="setGlobalFilter('cpp')" id="btn-cpp" class="nav-btn flex items-center gap-3 p-3 rounded-xl hover:bg-white/5 transition text-sm text-slate-400">
-                <span>⚙️</span> C++
-            </button>
-            <button onclick="setGlobalFilter('csharp')" id="btn-csharp" class="nav-btn flex items-center gap-3 p-3 rounded-xl hover:bg-white/5 transition text-sm text-slate-400">
-                <span>♯</span> C#
-            </button>
-
-            <p class="text-[10px] font-bold text-slate-600 uppercase mt-4 mb-2 px-3 tracking-widest">Scripting & AI</p>
             <button onclick="setGlobalFilter('bash')" id="btn-bash" class="nav-btn flex items-center gap-3 p-3 rounded-xl hover:bg-white/5 transition text-sm text-slate-400">
                 <span>🐚</span> Bash / Shell
             </button>
             <button onclick="setGlobalFilter('batch')" id="btn-batch" class="nav-btn flex items-center gap-3 p-3 rounded-xl hover:bg-white/5 transition text-sm text-slate-400">
                 <span>🖥️</span> Batch (.bat)
-            </button>
-            <button onclick="setGlobalFilter('tensorflow')" id="btn-tensorflow" class="nav-btn flex items-center gap-3 p-3 rounded-xl hover:bg-white/5 transition text-sm text-slate-400">
-                <span>🧠</span> TensorFlow
-            </button>
-            <button onclick="setGlobalFilter('jhipster')" id="btn-jhipster" class="nav-btn flex items-center gap-3 p-3 rounded-xl hover:bg-white/5 transition text-sm text-slate-400">
-                <span>🔥</span> JHipster
-            </button>
-
-            <p class="text-[10px] font-bold text-slate-600 uppercase mt-4 mb-2 px-3 tracking-widest">Data & Verktøy</p>
-            <button onclick="setGlobalFilter('database')" id="btn-database" class="nav-btn flex items-center gap-3 p-3 rounded-xl hover:bg-white/5 transition text-sm text-slate-400">
-                <span>🗄️</span> Database
-            </button>
-            <button onclick="setGlobalFilter('json')" id="btn-json" class="nav-btn flex items-center gap-3 p-3 rounded-xl hover:bg-white/5 transition text-sm text-slate-400">
-                <span>📦</span> JSON
-            </button>
-            <button onclick="setGlobalFilter('jsonl')" id="btn-jsonl" class="nav-btn flex items-center gap-3 p-3 rounded-xl hover:bg-white/5 transition text-sm text-slate-400">
-                <span>📜</span> JsonL
-            </button>
-            <button onclick="setGlobalFilter('yaml')" id="btn-yaml" class="nav-btn flex items-center gap-3 p-3 rounded-xl hover:bg-white/5 transition text-sm text-slate-400">
-                <span>📝</span> YAML
-            </button>
-            <button onclick="setGlobalFilter('curl')" id="btn-curl" class="nav-btn flex items-center gap-3 p-3 rounded-xl hover:bg-white/5 transition text-sm text-slate-400">
-                <span>🚀</span> Curl
             </button>
 
             <div class="my-4 border-t border-white/5"></div>
@@ -178,12 +150,34 @@
             <header class="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-10">
                 <div>
                     <h2 id="view-title" class="text-3xl font-bold tracking-tight text-white mb-1">Hovedbibliotek</h2>
-                    <p class="text-sm text-slate-500" id="view-desc">Administrer din lokale kodebase fordelt på 21 kategorier.</p>
+                    <p class="text-sm text-slate-500" id="view-desc">Administrer din lokale kodebase fordelt på kategorier.</p>
                 </div>
                 <button onclick="clearAllData()" class="px-4 py-2 rounded-lg bg-red-500/10 text-red-500 text-xs font-bold border border-red-500/20 hover:bg-red-500/20 transition">Tøm Bibliotek</button>
             </header>
 
+            <!-- Info Seksjon (Skjult som standard) -->
+            <div id="infoSection" class="hidden mb-12 animate-in fade-in slide-in-from-top-4 duration-500">
+                <div class="info-panel p-8 rounded-3xl border border-blue-500/20 relative overflow-hidden">
+                    <div class="absolute top-0 right-0 p-8 opacity-10 text-8xl">💾</div>
+                    <h3 class="text-xl font-bold text-blue-400 mb-4 flex items-center gap-2">
+                        Hvordan Kode Dagbok lagrer dine data
+                    </h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8 text-sm text-slate-300 leading-relaxed">
+                        <div class="space-y-4">
+                            <p><strong class="text-white">Lokal Lagring (LocalStorage):</strong> All kode du legger inn blir lagret direkte i nettleseren din. Dette betyr at dataene dine aldri forlater maskinen din og er tilgjengelige selv om du lukker fanen.</p>
+                            <p><strong class="text-white">Privatliv:</strong> Siden vi ikke bruker sky-servere, har ingen andre enn deg tilgang til kodebitene dine. Dette er perfekt for sensitive skript eller interne verktøy.</p>
+                        </div>
+                        <div class="space-y-4">
+                            <p><strong class="text-white">Kapasitet:</strong> Systemet overvåker lagringsplassen din (vanligvis 5MB per domene). Du kan følge med på "Lager-status" i sidemenyen for å se hvor mye plass som er igjen.</p>
+                            <p><strong class="text-white">Sikkerhetskopi:</strong> Husk at hvis du sletter nettleserdata (cache), vil også denne dagboken tømmes. Bruk kopieringsknappen for å ta vare på viktig kode andre steder!</p>
+                        </div>
+                    </div>
+                    <button onclick="hideInfo()" class="mt-6 text-xs font-bold text-slate-500 hover:text-white transition uppercase tracking-widest underline decoration-blue-500/50 underline-offset-4">Lukk informasjon</button>
+                </div>
+            </div>
+
             <div id="nodesGrid" class="grid grid-cols-1 lg:grid-cols-2 2xl:grid-cols-3 gap-6 pb-20"></div>
+            
             <div id="nodesEmpty" class="hidden flex flex-col items-center justify-center py-40 text-slate-600">
                 <div class="text-6xl mb-4">🌑</div>
                 <p class="text-lg font-medium">Ingen treff her</p>
@@ -196,7 +190,7 @@
             <div class="p-5 border-b border-white/5 flex justify-between items-center bg-white/[0.02]">
                 <div class="flex items-center gap-3">
                     <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-600 to-indigo-700 flex items-center justify-center shadow-lg text-white font-bold">V5</div>
-                    <h3 class="font-bold text-sm tracking-tight uppercase">Terminal Klient</h3>
+                    <h3 class="font-bold text-sm tracking-tight uppercase">Terminal_Input</h3>
                 </div>
                 <button onclick="toggleChat()" class="p-2 hover:bg-white/10 rounded-xl text-slate-400 transition">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
@@ -208,22 +202,23 @@
             <div class="p-5 border-t border-white/5 bg-black/40">
                 <div class="relative">
                     <textarea id="chatInput" rows="3" 
-                              placeholder="Lim inn kode, shell script eller AI-modeller her..." 
+                              placeholder="Lim inn kode, skript eller modeller her..." 
                               class="w-full bg-white/5 border border-white/10 rounded-2xl px-5 py-4 outline-none focus:border-blue-500/50 focus:ring-4 focus:ring-blue-500/10 transition text-sm code-font custom-scrollbar resize-none"></textarea>
                     <button onclick="handleChatSubmit()" class="absolute right-3 bottom-3 bg-blue-600 text-white p-3 rounded-xl hover:bg-blue-500 transition-all shadow-lg">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-width="2" d="M13 5l7 7-7 7M5 5l7 7-7 7"></path></svg>
                     </button>
                 </div>
+                <p class="text-[10px] text-center text-slate-500 mt-3 italic">Hver linje lagres automatisk i nettleseren din.</p>
             </div>
         </section>
     </main>
 
-    <div id="toast" class="fixed bottom-8 left-1/2 -translate-x-1/2 bg-white text-black px-6 py-3 rounded-2xl text-xs font-bold opacity-0 transition-all duration-300 pointer-events-none z-50">Kopiert!</div>
+    <div id="toast" class="fixed bottom-8 left-1/2 -translate-x-1/2 bg-white text-black px-6 py-3 rounded-2xl text-xs font-bold opacity-0 transition-all duration-300 pointer-events-none z-50">Kopiert til utklippstavlen!</div>
 
     <script>
         let nodes = JSON.parse(localStorage.getItem('codebrain_nodes')) || [];
         let chatHistory = JSON.parse(localStorage.getItem('codebrain_chat')) || [
-            { role: 'ai', content: 'Systemet hvor du kan legge inn koder og automatisk kategori lagre chat koder i form av kode blokker eller snippets .', type: 'system' }
+            { role: 'ai', content: 'Velkommen til Kode Dagbok v5.1. Jeg er klar til å organisere koden din. Trenger du hjelp? Skriv "hjelp" eller se <a href="#" onclick="showInfo(); return false;" class="text-blue-400 underline">hvordan vi lagrer data</a>.', type: 'system' }
         ];
         let currentFilter = 'all';
         let chatVisible = true;
@@ -232,8 +227,22 @@
             renderNodes();
             renderChat();
             updateStorageMetrics();
-            document.getElementById('chatInput').addEventListener('keydown', (e) => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); handleChatSubmit(); } });
+            document.getElementById('chatInput').addEventListener('keydown', (e) => { 
+                if (e.key === 'Enter' && !e.shiftKey) { 
+                    e.preventDefault(); 
+                    handleChatSubmit(); 
+                } 
+            });
         };
+
+        function showInfo() {
+            document.getElementById('infoSection').classList.remove('hidden');
+            document.getElementById('dashboardSection').scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function hideInfo() {
+            document.getElementById('infoSection').classList.add('hidden');
+        }
 
         function toggleChat() {
             chatVisible = !chatVisible;
@@ -242,6 +251,7 @@
 
         function setGlobalFilter(cat) {
             currentFilter = cat;
+            hideInfo();
             document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active-tab'));
             const btn = document.getElementById(`btn-${cat}`);
             if (btn) btn.classList.add('active-tab');
@@ -249,48 +259,22 @@
         }
 
         function detectContent(text) {
-            const urlRegex = /^(https?:\/\/|www\.)[^\s]+$/;
             const lower = text.toLowerCase();
+            if (lower === 'hjelp') return { type: 'cmd_help', lang: 'System' };
             
+            const urlRegex = /^(https?:\/\/|www\.)[^\s]+$/;
             if (urlRegex.test(text)) return { type: 'web', lang: 'URL' };
             
-            // JSON vs JSONL
-            if (text.startsWith('{') || text.startsWith('[')) {
-                try {
-                    JSON.parse(text);
-                    return { type: 'json', lang: 'JSON' };
-                } catch(e) {
-                    if (text.split('\n').every(line => { try { JSON.parse(line); return true; } catch(e) { return false; }})) {
-                        return { type: 'jsonl', lang: 'JsonL' };
-                    }
-                }
-            }
-
-            // AI & Frameworks
-            if (text.includes('tensorflow') || text.includes('tf.keras') || text.includes('import tensorflow as tf')) return { type: 'tensorflow', lang: 'TensorFlow' };
-            if (text.includes('jhipster') || text.includes('yo jhipster') || text.includes('.jdl')) return { type: 'jhipster', lang: 'JHipster' };
-
-            // Mobil
-            if (text.includes('import \'package:flutter') || text.includes('StatelessWidget') || text.includes('Widget build')) return { type: 'flutter', lang: 'Flutter' };
-            if (text.includes('fun main') || text.includes('val ') || text.includes('var ') && text.includes(': String')) return { type: 'kotlin', lang: 'Kotlin' };
-
-            // Scripts
-            if (text.startsWith('#!/bin/bash') || text.includes('grep ') || text.includes('sudo ') || text.includes('export ')) return { type: 'bash', lang: 'Bash' };
-            if (lower.includes('@echo off') || lower.includes('setlocal') || lower.includes('pause') && lower.includes('.bat')) return { type: 'batch', lang: 'Batch' };
-
-            // Database
-            if (lower.includes('select ') || lower.includes('create table') || lower.includes('update ')) return { type: 'database', lang: 'SQL' };
-            
-            // Andre Språk
-            if (text.includes('public static void main') || text.includes('System.out.println')) return { type: 'java', lang: 'Java' };
-            if (text.includes('#include <') || text.includes('std::cout')) return { type: 'cpp', lang: 'C++' };
-            if (text.includes('using System;') || text.includes('namespace ') || text.includes('Console.WriteLine')) return { type: 'csharp', lang: 'C#' };
-            if (text.includes('curl ') || text.includes('--request ')) return { type: 'curl', lang: 'Curl' };
+            if (text.includes('tensorflow') || text.includes('import tensorflow')) return { type: 'tensorflow', lang: 'TensorFlow' };
+            if (text.includes('jhipster') || text.includes('.jdl')) return { type: 'jhipster', lang: 'JHipster' };
+            if (text.includes('import \'package:flutter') || text.includes('StatelessWidget')) return { type: 'flutter', lang: 'Flutter' };
+            if (text.includes('fun main') || (text.includes('val ') && text.includes(': '))) return { type: 'kotlin', lang: 'Kotlin' };
+            if (text.startsWith('#!/bin/bash') || text.includes('sudo ') || text.includes('export ')) return { type: 'bash', lang: 'Bash' };
+            if (lower.includes('@echo off') || lower.includes('setlocal')) return { type: 'batch', lang: 'Batch' };
+            if (lower.includes('select ') || lower.includes('create table')) return { type: 'database', lang: 'SQL' };
             if (text.includes('<!DOCTYPE html>')) return { type: 'html', lang: 'HTML' };
             if (text.includes('def ') || text.includes('import ') || text.includes('print(')) return { type: 'python', lang: 'Python' };
-            if (text.includes('<?php')) return { type: 'php', lang: 'PHP' };
             if (text.includes('const ') || text.includes('let ') || text.includes('=>')) return { type: 'javascript', lang: 'JavaScript' };
-            if (text.includes('---') && text.includes(': ')) return { type: 'yaml', lang: 'YAML' };
 
             return { type: 'note', lang: 'Notat' };
         }
@@ -303,12 +287,19 @@
             const detection = detectContent(text);
             chatHistory.push({ role: 'user', content: text, type: detection.type });
             input.value = '';
+
+            if (detection.type === 'cmd_help') {
+                chatHistory.push({ role: 'ai', content: 'Kommandoer:<br>• Lim inn kode for lagring<br>• Klikk på kategorier til venstre for å filtrere<br>• <a href="#" onclick="showInfo(); return false;" class="text-blue-400">Les om lokal lagring her</a>', type: 'system' });
+                renderChat();
+                return;
+            }
+
             renderChat();
 
             setTimeout(() => {
-                const title = text.split('\n')[0].substring(0, 35) || 'Uten Tittel';
+                const title = text.split('\n')[0].substring(0, 35) || 'Navnløs kode';
                 saveNode(title, text, detection.type, detection.lang);
-                chatHistory.push({ role: 'ai', content: `Lagt til i biblioteket under ${detection.lang}.`, type: 'system' });
+                chatHistory.push({ role: 'ai', content: `Lagt til i biblioteket under <b>${detection.lang}</b>.`, type: 'system' });
                 renderChat();
                 updateStorageMetrics();
             }, 300);
@@ -334,13 +325,13 @@
                 card.innerHTML = `
                     <div class="flex justify-between items-start mb-4">
                         <span class="px-2 py-1 rounded-md bg-white/5 text-[9px] font-black uppercase text-slate-500 border border-white/5">${node.lang}</span>
-                        <button onclick="deleteNode(${node.id})" class="text-slate-600 hover:text-red-400">🗑️</button>
+                        <button onclick="deleteNode(${node.id})" class="text-slate-600 hover:text-red-400 transition-colors">🗑️ Slett</button>
                     </div>
                     <h4 class="text-sm font-bold text-white mb-4 line-clamp-1">${node.title}</h4>
                     <pre class="code-font text-[10px] bg-black/50 p-4 rounded-xl mb-4 overflow-x-auto text-blue-200 border border-white/5 flex-1 whitespace-pre-wrap">${node.content}</pre>
                     <div class="mt-auto flex justify-between items-center text-[10px]">
-                        <span class="text-slate-600 font-bold">${new Date(node.timestamp).toLocaleDateString()}</span>
-                        <button onclick="copyToClipboard('${node.content.replace(/'/g, "\\'")}')" class="text-blue-500 font-black hover:text-blue-400">KOPIER</button>
+                        <span class="text-slate-600 font-bold uppercase tracking-widest">${new Date(node.timestamp).toLocaleDateString('no-NO')}</span>
+                        <button onclick="copyToClipboard('${node.content.replace(/'/g, "\\'")}')" class="text-blue-500 font-black hover:text-blue-400 uppercase tracking-tighter">Kopier Kode</button>
                     </div>
                 `;
                 grid.appendChild(card);
@@ -349,10 +340,12 @@
         }
 
         function deleteNode(id) {
-            nodes = nodes.filter(n => n.id !== id);
-            localStorage.setItem('codebrain_nodes', JSON.stringify(nodes));
-            renderNodes();
-            updateStorageMetrics();
+            if(confirm("Slette denne kodebiten?")) {
+                nodes = nodes.filter(n => n.id !== id);
+                localStorage.setItem('codebrain_nodes', JSON.stringify(nodes));
+                renderNodes();
+                updateStorageMetrics();
+            }
         }
 
         function copyToClipboard(text) {
@@ -365,7 +358,7 @@
             box.innerHTML = '';
             chatHistory.forEach(msg => {
                 const bubble = document.createElement('div');
-                bubble.className = `p-4 rounded-2xl text-xs ${msg.role === 'user' ? 'bg-blue-600 ml-auto' : 'bg-white/5 mr-auto border border-white/10 text-slate-300'}`;
+                bubble.className = `p-4 rounded-2xl text-xs leading-relaxed ${msg.role === 'user' ? 'bg-blue-600 ml-auto max-w-[85%]' : 'bg-white/5 mr-auto border border-white/10 text-slate-300 max-w-[90%]'}`;
                 bubble.innerHTML = `<div class="break-words">${msg.content}</div>`;
                 box.appendChild(bubble);
             });
@@ -380,9 +373,10 @@
             document.getElementById('storageUsage').innerText = `${p}%`;
         }
 
-        function clearAllData() { if(confirm("Vil du slette hele biblioteket?")) { localStorage.clear(); location.reload(); } }
+        function clearAllData() { if(confirm("ADVARSEL: Dette vil slette ALL lagret kode permanent fra din nettleser. Fortsette?")) { localStorage.clear(); location.reload(); } }
     </script>
 </body>
 </html>
+
 
 
