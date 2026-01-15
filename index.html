@@ -3,351 +3,386 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title> Culture.Support</title>  
-    <!-- Bulma CSS -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@1.0.0/css/bulma.min.css">
-    <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <title>AI Brain - Ultimate Kodebok v5</title>
+    <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        :root {
-            --brand-primary: #6366f1;
-            --brand-secondary: #a855f7;
-            --bg-dark: #0f172a;
-            --card-bg: rgba(30, 41, 59, 0.7);
-            --border-color: rgba(255, 255, 255, 0.1);
-        }
-
-        body, html {
-            margin: 0;
-            padding: 0;
-            background-color: var(--bg-dark);
-            color: #f1f5f9;
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Fira+Code:wght@400;500&display=swap');
+        
+        body {
             font-family: 'Inter', sans-serif;
-            min-height: 100vh;
+            background-color: #05070a;
+            color: #f8fafc;
+            overflow: hidden;
         }
 
-        /* Animated Background Particles */
-        #particle-canvas {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: -1;
-            opacity: 0.5;
+        .glass {
+            background: rgba(13, 17, 23, 0.8);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.03);
         }
 
-        .navbar {
-            background: rgba(15, 23, 42, 0.8) !important;
-            backdrop-filter: blur(10px);
-            border-bottom: 1px solid var(--border-color);
+        /* Fargeindikatorer v5 */
+        .code-card-python { border-top: 3px solid #3776ab; }
+        .code-card-javascript { border-top: 3px solid #f7df1e; }
+        .code-card-php { border-top: 3px solid #777bb4; }
+        .code-card-database { border-top: 3px solid #00bbff; }
+        .code-card-html { border-top: 3px solid #e34c26; }
+        .code-card-java { border-top: 3px solid #b07219; }
+        .code-card-curl { border-top: 3px solid #06c600; }
+        .code-card-cpp { border-top: 3px solid #f34b7d; }
+        .code-card-csharp { border-top: 3px solid #178600; }
+        .code-card-yaml { border-top: 3px solid #cb171e; }
+        .code-card-json { border-top: 3px solid #29b5e8; }
+        .code-card-jsonl { border-top: 3px solid #ff9500; }
+        
+        /* Nye Kategorier v5 */
+        .code-card-flutter { border-top: 3px solid #02569b; }
+        .code-card-kotlin { border-top: 3px solid #7f52ff; }
+        .code-card-bash { border-top: 3px solid #4eaa25; }
+        .code-card-batch { border-top: 3px solid #6e6e6e; }
+        .code-card-jhipster { border-top: 3px solid #fa8e33; }
+        .code-card-tensorflow { border-top: 3px solid #ff6f00; }
+        .code-card-note { border-top: 3px solid #64748b; }
+
+        .code-font { font-family: 'Fira Code', monospace; }
+
+        .custom-scrollbar::-webkit-scrollbar { width: 4px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #1e293b; border-radius: 10px; }
+
+        .active-tab {
+            background: rgba(59, 130, 246, 0.15);
+            color: #60a5fa;
+            border: 1px solid rgba(59, 130, 246, 0.3);
         }
 
-        .glass-card {
-            background: var(--card-bg);
-            backdrop-filter: blur(12px);
-            border: 1px solid var(--border-color);
-            border-radius: 16px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
-            padding: 1.5rem;
-            transition: transform 0.2s ease;
+        #chatSection {
+            transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.3s ease;
         }
 
-        .input-card {
-            border-bottom: 4px solid var(--brand-primary);
+        #chatSection.minimized {
+            transform: translateX(100%);
+            opacity: 0;
+            pointer-events: none;
         }
 
-        .textarea {
-            background: rgba(15, 23, 42, 0.5) !important;
-            color: white !important;
-            border: 1px solid var(--border-color) !important;
-            border-radius: 12px;
-            resize: none;
-            font-size: 1.1rem;
-        }
-
-        .textarea:focus {
-            border-color: var(--brand-primary) !important;
-            box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.2) !important;
-        }
-
-        .btn-post {
-            background: linear-gradient(135deg, var(--brand-primary), var(--brand-secondary));
-            color: white;
-            border: none;
-            border-radius: 12px;
-            font-weight: 600;
-            padding: 0.5rem 2rem;
+        .node-card {
             transition: all 0.3s ease;
         }
-
-        .btn-post:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(99, 102, 241, 0.4);
-            color: white;
+        .node-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 10px 30px -10px rgba(0,0,0,0.5);
         }
-
-        .feed-container {
-            max-width: 700px;
-            margin: 2rem auto;
-        }
-
-        .post {
-            margin-bottom: 1.5rem;
-            animation: fadeIn 0.4s ease-out;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        .avatar {
-            border-radius: 50%;
-            border: 2px solid var(--brand-primary);
-        }
-
-        .username {
-            font-weight: 700;
-            background: linear-gradient(to right, #fff, #94a3b8);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-
-        .timestamp {
-            font-size: 0.8rem;
-            color: #64748b;
-        }
-
-        .post-content {
-            font-size: 1.05rem;
-            line-height: 1.6;
-            color: #cbd5e1;
-        }
-
-        .stats-badge {
-            font-size: 0.75rem;
-            padding: 4px 12px;
-            border-radius: 20px;
-            background: rgba(99, 102, 241, 0.1);
-            color: var(--brand-primary);
-            border: 1px solid rgba(99, 102, 241, 0.2);
-        }
-
-        ::-webkit-scrollbar { width: 8px; }
-        ::-webkit-scrollbar-thumb { background: #334155; border-radius: 10px; }
     </style>
 </head>
-<body>
+<body class="h-screen flex flex-col md:flex-row">
 
-    <canvas id="particle-canvas"></canvas>
+    <!-- Sidemeny -->
+    <aside class="w-full md:w-72 glass p-6 flex flex-col gap-6 z-20 border-r border-white/5">
+        <div class="shrink-0">
+            <h1 class="text-2xl font-black tracking-tighter bg-gradient-to-r from-blue-400 to-indigo-500 bg-clip-text text-transparent italic">
+                CODE_BRAIN.v5
+            </h1>
+            <p class="text-[9px] text-slate-500 font-bold tracking-[0.3em] uppercase mt-1">Universal Library Hub</p>
+        </div>
 
-    <nav class="navbar is-fixed-top">
-        <div class="container">
-            <div class="navbar-brand">
-                <a class="navbar-item" href="#">
-                    <strong style="color: var(--brand-primary); font-size: 1.5rem; letter-spacing: -1px;">Culture.Support</strong>
-                </a>
+        <nav class="flex-1 flex flex-col gap-1 overflow-y-auto custom-scrollbar pr-2">
+            <p class="text-[10px] font-bold text-slate-600 uppercase mb-2 px-3 tracking-widest">Generelt</p>
+            <button onclick="setGlobalFilter('all')" id="btn-all" class="nav-btn active-tab flex items-center gap-3 p-3 rounded-xl transition text-sm">
+                <span>📂</span> Alt Innhold
+            </button>
+
+            <p class="text-[10px] font-bold text-slate-600 uppercase mt-4 mb-2 px-3 tracking-widest">Web & Backend</p>
+            <button onclick="setGlobalFilter('html')" id="btn-html" class="nav-btn flex items-center gap-3 p-3 rounded-xl hover:bg-white/5 transition text-sm text-slate-400">
+                <span>🌐</span> HTML
+            </button>
+            <button onclick="setGlobalFilter('javascript')" id="btn-javascript" class="nav-btn flex items-center gap-3 p-3 rounded-xl hover:bg-white/5 transition text-sm text-slate-400">
+                <span>🟨</span> JavaScript
+            </button>
+            <button onclick="setGlobalFilter('php')" id="btn-php" class="nav-btn flex items-center gap-3 p-3 rounded-xl hover:bg-white/5 transition text-sm text-slate-400">
+                <span>🐘</span> PHP
+            </button>
+            <button onclick="setGlobalFilter('python')" id="btn-python" class="nav-btn flex items-center gap-3 p-3 rounded-xl hover:bg-white/5 transition text-sm text-slate-400">
+                <span>🐍</span> Python
+            </button>
+
+            <p class="text-[10px] font-bold text-slate-600 uppercase mt-4 mb-2 px-3 tracking-widest">Mobil & System</p>
+            <button onclick="setGlobalFilter('flutter')" id="btn-flutter" class="nav-btn flex items-center gap-3 p-3 rounded-xl hover:bg-white/5 transition text-sm text-slate-400">
+                <span>📱</span> Flutter
+            </button>
+            <button onclick="setGlobalFilter('kotlin')" id="btn-kotlin" class="nav-btn flex items-center gap-3 p-3 rounded-xl hover:bg-white/5 transition text-sm text-slate-400">
+                <span>🤖</span> Kotlin
+            </button>
+            <button onclick="setGlobalFilter('java')" id="btn-java" class="nav-btn flex items-center gap-3 p-3 rounded-xl hover:bg-white/5 transition text-sm text-slate-400">
+                <span>☕</span> Java
+            </button>
+            <button onclick="setGlobalFilter('cpp')" id="btn-cpp" class="nav-btn flex items-center gap-3 p-3 rounded-xl hover:bg-white/5 transition text-sm text-slate-400">
+                <span>⚙️</span> C++
+            </button>
+            <button onclick="setGlobalFilter('csharp')" id="btn-csharp" class="nav-btn flex items-center gap-3 p-3 rounded-xl hover:bg-white/5 transition text-sm text-slate-400">
+                <span>♯</span> C#
+            </button>
+
+            <p class="text-[10px] font-bold text-slate-600 uppercase mt-4 mb-2 px-3 tracking-widest">Scripting & AI</p>
+            <button onclick="setGlobalFilter('bash')" id="btn-bash" class="nav-btn flex items-center gap-3 p-3 rounded-xl hover:bg-white/5 transition text-sm text-slate-400">
+                <span>🐚</span> Bash / Shell
+            </button>
+            <button onclick="setGlobalFilter('batch')" id="btn-batch" class="nav-btn flex items-center gap-3 p-3 rounded-xl hover:bg-white/5 transition text-sm text-slate-400">
+                <span>🖥️</span> Batch (.bat)
+            </button>
+            <button onclick="setGlobalFilter('tensorflow')" id="btn-tensorflow" class="nav-btn flex items-center gap-3 p-3 rounded-xl hover:bg-white/5 transition text-sm text-slate-400">
+                <span>🧠</span> TensorFlow
+            </button>
+            <button onclick="setGlobalFilter('jhipster')" id="btn-jhipster" class="nav-btn flex items-center gap-3 p-3 rounded-xl hover:bg-white/5 transition text-sm text-slate-400">
+                <span>🔥</span> JHipster
+            </button>
+
+            <p class="text-[10px] font-bold text-slate-600 uppercase mt-4 mb-2 px-3 tracking-widest">Data & Verktøy</p>
+            <button onclick="setGlobalFilter('database')" id="btn-database" class="nav-btn flex items-center gap-3 p-3 rounded-xl hover:bg-white/5 transition text-sm text-slate-400">
+                <span>🗄️</span> Database
+            </button>
+            <button onclick="setGlobalFilter('json')" id="btn-json" class="nav-btn flex items-center gap-3 p-3 rounded-xl hover:bg-white/5 transition text-sm text-slate-400">
+                <span>📦</span> JSON
+            </button>
+            <button onclick="setGlobalFilter('jsonl')" id="btn-jsonl" class="nav-btn flex items-center gap-3 p-3 rounded-xl hover:bg-white/5 transition text-sm text-slate-400">
+                <span>📜</span> JsonL
+            </button>
+            <button onclick="setGlobalFilter('yaml')" id="btn-yaml" class="nav-btn flex items-center gap-3 p-3 rounded-xl hover:bg-white/5 transition text-sm text-slate-400">
+                <span>📝</span> YAML
+            </button>
+            <button onclick="setGlobalFilter('curl')" id="btn-curl" class="nav-btn flex items-center gap-3 p-3 rounded-xl hover:bg-white/5 transition text-sm text-slate-400">
+                <span>🚀</span> Curl
+            </button>
+
+            <div class="my-4 border-t border-white/5"></div>
+            <button onclick="toggleChat()" id="btn-toggle-chat" class="flex items-center justify-between p-3 rounded-xl hover:bg-white/5 transition text-sm text-blue-400 font-medium">
+                <div class="flex items-center gap-3"><span>⚡</span> Terminal</div>
+                <span id="chat-status-dot" class="w-2 h-2 rounded-full bg-blue-500 shadow-[0_0_8px_rgba(59,130,246,0.5)]"></span>
+            </button>
+        </nav>
+
+        <div class="shrink-0 bg-white/5 rounded-2xl p-4 border border-white/5">
+            <div class="flex justify-between items-center mb-2">
+                <p class="text-[10px] text-blue-300 font-bold uppercase">Lager-status</p>
+                <span class="text-[9px] text-slate-500" id="storageUsage">0%</span>
             </div>
-            <div class="navbar-end">
-                <div class="navbar-item">
-                    <span class="stats-badge" id="storage-info">SYNCED: 0.00KB</span>
-                </div>
+            <div class="w-full bg-black/40 h-1 rounded-full overflow-hidden">
+                <div id="storageBar" class="bg-blue-500 h-full w-0 transition-all duration-500"></div>
             </div>
         </div>
-    </nav>
+    </aside>
 
-    <section class="section" style="margin-top: 4rem;">
-        <div class="container feed-container">
-            
-            <!-- Composer Card -->
-            <div class="glass-card input-card mb-6">
-                <div class="media">
-                    <figure class="media-left">
-                        <p class="image is-48x48">
-                            <img class="avatar" src="https://api.dicebear.com/7.x/avataaars/svg?seed=Admin" alt="User">
-                        </p>
-                    </figure>
-                    <div class="media-content">
-                        <div class="field">
-                            <p class="control">
-                                <textarea id="postInput" class="textarea" placeholder="What's happening in the collective?"></textarea>
-                            </p>
-                        </div>
-                        <div class="level is-mobile">
-                            <div class="level-left">
-                                <button id="submitBtn" class="button btn-post">Share Post</button>
-                            </div>
-                            <div class="level-right">
-                                <label class="checkbox is-size-7 has-text-grey">
-                                    <input type="checkbox" id="enterSubmit" checked> Press Enter to post
-                                </label>
-                            </div>
-                        </div>
-                    </div>
+    <!-- Hovedinnhold -->
+    <main class="flex-1 flex h-full overflow-hidden relative">
+        <section id="dashboardSection" class="flex-1 p-8 overflow-y-auto custom-scrollbar transition-all duration-300">
+            <header class="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-10">
+                <div>
+                    <h2 id="view-title" class="text-3xl font-bold tracking-tight text-white mb-1">Hovedbibliotek</h2>
+                    <p class="text-sm text-slate-500" id="view-desc">Administrer din lokale kodebase fordelt på 21 kategorier.</p>
                 </div>
+                <button onclick="clearAllData()" class="px-4 py-2 rounded-lg bg-red-500/10 text-red-500 text-xs font-bold border border-red-500/20 hover:bg-red-500/20 transition">Tøm Bibliotek</button>
+            </header>
+
+            <div id="nodesGrid" class="grid grid-cols-1 lg:grid-cols-2 2xl:grid-cols-3 gap-6 pb-20"></div>
+            <div id="nodesEmpty" class="hidden flex flex-col items-center justify-center py-40 text-slate-600">
+                <div class="text-6xl mb-4">🌑</div>
+                <p class="text-lg font-medium">Ingen treff her</p>
+                <p class="text-sm opacity-60">Prøv å lime inn ny kode i terminalen.</p>
+            </div>
+        </section>
+
+        <!-- Terminal -->
+        <section id="chatSection" class="absolute right-0 top-0 bottom-0 w-full md:w-[450px] glass flex flex-col z-30 shadow-[-20px_0_50px_rgba(0,0,0,0.5)] border-l border-white/10">
+            <div class="p-5 border-b border-white/5 flex justify-between items-center bg-white/[0.02]">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-600 to-indigo-700 flex items-center justify-center shadow-lg text-white font-bold">V5</div>
+                    <h3 class="font-bold text-sm tracking-tight uppercase">Terminal_Input</h3>
+                </div>
+                <button onclick="toggleChat()" class="p-2 hover:bg-white/10 rounded-xl text-slate-400 transition">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                </button>
             </div>
 
-            <!-- Header -->
-            <div class="level mb-5">
-                <div class="level-left">
-                    <h2 class="title is-4 has-text-white"> lokal lagret  Dagbok</h2>
-                </div>
-                <div class="level-right">
-                    <button id="clearBtn" class="button is-ghost is-small has-text-grey">slett alle dagbok poster</button>
+            <div id="chatBox" class="flex-1 overflow-y-auto p-6 flex flex-col gap-5 custom-scrollbar bg-black/20"></div>
+
+            <div class="p-5 border-t border-white/5 bg-black/40">
+                <div class="relative">
+                    <textarea id="chatInput" rows="3" 
+                              placeholder="Lim inn kode, shell script eller AI-modeller her..." 
+                              class="w-full bg-white/5 border border-white/10 rounded-2xl px-5 py-4 outline-none focus:border-blue-500/50 focus:ring-4 focus:ring-blue-500/10 transition text-sm code-font custom-scrollbar resize-none"></textarea>
+                    <button onclick="handleChatSubmit()" class="absolute right-3 bottom-3 bg-blue-600 text-white p-3 rounded-xl hover:bg-blue-500 transition-all shadow-lg">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-width="2" d="M13 5l7 7-7 7M5 5l7 7-7 7"></path></svg>
+                    </button>
                 </div>
             </div>
+        </section>
+    </main>
 
-            <!-- Feed -->
-            <div id="feedContainer">
-                <!-- Posts injected by JS -->
-            </div>
-
-        </div>
-    </section>
+    <div id="toast" class="fixed bottom-8 left-1/2 -translate-x-1/2 bg-white text-black px-6 py-3 rounded-2xl text-xs font-bold opacity-0 transition-all duration-300 pointer-events-none z-50">Kopiert!</div>
 
     <script>
-        // --- High-Performance Particle Background ---
-        const canvas = document.getElementById('particle-canvas');
-        const ctx = canvas.getContext('2d');
-        let particles = [];
+        let nodes = JSON.parse(localStorage.getItem('codebrain_nodes')) || [];
+        let chatHistory = JSON.parse(localStorage.getItem('codebrain_chat')) || [
+            { role: 'ai', content: 'System v5 klar. Støtter nå Flutter, Kotlin, Bash, Batch, JHipster og TensorFlow.', type: 'system' }
+        ];
+        let currentFilter = 'all';
+        let chatVisible = true;
 
-        function resize() {
-            canvas.width = window.innerWidth;
-            canvas.height = window.innerHeight;
-        }
-        window.addEventListener('resize', resize);
-        resize();
+        window.onload = () => {
+            renderNodes();
+            renderChat();
+            updateStorageMetrics();
+            document.getElementById('chatInput').addEventListener('keydown', (e) => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); handleChatSubmit(); } });
+        };
 
-        class Particle {
-            constructor() { this.reset(); }
-            reset() {
-                this.x = Math.random() * canvas.width;
-                this.y = Math.random() * canvas.height;
-                this.vX = (Math.random() - 0.5) * 0.3;
-                this.vY = (Math.random() - 0.5) * 0.3;
-                this.size = Math.random() * 2 + 1;
-            }
-            update() {
-                this.x += this.vX; this.y += this.vY;
-                if(this.x < 0 || this.x > canvas.width || this.y < 0 || this.y > canvas.height) this.reset();
-            }
-            draw() {
-                ctx.fillStyle = 'rgba(99, 102, 241, 0.2)';
-                ctx.beginPath();
-                ctx.arc(this.x, this.y, this.size, 0, Math.PI*2);
-                ctx.fill();
-            }
+        function toggleChat() {
+            chatVisible = !chatVisible;
+            document.getElementById('chatSection').classList.toggle('minimized', !chatVisible);
         }
 
-        for(let i=0; i<60; i++) particles.push(new Particle());
-
-        function animate() {
-            ctx.clearRect(0,0,canvas.width, canvas.height);
-            particles.forEach(p => { p.update(); p.draw(); });
-            requestAnimationFrame(animate);
+        function setGlobalFilter(cat) {
+            currentFilter = cat;
+            document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active-tab'));
+            const btn = document.getElementById(`btn-${cat}`);
+            if (btn) btn.classList.add('active-tab');
+            renderNodes();
         }
-        animate();
 
-        // --- Core Logic ---
-        const STORAGE_KEY = 'nexus_social_v1';
-        const input = document.getElementById('postInput');
-        const submitBtn = document.getElementById('submitBtn');
-        const feed = document.getElementById('feedContainer');
-        const autoSubmit = document.getElementById('enterSubmit');
-        const clearBtn = document.getElementById('clearBtn');
-        const storageInfo = document.getElementById('storage-info');
-
-        let posts = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
-
-        function saveAndRender() {
-            localStorage.setItem(STORAGE_KEY, JSON.stringify(posts));
+        function detectContent(text) {
+            const urlRegex = /^(https?:\/\/|www\.)[^\s]+$/;
+            const lower = text.toLowerCase();
             
-            // Calculate Storage Size
-            const size = (JSON.stringify(posts).length / 1024).toFixed(2);
-            storageInfo.textContent = `STORAGE: ${size}KB`;
-
-            if (posts.length === 0) {
-                feed.innerHTML = `
-                    <div class="has-text-centered py-6">
-                        <p class="has-text-grey">The feed is empty. Start the conversation!</p>
-                    </div>`;
-                return;
+            if (urlRegex.test(text)) return { type: 'web', lang: 'URL' };
+            
+            // JSON vs JSONL
+            if (text.startsWith('{') || text.startsWith('[')) {
+                try {
+                    JSON.parse(text);
+                    return { type: 'json', lang: 'JSON' };
+                } catch(e) {
+                    if (text.split('\n').every(line => { try { JSON.parse(line); return true; } catch(e) { return false; }})) {
+                        return { type: 'jsonl', lang: 'JsonL' };
+                    }
+                }
             }
 
-            feed.innerHTML = posts.slice().reverse().map(post => `
-                <div class="glass-card post">
-                    <div class="media">
-                        <div class="media-left">
-                            <figure class="image is-40x40">
-                                <img class="avatar" src="https://api.dicebear.com/7.x/avataaars/svg?seed=${post.userSeed}" alt="User">
-                            </figure>
-                        </div>
-                        <div class="media-content">
-                            <div class="content">
-                                <p>
-                                    <span class="username">@user_${post.userSeed.substring(0,6)}</span>
-                                    <span class="timestamp"> • ${post.timestamp}</span>
-                                    <br>
-                                    <span class="post-content">${escapeHTML(post.content)}</span>
-                                </p>
-                            </div>
-                            <div class="level is-mobile mt-2">
-                                <div class="level-left">
-                                    <a class="level-item has-text-grey is-size-7">Reply</a>
-                                    <a class="level-item has-text-grey is-size-7">Repost</a>
-                                    <a class="level-item has-text-grey is-size-7">Like</a>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            `).join('');
+            // AI & Frameworks
+            if (text.includes('tensorflow') || text.includes('tf.keras') || text.includes('import tensorflow as tf')) return { type: 'tensorflow', lang: 'TensorFlow' };
+            if (text.includes('jhipster') || text.includes('yo jhipster') || text.includes('.jdl')) return { type: 'jhipster', lang: 'JHipster' };
+
+            // Mobil
+            if (text.includes('import \'package:flutter') || text.includes('StatelessWidget') || text.includes('Widget build')) return { type: 'flutter', lang: 'Flutter' };
+            if (text.includes('fun main') || text.includes('val ') || text.includes('var ') && text.includes(': String')) return { type: 'kotlin', lang: 'Kotlin' };
+
+            // Scripts
+            if (text.startsWith('#!/bin/bash') || text.includes('grep ') || text.includes('sudo ') || text.includes('export ')) return { type: 'bash', lang: 'Bash' };
+            if (lower.includes('@echo off') || lower.includes('setlocal') || lower.includes('pause') && lower.includes('.bat')) return { type: 'batch', lang: 'Batch' };
+
+            // Database
+            if (lower.includes('select ') || lower.includes('create table') || lower.includes('update ')) return { type: 'database', lang: 'SQL' };
+            
+            // Andre Språk
+            if (text.includes('public static void main') || text.includes('System.out.println')) return { type: 'java', lang: 'Java' };
+            if (text.includes('#include <') || text.includes('std::cout')) return { type: 'cpp', lang: 'C++' };
+            if (text.includes('using System;') || text.includes('namespace ') || text.includes('Console.WriteLine')) return { type: 'csharp', lang: 'C#' };
+            if (text.includes('curl ') || text.includes('--request ')) return { type: 'curl', lang: 'Curl' };
+            if (text.includes('<!DOCTYPE html>')) return { type: 'html', lang: 'HTML' };
+            if (text.includes('def ') || text.includes('import ') || text.includes('print(')) return { type: 'python', lang: 'Python' };
+            if (text.includes('<?php')) return { type: 'php', lang: 'PHP' };
+            if (text.includes('const ') || text.includes('let ') || text.includes('=>')) return { type: 'javascript', lang: 'JavaScript' };
+            if (text.includes('---') && text.includes(': ')) return { type: 'yaml', lang: 'YAML' };
+
+            return { type: 'note', lang: 'Notat' };
         }
 
-        function handlePost() {
-            const content = input.value.trim();
-            if(!content) return;
+        function handleChatSubmit() {
+            const input = document.getElementById('chatInput');
+            const text = input.value.trim();
+            if (!text) return;
 
-            const newPost = {
-                id: Date.now(),
-                content: content,
-                userSeed: Math.random().toString(36).substring(7),
-                timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-            };
-
-            posts.push(newPost);
+            const detection = detectContent(text);
+            chatHistory.push({ role: 'user', content: text, type: detection.type });
             input.value = '';
-            saveAndRender();
+            renderChat();
+
+            setTimeout(() => {
+                const title = text.split('\n')[0].substring(0, 35) || 'Uten Tittel';
+                saveNode(title, text, detection.type, detection.lang);
+                chatHistory.push({ role: 'ai', content: `Lagt til i biblioteket under ${detection.lang}.`, type: 'system' });
+                renderChat();
+                updateStorageMetrics();
+            }, 300);
         }
 
-        function escapeHTML(str) {
-            const p = document.createElement('p');
-            p.textContent = str;
-            return p.innerHTML;
+        function saveNode(title, content, category, lang) {
+            nodes.unshift({ id: Date.now(), title, content, category, lang, timestamp: new Date().toISOString() });
+            localStorage.setItem('codebrain_nodes', JSON.stringify(nodes));
+            renderNodes();
         }
 
-        // --- Event Listeners ---
-        submitBtn.addEventListener('click', handlePost);
+        function renderNodes() {
+            const grid = document.getElementById('nodesGrid');
+            const empty = document.getElementById('nodesEmpty');
+            const filtered = currentFilter === 'all' ? nodes : nodes.filter(n => n.category === currentFilter);
+            
+            grid.innerHTML = '';
+            filtered.length === 0 ? empty.classList.remove('hidden') : empty.classList.add('hidden');
 
-        input.addEventListener('keydown', (e) => {
-            if(e.key === 'Enter' && autoSubmit.checked && !e.shiftKey) {
-                e.preventDefault();
-                handlePost();
-            }
-        });
+            filtered.forEach(node => {
+                const card = document.createElement('div');
+                card.className = `node-card glass rounded-2xl p-6 border border-white/5 flex flex-col h-full code-card-${node.category}`;
+                card.innerHTML = `
+                    <div class="flex justify-between items-start mb-4">
+                        <span class="px-2 py-1 rounded-md bg-white/5 text-[9px] font-black uppercase text-slate-500 border border-white/5">${node.lang}</span>
+                        <button onclick="deleteNode(${node.id})" class="text-slate-600 hover:text-red-400">🗑️</button>
+                    </div>
+                    <h4 class="text-sm font-bold text-white mb-4 line-clamp-1">${node.title}</h4>
+                    <pre class="code-font text-[10px] bg-black/50 p-4 rounded-xl mb-4 overflow-x-auto text-blue-200 border border-white/5 flex-1 whitespace-pre-wrap">${node.content}</pre>
+                    <div class="mt-auto flex justify-between items-center text-[10px]">
+                        <span class="text-slate-600 font-bold">${new Date(node.timestamp).toLocaleDateString()}</span>
+                        <button onclick="copyToClipboard('${node.content.replace(/'/g, "\\'")}')" class="text-blue-500 font-black hover:text-blue-400">KOPIER</button>
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+            document.getElementById('view-title').innerText = currentFilter === 'all' ? 'Hovedbibliotek' : `${currentFilter.toUpperCase()}`;
+        }
 
-        clearBtn.addEventListener('click', () => {
-            if(confirm("Are you sure you want to clear your local activity feed?")) {
-                posts = [];
-                saveAndRender();
-            }
-        });
+        function deleteNode(id) {
+            nodes = nodes.filter(n => n.id !== id);
+            localStorage.setItem('codebrain_nodes', JSON.stringify(nodes));
+            renderNodes();
+            updateStorageMetrics();
+        }
 
-        // Initialize Display
-        saveAndRender();
+        function copyToClipboard(text) {
+            const el = document.createElement('textarea'); el.value = text; document.body.appendChild(el); el.select(); document.execCommand('copy'); document.body.removeChild(el);
+            const t = document.getElementById('toast'); t.style.opacity = '1'; setTimeout(() => t.style.opacity = '0', 2000);
+        }
 
+        function renderChat() {
+            const box = document.getElementById('chatBox');
+            box.innerHTML = '';
+            chatHistory.forEach(msg => {
+                const bubble = document.createElement('div');
+                bubble.className = `p-4 rounded-2xl text-xs ${msg.role === 'user' ? 'bg-blue-600 ml-auto' : 'bg-white/5 mr-auto border border-white/10 text-slate-300'}`;
+                bubble.innerHTML = `<div class="break-words">${msg.content}</div>`;
+                box.appendChild(bubble);
+            });
+            box.scrollTop = box.scrollHeight;
+            localStorage.setItem('codebrain_chat', JSON.stringify(chatHistory));
+        }
+
+        function updateStorageMetrics() {
+            const size = (JSON.stringify(nodes).length * 2) / 1024 / 1024;
+            const p = Math.min((size / 5) * 100, 100).toFixed(1);
+            document.getElementById('storageBar').style.width = `${p}%`;
+            document.getElementById('storageUsage').innerText = `${p}%`;
+        }
+
+        function clearAllData() { if(confirm("Vil du slette hele biblioteket?")) { localStorage.clear(); location.reload(); } }
     </script>
 </body>
 </html>
+
 
