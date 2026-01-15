@@ -12,3 +12,24 @@ This application includes:
 
 -------------------
 
+
+
+# Local Host Offline
+
+
+How to Host and Use this Offline:
+1. Using VS Code Live Server:
+• Save the code above as index.html.
+• Right-click the file in VS Code and select "Open with Live Server".
+• Your browser will open http://127.0.0.1:5500.
+2. Using Python (Terminal/Command Prompt):
+• Navigate to the folder where you saved the file.
+• Run: python -m http.server 8000.
+• Open your browser to http://localhost:8000.
+3. Going Offline:
+• Once the page loads, your browser caches the assets.
+• Turn off your Wi-Fi or disconnect your Ethernet.
+• Refresh the page. Because it uses Local Storage, your chat history and "Agent" settings will remain perfectly intact.
+The Text-to-Speech uses the built-in operating system voices, so it works 100% offline without needing a Google or Amazon cloud API. Your "memories" are stored safely on your own computer and never leave your device.
+
+
