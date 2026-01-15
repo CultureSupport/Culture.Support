@@ -196,7 +196,7 @@
             <div class="p-5 border-b border-white/5 flex justify-between items-center bg-white/[0.02]">
                 <div class="flex items-center gap-3">
                     <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-600 to-indigo-700 flex items-center justify-center shadow-lg text-white font-bold">V5</div>
-                    <h3 class="font-bold text-sm tracking-tight uppercase">Terminal_Input</h3>
+                    <h3 class="font-bold text-sm tracking-tight uppercase">Terminal Klient</h3>
                 </div>
                 <button onclick="toggleChat()" class="p-2 hover:bg-white/10 rounded-xl text-slate-400 transition">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
@@ -223,7 +223,7 @@
     <script>
         let nodes = JSON.parse(localStorage.getItem('codebrain_nodes')) || [];
         let chatHistory = JSON.parse(localStorage.getItem('codebrain_chat')) || [
-            { role: 'ai', content: 'System v5 klar. Støtter nå Flutter, Kotlin, Bash, Batch, JHipster og TensorFlow.', type: 'system' }
+            { role: 'ai', content: 'Systemet hvor du kan legge inn koder og automatisk kategori lagre chat koder i form av kode blokker eller snippets .', type: 'system' }
         ];
         let currentFilter = 'all';
         let chatVisible = true;
