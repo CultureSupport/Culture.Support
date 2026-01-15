@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title> Culture.Support </title>
+    <title>AI Mobil GUI - Auto-Arkivering</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Fira+Code:wght@400;500&display=swap');
@@ -100,7 +100,7 @@
                 <div>
                     <h1 class="text-xl font-black text-white tracking-tight italic">AI MOBIL GUI</h1>
                     <div class="flex items-center gap-2">
-                        <span class="text-[10px] text-purple-400 font-black uppercase tracking-[0.2em]">System Online</span>
+                        <span class="text-[10px] text-purple-400 font-black uppercase tracking-[0.2em]">Auto-Archive System</span>
                     </div>
                 </div>
             </div>
@@ -124,7 +124,7 @@
         <div class="p-6 md:p-8 bg-black/40 border-t border-white/5 backdrop-blur-xl z-10">
             <div class="max-w-4xl mx-auto relative group">
                 <textarea id="chatInput" rows="1" oninput="autoResize(this)" 
-                          placeholder="F.eks: Lagre dette som app.py..." 
+                          placeholder="Lim inn kode og avslutt med 'lagre som filnavn.html'..." 
                           class="w-full bg-white/[0.04] border border-white/10 rounded-3xl px-6 py-5 outline-none focus:border-purple-500/50 focus:ring-4 focus:ring-purple-500/5 transition text-base code-font resize-none pr-16 custom-scrollbar placeholder:text-slate-600"></textarea>
                 
                 <button onclick="handleChatSubmit()" class="absolute right-3 top-3 bg-purple-600 text-white p-4 rounded-2xl hover:bg-purple-500 transition-all shadow-xl active:scale-90 hover:shadow-purple-500/40">
@@ -135,10 +135,10 @@
             </div>
             <div class="flex justify-center mt-6 gap-8">
                 <p class="text-[10px] text-slate-600 font-bold uppercase tracking-widest flex items-center gap-2">
-                    <span class="w-1 h-1 rounded-full bg-purple-500"></span> Smart Filnavngivning
+                    <span class="w-1 h-1 rounded-full bg-purple-500"></span> Gjenkjenner Imports
                 </p>
                 <p class="text-[10px] text-slate-600 font-bold uppercase tracking-widest flex items-center gap-2">
-                    <span class="w-1 h-1 rounded-full bg-purple-500"></span> .js, .py, .html, .json, .txt
+                    <span class="w-1 h-1 rounded-full bg-purple-500"></span> Auto-snippet tags
                 </p>
             </div>
         </div>
@@ -148,18 +148,18 @@
             <header class="p-6 border-b border-white/5 bg-white/5 flex justify-between items-center">
                 <div>
                     <h2 class="text-xl font-black text-white italic tracking-tight">KODE BIBLIOTEK</h2>
-                    <p class="text-[9px] text-purple-400 font-black uppercase tracking-[0.2em]">Dine Filer</p>
+                    <p class="text-[9px] text-purple-400 font-black uppercase tracking-[0.2em]">Automatisk Arkiverte Filer</p>
                 </div>
-                <button onclick="toggleStorage()" class="px-5 py-2.5 bg-white/10 hover:bg-white/20 rounded-2xl text-xs font-bold text-white transition uppercase tracking-widest">Tilbake</button>
+                <button onclick="toggleStorage()" class="px-5 py-2.5 bg-white/10 hover:bg-white/20 rounded-2xl text-xs font-bold text-white transition uppercase tracking-widest">Lukk</button>
             </header>
             
             <div class="p-6 flex flex-col md:flex-row gap-4 items-center justify-between border-b border-white/5 bg-black/20">
                 <div class="relative w-full md:w-96">
-                    <input type="text" id="storageSearch" oninput="renderStorageItems()" placeholder="Søk i filnavn eller kode..." class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm outline-none focus:border-purple-500/50 transition">
+                    <input type="text" id="storageSearch" oninput="renderStorageItems()" placeholder="Søk i snippets..." class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm outline-none focus:border-purple-500/50 transition">
                 </div>
                 <div class="flex gap-3 w-full md:w-auto">
-                    <button onclick="exportData('json')" class="flex-1 md:flex-none px-4 py-3 bg-indigo-600/20 text-indigo-400 rounded-xl text-[10px] font-black uppercase tracking-widest border border-indigo-500/20 hover:bg-indigo-600/30 transition">Backup (JSON)</button>
-                    <button onclick="clearAllData()" class="flex-1 md:flex-none px-4 py-3 bg-red-600/20 text-red-400 rounded-xl text-[10px] font-black uppercase tracking-widest border border-red-500/20 hover:bg-red-600/30 transition">Nullstill</button>
+                    <button onclick="exportData('json')" class="flex-1 md:flex-none px-4 py-3 bg-indigo-600/20 text-indigo-400 rounded-xl text-[10px] font-black uppercase tracking-widest border border-indigo-500/20 hover:bg-indigo-600/30 transition">Full Backup</button>
+                    <button onclick="clearAllData()" class="flex-1 md:flex-none px-4 py-3 bg-red-600/20 text-red-400 rounded-xl text-[10px] font-black uppercase tracking-widest border border-red-500/20 hover:bg-red-600/30 transition">Tøm alt</button>
                 </div>
             </div>
 
@@ -169,12 +169,11 @@
         </div>
     </div>
 
-    <!-- Toast varsling -->
     <div id="toast" class="fixed bottom-10 left-1/2 -translate-x-1/2 bg-purple-600 text-white px-8 py-4 rounded-2xl text-xs font-black opacity-0 transition-all duration-300 pointer-events-none z-50 shadow-2xl uppercase tracking-widest">Kopiert!</div>
 
     <script>
         let chatHistory = JSON.parse(localStorage.getItem('codebrain_fullgui_chat')) || [
-            { role: 'ai', content: '👋 <b>Velkommen til avansert filbehandling!</b><br><br>Du kan nå be meg lagre koden din som spesifikke filer. Prøv:<br><i>"lagre dette som index.html"</i> eller <i>"lagre som app.py"</i>.<br><br>Jeg vil gjenkjenne filnavnet og legge det i biblioteket ditt.' }
+            { role: 'ai', content: '🤖 <b>System Oppdatert.</b><br><br>Jeg skanner nå automatisk etter kodesnutter (HTML tags, imports, libraries) og lagrer dem.<br><br>Eksempel: Skriv <i>"&lt;div&gt;Hei&lt;/div&gt; lagre som test.html"</i>' }
         ];
 
         window.onload = () => {
@@ -190,9 +189,7 @@
         function toggleStorage() {
             const panel = document.getElementById('storagePanel');
             panel.classList.toggle('open');
-            if(panel.classList.contains('open')) {
-                renderStorageItems();
-            }
+            if(panel.classList.contains('open')) renderStorageItems();
         }
 
         function autoResize(textarea) {
@@ -211,52 +208,64 @@
             renderChat();
 
             setTimeout(() => {
-                const langData = analyzeContentAndIntent(text);
-                saveData(text, langData);
-                
-                chatHistory.push({ 
-                    role: 'ai', 
-                    content: `💾 <b>Fil opprettet:</b> <code class="bg-white/10 px-2 py-0.5 rounded text-purple-300">${langData.filename}</code><br>Koden din er lagret i biblioteket og kan lastes ned når som helst.` 
-                });
-                renderChat();
-            }, 600);
+                const results = processSmartContent(text);
+                if (results.saved) {
+                    chatHistory.push({ 
+                        role: 'ai', 
+                        content: `✅ <b>Automatisk Arkivert:</b> <span class="text-purple-300 font-bold">${results.filename}</span><br>Koden er gjenkjent som ${results.lang} og lagret i biblioteket.` 
+                    });
+                    renderChat();
+                }
+            }, 500);
         }
 
-        function analyzeContentAndIntent(text) {
+        function processSmartContent(text) {
             const low = text.toLowerCase();
-            let filename = "snippet_" + Date.now();
+            let filename = "";
+            let cleanContent = text;
             
-            // Sjekk etter "lagre som X" mønster
-            const match = text.match(/lagre\s+(?:dette\s+)?som\s+([a-zA-Z0-9._-]+)/i);
-            if (match && match[1]) {
-                filename = match[1];
+            // 1. Sjekk for "lagre som [navn]" på slutten av strengen
+            const saveMatch = text.match(/(?:lagre\s+(?:dette\s+)?som\s+)([a-zA-Z0-9._-]+)/i);
+            if (saveMatch) {
+                filename = saveMatch[1];
+                // Fjern instruksjonen fra innholdet som skal lagres
+                cleanContent = text.replace(saveMatch[0], "").trim();
             }
 
-            // Standard gjenkjenning av type hvis ikke spesifisert i filnavn
+            // 2. Gjenkjenn teknologi/språk
             let type = 'text';
-            let name = 'Notat';
-            let ext = filename.includes('.') ? filename.split('.').pop() : 'txt';
+            let lang = 'Notat';
+            let ext = 'txt';
 
-            if (!filename.includes('.')) {
-                if (low.includes('function') || low.includes('const ')) { type = 'javascript'; name = 'JavaScript'; ext = 'js'; }
-                else if (low.includes('def ') || low.includes('import ')) { type = 'python'; name = 'Python'; ext = 'py'; }
-                else if (low.includes('<html') || low.includes('<!doctype')) { type = 'html'; name = 'HTML'; ext = 'html'; }
-                else if (text.trim().startsWith('{') || text.trim().startsWith('[')) { type = 'json'; name = 'JSON'; ext = 'json'; }
-                filename += "." + ext;
+            const hasHtml = /<[a-z][\s\S]*>/i.test(cleanContent);
+            const hasImport = low.includes('import ') || low.includes('@import') || low.includes('require(');
+            const hasJs = low.includes('const ') || low.includes('function') || low.includes('=>');
+            const hasCss = low.includes('{') && low.includes(':') && (low.includes('color:') || low.includes('margin:'));
+
+            if (hasHtml) { type = 'html'; lang = 'HTML/XML'; ext = 'html'; }
+            else if (hasImport || hasJs) { type = 'javascript'; lang = 'JavaScript/Logic'; ext = 'js'; }
+            else if (hasCss) { type = 'css'; lang = 'CSS Styles'; ext = 'css'; }
+            else if (cleanContent.trim().startsWith('{')) { type = 'json'; lang = 'JSON Data'; ext = 'json'; }
+
+            if (!filename) {
+                filename = `snippet_${Date.now()}.${ext}`;
+            } else if (!filename.includes('.')) {
+                filename += `.${ext}`;
             }
 
-            return { type, name, ext, filename };
+            saveToLibrary(cleanContent, filename, type, lang, ext);
+            return { saved: true, filename, lang };
         }
 
-        function saveData(content, data) {
+        function saveToLibrary(content, filename, type, lang, ext) {
             let nodes = JSON.parse(localStorage.getItem('codebrain_nodes_v10')) || [];
             nodes.unshift({
                 id: Date.now(),
                 content: content,
-                filename: data.filename,
-                category: data.type,
-                lang: data.name,
-                ext: data.ext,
+                filename: filename,
+                category: type,
+                lang: lang,
+                ext: ext,
                 timestamp: new Date().toISOString()
             });
             localStorage.setItem('codebrain_nodes_v10', JSON.stringify(nodes));
@@ -268,8 +277,8 @@
             chatHistory.forEach((msg) => {
                 const isAi = msg.role === 'ai';
                 const div = document.createElement('div');
-                div.className = `chat-bubble p-6 rounded-[2rem] text-sm md:text-base leading-relaxed max-w-[90%] md:max-w-[80%] ${
-                    isAi ? 'bg-white/5 mr-auto border border-white/10 text-slate-200 rounded-bl-none' : 'bg-purple-600 ml-auto text-white shadow-2xl shadow-purple-900/30 rounded-br-none'
+                div.className = `chat-bubble p-6 rounded-[2rem] text-sm leading-relaxed max-w-[90%] md:max-w-[80%] ${
+                    isAi ? 'bg-white/5 mr-auto border border-white/10 text-slate-200 rounded-bl-none' : 'bg-purple-600 ml-auto text-white shadow-2xl rounded-br-none'
                 }`;
                 div.innerHTML = `<div class="break-words">${msg.content}</div>`;
                 box.appendChild(div);
@@ -296,26 +305,26 @@
 
             filtered.forEach(node => {
                 const card = document.createElement('div');
-                card.className = 'glass p-5 rounded-2xl border border-white/5 flex flex-col gap-3 group relative hover:border-purple-500/30 transition';
+                card.className = 'glass p-5 rounded-2xl border border-white/5 flex flex-col gap-3 group hover:border-purple-500/30 transition relative';
                 card.innerHTML = `
                     <div class="flex justify-between items-start">
-                        <div>
-                            <h3 class="text-white font-bold text-sm truncate max-w-[150px]">${node.filename || 'Uten navn'}</h3>
+                        <div class="overflow-hidden">
+                            <h3 class="text-white font-bold text-sm truncate">${node.filename}</h3>
                             <span class="text-[8px] font-black uppercase text-purple-400">${node.lang}</span>
                         </div>
-                        <div class="flex gap-2">
-                             <button onclick="downloadSnippet('${node.id}')" class="p-2 bg-white/5 rounded-lg hover:bg-green-500/20 text-green-500 transition" title="Last ned">
+                        <div class="flex gap-1">
+                             <button onclick="downloadSnippet('${node.id}')" class="p-2 bg-white/5 rounded-lg text-green-500 hover:bg-green-500/20">
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
                              </button>
-                             <button onclick="deleteNode('${node.id}')" class="p-2 bg-white/5 rounded-lg hover:bg-red-500/20 text-red-500 transition">
+                             <button onclick="deleteNode('${node.id}')" class="p-2 bg-white/5 rounded-lg text-red-500 hover:bg-red-500/20">
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
                              </button>
                         </div>
                     </div>
-                    <pre class="code-font text-[10px] bg-black/40 p-3 rounded-lg overflow-x-auto text-slate-400 max-h-32 custom-scrollbar border border-white/5">${node.content.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;")}</pre>
-                    <div class="flex justify-between items-center mt-2">
-                        <span class="text-[8px] text-slate-600 font-bold uppercase">${new Date(node.timestamp).toLocaleDateString()}</span>
-                        <button onclick="copyToClipboard('${node.id}')" class="text-[9px] text-slate-400 hover:text-white uppercase font-bold tracking-tighter">Kopier</button>
+                    <pre class="code-font text-[9px] bg-black/40 p-3 rounded-lg overflow-x-auto text-slate-400 max-h-24 custom-scrollbar border border-white/5">${node.content.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;")}</pre>
+                    <div class="flex justify-between items-center mt-1">
+                        <span class="text-[7px] text-slate-600 font-bold uppercase">${new Date(node.timestamp).toLocaleTimeString()}</span>
+                        <button onclick="copyToClipboard('${node.id}')" class="text-[9px] text-slate-400 hover:text-white uppercase font-bold">Kopier</button>
                     </div>
                 `;
                 container.appendChild(card);
@@ -326,16 +335,15 @@
             let nodes = JSON.parse(localStorage.getItem('codebrain_nodes_v10')) || [];
             const node = nodes.find(n => n.id.toString() === id.toString());
             if (!node) return;
-
             const blob = new Blob([node.content], { type: 'text/plain' });
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = url;
-            a.download = node.filename || `snippet.${node.ext}`;
+            a.download = node.filename;
             document.body.appendChild(a);
             a.click();
             document.body.removeChild(a);
-            showToast(`Lastet ned: ${node.filename}`);
+            showToast(`Fil lagret: ${node.filename}`);
         }
 
         function deleteNode(id) {
@@ -346,14 +354,14 @@
         }
 
         function clearAllData() {
-            if(confirm("Dette sletter ALLE filer i biblioteket. Er du sikker?")) {
+            if(confirm("Tømme hele biblioteket?")) {
                 localStorage.removeItem('codebrain_nodes_v10');
                 renderStorageItems();
             }
         }
 
         function clearChat() {
-            if(confirm("Slette chat-loggen?")) {
+            if(confirm("Slette chatten?")) {
                 chatHistory = [chatHistory[0]];
                 localStorage.setItem('codebrain_fullgui_chat', JSON.stringify(chatHistory));
                 renderChat();
@@ -370,7 +378,7 @@
                 el.select();
                 document.execCommand('copy');
                 document.body.removeChild(el);
-                showToast("Kopiert til utklippstavle");
+                showToast("Kopiert!");
             }
         }
 
@@ -381,21 +389,19 @@
             setTimeout(() => t.style.opacity = '0', 2000);
         }
 
-        function exportData(format) {
+        function exportData() {
             const data = localStorage.getItem('codebrain_nodes_v10') || '[]';
             const blob = new Blob([data], { type: 'application/json' });
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = url;
-            a.download = `backup_bibliotek_${new Date().toISOString().slice(0,10)}.json`;
-            document.body.appendChild(a);
+            a.download = `backup_${Date.now()}.json`;
             a.click();
-            document.body.removeChild(a);
-            showToast("Backup fullført!");
         }
     </script>
 </body>
 </html>
+
 
 
 
