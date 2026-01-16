@@ -1,111 +1,159 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="nb">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title> Protests</title>
+    <title>Mobil Musikkstudio Tutorial</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        /* High-speed background flash */
-        @keyframes flash-red-dark {
-            0%, 49% { background-color: #000000; }
-            50%, 100% { background-color: #990000; }
-        }
-
-        /* High-speed text blink */
-        @keyframes blink-text {
-            0%, 49% { opacity: 1; }
-            50%, 100% { opacity: 0; }
-        }
-
-        /* Rapid scale pulse */
-        @keyframes rapid-pulse {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.15); }
-            100% { transform: scale(1); }
-        }
-
-        /* Fast scrolling marquee */
-        @keyframes fast-marquee {
-            0% { transform: translateX(100%); }
-            100% { transform: translateX(-100%); }
-        }
-
-        .animate-flash-bg {
-            animation: flash-red-dark 0.12s infinite; /* 5x speed (0.2s cycle) */
-        }
-
-        .animate-blink-fast {
-            animation: blink-text 0.15s infinite;
-        }
-
-        .animate-pulse-fast {
-            animation: rapid-pulse 0.12s infinite;
-        }
-
-        .marquee-container {
-            overflow: hidden;
-            white-space: nowrap;
-            background: #ff0000;
-            color: #fff;
-            padding: 10px 0;
-            font-weight: 900;
-            text-transform: uppercase;
-            border-top: 4px solid white;
-            border-bottom: 4px solid white;
-        }
-
-        .marquee-content {
-            display: inline-block;
-            animation: fast-marquee 3s linear infinite; /* Increased speed */
-            font-size: 2rem;
-        }
-
-        .glitch-text {
-            text-shadow: 2px 2px #ff0000, -2px -2px #0000ff;
-        }
+        body { font-family: 'Inter', sans-serif; scroll-behavior: smooth; }
+        .section-card { @apply bg-white p-8 rounded-2xl shadow-lg mb-8 border border-gray-100; }
+        .step-number { @apply bg-blue-600 text-white w-10 h-10 flex items-center justify-center rounded-full font-bold mb-4; }
     </style>
 </head>
-<body class="animate-flash-bg h-screen flex flex-col justify-between items-center overflow-hidden font-sans">
+<body class="bg-gray-50 text-gray-800">
 
-    <!-- Top Warning Bar -->
-    <div class="marquee-container w-full">
-        <div class="marquee-content">
-            PROTEST 🪧 AROUND GLOBE — URGENT UPDATE — PROTEST 🪧 AROUND GLOBE — URGENT UPDATE — PROTEST 🪧 AROUND GLOBE
+    <nav class="bg-black text-white p-4 sticky top-0 z-50">
+        <div class="container mx-auto flex justify-between items-center">
+            <h1 class="text-xl font-bold">Mobil Studio Pro</h1>
+            <a href="#start" class="bg-blue-500 px-4 py-2 rounded-lg text-sm">Start Guide</a>
         </div>
-    </div>
+    </nav>
 
-    <!-- Main Content -->
-    <div class="flex flex-col items-center justify-center text-center p-4">
-        <div class="animate-pulse-fast mb-4">
-            <span class="text-8xl md:text-9xl">⚠️</span>
-        </div>
-        
-        <h1 class="text-white text-5xl md:text-8xl font-black italic uppercase tracking-tighter animate-blink-fast glitch-text">
-            Protest 🪧 Around Globe
-        </h1>
-        
-        <div class="mt-8 bg-white text-black px-6 py-2 font-black text-2xl uppercase skew-x-12 animate-pulse-fast">
-            Live Updates Now
-        </div>
-    </div>
+    <header class="bg-gradient-to-r from-indigo-900 to-purple-800 text-white py-20 px-4 text-center">
+        <h2 class="text-4xl md:text-6xl font-extrabold mb-4">Fra Mobil til Spotify</h2>
+        <p class="text-xl opacity-90">Komplett 14-trinns guide til profesjonell musikkproduksjon på farten.</p>
+    </header>
 
-    <!-- Bottom Warning Bar -->
-    <div class="marquee-container w-full">
-        <div class="marquee-content" style="animation-direction: reverse;">
-            PROTEST 🪧 AROUND GLOBE — BREAKING NEWS — PROTEST 🪧 AROUND GLOBE — BREAKING NEWS — PROTEST 🪧 AROUND GLOBE
-        </div>
-    </div>
+    <main class="container mx-auto px-4 py-12 max-w-4xl">
 
-    <script>
-        // Interactive element to "Silence" or "Boost" the visual intensity
-        document.body.addEventListener('click', () => {
-            console.log("Alert Acknowledged");
-            // Placeholder for interactivity
-        });
-    </script>
+        <!-- Seksjon 1: Valg av DAW -->
+        <section id="start" class="section-card">
+            <div class="step-number">1</div>
+            <h3 class="text-2xl font-bold mb-4">Velg din DAW (Digital Audio Workstation)</h3>
+            <p class="mb-4">Dette er selve hjertet i studioet ditt. De mest populære valgene er:</p>
+            <ul class="list-disc pl-6 space-y-2">
+                <li><strong>FL Studio Mobile:</strong> Best for beats og elektronisk musikk.</li>
+                <li><strong>Steinberg Cubasis 3:</strong> Den mest komplette "desktop-aktige" opplevelsen på mobil.</li>
+                <li><strong>Korg Gadget:</strong> Et unikt økosystem med fokuserte instrumenter.</li>
+            </ul>
+            <div class="mt-4 p-4 bg-gray-100 rounded-lg text-center">
+                
+            </div>
+        </section>
+
+        <!-- Seksjon 2: VST og AUv3 Forklart -->
+        <section class="section-card">
+            <div class="step-number">2</div>
+            <h3 class="text-2xl font-bold mb-4">Forstå Plugin-formater</h3>
+            <p>På mobil bruker vi sjelden "VST" (som er for PC), men heller <strong>AUv3</strong> (Audio Unit v3). Dette lar en app (f.eks. Korg Module) kjøre inne i en annen app (f.eks. Cubasis).</p>
+        </section>
+
+        <!-- Seksjon 3: Installere Instrument-apper -->
+        <section class="section-card">
+            <div class="step-number">3</div>
+            <h3 class="text-2xl font-bold mb-4">Installere Korg Module eller Gadget</h3>
+            <p>Gå til App Store eller Play Store og last ned instrument-apper. Korg Module er fantastisk for piano og synther som fungerer som frittstående lydmoduler.</p>
+            <div class="mt-4 p-4 bg-gray-100 rounded-lg text-center">
+                
+            </div>
+        </section>
+
+        <!-- Seksjon 4: Koble sammen apper (IAA / AUv3) -->
+        <section class="section-card">
+            <div class="step-number">4</div>
+            <h3 class="text-2xl font-bold mb-4">Laste inn instrumenter i Cubasis/FL Studio</h3>
+            <p>I Cubasis: Trykk på "Instrument"-sporet, velg "Audio Units" og finn Korg-appen din. Nå kan du spille på Korg-lyder direkte fra Cubasis-tangentene.</p>
+        </section>
+
+        <!-- Seksjon 5: MIDI-kontroller Setup -->
+        <section class="section-card">
+            <div class="step-number">5</div>
+            <h3 class="text-2xl font-bold mb-4">Koble til fysiske tangenter</h3>
+            <p>Bruk en USB-C til USB-A adapter (OTG) for å koble et MIDI-keyboard direkte til mobilen. Dette gir en mye bedre spilleopplevelse.</p>
+        </section>
+
+        <!-- Seksjon 6: Opptak og Arrangering -->
+        <section class="section-card">
+            <div class="step-number">6</div>
+            <h3 class="text-2xl font-bold mb-4">Selve låtskrivingen</h3>
+            <p>Bruk "Piano Roll" for å tegne inn noter eller ta opp i sanntid. Organiser blokkene dine i tidslinjen for å bygge opp vers, refreng og bro.</p>
+        </section>
+
+        <!-- Seksjon 7: Miksing på Mobil -->
+        <section class="section-card">
+            <div class="step-number">7</div>
+            <h3 class="text-2xl font-bold mb-4">Miksing (EQ og Kompresjon)</h3>
+            <p>Bruk innebygde effekter for å rydde opp i lyden. Skjær bort lavbass på instrumenter som ikke trenger det ved bruk av en High Pass-filter.</p>
+            <div class="mt-4 p-4 bg-gray-100 rounded-lg text-center">
+                
+            </div>
+        </section>
+
+        <!-- Seksjon 8: Mastering-apper -->
+        <section class="section-card">
+            <div class="step-number">8</div>
+            <h3 class="text-2xl font-bold mb-4">Gjør lyden høy og klar</h3>
+            <p>Bruk apper som <strong>GrandFinale</strong> eller <strong>CloudBounce</strong> for å gi låten din det siste profesjonelle "pushet" før eksport.</p>
+        </section>
+
+        <!-- Seksjon 9: Eksportere Lydfilen -->
+        <section class="section-card">
+            <div class="step-number">9</div>
+            <h3 class="text-2xl font-bold mb-4">Eksporter til WAV</h3>
+            <p>Velg alltid WAV (24-bit) for best kvalitet. Unngå MP3 før den aller siste fasen, da MP3 mister lyddetaljer.</p>
+        </section>
+
+        <!-- Seksjon 10: Plateomslag (Artwork) -->
+        <section class="section-card">
+            <div class="step-number">10</div>
+            <h3 class="text-2xl font-bold mb-4">Lag Cover Art</h3>
+            <p>Bruk Canva eller Adobe Express på mobilen for å lage et bilde på 3000x3000px. Dette kreves av Spotify.</p>
+        </section>
+
+        <!-- Seksjon 11: Opplasting til SoundCloud -->
+        <section class="section-card">
+            <div class="step-number">11</div>
+            <h3 class="text-2xl font-bold mb-4">SoundCloud Opplasting</h3>
+            <ol class="list-decimal pl-6 space-y-2">
+                <li>Åpne SoundCloud-appen.</li>
+                <li>Trykk på pil-opp ikonet.</li>
+                <li>Velg din WAV-fil fra mobilens filbehandler.</li>
+                <li>Legg til tittel og cover.</li>
+            </ol>
+        </section>
+
+        <!-- Seksjon 12: Velg en Distributør (Spotify) -->
+        <section class="section-card">
+            <div class="step-number">12</div>
+            <h3 class="text-22xl font-bold mb-4">Hvordan komme på Spotify?</h3>
+            <p>Du kan ikke laste opp direkte til Spotify. Du må bruke en distributør som <strong>DistroKid</strong> eller <strong>TuneCore</strong>.</p>
+            <div class="mt-4 p-4 bg-gray-100 rounded-lg text-center">
+                
+            </div>
+        </section>
+
+        <!-- Seksjon 13: Opplasting til Distributør -->
+        <section class="section-card">
+            <div class="step-number">13</div>
+            <h3 class="text-2xl font-bold mb-4">Sende inn låten</h3>
+            <p>Logg inn på DistroKid på mobilen, last opp WAV-filen og coveret, sett en utgivelsesdato (minst 2 uker frem i tid), og velg Spotify/Apple Music.</p>
+        </section>
+
+        <!-- Seksjon 14: Markedsføring -->
+        <section class="section-card">
+            <div class="step-number">14</div>
+            <h3 class="text-2xl font-bold mb-4">Spotify for Artists</h3>
+            <p>Last ned "Spotify for Artists" appen for å følge med på strømmetallene dine og pitche låten din til offisielle spillelister.</p>
+        </section>
+
+    </main>
+
+    <footer class="bg-gray-900 text-white py-8 text-center">
+        <p>&copy; Culture.Support : Mobiltelefon Tutorial Musikk Produksjon</p>
+    </footer>
+
 </body>
 </html>
-
 
 
