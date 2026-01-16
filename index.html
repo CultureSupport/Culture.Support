@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Warning Banner Demonstration</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @keyframes marquee {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-50%); }
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0) scale(1); }
+            50% { transform: translateY(-10px) scale(1.02); }
+        }
+
+        .marquee-content {
+            display: flex;
+            white-space: nowrap;
+            animation: marquee 20s linear infinite;
+        }
+
+        .floating-banner {
+            animation: float 4s ease-in-out infinite;
+        }
+
+        /* Strict 15px text as per previous requirement */
+        .text-15px {
+            font-size: 15px !important;
+        }
+
+        .warning-stripe {
+            background: repeating-linear-gradient(
+                45deg,
+                #facc15,
+                #facc15 10px,
+                #000 10px,
+                #000 20px
+            );
+        }
+    </style>
+</head>
+<body class="bg-slate-100 dark:bg-slate-950 min-h-screen flex flex-col items-center justify-center overflow-hidden transition-colors duration-500">
+
+    <!-- Theme Toggle -->
+    <button onclick="document.documentElement.classList.toggle('dark')" class="fixed top-5 right-5 p-2 rounded-full bg-white dark:bg-slate-800 shadow-lg z-50">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 dark:text-yellow-400 text-slate-700" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 9h-1m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
+        </svg>
+    </button>
+
+    <!-- Main Banner Container -->
+    <div class="w-full max-w-4xl px-4">
+        
+        <div class="floating-banner relative group">
+            <!-- Warning Stripes Top -->
+            <div class="warning-stripe h-2 w-full rounded-t-lg opacity-80"></div>
+            
+            <!-- Main Banner Content -->
+            <div class="bg-yellow-400 dark:bg-yellow-500 text-black py-4 overflow-hidden border-x-4 border-black shadow-[10px_10px_0px_0px_rgba(0,0,0,1)] dark:shadow-[10px_10px_0px_0px_rgba(255,255,255,0.1)]">
+                <div class="marquee-content flex items-center">
+                    <!-- Duplicate text for seamless loop -->
+                    <div class="flex items-center space-x-8 px-4">
+                        <span class="text-15px font-black uppercase tracking-tighter">⚠️ Warning: Demonstrations Happening Around .</span>
+                        <span class="text-15px font-black uppercase tracking-tighter text-black/40">●</span>
+                        <span class="text-15px font-black uppercase tracking-tighter">⚠️ Warning: Demonstrations Happening Around .</span>
+                        <span class="text-15px font-black uppercase tracking-tighter text-black/40">●</span>
+                        <span class="text-15px font-black uppercase tracking-tighter">⚠️ Warning: Demonstrations Happening Around .</span>
+                        <span class="text-15px font-black uppercase tracking-tighter text-black/40">●</span>
+                    </div>
+                    <div class="flex items-center space-x-8 px-4">
+                        <span class="text-15px font-black uppercase tracking-tighter">⚠️ Warning: Demonstrations Happening Around .</span>
+                        <span class="text-15px font-black uppercase tracking-tighter text-black/40">●</span>
+                        <span class="text-15px font-black uppercase tracking-tighter">⚠️ Warning: Demonstrations Happening Around .</span>
+                        <span class="text-15px font-black uppercase tracking-tighter text-black/40">●</span>
+                        <span class="text-15px font-black uppercase tracking-tighter">⚠️ Warning: Demonstrations Happening Around .</span>
+                        <span class="text-15px font-black uppercase tracking-tighter text-black/40">●</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Warning Stripes Bottom -->
+            <div class="warning-stripe h-2 w-full rounded-b-lg opacity-80"></div>
+            
+            <!-- Context Text below banner -->
+            <div class="mt-8 text-center">
+                <p class="text-15px text-slate-600 dark:text-slate-400 italic">
+Demonstrations Happening Around 
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Decorative Elements -->
+    <div class="fixed bottom-10 left-10 w-32 h-32 bg-yellow-400/10 rounded-full blur-3xl"></div>
+    <div class="fixed top-10 right-10 w-32 h-32 bg-indigo-500/10 rounded-full blur-3xl"></div>
+
+</body>
+</html>
+
