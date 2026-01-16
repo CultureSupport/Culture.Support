@@ -3,156 +3,265 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title> Culture.Support </title>
+    <title>Mobil Musikkstudio - Komplett Guide</title>
+    <!-- Bibliotek & CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+    
     <style>
-        body { font-family: 'Inter', sans-serif; scroll-behavior: smooth; }
-        .section-card { @apply bg-white p-8 rounded-2xl shadow-lg mb-8 border border-gray-100; }
-        .step-number { @apply bg-blue-600 text-white w-10 h-10 flex items-center justify-center rounded-full font-bold mb-4; }
+        body { font-family: 'Inter', sans-serif; }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        
+        /* Joystick animasjon */
+        .joystick-track { transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+        .joystick-handle { transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+        
+        @keyframes spin-slow {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+        .animate-spin-slow { animation: spin-slow 8s linear infinite; }
+        
+        .active-lang { @apply bg-blue-600 text-white shadow-lg; }
     </style>
 </head>
-<body class="bg-gray-50 text-gray-800">
+<body class="bg-slate-950 text-slate-100 pb-32">
 
-    <nav class="bg-black text-white p-4 sticky top-0 z-50">
-        <div class="container mx-auto flex justify-between items-center">
-            <h1 class="text-xl font-bold">Mobil Studio Pro</h1>
-            <a href="#start" class="bg-blue-500 px-4 py-2 rounded-lg text-sm">Start Guide</a>
-        </div>
+    <!-- Språk-fane (Horisontal scroll) -->
+    <nav id="lang-nav" class="sticky top-0 z-50 bg-slate-900/90 backdrop-blur-md border-b border-slate-800 p-4 overflow-x-auto flex space-x-2 no-scrollbar">
+        <!-- Knappar blir generert av JS -->
     </nav>
 
-    <header class="bg-gradient-to-r from-indigo-900 to-purple-800 text-white py-20 px-4 text-center">
-        <h2 class="text-4xl md:text-6xl font-extrabold mb-4">Fra Mobil til Spotify</h2>
-        <p class="text-xl opacity-90">Komplett 14-trinns guide til profesjonell musikkproduksjon på farten.</p>
+    <!-- Header -->
+    <header class="p-8 text-center bg-gradient-to-b from-blue-900/30 to-transparent">
+        <div class="inline-block p-4 rounded-full bg-blue-500/10 mb-6 border border-blue-500/20">
+            <i data-lucide="music" class="w-12 h-12 text-blue-400"></i>
+        </div>
+        <h1 id="main-title" class="text-4xl font-extrabold mb-4 tracking-tight">Mobil Musikkstudio Guide</h1>
+        <p id="main-intro" class="text-slate-400 max-w-xl mx-auto text-lg leading-relaxed">
+            Frå Korg-appar til Spotify-artist – her er din 14-seksjoners guide.
+        </p>
+        
+        <button id="read-page-btn" class="mt-8 flex items-center mx-auto bg-blue-600 hover:bg-blue-500 text-white px-8 py-4 rounded-2xl font-bold transition transform active:scale-95 shadow-xl">
+            <i data-lucide="play" class="mr-3 fill-current"></i>
+            <span>Les opp sida</span>
+        </button>
     </header>
 
-    <main class="container mx-auto px-4 py-12 max-w-4xl">
-
-        <!-- Seksjon 1: Valg av DAW -->
-        <section id="start" class="section-card">
-            <div class="step-number">1</div>
-            <h3 class="text-2xl font-bold mb-4">Velg din DAW (Digital Audio Workstation)</h3>
-            <p class="mb-4">Dette er selve hjertet i studioet ditt. De mest populære valgene er:</p>
-            <ul class="list-disc pl-6 space-y-2">
-                <li><strong>FL Studio Mobile:</strong> Best for beats og elektronisk musikk.</li>
-                <li><strong>Steinberg Cubasis 3:</strong> Den mest komplette "desktop-aktige" opplevelsen på mobil.</li>
-                <li><strong>Korg Gadget:</strong> Et unikt økosystem med fokuserte instrumenter.</li>
-            </ul>
-            <div class="mt-4 p-4 bg-gray-100 rounded-lg text-center">
-                
-            </div>
-        </section>
-
-        <!-- Seksjon 2: VST og AUv3 Forklart -->
-        <section class="section-card">
-            <div class="step-number">2</div>
-            <h3 class="text-2xl font-bold mb-4">Forstå Plugin-formater</h3>
-            <p>På mobil bruker vi sjelden "VST" (som er for PC), men heller <strong>AUv3</strong> (Audio Unit v3). Dette lar en app (f.eks. Korg Module) kjøre inne i en annen app (f.eks. Cubasis).</p>
-        </section>
-
-        <!-- Seksjon 3: Installere Instrument-apper -->
-        <section class="section-card">
-            <div class="step-number">3</div>
-            <h3 class="text-2xl font-bold mb-4">Installere Korg Module eller Gadget</h3>
-            <p>Gå til App Store eller Play Store og last ned instrument-apper. Korg Module er fantastisk for piano og synther som fungerer som frittstående lydmoduler.</p>
-            <div class="mt-4 p-4 bg-gray-100 rounded-lg text-center">
-                
-            </div>
-        </section>
-
-        <!-- Seksjon 4: Koble sammen apper (IAA / AUv3) -->
-        <section class="section-card">
-            <div class="step-number">4</div>
-            <h3 class="text-2xl font-bold mb-4">Laste inn instrumenter i Cubasis/FL Studio</h3>
-            <p>I Cubasis: Trykk på "Instrument"-sporet, velg "Audio Units" og finn Korg-appen din. Nå kan du spille på Korg-lyder direkte fra Cubasis-tangentene.</p>
-        </section>
-
-        <!-- Seksjon 5: MIDI-kontroller Setup -->
-        <section class="section-card">
-            <div class="step-number">5</div>
-            <h3 class="text-2xl font-bold mb-4">Koble til fysiske tangenter</h3>
-            <p>Bruk en USB-C til USB-A adapter (OTG) for å koble et MIDI-keyboard direkte til mobilen. Dette gir en mye bedre spilleopplevelse.</p>
-        </section>
-
-        <!-- Seksjon 6: Opptak og Arrangering -->
-        <section class="section-card">
-            <div class="step-number">6</div>
-            <h3 class="text-2xl font-bold mb-4">Selve låtskrivingen</h3>
-            <p>Bruk "Piano Roll" for å tegne inn noter eller ta opp i sanntid. Organiser blokkene dine i tidslinjen for å bygge opp vers, refreng og bro.</p>
-        </section>
-
-        <!-- Seksjon 7: Miksing på Mobil -->
-        <section class="section-card">
-            <div class="step-number">7</div>
-            <h3 class="text-2xl font-bold mb-4">Miksing (EQ og Kompresjon)</h3>
-            <p>Bruk innebygde effekter for å rydde opp i lyden. Skjær bort lavbass på instrumenter som ikke trenger det ved bruk av en High Pass-filter.</p>
-            <div class="mt-4 p-4 bg-gray-100 rounded-lg text-center">
-                
-            </div>
-        </section>
-
-        <!-- Seksjon 8: Mastering-apper -->
-        <section class="section-card">
-            <div class="step-number">8</div>
-            <h3 class="text-2xl font-bold mb-4">Gjør lyden høy og klar</h3>
-            <p>Bruk apper som <strong>GrandFinale</strong> eller <strong>CloudBounce</strong> for å gi låten din det siste profesjonelle "pushet" før eksport.</p>
-        </section>
-
-        <!-- Seksjon 9: Eksportere Lydfilen -->
-        <section class="section-card">
-            <div class="step-number">9</div>
-            <h3 class="text-2xl font-bold mb-4">Eksporter til WAV</h3>
-            <p>Velg alltid WAV (24-bit) for best kvalitet. Unngå MP3 før den aller siste fasen, da MP3 mister lyddetaljer.</p>
-        </section>
-
-        <!-- Seksjon 10: Plateomslag (Artwork) -->
-        <section class="section-card">
-            <div class="step-number">10</div>
-            <h3 class="text-2xl font-bold mb-4">Lag Cover Art</h3>
-            <p>Bruk Canva eller Adobe Express på mobilen for å lage et bilde på 3000x3000px. Dette kreves av Spotify.</p>
-        </section>
-
-        <!-- Seksjon 11: Opplasting til SoundCloud -->
-        <section class="section-card">
-            <div class="step-number">11</div>
-            <h3 class="text-2xl font-bold mb-4">SoundCloud Opplasting</h3>
-            <ol class="list-decimal pl-6 space-y-2">
-                <li>Åpne SoundCloud-appen.</li>
-                <li>Trykk på pil-opp ikonet.</li>
-                <li>Velg din WAV-fil fra mobilens filbehandler.</li>
-                <li>Legg til tittel og cover.</li>
-            </ol>
-        </section>
-
-        <!-- Seksjon 12: Velg en Distributør (Spotify) -->
-        <section class="section-card">
-            <div class="step-number">12</div>
-            <h3 class="text-22xl font-bold mb-4">Hvordan komme på Spotify?</h3>
-            <p>Du kan ikke laste opp direkte til Spotify. Du må bruke en distributør som <strong>DistroKid</strong> eller <strong>TuneCore</strong>.</p>
-            <div class="mt-4 p-4 bg-gray-100 rounded-lg text-center">
-                
-            </div>
-        </section>
-
-        <!-- Seksjon 13: Opplasting til Distributør -->
-        <section class="section-card">
-            <div class="step-number">13</div>
-            <h3 class="text-2xl font-bold mb-4">Sende inn låten</h3>
-            <p>Logg inn på DistroKid på mobilen, last opp WAV-filen og coveret, sett en utgivelsesdato (minst 2 uker frem i tid), og velg Spotify/Apple Music.</p>
-        </section>
-
-        <!-- Seksjon 14: Markedsføring -->
-        <section class="section-card">
-            <div class="step-number">14</div>
-            <h3 class="text-2xl font-bold mb-4">Spotify for Artists</h3>
-            <p>Last ned "Spotify for Artists" appen for å følge med på strømmetallene dine og pitche låten din til offisielle spillelister.</p>
-        </section>
-
+    <!-- Innhald (14 Seksjonar) -->
+    <main id="steps-container" class="max-w-3xl mx-auto p-6 space-y-8">
+        <!-- Steg blir generert av JS -->
     </main>
 
-    <footer class="bg-gray-900 text-white py-8 text-center">
-        <p>&copy; Culture.Support : Mobiltelefon Tutorial Musikk Produksjon</p>
-    </footer>
+    <!-- Spotify Call to Action -->
+    <section class="max-w-3xl mx-auto px-6 mb-12">
+        <div class="bg-gradient-to-br from-indigo-900/50 to-purple-900/50 p-10 rounded-[3rem] border border-white/10 text-center relative overflow-hidden">
+            <i data-lucide="disc" class="w-16 h-16 mx-auto mb-4 text-purple-400 animate-spin-slow opacity-50"></i>
+            <h3 class="text-3xl font-bold mb-3">Klar for verda?</h3>
+            <p class="mb-8 text-slate-300">Last opp til Spotify, Apple Music og TikTok med DistroKid.</p>
+            <button class="bg-white text-slate-950 font-black px-10 py-4 rounded-full hover:bg-blue-50 transition shadow-2xl flex items-center mx-auto">
+                <i data-lucide="share-2" class="mr-2"></i> START UTGIVING
+            </button>
+        </div>
+    </section>
 
+    <!-- Joystick TTS Switch -->
+    <div class="fixed bottom-10 right-10 z-[100] flex flex-col items-center">
+        <span class="text-[10px] uppercase tracking-[0.2em] mb-3 font-black text-slate-500">TTS Voice</span>
+        <button id="tts-toggle" class="joystick-track w-16 h-28 rounded-full p-2 bg-slate-800 border-4 border-slate-700 shadow-2xl relative">
+            <div id="joystick-knob" class="joystick-handle w-full aspect-square rounded-full bg-white shadow-inner flex items-center justify-center translate-y-12">
+                <i id="tts-icon" data-lucide="volume-x" class="text-slate-400 w-6 h-6"></i>
+            </div>
+        </button>
+    </div>
+
+    <script>
+        // Konfigurasjon
+        const apiKey = ""; // Handtert av miljøet
+        let isTtsEnabled = false;
+        let isReading = false;
+        let currentLang = 'nn';
+
+        const languages = [
+            { code: 'nn', name: 'Nynorsk' },
+            { code: 'nb', name: 'Bokmål' },
+            { code: 'en', name: 'English (USA)' },
+            { code: 'sami', name: 'Sápmi' },
+            { code: 'de', name: 'Deutsch' },
+            { code: 'fi', name: 'Suomi' },
+            { code: 'uk', name: 'Українська' },
+            { code: 'ar', name: 'Palestinsk' },
+            { code: 'fa', name: 'Iransk' },
+            { code: 'ur', name: 'Urdu' },
+            { code: 'el', name: 'Gresk' }
+        ];
+
+        const translations = {
+            nn: {
+                title: "Mobil Musikkstudio Guide",
+                intro: "Lær korleis du lagar musikk med Korg og FL Studio på mobilen.",
+                steps: [
+                    { t: "Vel din DAW", c: "Bruk Cubasis 3 eller FL Studio Mobile som hovudstudio." },
+                    { t: "Forstå AUv3", c: "Mobilens svar på VST. Lar appar snakke saman." },
+                    { t: "Korg Module", c: "Last ned for profesjonelle piano og synth-lydar." },
+                    { t: "Koble til MIDI", c: "Bruk USB-C adapter for å koble til keyboard." },
+                    { t: "Opptak", c: "Fang kreativiteten din i Piano Roll-editoren." },
+                    { t: "Effektar", c: "Legg på Reverb og Delay for djupne i lyden." },
+                    { t: "Miksing", c: "Juster volumet på kvart spor for balanse." },
+                    { t: "Mastering", c: "Bruk GrandFinale for å gjere lyden radio-klar." },
+                    { t: "Eksport", c: "Lagre som WAV 24-bit for best kvalitet." },
+                    { t: "Cover Art", c: "Lag bilde i 3000x3000px med Canva." },
+                    { t: "SoundCloud", c: "Last opp direkte frå mobilen for rask deling." },
+                    { t: "Distributør", c: "Opprett konto på DistroKid." },
+                    { t: "Spotify Artist", c: "Send inn låten og vent på godkjenning." },
+                    { t: "Markedsføring", c: "Bruk Spotify for Artists for å nå nye fans." }
+                ]
+            },
+            en: {
+                title: "Mobile Music Studio Guide",
+                intro: "Learn how to create music with Korg and FL Studio on your phone.",
+                steps: [
+                    { t: "Choose your DAW", c: "Use Cubasis 3 or FL Studio Mobile." },
+                    { t: "Understand AUv3", c: "Mobile's version of VST for app connectivity." },
+                    { t: "Korg Module", c: "Download for professional piano and synth sounds." },
+                    { t: "MIDI Setup", c: "Connect keyboards via USB-C adapter." },
+                    { t: "Recording", c: "Capture ideas in the Piano Roll editor." },
+                    { t: "Effects", c: "Add Reverb and Delay for professional depth." },
+                    { t: "Mixing", c: "Balance your track volumes." },
+                    { t: "Mastering", c: "Use GrandFinale to make it radio-ready." },
+                    { t: "Exporting", c: "Save as 24-bit WAV files." },
+                    { t: "Cover Design", c: "Create 3000px artwork in Canva." },
+                    { t: "SoundCloud", c: "Quick upload for immediate sharing." },
+                    { t: "Distributor", c: "Sign up for a DistroKid account." },
+                    { t: "Spotify Artist", c: "Submit your track for global streaming." },
+                    { t: "Promotion", c: "Use Spotify for Artists to grow." }
+                ]
+            }
+            // Fleire språk kan leggjast til her
+        };
+
+        // Initialisering
+        function init() {
+            renderNav();
+            renderContent();
+            lucide.createIcons();
+            setupEventListeners();
+        }
+
+        function renderNav() {
+            const nav = document.getElementById('lang-nav');
+            nav.innerHTML = languages.map(l => `
+                <button onclick="setLanguage('${l.code}')" class="lang-btn px-5 py-2 rounded-full whitespace-nowrap transition-all border border-slate-700 hover:border-blue-500/50 ${currentLang === l.code ? 'active-lang' : 'bg-slate-800'}" data-lang="${l.code}">
+                    ${l.name}
+                </button>
+            `).join('');
+        }
+
+        function renderContent() {
+            const data = translations[currentLang] || translations['en'];
+            document.getElementById('main-title').innerText = data.title;
+            document.getElementById('main-intro').innerText = data.intro;
+
+            const container = document.getElementById('steps-container');
+            container.innerHTML = data.steps.map((step, i) => `
+                <div class="bg-slate-900 p-6 rounded-3xl border border-slate-800 relative group transition hover:border-blue-500/30">
+                    <button onclick="speak('${step.t}. ${step.c}')" class="absolute top-6 right-6 p-2 bg-slate-800 rounded-xl opacity-0 group-hover:opacity-100 transition hover:text-blue-400">
+                        <i data-lucide="volume-2" class="w-5 h-5"></i>
+                    </button>
+                    <div class="flex items-center mb-4">
+                        <span class="bg-blue-600/20 text-blue-400 px-3 py-1 rounded-lg text-xs font-black uppercase tracking-widest">Steg ${i+1}</span>
+                    </div>
+                    <h2 class="text-xl font-bold mb-2">${step.t}</h2>
+                    <p class="text-slate-400 leading-relaxed">${step.c}</p>
+                </div>
+            `).join('');
+            lucide.createIcons();
+        }
+
+        function setLanguage(code) {
+            currentLang = code;
+            renderNav();
+            renderContent();
+            if (isTtsEnabled) {
+                const data = translations[currentLang] || translations['en'];
+                speak(data.title + ". " + data.intro);
+            }
+        }
+
+        // TTS Funksjon
+        async function speak(text) {
+            if (!isTtsEnabled) return;
+            
+            try {
+                const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-tts:generateContent?key=${apiKey}`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        contents: [{ parts: [{ text: `Say in a natural female voice: ${text}` }] }],
+                        generationConfig: {
+                            responseModalities: ["AUDIO"],
+                            speechConfig: {
+                                voiceConfig: { prebuiltVoiceConfig: { voiceName: "Kore" } }
+                            }
+                        },
+                        model: "gemini-2.5-flash-preview-tts"
+                    })
+                });
+
+                const result = await response.json();
+                const audioBase64 = result.candidates[0].content.parts[0].inlineData.data;
+                const audioBlob = base64ToBlob(audioBase64, 'audio/wav');
+                const audioUrl = URL.createObjectURL(audioBlob);
+                const audio = new Audio(audioUrl);
+                audio.play();
+            } catch (e) {
+                console.error("TTS Feil", e);
+            }
+        }
+
+        function base64ToBlob(base64, type) {
+            const bin = atob(base64);
+            const len = bin.length;
+            const arr = new Uint8Array(len);
+            for (let i = 0; i < len; i++) arr[i] = bin.charCodeAt(i);
+            return new Blob([arr], { type: type });
+        }
+
+        function setupEventListeners() {
+            // Joystick Toggle
+            const ttsToggle = document.getElementById('tts-toggle');
+            const knob = document.getElementById('joystick-knob');
+            const ttsIcon = document.getElementById('tts-icon');
+
+            ttsToggle.addEventListener('click', () => {
+                isTtsEnabled = !isTtsEnabled;
+                
+                if (isTtsEnabled) {
+                    knob.style.transform = "translateY(0px)";
+                    ttsToggle.classList.add('bg-blue-600', 'border-blue-400');
+                    ttsIcon.setAttribute('data-lucide', 'volume-2');
+                    ttsIcon.classList.replace('text-slate-400', 'text-blue-600');
+                    speak("Stemme aktivert");
+                } else {
+                    knob.style.transform = "translateY(48px)";
+                    ttsToggle.classList.remove('bg-blue-600', 'border-blue-400');
+                    ttsIcon.setAttribute('data-lucide', 'volume-x');
+                    ttsIcon.classList.replace('text-blue-600', 'text-slate-400');
+                }
+                lucide.createIcons();
+            });
+
+            document.getElementById('read-page-btn').addEventListener('click', () => {
+                const data = translations[currentLang] || translations['en'];
+                let fullText = data.title + ". " + data.intro + ". ";
+                data.steps.forEach(s => fullText += s.t + ". " + s.c + ". ");
+                speak(fullText);
+            });
+        }
+
+        window.onload = init;
+    </script>
 </body>
 </html>
 
