@@ -3,310 +3,156 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mobil Musikkstudio - Global Portal</title>
-    <!-- Bibliotek & CDN -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://unpkg.com/lucide@latest"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
-    
+    <title>Instruksjoner og Veiledning: Schizofreni, Rus og Psykisk Helsevern</title>
     <style>
-        body { 
-            font-family: 'Inter', sans-serif; 
-            transition: transform 0.1s ease-out;
-            transform-origin: center top;
-            overflow-x: hidden;
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f4f4f4;
         }
-        .no-scrollbar::-webkit-scrollbar { display: none; }
-        
-        @keyframes fade-in {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
+        .container {
+            background-color: #fff;
+            padding: 40px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
         }
-        .animate-fade { animation: fade-in 0.4s ease-out forwards; }
-        
-        .active-lang { @apply bg-blue-600 text-white shadow-lg border-blue-400 scale-105; }
-        .lang-btn { @apply border border-slate-700 hover:border-blue-500/50 transition-all px-4 py-2 rounded-full whitespace-nowrap text-xs font-semibold bg-slate-800/50 backdrop-blur-sm; }
-        
-        #offline-banner { display: none; }
-        body.is-offline #offline-banner { display: block; }
-
-        /* Joystick System Styles */
-        .joystick-wrapper {
-            position: fixed;
-            bottom: 1.5rem;
-            right: 1.5rem;
-            display: flex;
-            flex-direction: column;
-            gap: 1rem;
-            z-index: 1000;
+        h1 {
+            color: #2c3e50;
+            border-bottom: 2px solid #2c3e50;
+            padding-bottom: 10px;
+            text-align: center;
         }
-
-        .joystick-base {
-            width: 80px;
-            height: 80px;
-            background: rgba(15, 23, 42, 0.8);
-            backdrop-filter: blur(12px);
-            border-radius: 50%;
-            border: 2px solid rgba(255, 255, 255, 0.1);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            touch-action: none;
-            box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.7);
-            position: relative;
+        h2 {
+            color: #2980b9;
+            margin-top: 30px;
+            border-left: 5px solid #2980b9;
+            padding-left: 10px;
         }
-
-        .joystick-knob {
-            width: 32px;
-            height: 32px;
-            border-radius: 50%;
-            cursor: pointer;
-            border: 2px solid white;
-            transition: transform 0.05s linear;
-            z-index: 10;
+        h3 {
+            color: #d35400;
+            margin-top: 20px;
         }
-
-        .scroll-knob { background: #3b82f6; box-shadow: 0 0 15px rgba(59, 130, 246, 0.5); }
-        .zoom-knob { background: #a855f7; box-shadow: 0 0 15px rgba(168, 85, 247, 0.5); }
-
-        .joystick-label {
-            position: absolute;
-            font-size: 7px;
-            font-weight: 900;
-            color: rgba(255, 255, 255, 0.3);
-            text-transform: uppercase;
-            pointer-events: none;
+        p {
+            margin-bottom: 15px;
+            text-align: justify;
+        }
+        ul, ol {
+            margin-bottom: 20px;
+        }
+        li {
+            margin-bottom: 10px;
+        }
+        .warning {
+            background-color: #fff3cd;
+            border: 1px solid #ffeeba;
+            padding: 15px;
+            border-radius: 5px;
+            font-style: italic;
+        }
+        .info-box {
+            background-color: #d1ecf1;
+            border: 1px solid #bee5eb;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 20px 0;
+        }
+        footer {
+            margin-top: 40px;
+            font-size: 0.9em;
+            color: #7f8c8d;
+            text-align: center;
         }
     </style>
 </head>
-<body class="bg-slate-950 text-slate-100 pb-40">
+<body>
 
-    <!-- Offline Varsel -->
-    <div id="offline-banner" class="bg-blue-600 text-white text-center py-2 text-xs font-bold sticky top-0 z-[60]">
-        Modus: Lokal lagring aktivert (Offline tilgjengelig)
-    </div>
+<div class="container">
+    <h1>Instruksjoner om Alvorlige Psykiske Lidelser og Behandlingsforløp</h1>
 
-    <!-- Global Språk-navigasjon -->
-    <nav id="lang-nav" class="sticky top-0 z-50 bg-slate-900/95 backdrop-blur-xl border-b border-slate-800 p-3 overflow-x-auto flex space-x-2 no-scrollbar shadow-2xl">
-        <!-- Genereres dynamisk -->
-    </nav>
-
-    <!-- Header -->
-    <header class="p-8 text-center bg-gradient-to-b from-blue-900/20 via-slate-950 to-transparent relative">
-        <div id="active-lang-indicator" class="inline-flex items-center space-x-2 bg-blue-500/10 border border-blue-500/30 px-4 py-1.5 rounded-full text-[10px] uppercase tracking-[0.2em] text-blue-400 font-black mb-6">
-            <i data-lucide="globe" class="w-3 h-3"></i>
-            <span id="lang-display-name">Språk: Norsk</span>
-        </div>
+    <section>
+        <h2>1. Forståelse av Schizofrenispekteret</h2>
+        <p>Schizofreni er en av de mest komplekse hjernesykdommene vi kjenner til. Det er ikke en sykdom med én enkelt årsak, men et resultat av et komplisert samspill mellom genetisk sårbarhet og miljømessige stressfaktorer. Når vi snakker om schizofreni, snakker vi om en tilstand hvor hjernens evne til å integrere tanker, følelser og sanseoppfatninger bryter sammen.</p>
         
-        <div class="block mb-6">
-            <div class="inline-block p-5 rounded-[2rem] bg-slate-900 border border-slate-800 shadow-inner">
-                <i data-lucide="music-2" class="w-14 h-14 text-blue-500"></i>
-            </div>
-        </div>
-
-        <h1 id="main-title" class="text-4xl md:text-6xl font-black mb-4 tracking-tighter bg-clip-text text-transparent bg-gradient-to-r from-white to-slate-400 italic">
-            Mobil Musikkstudio Guide
-        </h1>
-        <p id="main-intro" class="text-slate-400 max-w-2xl mx-auto text-lg leading-relaxed font-medium">
-            Laster...
-        </p>
-    </header>
-
-    <!-- Innhold -->
-    <main id="steps-container" class="max-w-4xl mx-auto p-6 grid grid-cols-1 md:grid-cols-2 gap-6 min-h-[400px]">
-        <!-- Innholdet rendres her -->
-    </main>
-
-    <!-- Footer Action -->
-    <section class="max-w-4xl mx-auto px-6 mt-12 mb-20">
-        <div class="bg-gradient-to-br from-slate-900 to-slate-800 p-12 rounded-[3.5rem] border border-white/5 text-center shadow-2xl relative overflow-hidden group">
-            <i data-lucide="rocket" class="w-16 h-16 mx-auto mb-6 text-blue-500 opacity-80"></i>
-            <h3 id="footer-title" class="text-3xl font-black mb-4">Klar for utgivelse?</h3>
-            <p id="footer-desc" class="mb-8 text-slate-400 font-medium text-lg italic">Start din globale karriere fra mobilen i dag.</p>
-            <button class="bg-blue-600 text-white font-black px-12 py-4 rounded-full hover:bg-blue-500 transition shadow-xl uppercase tracking-tighter">
-                <span id="footer-btn">Start nå</span>
-            </button>
-        </div>
+        <h3>Symptomkategorier</h3>
+        <p>For å forstå lidelsen, må vi dele symptomene inn i tre hovedkategorier:</p>
+        <ul>
+            <li><strong>Positive symptomer:</strong> Dette er fenomener som "legges til" personligheten. Det inkluderer hallusinasjoner og vrangforestillinger.</li>
+            <li><strong>Negative symptomer:</strong> Dette er funksjoner som "tas bort". Det inkluderer tap av motivasjon, sosial tilbaketrekking og emosjonell avflating.</li>
+            <li><strong>Kognitive symptomer:</strong> Problemer med hukommelse, konsentrasjon og evnen til å planlegge hverdagen.</li>
+        </ul>
     </section>
 
-    <!-- Dual Joystick System -->
-    <div class="joystick-wrapper">
-        <!-- Zoom Joystick -->
-        <div id="zoom-joystick" class="joystick-base border-purple-500/30">
-            <span class="joystick-label" style="top: 8px;">Zoom In</span>
-            <span class="joystick-label" style="bottom: 8px;">Zoom Out</span>
-            <div id="zoom-knob" class="joystick-knob zoom-knob"></div>
-        </div>
+    <section>
+        <h2>2. Hallusinasjoner og Sanseoppfatninger</h2>
+        <p>Et av de mest karakteristiske trekkene ved schizofreni er forstyrrede sanseoppfatninger. Dette omtales ofte som psykose. Pasienten kan oppleve at sansene sender signaler til hjernen som ikke har rot i virkeligheten.</p>
+        
+        <h3>Stemmehøring (Auditive hallusinasjoner)</h3>
+        <p>Dette er den vanligste formen for hallusinasjon. Stemmene kan oppleves som om de kommer utenfra eller inne i hodet. De kan være:</p>
+        <ul>
+            <li><strong>Kommenterende:</strong> Stemmer som forteller hva pasienten gjør ("Nå vasker han hendene").</li>
+            <li><strong>Kommanderende:</strong> Stemmer som gir ordre, noe som kan være svært farlig dersom ordrene er selvskadende eller aggressive mot andre.</li>
+            <li><strong>Diskuterende:</strong> To eller flere stemmer som krangler om pasienten.</li>
+        </ul>
 
-        <!-- Scroll Joystick -->
-        <div id="scroll-joystick" class="joystick-base border-blue-500/30">
-            <span class="joystick-label" style="top: 8px;">Up</span>
-            <span class="joystick-label" style="bottom: 8px;">Down</span>
-            <div id="scroll-knob" class="joystick-knob scroll-knob"></div>
-        </div>
+        <h3>Vrangforestillinger og Paranoia</h3>
+        <p>En vrangforestilling er en fastlåst overbevisning som ikke endres selv om man blir presentert for motbevis. Ved schizofreni ser vi ofte forfølgelsesvanvidd (paranoia), hvor pasienten er overbevist om at de overvåkes av etterretningstjenester, romvesener eller hemmelige organisasjoner. Dette skaper en ekstrem frykt- og stresstilstand.</p>
+    </section>
+
+    <div class="info-box">
+        <strong>Viktig om sanseoppfatninger:</strong> For pasienten er disse opplevelsene 100% reelle. Å prøve å krangle bort en hallusinasjon er sjelden effektivt; det viktigste er å anerkjenne pasientens frykt uten nødvendigvis å bekrefte at hallusinasjonen er sann.
     </div>
 
-    <script>
-        const translations = {
-            "no": {
-                "title": "Mobil Musikkstudio Guide",
-                "intro": "Din komplette guide til produksjon på farten.",
-                "step_label": "STEG",
-                "footer_h": "Klar for utgivelse?",
-                "footer_p": "Start din globale karriere fra mobilen i dag.",
-                "footer_b": "Start nå",
-                "steps": ["Velg DAW", "Konfigurer AUv3", "Korg Installasjon", "MIDI Oppsett", "Opptak", "Miks", "Mastering", "Distribusjon"]
-            },
-            "en": {
-                "title": "Mobile Music Studio Guide",
-                "intro": "Your complete guide to production on the go.",
-                "step_label": "STEP",
-                "footer_h": "Ready for release?",
-                "footer_p": "Start your global career from your mobile today.",
-                "footer_b": "Start Now",
-                "steps": ["Choose DAW", "Configure AUv3", "Korg Installation", "MIDI Setup", "Recording", "Mixing", "Mastering", "Distribution"]
-            }
-        };
+    <section>
+        <h2>3. Rusmidler: Hasj, Marihuana og Psykoserisiko</h2>
+        <p>Bruk av rusmidler er en av de største risikofaktorene for både utløsning og forverring av schizofreni. Særlig cannabis (hasj og marihuana) har vist seg å ha en direkte skadelig effekt på sårbare hjerner.</p>
+        
+        <h3>Hvorfor øker cannabis risikoen?</h3>
+        <p>Cannabis inneholder stoffet THC, som påvirker dopaminsystemet i hjernen. Schizofreni er knyttet til en overaktivitet av dopamin i visse deler av hjernen. Når en person som allerede er disponert for lidelsen bruker cannabis, kan dette "vippe" systemet over kanten og utløse en fullstendig psykose.</p>
+        
+        <h3>Rusutløst psykose</h3>
+        <p>Mange opplever det som kalles en rusutløst psykose. Dette er en akutt tilstand av forvirring, hallusinasjoner og paranoia som oppstår under eller rett etter rusbruk. Selv om denne tilstanden kan gå over når stoffet er ute av kroppen, ser vi at en stor prosentandel av disse pasientene senere utvikler en kronisk schizofrenidiagnose.</p>
+        
+        <p class="warning">Advarsel: Moderne marihuana har ofte et mye høyere innhold av THC enn tidligere, noe som øker faren for alvorlige psykiske sammenbrudd drastisk.</p>
+    </section>
 
-        const availableLanguages = [
-            { code: 'no', name: 'Norsk' }, { code: 'en', name: 'English' }, 
-            { code: 'es', name: 'Español' }, { code: 'fr', name: 'Français' },
-            { code: 'de', name: 'Deutsch' }, { code: 'it', name: 'Italiano' }
-        ];
+    <section>
+        <h2>4. Psykisk Helsevern: Tvang og Samfunnsvern</h2>
+        <p>Når en person lider av schizofreni og mangler innsikt i sin egen sykdom, oppstår det utfordringer knyttet til sikkerhet. Psykisk helsevernlovgivningen i Norge er laget for å håndtere situasjoner hvor pasienten kan være til fare for seg selv eller andre.</p>
+        
+        <h3>Beherskelse av lidelsen</h3>
+        <p>En person som er i aktiv psykose, har ofte mistet kontrollen over sine egne handlinger. De styres av vrangforestillinger eller kommanderende stemmer. I slike tilfeller er pasienten ikke "seg selv", og deres evne til å vurdere konsekvenser er borte.</p>
+        
+        <h3>Tiltak for vern</h3>
+        <p>Psykisk helsevern har flere verktøy for å beskytte pasienten og samfunnet:</p>
+        <ul>
+            <li><strong>Tvangsinnleggelse:</strong> Dersom frivillig hjelp ikke er mulig og pasienten utgjør en alvorlig fare eller får sin helse vesentlig forverret.</li>
+            <li><strong>Skjerming:</strong> Pasienten holdes i et rolig miljø med få inntrykk for å roe ned hjernens aktivitet.</li>
+            <li><strong>Medisinering:</strong> Bruk av antipsykotika for å blokkere dopaminreseptorer og dermed fjerne hallusinasjoner.</li>
+        </ul>
+    </section>
 
-        let currentLang = localStorage.getItem('app_lang') || 'no';
-        let currentZoom = 1;
+    <section>
+        <h2>5. Samhandling og "Sanseoppfatninger med hverandre"</h2>
+        <p>Du nevner mennesker som kan ha sanseoppfatninger med hverandre. I psykiatrien ser vi av og til at pasienter i tette miljøer kan "smitte" hverandre med vrangforestillinger (folie à deux), eller at de utvikler et felles kodespråk basert på sine psykotiske opplevelser. Dette gjør det ekstra viktig med profesjonell oppfølging i grupper, slik at man styrker virkelighetsorienteringen fremfor å bekrefte hverandres vrangforestillinger.</p>
+    </section>
 
-        // --- JOYSTICK ENGINE ---
-        function createJoystick(containerId, knobId, onMove) {
-            const container = document.getElementById(containerId);
-            const knob = document.getElementById(knobId);
-            let active = false;
-            let startPos = { x: 0, y: 0 };
-            let currentOffset = { x: 0, y: 0 };
+    <section>
+        <h2>6. Oppsummering og Veien Videre</h2>
+        <p>Schizofreni krever langvarig og tverrfaglig behandling. Det er ikke nok med bare medisiner; pasienten trenger også bolig, meningsfull aktivitet og et rusfritt miljø. Samfunnets viktigste oppgave er å fange opp de første tegnene på psykose tidlig, da tidlig behandling gir langt bedre prognoser for et fungerende liv.</p>
+        
+        <p>Hvis en person er i en situasjon der de utgjør en fare på grunn av rus og psykose, er det avgjørende at politi og helsevesen samarbeider tett for å sikre en verdig og trygg håndtering som ivaretar både pasientens rettigheter og samfunnets behov for beskyttelse.</p>
+    </section>
 
-            const handleStart = (e) => {
-                active = true;
-                const pos = e.type.includes('mouse') ? e : e.touches[0];
-                startPos = { x: pos.clientX, y: pos.clientY };
-            };
+    <footer>
+        <p>Denne informasjonen er ment som en veiledning. Ved akutte kriser, kontakt alltid legevakt (116 117) eller nødnummer (113).</p>
+    </footer>
+</div>
 
-            const handleMove = (e) => {
-                if (!active) return;
-                const pos = e.type.includes('mouse') ? e : e.touches[0];
-                let dx = pos.clientX - startPos.x;
-                let dy = pos.clientY - startPos.y;
-                
-                const limit = 25;
-                const dist = Math.sqrt(dx*dx + dy*dy);
-                if (dist > limit) {
-                    dx *= limit / dist;
-                    dy *= limit / dist;
-                }
-
-                currentOffset = { x: dx / limit, y: dy / limit };
-                knob.style.transform = `translate(${dx}px, ${dy}px)`;
-                onMove(currentOffset);
-            };
-
-            const handleEnd = () => {
-                active = false;
-                currentOffset = { x: 0, y: 0 };
-                knob.style.transform = `translate(0px, 0px)`;
-                onMove(currentOffset);
-            };
-
-            container.addEventListener('mousedown', handleStart);
-            container.addEventListener('touchstart', handleStart);
-            window.addEventListener('mousemove', handleMove);
-            window.addEventListener('touchmove', handleMove);
-            window.addEventListener('mouseup', handleEnd);
-            window.addEventListener('touchend', handleEnd);
-        }
-
-        let scrollSpeed = 0;
-        let zoomSpeed = 0;
-
-        // Initier Scroll Joystick
-        createJoystick('scroll-joystick', 'scroll-knob', (offset) => {
-            scrollSpeed = offset.y;
-        });
-
-        // Initier Zoom Joystick
-        createJoystick('zoom-joystick', 'zoom-knob', (offset) => {
-            zoomSpeed = offset.y;
-        });
-
-        // Game Loop for jevn navigasjon
-        function loop() {
-            if (Math.abs(scrollSpeed) > 0.05) {
-                window.scrollBy(0, scrollSpeed * 20);
-            }
-            if (Math.abs(zoomSpeed) > 0.05) {
-                // Zoomer ut når man drar ned (positiv y), zoomer inn når man drar opp (negativ y)
-                currentZoom -= zoomSpeed * 0.015;
-                currentZoom = Math.min(Math.max(0.4, currentZoom), 2.5);
-                document.body.style.transform = `scale(${currentZoom})`;
-            }
-            requestAnimationFrame(loop);
-        }
-        loop();
-
-        // --- APP LOGIKK ---
-        async function updateAppContent(langCode) {
-            currentLang = langCode;
-            localStorage.setItem('app_lang', langCode);
-            const data = translations[langCode] || translations['en'];
-            const langName = availableLanguages.find(l => l.code === langCode)?.name || langCode;
-
-            document.getElementById('lang-display-name').innerText = `Språk: ${langName}`;
-            document.getElementById('main-title').innerText = data.title;
-            document.getElementById('main-intro').innerText = data.intro;
-            document.getElementById('footer-title').innerText = data.footer_h;
-            document.getElementById('footer-desc').innerText = data.footer_p;
-            document.getElementById('footer-btn').innerText = data.footer_b;
-
-            const container = document.getElementById('steps-container');
-            container.innerHTML = data.steps.map((step, i) => `
-                <div class="bg-slate-900/60 p-6 rounded-[2rem] border border-slate-800 animate-fade" style="animation-delay: ${i * 0.05}s">
-                    <span class="text-blue-500 text-[10px] font-black tracking-widest block mb-2">${data.step_label} ${i + 1}</span>
-                    <h2 class="text-xl font-black mb-2">${step}</h2>
-                    <p class="text-slate-500 text-sm italic">Konfigurasjon fullført.</p>
-                </div>
-            `).join('');
-
-            document.querySelectorAll('.lang-btn').forEach(btn => btn.classList.toggle('active-lang', btn.dataset.lang === langCode));
-            lucide.createIcons();
-        }
-
-        function init() {
-            const nav = document.getElementById('lang-nav');
-            nav.innerHTML = availableLanguages.map(l => `
-                <button onclick="updateAppContent('${l.code}')" data-lang="${l.code}" class="lang-btn">${l.name}</button>
-            `).join('');
-            updateAppContent(currentLang);
-            
-            const checkStatus = () => document.body.classList.toggle('is-offline', !navigator.onLine);
-            window.addEventListener('online', checkStatus);
-            window.addEventListener('offline', checkStatus);
-            checkStatus();
-        }
-
-        // Service Worker for Offline
-        if ('serviceWorker' in navigator) {
-            const swCode = `
-                const CACHE_NAME = 'dual-joy-cache-v1';
-                self.addEventListener('install', e => e.waitUntil(caches.open(CACHE_NAME).then(c => c.addAll(['/', location.href]))));
-                self.addEventListener('fetch', e => e.respondWith(caches.match(e.request).then(r => r || fetch(e.request))));
-            `;
-            const blob = new Blob([swCode], { type: 'text/javascript' });
-            navigator.serviceWorker.register(URL.createObjectURL(blob));
-        }
-
-        window.onload = init;
-    </script>
 </body>
 </html>
-
 
 
