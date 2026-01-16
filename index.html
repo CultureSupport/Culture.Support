@@ -3,100 +3,109 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Warning Banner Demonstration</title>
+    <title>Protest 🪧 Around Globe - Alert</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        @keyframes marquee {
-            0% { transform: translateX(0); }
-            100% { transform: translateX(-50%); }
+        /* High-speed background flash */
+        @keyframes flash-red-dark {
+            0%, 49% { background-color: #000000; }
+            50%, 100% { background-color: #990000; }
         }
 
-        @keyframes float {
-            0%, 100% { transform: translateY(0) scale(1); }
-            50% { transform: translateY(-10px) scale(1.02); }
+        /* High-speed text blink */
+        @keyframes blink-text {
+            0%, 49% { opacity: 1; }
+            50%, 100% { opacity: 0; }
+        }
+
+        /* Rapid scale pulse */
+        @keyframes rapid-pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.15); }
+            100% { transform: scale(1); }
+        }
+
+        /* Fast scrolling marquee */
+        @keyframes fast-marquee {
+            0% { transform: translateX(100%); }
+            100% { transform: translateX(-100%); }
+        }
+
+        .animate-flash-bg {
+            animation: flash-red-dark 0.2s infinite; /* 5x speed (0.2s cycle) */
+        }
+
+        .animate-blink-fast {
+            animation: blink-text 0.15s infinite;
+        }
+
+        .animate-pulse-fast {
+            animation: rapid-pulse 0.2s infinite;
+        }
+
+        .marquee-container {
+            overflow: hidden;
+            white-space: nowrap;
+            background: #ff0000;
+            color: #fff;
+            padding: 10px 0;
+            font-weight: 900;
+            text-transform: uppercase;
+            border-top: 4px solid white;
+            border-bottom: 4px solid white;
         }
 
         .marquee-content {
-            display: flex;
-            white-space: nowrap;
-            animation: marquee 20s linear infinite;
+            display: inline-block;
+            animation: fast-marquee 3s linear infinite; /* Increased speed */
+            font-size: 2rem;
         }
 
-        .floating-banner {
-            animation: float 4s ease-in-out infinite;
-        }
-
-        /* Strict 15px text as per previous requirement */
-        .text-15px {
-            font-size: 15px !important;
-        }
-
-        .warning-stripe {
-            background: repeating-linear-gradient(
-                45deg,
-                #facc15,
-                #facc15 10px,
-                #000 10px,
-                #000 20px
-            );
+        .glitch-text {
+            text-shadow: 2px 2px #ff0000, -2px -2px #0000ff;
         }
     </style>
 </head>
-<body class="bg-slate-100 dark:bg-slate-950 min-h-screen flex flex-col items-center justify-center overflow-hidden transition-colors duration-500">
+<body class="animate-flash-bg h-screen flex flex-col justify-between items-center overflow-hidden font-sans">
 
-    <!-- Theme Toggle -->
-    <button onclick="document.documentElement.classList.toggle('dark')" class="fixed top-5 right-5 p-2 rounded-full bg-white dark:bg-slate-800 shadow-lg z-50">
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 dark:text-yellow-400 text-slate-700" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 9h-1m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
-        </svg>
-    </button>
-
-    <!-- Main Banner Container -->
-    <div class="w-full max-w-4xl px-4">
-        
-        <div class="floating-banner relative group">
-            <!-- Warning Stripes Top -->
-            <div class="warning-stripe h-2 w-full rounded-t-lg opacity-80"></div>
-            
-            <!-- Main Banner Content -->
-            <div class="bg-yellow-400 dark:bg-yellow-500 text-black py-4 overflow-hidden border-x-4 border-black shadow-[10px_10px_0px_0px_rgba(0,0,0,1)] dark:shadow-[10px_10px_0px_0px_rgba(255,255,255,0.1)]">
-                <div class="marquee-content flex items-center">
-                    <!-- Duplicate text for seamless loop -->
-                    <div class="flex items-center space-x-8 px-4">
-                        <span class="text-15px font-black uppercase tracking-tighter">⚠️ Warning: Demonstrations Happening Around .</span>
-                        <span class="text-15px font-black uppercase tracking-tighter text-black/40">●</span>
-                        <span class="text-15px font-black uppercase tracking-tighter">⚠️ Warning: Demonstrations Happening Around .</span>
-                        <span class="text-15px font-black uppercase tracking-tighter text-black/40">●</span>
-                        <span class="text-15px font-black uppercase tracking-tighter">⚠️ Warning: Demonstrations Happening Around .</span>
-                        <span class="text-15px font-black uppercase tracking-tighter text-black/40">●</span>
-                    </div>
-                    <div class="flex items-center space-x-8 px-4">
-                        <span class="text-15px font-black uppercase tracking-tighter">⚠️ Warning: Demonstrations Happening Around .</span>
-                        <span class="text-15px font-black uppercase tracking-tighter text-black/40">●</span>
-                        <span class="text-15px font-black uppercase tracking-tighter">⚠️ Warning: Demonstrations Happening Around .</span>
-                        <span class="text-15px font-black uppercase tracking-tighter text-black/40">●</span>
-                        <span class="text-15px font-black uppercase tracking-tighter">⚠️ Warning: Demonstrations Happening Around .</span>
-                        <span class="text-15px font-black uppercase tracking-tighter text-black/40">●</span>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Warning Stripes Bottom -->
-            <div class="warning-stripe h-2 w-full rounded-b-lg opacity-80"></div>
-            
-            <!-- Context Text below banner -->
-            <div class="mt-8 text-center">
-                <p class="text-15px text-slate-600 dark:text-slate-400 italic">
-Demonstrations Happening Around 
-                </p>
-            </div>
+    <!-- Top Warning Bar -->
+    <div class="marquee-container w-full">
+        <div class="marquee-content">
+            PROTEST 🪧 AROUND GLOBE — URGENT UPDATE — PROTEST 🪧 AROUND GLOBE — URGENT UPDATE — PROTEST 🪧 AROUND GLOBE
         </div>
     </div>
 
-    <!-- Decorative Elements -->
-    <div class="fixed bottom-10 left-10 w-32 h-32 bg-yellow-400/10 rounded-full blur-3xl"></div>
-    <div class="fixed top-10 right-10 w-32 h-32 bg-indigo-500/10 rounded-full blur-3xl"></div>
+    <!-- Main Content -->
+    <div class="flex flex-col items-center justify-center text-center p-4">
+        <div class="animate-pulse-fast mb-4">
+            <span class="text-8xl md:text-9xl">⚠️</span>
+        </div>
+        
+        <h1 class="text-white text-5xl md:text-8xl font-black italic uppercase tracking-tighter animate-blink-fast glitch-text">
+            Protest 🪧 Around Globe
+        </h1>
+        
+        <div class="mt-8 bg-white text-black px-6 py-2 font-black text-2xl uppercase skew-x-12 animate-pulse-fast">
+            Live Updates Now
+        </div>
+    </div>
 
+    <!-- Bottom Warning Bar -->
+    <div class="marquee-container w-full">
+        <div class="marquee-content" style="animation-direction: reverse;">
+            PROTEST 🪧 AROUND GLOBE — BREAKING NEWS — PROTEST 🪧 AROUND GLOBE — BREAKING NEWS — PROTEST 🪧 AROUND GLOBE
+        </div>
+    </div>
+
+    <script>
+        // Interactive element to "Silence" or "Boost" the visual intensity
+        document.body.addEventListener('click', () => {
+            console.log("Alert Acknowledged");
+            // Placeholder for interactivity
+        });
+    </script>
 </body>
 </html>
+
+
 
