@@ -1,1 +1,326 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dathu Tech - Ignition Flow Profile</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --emerald: #10b981;
+            --emerald-glow: rgba(16, 185, 129, 0.4);
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            transition: background-color 0.5s ease, color 0.5s ease;
+        }
+
+        .dark-mode {
+            background-color: #020617;
+            color: #f8fafc;
+        }
+
+        .light-mode {
+            background-color: #f8fafc;
+            color: #0f172a;
+        }
+
+        /* Ignition Flow Animation Algorithm */
+        .ignition-bg {
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            z-index: 0;
+            opacity: 0;
+            transition: opacity 2s ease;
+        }
+
+        .ignited .ignition-bg {
+            opacity: 0.2;
+        }
+
+        .pulse-blob {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(120px);
+            background: var(--emerald);
+            animation: blobFloat 20s infinite alternate ease-in-out;
+        }
+
+        @keyframes blobFloat {
+            0% { transform: translate(0, 0) scale(1); }
+            50% { transform: translate(10%, 15%) scale(1.1); }
+            100% { transform: translate(-5%, 5%) scale(0.9); }
+        }
+
+        /* Dathu Glow Progress Bar */
+        .progress-bar-glow {
+            box-shadow: 0 0 15px var(--emerald-glow);
+            transition: width 1.5s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .card-glass {
+            backdrop-filter: blur(12px);
+            transition: border-color 0.3s ease, transform 0.3s ease;
+        }
+
+        .dark-mode .card-glass {
+            background: rgba(15, 23, 42, 0.6);
+            border: 1px solid rgba(51, 65, 85, 0.5);
+        }
+
+        .light-mode .card-glass {
+            background: rgba(255, 255, 255, 0.8);
+            border: 1px solid rgba(226, 232, 240, 1);
+        }
+
+        .ignite-btn {
+            background: var(--emerald);
+            box-shadow: 0 10px 25px -5px rgba(16, 185, 129, 0.4);
+            transition: all 0.3s ease;
+        }
+
+        .ignite-btn:active {
+            transform: scale(0.95);
+        }
+
+        /* SVG Icon styling */
+        .icon-emerald {
+            color: var(--emerald);
+            fill: rgba(16, 185, 129, 0.1);
+        }
+    </style>
+</head>
+<body class="dark-mode min-h-screen relative overflow-x-hidden">
+
+    <!-- Background Algorithm Elements -->
+    <div class="ignition-bg" id="bgLayer">
+        <div class="pulse-blob w-[40vw] h-[40vw] top-[-10%] left-[-10%]"></div>
+        <div class="pulse-blob w-[30vw] h-[30vw] bottom-[-10%] right-[-10%]" style="animation-delay: -5s; background: #059669;"></div>
+    </div>
+
+    <div class="relative z-10 p-4 md:p-8 max-w-6xl mx-auto">
+        
+        <!-- Header -->
+        <header class="flex justify-between items-center mb-12">
+            <div class="flex items-center gap-3">
+                <div class="w-12 h-12 bg-emerald-500 rounded-xl flex items-center justify-center shadow-lg shadow-emerald-500/30">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="2" ry="2"></rect><rect x="9" y="9" width="6" height="6"></rect><line x1="9" y1="1" x2="9" y2="4"></line><line x1="15" y1="1" x2="15" y2="4"></line><line x1="9" y1="20" x2="9" y2="23"></line><line x1="15" y1="20" x2="15" y2="23"></line><line x1="20" y1="9" x2="23" y2="9"></line><line x1="20" y1="15" x2="23" y2="15"></line><line x1="1" y1="9" x2="4" y2="9"></line><line x1="1" y1="15" x2="4" y2="15"></line></svg>
+                </div>
+                <div>
+                    <h1 class="text-xl font-black uppercase tracking-tighter">Dathu<span class="text-emerald-500">Tech</span></h1>
+                    <p class="text-[10px] uppercase tracking-[0.3em] opacity-50">Flow Algorithm Profile</p>
+                </div>
+            </div>
+
+            <button onclick="toggleTheme()" class="p-3 rounded-full card-glass hover:scale-110 transition-transform" id="themeBtn">
+                <!-- Sun Icon -->
+                <svg id="sunIcon" class="hidden text-yellow-400" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>
+                <!-- Moon Icon -->
+                <svg id="moonIcon" class="text-indigo-400" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
+            </button>
+        </header>
+
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+            
+            <!-- Profile Column -->
+            <aside class="lg:col-span-4 space-y-6">
+                <div class="card-glass p-8 rounded-[2rem] text-center relative overflow-hidden group">
+                    <div class="relative z-10">
+                        <div class="w-32 h-32 mx-auto rounded-full border-4 border-emerald-500/30 p-1 mb-6 group-hover:border-emerald-500 transition-colors">
+                            <div class="w-full h-full rounded-full bg-slate-800 flex items-center justify-center overflow-hidden">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="60" height="60" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="translate-y-2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+                            </div>
+                        </div>
+                        <h2 class="text-2xl font-bold">Dathuvishnu S.</h2>
+                        <p class="text-emerald-500 font-medium mb-6">Systems Architect</p>
+                        
+                        <div class="grid grid-cols-2 gap-3 mb-8">
+                            <div class="p-3 rounded-2xl bg-slate-500/5 border border-slate-500/10 text-left">
+                                <p class="text-[10px] uppercase opacity-50">Node Rank</p>
+                                <p class="text-lg font-bold">#14</p>
+                            </div>
+                            <div class="p-3 rounded-2xl bg-slate-500/5 border border-slate-500/10 text-left">
+                                <p class="text-[10px] uppercase opacity-50">Trust Score</p>
+                                <p class="text-lg font-bold">9.8</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card-glass p-6 rounded-3xl flex items-center justify-between hover:border-emerald-500/40 cursor-pointer transition-all group">
+                    <div class="flex items-center gap-4">
+                        <div class="p-3 rounded-xl bg-emerald-500/10 text-emerald-500">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="7"></circle><polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"></polyline></svg>
+                        </div>
+                        <div>
+                            <p class="font-bold">Certifications</p>
+                            <p class="text-xs opacity-50">Verified Flow Specialist</p>
+                        </div>
+                    </div>
+                    <svg class="opacity-30 group-hover:translate-x-1 transition-transform" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
+                </div>
+            </aside>
+
+            <!-- Adoption & Flow Column -->
+            <main class="lg:col-span-8 space-y-8">
+                
+                <!-- Adoption Card -->
+                <div class="card-glass p-8 rounded-[2rem] relative overflow-hidden">
+                    <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-10 gap-4">
+                        <div>
+                            <h3 class="text-xl font-bold flex items-center gap-2">
+                                <svg class="text-emerald-500" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"></polyline><polyline points="16 7 22 7 22 13"></polyline></svg>
+                                User Adoption Flow
+                            </h3>
+                            <p class="text-sm opacity-50">Integration depth of Dathu technology protocols.</p>
+                        </div>
+                        <div class="text-left md:text-right">
+                            <span id="adoptionPercent" class="text-4xl font-black text-emerald-500">0%</span>
+                            <p class="text-[10px] uppercase tracking-widest opacity-50">Live Saturation</p>
+                        </div>
+                    </div>
+
+                    <!-- Ignition Flow Progress -->
+                    <div class="w-full h-4 bg-slate-500/20 rounded-full overflow-hidden mb-10 relative">
+                        <div id="adoptionBar" class="progress-bar-glow absolute top-0 left-0 h-full bg-emerald-500 w-0 flex items-center justify-center">
+                            <div class="w-20 h-full bg-white/20 -skew-x-12 animate-pulse"></div>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        <div class="p-4 rounded-2xl border border-slate-500/10 hover:border-emerald-500/30 transition-colors">
+                            <p class="text-[10px] uppercase opacity-50 mb-1">Total Nodes</p>
+                            <p class="text-xl font-bold">12,402</p>
+                        </div>
+                        <div class="p-4 rounded-2xl border border-slate-500/10 hover:border-emerald-500/30 transition-colors">
+                            <p class="text-[10px] uppercase opacity-50 mb-1">Flow Purity</p>
+                            <p class="text-xl font-bold">99.9%</p>
+                        </div>
+                        <div class="p-4 rounded-2xl border border-slate-500/10 hover:border-emerald-500/30 transition-colors">
+                            <p class="text-[10px] uppercase opacity-50 mb-1">Latency</p>
+                            <p class="text-xl font-bold text-emerald-500">24ms</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Secondary Widgets -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <div class="card-glass p-8 rounded-[2rem]">
+                        <h4 class="font-bold mb-6">Ignition Sequences</h4>
+                        <div class="space-y-4" id="sequenceList">
+                            <!-- Bars added by JS -->
+                        </div>
+                    </div>
+
+                    <div class="card-glass p-8 rounded-[2rem] flex flex-col items-center justify-center text-center">
+                        <div class="w-20 h-20 bg-emerald-500/10 rounded-3xl flex items-center justify-center text-emerald-500 mb-6 pulse-animation">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
+                        </div>
+                        <h4 class="text-lg font-bold mb-2">Re-Ignite Flow</h4>
+                        <p class="text-sm opacity-50 mb-6">Reset the Dathu core algorithm and refresh local cache.</p>
+                        <button onclick="igniteFlow()" class="ignite-btn w-full py-4 rounded-2xl text-slate-950 font-bold">
+                            Initialize Protocol
+                        </button>
+                    </div>
+                </div>
+            </main>
+        </div>
+
+        <footer class="mt-20 pb-10 text-center text-[10px] uppercase tracking-[0.4em] opacity-30">
+            Dathu Tech Flow Interface &bull; System Verified &bull; 2024
+        </footer>
+    </div>
+
+    <script>
+        // State Management
+        let isDarkMode = true;
+        let adoptionValue = 0;
+        const targetAdoption = 84;
+
+        // Theme Algorithm
+        function toggleTheme() {
+            isDarkMode = !isDarkMode;
+            const body = document.body;
+            const sun = document.getElementById('sunIcon');
+            const moon = document.getElementById('moonIcon');
+
+            if (isDarkMode) {
+                body.classList.remove('light-mode');
+                body.classList.add('dark-mode');
+                sun.classList.add('hidden');
+                moon.classList.remove('hidden');
+            } else {
+                body.classList.remove('dark-mode');
+                body.classList.add('light-mode');
+                moon.classList.add('hidden');
+                sun.classList.remove('hidden');
+            }
+        }
+
+        // Ignition Flow Algorithm
+        function igniteFlow() {
+            // Reset
+            adoptionValue = 0;
+            document.getElementById('adoptionBar').style.width = '0%';
+            document.getElementById('adoptionPercent').innerText = '0%';
+            document.body.classList.remove('ignited');
+
+            // Trigger Ignition
+            setTimeout(() => {
+                document.body.classList.add('ignited');
+                
+                // Animate adoption number
+                const interval = setInterval(() => {
+                    if (adoptionValue >= targetAdoption) {
+                        clearInterval(interval);
+                    } else {
+                        adoptionValue++;
+                        document.getElementById('adoptionPercent').innerText = adoptionValue + '%';
+                        document.getElementById('adoptionBar').style.width = adoptionValue + '%';
+                    }
+                }, 25);
+            }, 300);
+        }
+
+        // Initialize Sequence Bars
+        function initSequences() {
+            const list = document.getElementById('sequenceList');
+            const widths = [80, 60, 95, 40];
+            const labels = ["Bio-Link", "Quantum Sink", "Core Pulse", "Ether Net"];
+            
+            list.innerHTML = widths.map((w, i) => `
+                <div class="space-y-1">
+                    <div class="flex justify-between text-[10px] uppercase opacity-50">
+                        <span>${labels[i]}</span>
+                        <span>${w}%</span>
+                    </div>
+                    <div class="h-1.5 w-full bg-slate-500/10 rounded-full overflow-hidden">
+                        <div class="h-full bg-emerald-500/40 rounded-full transition-all duration-[2s] delay-[${i * 200}ms]" style="width: ${w}%"></div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // On Load
+        window.onload = () => {
+            initSequences();
+            igniteFlow();
+        };
+    </script>
+
+    <style>
+        .pulse-animation {
+            animation: softPulse 2s infinite ease-in-out;
+        }
+        @keyframes softPulse {
+            0%, 100% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.1); opacity: 0.7; }
+        }
+    </style>
+</body>
+</html>
+
 
