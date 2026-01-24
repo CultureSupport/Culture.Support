@@ -2,45 +2,88 @@
 <html lang="no">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Star Wars: Måneforsvar</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Star Wars: Ultimate Måneforsvar</title>
     <style>
         body {
             margin: 0;
             padding: 0;
             background-color: #000;
-            color: #ffe81f; /* Star Wars gul */
+            color: #ffe81f;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             overflow: hidden;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            height: 100vh;
+            touch-action: none;
+            user-select: none;
         }
 
         canvas {
-            border: 2px solid #333;
-            box-shadow: 0 0 20px rgba(255, 232, 31, 0.2);
+            display: block;
             background-color: #00050a;
-            max-width: 100%;
-            max-height: 80vh;
-            touch-action: none;
         }
 
-        .ui {
+        .ui-container {
             position: absolute;
-            top: 20px;
-            left: 20px;
+            top: 10px;
+            left: 10px;
+            right: 10px;
+            display: flex;
+            justify-content: space-between;
             pointer-events: none;
             text-shadow: 2px 2px 4px #000;
+            z-index: 5;
         }
 
-        .controls {
-            margin-top: 10px;
-            color: #aaa;
-            font-size: 0.9rem;
+        .stats { font-size: 1.2rem; font-weight: bold; }
+        .special-weapon { color: #f00; font-size: 1rem; }
+
+        /* Mobil Kontroller */
+        #joystick-container {
+            position: absolute;
+            bottom: 50px;
+            left: 50px;
+            width: 120px;
+            height: 120px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            touch-action: none;
         }
+        #joystick-knob {
+            position: absolute;
+            top: 35px;
+            left: 35px;
+            width: 50px;
+            height: 50px;
+            background: rgba(255, 232, 31, 0.5);
+            border-radius: 50%;
+        }
+
+        .action-buttons {
+            position: absolute;
+            bottom: 50px;
+            right: 50px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .btn {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            border: 2px solid #ffe81f;
+            background: rgba(0, 0, 0, 0.6);
+            color: #ffe81f;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            font-size: 0.8rem;
+            pointer-events: auto;
+        }
+
+        .btn:active { background: #ffe81f; color: #000; }
+        #btn-missile { border-color: #f00; color: #f00; }
 
         #gameOver {
             display: none;
@@ -48,41 +91,40 @@
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            background: rgba(0, 0, 0, 0.85);
+            background: rgba(0, 0, 0, 0.9);
             padding: 40px;
             border: 3px solid #ffe81f;
             text-align: center;
-            z-index: 10;
-        }
-
-        button {
-            background: #ffe81f;
-            color: #000;
-            border: none;
-            padding: 10px 20px;
-            font-weight: bold;
-            cursor: pointer;
-            margin-top: 20px;
-            border-radius: 4px;
-        }
-
-        button:hover {
-            background: #fff;
+            z-index: 100;
         }
     </style>
 </head>
 <body>
 
-    <div class="ui">
-        <div id="score">Poeng: 0</div>
-        <div id="lives">Månens helse: 100%</div>
-        <div class="controls">Piltaster: Fly | Mellomrom: Skyt</div>
+    <div class="ui-container">
+        <div class="stats">
+            <div id="score">Poeng: 0</div>
+            <div id="lives">Måne-HP: 100%</div>
+        </div>
+        <div class="special-weapon">
+            <div id="missile-count">Guided Missiles: 30</div>
+            <div>SENTINEL: AUTO-LOCK PÅ</div>
+        </div>
+    </div>
+
+    <div id="joystick-container">
+        <div id="joystick-knob"></div>
+    </div>
+
+    <div class="action-buttons">
+        <div class="btn" id="btn-shoot">AK47<br>HOLD</div>
+        <div class="btn" id="btn-missile">MEGA<br>MISSILE</div>
     </div>
 
     <div id="gameOver">
-        <h1>SPILLET ER OVER</h1>
+        <h1>MISJON FEILET</h1>
         <p id="finalScore"></p>
-        <button onclick="resetGame()">Prøv igjen</button>
+        <button onclick="location.reload()" style="padding:10px 20px; cursor:pointer;">START PÅ NYTT</button>
     </div>
 
     <canvas id="gameCanvas"></canvas>
@@ -90,331 +132,295 @@
     <script>
         const canvas = document.getElementById('gameCanvas');
         const ctx = canvas.getContext('2d');
-        const scoreElement = document.getElementById('score');
-        const livesElement = document.getElementById('lives');
-        const gameOverScreen = document.getElementById('gameOver');
-        const finalScoreText = document.getElementById('finalScore');
-
-        // Tilpass canvas til skjermen
-        function resize() {
-            canvas.width = window.innerWidth > 800 ? 800 : window.innerWidth - 20;
-            canvas.height = window.innerHeight > 600 ? 600 : window.innerHeight - 150;
-        }
-        window.addEventListener('resize', resize);
-        resize();
-
-        // Spilltilstand
+        
+        // Spillvariabler
         let score = 0;
         let moonHealth = 100;
+        let guidedMissiles = 30;
         let gameActive = true;
-        let keys = {};
+        let width, height;
 
-        // Stjerner i bakgrunnen
-        const stars = Array.from({ length: 100 }, () => ({
-            x: Math.random() * canvas.width,
-            y: Math.random() * canvas.height,
-            size: Math.random() * 2,
-            speed: Math.random() * 0.5 + 0.1
-        }));
+        function init() {
+            width = canvas.width = window.innerWidth;
+            height = canvas.height = window.innerHeight;
+        }
+        window.addEventListener('resize', init);
+        init();
 
-        // Spillerens skip (X-Wing stil)
-        const ship = {
-            x: canvas.width / 2,
-            y: canvas.height / 2,
-            radius: 15,
+        // Objekt-lister
+        let ship = {
+            x: width / 2,
+            y: height / 2,
             angle: -Math.PI / 2,
-            rotation: 0,
-            velocity: { x: 0, y: 0 },
-            thrusting: false,
-            cooldown: 0
+            vx: 0,
+            vy: 0,
+            target: null,
+            autoShootTimer: 0
         };
 
-        let lasers = [];
+        let bullets = [];
         let ufos = [];
+        let moonMissiles = [];
         let particles = [];
+        let stars = Array.from({length: 150}, () => ({x: Math.random()*width, y: Math.random()*height, s: Math.random()*2}));
 
-        // Månen nederst
-        const moon = {
-            x: canvas.width / 2,
-            y: canvas.height + 100,
-            radius: 200,
-            color: '#ddd'
-        };
+        // Kontroll-tilstand
+        let joystick = { active: false, x: 0, y: 0, startX: 0, startY: 0, angle: 0, dist: 0 };
+        let shooting = false;
 
-        // Input håndtering
-        window.addEventListener('keydown', e => keys[e.code] = true);
-        window.addEventListener('keyup', e => keys[e.code] = false);
+        // --- INPUT HÅNDTERING ---
+        const knob = document.getElementById('joystick-knob');
+        const joyCont = document.getElementById('joystick-container');
 
-        function createExplosion(x, y, color) {
-            for (let i = 0; i < 15; i++) {
+        joyCont.addEventListener('touchstart', e => {
+            joystick.active = true;
+            const rect = joyCont.getBoundingClientRect();
+            joystick.startX = rect.left + rect.width/2;
+            joystick.startY = rect.top + rect.height/2;
+        });
+
+        window.addEventListener('touchmove', e => {
+            if (!joystick.active) return;
+            const touch = e.touches[0];
+            const dx = touch.clientX - joystick.startX;
+            const dy = touch.clientY - joystick.startY;
+            const dist = Math.min(Math.hypot(dx, dy), 50);
+            const angle = Math.atan2(dy, dx);
+            
+            joystick.x = Math.cos(angle) * dist;
+            joystick.y = Math.sin(angle) * dist;
+            joystick.angle = angle;
+            joystick.dist = dist / 50;
+
+            knob.style.transform = `translate(${joystick.x}px, ${joystick.y}px)`;
+        });
+
+        window.addEventListener('touchend', () => {
+            joystick.active = false;
+            joystick.dist = 0;
+            knob.style.transform = `translate(0px, 0px)`;
+        });
+
+        document.getElementById('btn-shoot').addEventListener('touchstart', () => shooting = true);
+        document.getElementById('btn-shoot').addEventListener('touchend', () => shooting = false);
+
+        document.getElementById('btn-missile').addEventListener('touchstart', () => {
+            if (guidedMissiles > 0 && ufos.length > 0) {
+                guidedMissiles--;
+                document.getElementById('missile-count').innerText = `Guided Missiles: ${guidedMissiles}`;
+                launchMegaStrike();
+            }
+        });
+
+        // --- LOGIKK ---
+
+        function launchMegaStrike() {
+            ufos.forEach(ufo => {
+                moonMissiles.push({
+                    x: width / 2,
+                    y: height,
+                    target: ufo,
+                    speed: 10,
+                    color: '#ff0'
+                });
+            });
+        }
+
+        function createExplosion(x, y, color, count=10) {
+            for(let i=0; i<count; i++) {
                 particles.push({
-                    x: x,
-                    y: y,
-                    vx: (Math.random() - 0.5) * 6,
-                    vy: (Math.random() - 0.5) * 6,
-                    life: 1.0,
-                    color: color
+                    x, y, 
+                    vx: (Math.random()-0.5)*10, 
+                    vy: (Math.random()-0.5)*10, 
+                    life: 1, 
+                    color
                 });
             }
         }
 
         function spawnUfo() {
             if (!gameActive) return;
-            const x = Math.random() * canvas.width;
-            const y = -50;
-            const angleToMoon = Math.atan2(moon.y - y, moon.x - x);
-            const speed = 1 + Math.random() * 1.5;
-            
             ufos.push({
-                x: x,
-                y: y,
-                radius: 20,
-                vx: Math.cos(angleToMoon) * speed,
-                vy: Math.sin(angleToMoon) * speed,
-                hp: 2
+                x: Math.random() * width,
+                y: -50,
+                radius: 25,
+                hp: 3,
+                vx: (Math.random() - 0.5) * 2,
+                vy: 1 + Math.random() * 2
             });
-            
-            // Øk vanskelighetsgrad over tid
-            setTimeout(spawnUfo, Math.max(500, 2000 - score * 10));
+            setTimeout(spawnUfo, 2000 - Math.min(1500, score/10));
         }
 
         function update() {
             if (!gameActive) return;
 
-            // Roter skip
-            if (keys['ArrowLeft']) ship.angle -= 0.08;
-            if (keys['ArrowRight']) ship.angle += 0.08;
-
-            // Akselerasjon (Thrust)
-            if (keys['ArrowUp']) {
-                ship.velocity.x += Math.cos(ship.angle) * 0.15;
-                ship.velocity.y += Math.sin(ship.angle) * 0.15;
-                ship.thrusting = true;
-            } else {
-                ship.thrusting = false;
+            // Beveg skip
+            if (joystick.active) {
+                ship.angle = joystick.angle;
+                ship.vx += Math.cos(ship.angle) * 0.4 * joystick.dist;
+                ship.vy += Math.sin(ship.angle) * 0.4 * joystick.dist;
             }
+            ship.vx *= 0.95; ship.vy *= 0.95;
+            ship.x += ship.vx; ship.y += ship.vy;
 
-            // Friksjon
-            ship.velocity.x *= 0.98;
-            ship.velocity.y *= 0.98;
+            // Skjermkanter
+            if(ship.x < 0) ship.x = width; if(ship.x > width) ship.x = 0;
+            if(ship.y < 0) ship.y = height; if(ship.y > height) ship.y = 0;
 
-            // Oppdater posisjon
-            ship.x += ship.velocity.x;
-            ship.y += ship.velocity.y;
-
-            // Wrap around (skjermkanter)
-            if (ship.x < 0) ship.x = canvas.width;
-            if (ship.x > canvas.width) ship.x = 0;
-            if (ship.y < 0) ship.y = canvas.height;
-            if (ship.y > canvas.height) ship.y = 0;
-
-            // Skyting
-            if (keys['Space'] && ship.cooldown <= 0) {
-                lasers.push({
-                    x: ship.x + Math.cos(ship.angle) * 20,
-                    y: ship.y + Math.sin(ship.angle) * 20,
-                    vx: Math.cos(ship.angle) * 8,
-                    vy: Math.sin(ship.angle) * 8,
-                    life: 60
-                });
-                ship.cooldown = 15;
-            }
-            if (ship.cooldown > 0) ship.cooldown--;
-
-            // Oppdater lasere
-            lasers = lasers.filter(l => {
-                l.x += l.vx;
-                l.y += l.vy;
-                l.life--;
-                return l.life > 0 && l.x > 0 && l.x < canvas.width && l.y > 0 && l.y < canvas.height;
-            });
-
-            // Oppdater UFOer
-            ufos.forEach((ufo, uIdx) => {
-                ufo.x += ufo.vx;
-                ufo.y += ufo.vy;
-
-                // Sjekk kollisjon med lasere
-                lasers.forEach((laser, lIdx) => {
-                    const dist = Math.hypot(ufo.x - laser.x, ufo.y - laser.y);
-                    if (dist < ufo.radius) {
-                        ufo.hp--;
-                        lasers.splice(lIdx, 1);
-                        if (ufo.hp <= 0) {
-                            createExplosion(ufo.x, ufo.y, '#f00');
-                            ufos.splice(uIdx, 1);
-                            score += 100;
-                            scoreElement.innerText = `Poeng: ${score}`;
-                        }
-                    }
-                });
-
-                // Sjekk om UFO lander på månen
-                const distToMoon = Math.hypot(ufo.x - moon.x, ufo.y - moon.y);
-                if (distToMoon < moon.radius + ufo.radius - 20) {
-                    moonHealth -= 10;
-                    createExplosion(ufo.x, ufo.y, '#ff0');
-                    ufos.splice(uIdx, 1);
-                    livesElement.innerText = `Månens helse: ${moonHealth}%`;
-                    if (moonHealth <= 0) endGame();
+            // Auto-target system (SENTINEL)
+            let nearestDist = Infinity;
+            ship.target = null;
+            ufos.forEach(ufo => {
+                const d = Math.hypot(ufo.x - ship.x, ufo.y - ship.y);
+                if (d < 400 && d < nearestDist) {
+                    nearestDist = d;
+                    ship.target = ufo;
                 }
             });
 
-            // Partikler
+            // Auto-skyting (AK47 & Sentinel)
+            if (shooting || (ship.target && ship.autoShootTimer <= 0)) {
+                const targetAngle = ship.target ? Math.atan2(ship.target.y - ship.y, ship.target.x - ship.x) : ship.angle;
+                bullets.push({
+                    x: ship.x, y: ship.y, 
+                    vx: Math.cos(targetAngle) * 12, 
+                    vy: Math.sin(targetAngle) * 12,
+                    type: 'bullet'
+                });
+                ship.autoShootTimer = shooting ? 5 : 15; // AK47 er raskere enn auto-sentinel
+            }
+            if (ship.autoShootTimer > 0) ship.autoShootTimer--;
+
+            // Kuler
+            bullets = bullets.filter(b => {
+                b.x += b.vx; b.y += b.vy;
+                return b.x > 0 && b.x < width && b.y > 0 && b.y < height;
+            });
+
+            // Guided Moon Missiles
+            moonMissiles.forEach((m, i) => {
+                const dx = m.target.x - m.x;
+                const dy = m.target.y - m.y;
+                const angle = Math.atan2(dy, dx);
+                m.x += Math.cos(angle) * m.speed;
+                m.y += Math.sin(angle) * m.speed;
+
+                if (Math.hypot(dx, dy) < 20) {
+                    createExplosion(m.x, m.y, '#ff0', 30);
+                    m.target.hp = 0; // Instant kill
+                    moonMissiles.splice(i, 1);
+                }
+            });
+
+            // UFOer
+            ufos.forEach((ufo, uIdx) => {
+                ufo.x += ufo.vx; ufo.y += ufo.vy;
+
+                // Kollisjon med kuler
+                bullets.forEach((b, bIdx) => {
+                    if (Math.hypot(ufo.x - b.x, ufo.y - b.y) < ufo.radius) {
+                        ufo.hp--;
+                        bullets.splice(bIdx, 1);
+                        createExplosion(b.x, b.y, '#fff', 3);
+                    }
+                });
+
+                if (ufo.hp <= 0 || ufo.y > height - 50) {
+                    if (ufo.y > height - 50) {
+                        moonHealth -= 10;
+                        document.getElementById('lives').innerText = `Måne-HP: ${moonHealth}%`;
+                        createExplosion(ufo.x, height-20, '#f00', 20);
+                        if (moonHealth <= 0) gameActive = false;
+                    } else {
+                        score += 100;
+                        document.getElementById('score').innerText = `Poeng: ${score}`;
+                    }
+                    ufos.splice(uIdx, 1);
+                }
+            });
+
             particles.forEach((p, i) => {
-                p.x += p.vx;
-                p.y += p.vy;
-                p.life -= 0.02;
+                p.x += p.vx; p.y += p.vy; p.life -= 0.02;
                 if (p.life <= 0) particles.splice(i, 1);
             });
-        }
 
-        function drawShip() {
-            ctx.save();
-            ctx.translate(ship.x, ship.y);
-            ctx.rotate(ship.angle);
-
-            // Tegn X-Wing form
-            ctx.strokeStyle = '#fff';
-            ctx.lineWidth = 2;
-            
-            // Kroppen
-            ctx.beginPath();
-            ctx.moveTo(20, 0);
-            ctx.lineTo(-10, -10);
-            ctx.lineTo(-5, 0);
-            ctx.lineTo(-10, 10);
-            ctx.closePath();
-            ctx.stroke();
-
-            // Vinger
-            ctx.beginPath();
-            ctx.moveTo(0, -5);
-            ctx.lineTo(-15, -20);
-            ctx.moveTo(0, 5);
-            ctx.lineTo(-15, 20);
-            ctx.stroke();
-
-            // Cockpit
-            ctx.fillStyle = '#4af';
-            ctx.beginPath();
-            ctx.arc(5, 0, 4, 0, Math.PI * 2);
-            ctx.fill();
-
-            // Flamme hvis thrust
-            if (ship.thrusting) {
-                ctx.fillStyle = '#f80';
-                ctx.beginPath();
-                ctx.moveTo(-10, 0);
-                ctx.lineTo(-25, 0);
-                ctx.lineTo(-10, 5);
-                ctx.fill();
+            if (!gameActive) {
+                document.getElementById('gameOver').style.display = 'block';
+                document.getElementById('finalScore').innerText = `Score: ${score}`;
             }
-
-            ctx.restore();
-        }
-
-        function drawUfo(ufo) {
-            ctx.save();
-            ctx.translate(ufo.x, ufo.y);
-            
-            // UFO-kropp
-            ctx.fillStyle = '#888';
-            ctx.beginPath();
-            ctx.ellipse(0, 0, ufo.radius, ufo.radius / 2, 0, 0, Math.PI * 2);
-            ctx.fill();
-            
-            // Dome
-            ctx.fillStyle = '#0f0';
-            ctx.beginPath();
-            ctx.arc(0, -5, 10, Math.PI, 0);
-            ctx.fill();
-            
-            ctx.restore();
         }
 
         function draw() {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.fillStyle = '#00050a';
+            ctx.fillRect(0, 0, width, height);
 
             // Stjerner
             ctx.fillStyle = '#fff';
-            stars.forEach(s => {
-                ctx.beginPath();
-                ctx.arc(s.x, s.y, s.size, 0, Math.PI * 2);
-                ctx.fill();
-                s.y += s.speed;
-                if (s.y > canvas.height) s.y = 0;
-            });
+            stars.forEach(s => ctx.fillRect(s.x, s.y, s.s, s.s));
 
             // Månen
-            ctx.fillStyle = moon.color;
+            ctx.fillStyle = '#333';
             ctx.beginPath();
-            ctx.arc(moon.x, moon.y, moon.radius, 0, Math.PI * 2);
+            ctx.arc(width/2, height + 800, 900, 0, Math.PI*2);
             ctx.fill();
-            // Kratere på månen
-            ctx.fillStyle = '#ccc';
-            ctx.beginPath(); ctx.arc(moon.x - 50, moon.y - 120, 20, 0, Math.PI * 2); ctx.fill();
-            ctx.beginPath(); ctx.arc(moon.x + 80, moon.y - 150, 15, 0, Math.PI * 2); ctx.fill();
 
-            // Lasere
-            ctx.shadowBlur = 10;
-            ctx.shadowColor = '#f00';
-            ctx.strokeStyle = '#f00';
-            ctx.lineWidth = 3;
-            lasers.forEach(l => {
+            // Sikte-scope (Auto-target UI)
+            if (ship.target) {
+                ctx.strokeStyle = 'rgba(0, 255, 0, 0.5)';
+                ctx.lineWidth = 2;
                 ctx.beginPath();
-                ctx.moveTo(l.x, l.y);
-                ctx.lineTo(l.x - l.vx * 2, l.y - l.vy * 2);
+                ctx.arc(ship.target.x, ship.target.y, 40, 0, Math.PI*2);
                 ctx.stroke();
+                // Crosshair
+                ctx.moveTo(ship.target.x - 50, ship.target.y); ctx.lineTo(ship.target.x + 50, ship.target.y);
+                ctx.moveTo(ship.target.x, ship.target.y - 50); ctx.lineTo(ship.target.x, ship.target.y + 50);
+                ctx.stroke();
+            }
+
+            // Kuler
+            ctx.fillStyle = '#f00';
+            bullets.forEach(b => ctx.fillRect(b.x-2, b.y-2, 4, 10));
+
+            // Guided Missiles
+            moonMissiles.forEach(m => {
+                ctx.fillStyle = '#ff0';
+                ctx.beginPath(); ctx.arc(m.x, m.y, 5, 0, Math.PI*2); ctx.fill();
             });
-            ctx.shadowBlur = 0;
 
             // UFOer
-            ufos.forEach(drawUfo);
+            ufos.forEach(ufo => {
+                ctx.fillStyle = '#888';
+                ctx.beginPath(); ctx.ellipse(ufo.x, ufo.y, ufo.radius, 10, 0, 0, Math.PI*2); ctx.fill();
+                ctx.fillStyle = '#0f0';
+                ctx.beginPath(); ctx.arc(ufo.x, ufo.y - 5, 8, 0, Math.PI*2); ctx.fill();
+            });
+
+            // Skip (X-Wing)
+            ctx.save();
+            ctx.translate(ship.x, ship.y);
+            ctx.rotate(ship.angle);
+            ctx.strokeStyle = '#fff';
+            ctx.lineWidth = 3;
+            ctx.beginPath();
+            ctx.moveTo(25, 0); ctx.lineTo(-15, -15); ctx.lineTo(-15, 15); ctx.closePath(); ctx.stroke();
+            // Vinger
+            ctx.beginPath(); ctx.moveTo(0, -10); ctx.lineTo(-20, -25); ctx.stroke();
+            ctx.beginPath(); ctx.moveTo(0, 10); ctx.lineTo(-20, 25); ctx.stroke();
+            ctx.restore();
 
             // Partikler
             particles.forEach(p => {
                 ctx.globalAlpha = p.life;
                 ctx.fillStyle = p.color;
-                ctx.fillRect(p.x, p.y, 3, 3);
+                ctx.fillRect(p.x, p.y, 4, 4);
             });
-            ctx.globalAlpha = 1.0;
+            ctx.globalAlpha = 1;
 
-            // Spiller
-            drawShip();
+            if (gameActive) requestAnimationFrame(() => { update(); draw(); });
         }
 
-        function loop() {
-            update();
-            draw();
-            requestAnimationFrame(loop);
-        }
-
-        function endGame() {
-            gameActive = false;
-            gameOverScreen.style.display = 'block';
-            finalScoreText.innerText = `Du fikk ${score} poeng før månen ble overrunnet!`;
-        }
-
-        function resetGame() {
-            score = 0;
-            moonHealth = 100;
-            gameActive = true;
-            ufos = [];
-            lasers = [];
-            particles = [];
-            ship.x = canvas.width / 2;
-            ship.y = canvas.height / 2;
-            ship.velocity = { x: 0, y: 0 };
-            scoreElement.innerText = `Poeng: 0`;
-            livesElement.innerText = `Månens helse: 100%`;
-            gameOverScreen.style.display = 'none';
-        }
-
-        // Start spillet
         spawnUfo();
-        loop();
-
+        draw();
     </script>
 </body>
 </html>
