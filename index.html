@@ -3,192 +3,355 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Canvas API Slot Machine Masterclass</title>
+    <title>Sabeltann Slots - Kapteinens Skatt</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
+        @import url('https://fonts.googleapis.com/css2?family=Pirata+One&family=Roboto:wght@400;700&display=swap');
+
+        body {
+            background-color: #0c0c0c;
+            color: #e0e0e0;
+            font-family: 'Roboto', sans-serif;
+            margin: 0;
+            overflow: hidden;
+            touch-action: manipulation;
+        }
+
+        .pirate-font {
+            font-family: 'Pirata One', cursive;
+        }
+
+        #game-container {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background: radial-gradient(circle, #1a2a3a 0%, #050a0f 100%);
+        }
+
         canvas {
-            image-rendering: -moz-crisp-edges;
-            image-rendering: -webkit-crisp-edges;
-            image-rendering: pixelated;
-            image-rendering: crisp-edges;
+            max-width: 100%;
+            height: auto;
+            border: 4px solid #c5a059;
+            border-radius: 12px;
+            box-shadow: 0 0 50px rgba(197, 160, 89, 0.3);
+            background: #000;
+        }
+
+        .controls {
+            margin-top: 20px;
+            display: flex;
+            gap: 20px;
+            align-items: center;
+            background: rgba(0, 0, 0, 0.6);
+            padding: 15px 30px;
+            border-radius: 50px;
+            border: 1px solid #c5a059;
+        }
+
+        .btn-spin {
+            background: linear-gradient(180deg, #ffd700 0%, #c5a059 100%);
+            color: #000;
+            font-weight: bold;
+            padding: 12px 40px;
+            border-radius: 25px;
+            cursor: pointer;
+            text-transform: uppercase;
+            transition: transform 0.1s, filter 0.2s;
+            box-shadow: 0 4px 15px rgba(255, 215, 0, 0.4);
+            border: none;
+        }
+
+        .btn-spin:active {
+            transform: scale(0.95);
+        }
+
+        .btn-spin:disabled {
+            filter: grayscale(1);
+            cursor: not-allowed;
+        }
+
+        .stat-box {
+            text-align: center;
+        }
+
+        .stat-label {
+            font-size: 10px;
+            color: #c5a059;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .stat-value {
+            font-size: 20px;
+            font-weight: bold;
+            color: #fff;
+        }
+
+        #win-overlay {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0);
+            z-index: 10;
+            text-align: center;
+            pointer-events: none;
+            transition: transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        #win-overlay.show {
+            transform: translate(-50%, -50%) scale(1.5);
+        }
+
+        .particles {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
         }
     </style>
 </head>
-<body class="bg-gray-950 text-white min-h-screen flex flex-col items-center justify-center p-4">
+<body>
 
-    <div class="max-w-4xl w-full space-y-6">
-        <header class="text-center">
-            <h1 class="text-3xl font-bold text-yellow-500">HTML5 Canvas API Arkitektur</h1>
-            <p class="text-gray-400">Teknisk gjennomgang av rendering-loop, gradienter og maskering</p>
-        </header>
+<div id="game-container">
+    <h1 class="pirate-font text-5xl mb-6 text-[#c5a059] tracking-widest">Sabeltann Slots</h1>
+    
+    <div id="win-overlay">
+        <h2 class="pirate-font text-6xl text-yellow-400 drop-shadow-lg">STOR GEVINST!</h2>
+        <p id="win-amount" class="text-3xl font-bold text-white"></p>
+    </div>
 
-        <div class="relative group">
-            <!-- Selve Canvas-elementet -->
-            <canvas id="mainCanvas" class="w-full bg-black rounded-xl border-4 border-gray-800 shadow-2xl cursor-pointer"></canvas>
-            
-            <div id="loading" class="absolute inset-0 flex items-center justify-center bg-black bg-opacity-80 rounded-xl">
-                <span class="animate-pulse text-yellow-500">Laster Canvas-ressurser...</span>
-            </div>
+    <canvas id="slotCanvas"></canvas>
+
+    <div class="controls">
+        <div class="stat-box">
+            <div class="stat-label">Saldo</div>
+            <div id="balance" class="stat-value">1000</div>
         </div>
-
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div class="bg-gray-900 p-4 rounded-lg border border-gray-800">
-                <h3 class="text-yellow-500 font-bold mb-2">Anvendte API-metoder:</h3>
-                <ul class="text-xs space-y-1 text-gray-300 font-mono">
-                    <li>- ctx.beginPath() / clip() : For hjul-maskering</li>
-                    <li>- ctx.createLinearGradient() : For 3D-dybde</li>
-                    <li>- ctx.setTransform() : For risting/vibrasjon</li>
-                    <li>- ctx.drawImage() : Rendering av SVG-assets</li>
-                </ul>
-            </div>
-            <div class="flex items-center justify-center">
-                <button id="triggerSpin" class="bg-yellow-600 hover:bg-yellow-500 text-black font-black px-10 py-4 rounded-full text-xl transition-all transform active:scale-95 shadow-lg">
-                    KJØR RENDER-LOOP
-                </button>
-            </div>
+        
+        <button id="spinBtn" class="btn-spin text-xl">Spinn!</button>
+        
+        <div class="stat-box">
+            <div class="stat-label">Siste Vinn</div>
+            <div id="lastWin" class="stat-value">0</div>
         </div>
     </div>
 
+    <div class="mt-4 text-[#c5a059] text-xs uppercase tracking-widest opacity-50">
+        Fem like gir 10x innsats | Tre like gir 2x
+    </div>
+</div>
+
 <script>
-    const canvas = document.getElementById('mainCanvas');
+    /**
+     * SVG Assets som Data URIs for skarpe symboler
+     */
+    const SYMBOLS_SVG = {
+        hodeskalle: `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><circle cx="50" cy="45" r="35" fill="#f0f0f0"/><path d="M30 70 q20 15 40 0" fill="#f0f0f0"/><circle cx="38" cy="40" r="8" fill="#000"/><circle cx="62" cy="40" r="8" fill="#000"/><rect x="45" y="55" width="10" height="15" rx="2" fill="#000"/></svg>`,
+        gullmynt: `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><circle cx="50" cy="50" r="45" fill="#ffd700" stroke="#b8860b" stroke-width="4"/><circle cx="50" cy="50" r="35" fill="none" stroke="#b8860b" stroke-width="2" stroke-dasharray="4"/><text x="50" y="65" font-family="serif" font-size="40" text-anchor="middle" fill="#b8860b">$</text></svg>`,
+        sabel: `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><path d="M20 80 L80 20 M15 85 L25 75" stroke="#c0c0c0" stroke-width="8" stroke-linecap="round"/><path d="M15 85 Q25 95 35 85" fill="none" stroke="#8b4513" stroke-width="6"/></svg>`,
+        diamant: `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><path d="M50 10 L85 40 L50 90 L15 40 Z" fill="#00ffff" opacity="0.8" stroke="#fff" stroke-width="2"/><path d="M15 40 L85 40 M50 10 L50 90" stroke="#fff" stroke-width="1" opacity="0.5"/></svg>`,
+        anker: `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><path d="M50 20 V80 M30 60 Q30 85 50 85 Q70 85 70 60" fill="none" stroke="#4a4a4a" stroke-width="8" stroke-linecap="round"/><circle cx="50" cy="15" r="8" fill="none" stroke="#4a4a4a" stroke-width="6"/></svg>`
+    };
+
+    const canvas = document.getElementById('slotCanvas');
     const ctx = canvas.getContext('2d');
-    const spinBtn = document.getElementById('triggerSpin');
+    const spinBtn = document.getElementById('spinBtn');
+    const balanceEl = document.getElementById('balance');
+    const lastWinEl = document.getElementById('lastWin');
+    const winOverlay = document.getElementById('win-overlay');
+    const winAmountEl = document.getElementById('win-amount');
 
-    // Konfigurasjon
-    const REEL_COUNT = 3;
-    const SYMBOL_SIZE = 150;
-    const WIDTH = (SYMBOL_SIZE * REEL_COUNT) + 100;
-    const HEIGHT = 400;
+    // Spillinnstillinger
+    const REEL_COUNT = 5;
+    const ROW_COUNT = 3;
+    const SYMBOL_SIZE = 120;
+    const REEL_SPACING = 15;
+    const MARGIN = 20;
 
-    canvas.width = WIDTH;
-    canvas.height = HEIGHT;
+    canvas.width = (SYMBOL_SIZE * REEL_COUNT) + (REEL_SPACING * (REEL_COUNT - 1)) + (MARGIN * 2);
+    canvas.height = (SYMBOL_SIZE * ROW_COUNT) + (MARGIN * 2);
 
-    // Symboler som SVG Paths (tegnes direkte til off-screen canvas)
-    const symbols = [
-        { name: 'Sabel', color: '#C0C0C0', path: 'M20,80 L80,20' },
-        { name: 'Gull', color: '#FFD700', path: 'M50,50 m-30,0 a30,30 0 1,0 60,0 a30,30 0 1,0 -60,0' },
-        { name: 'Hodeskalle', color: '#FFFFFF', path: 'M30,40 Q50,10 70,40 L70,70 L30,70 Z' }
-    ];
+    let balance = 1000;
+    let isSpinning = false;
+    const symbols = Object.keys(SYMBOLS_SVG);
+    const loadedImages = {};
+
+    // Forbered bilder
+    async function initSymbols() {
+        const promises = Object.entries(SYMBOLS_SVG).map(([name, svg]) => {
+            return new Promise((resolve) => {
+                const img = new Image();
+                const svgBlob = new Blob([svg], {type: 'image/svg+xml;charset=utf-8'});
+                const url = URL.createObjectURL(svgBlob);
+                img.onload = () => {
+                    loadedImages[name] = img;
+                    resolve();
+                };
+                img.src = url;
+            });
+        });
+        await Promise.all(promises);
+        drawStatic();
+    }
 
     class Reel {
-        constructor(x) {
-            this.x = x;
-            this.y = 0;
-            this.symbols = [0, 1, 2, 0, 1];
-            this.velocity = 0;
-            this.friction = 0.98;
+        constructor(xIndex) {
+            this.x = MARGIN + xIndex * (SYMBOL_SIZE + REEL_SPACING);
+            this.symbols = Array.from({length: ROW_COUNT + 2}, () => this.getRandomSymbol());
             this.offset = 0;
+            this.speed = 0;
+            this.stopping = false;
+            this.finalSymbols = [];
         }
 
-        update() {
-            this.offset += this.velocity;
-            this.velocity *= this.friction;
+        getRandomSymbol() {
+            return symbols[Math.floor(Math.random() * symbols.length)];
+        }
 
-            if (this.offset >= SYMBOL_SIZE) {
-                this.offset = 0;
-                const last = this.symbols.pop();
-                this.symbols.unshift(Math.floor(Math.random() * symbols.length));
+        update(dt) {
+            if (this.speed > 0) {
+                this.offset += this.speed;
+                if (this.offset >= SYMBOL_SIZE) {
+                    this.offset = 0;
+                    this.symbols.pop();
+                    this.symbols.unshift(this.getRandomSymbol());
+                    
+                    if (this.stopping && this.finalSymbols.length > 0) {
+                        this.symbols[0] = this.finalSymbols.pop();
+                        if (this.finalSymbols.length === 0) {
+                            this.speed = 0;
+                            this.offset = 0;
+                        }
+                    }
+                }
             }
-            
-            if (this.velocity < 0.1) this.velocity = 0;
         }
 
         draw() {
             ctx.save();
-            
-            // 1. MASKERING (Viktig API-konsept)
-            // Vi begrenser tegneområdet slik at symboler forsvinner utenfor hjulet
+            // Maskering for hjulene
             ctx.beginPath();
-            ctx.rect(this.x, 50, SYMBOL_SIZE, 300);
+            ctx.rect(this.x, MARGIN, SYMBOL_SIZE, SYMBOL_SIZE * ROW_COUNT);
             ctx.clip();
 
-            // 2. TEGNING AV SYMBOLER
-            this.symbols.forEach((symbolIdx, i) => {
-                const s = symbols[symbolIdx];
-                const drawY = 50 + (i * SYMBOL_SIZE) + this.offset - SYMBOL_SIZE;
-
-                // Tegn skygge
-                ctx.fillStyle = 'rgba(0,0,0,0.5)';
-                ctx.fillRect(this.x + 10, drawY + 10, SYMBOL_SIZE - 20, SYMBOL_SIZE - 20);
-
-                // Tegn symbol-bakgrunn med Gradient
-                const grad = ctx.createLinearGradient(this.x, drawY, this.x + SYMBOL_SIZE, drawY + SYMBOL_SIZE);
-                grad.addColorStop(0, '#222');
-                grad.addColorStop(0.5, '#444');
-                grad.addColorStop(1, '#222');
+            // Tegn symboler
+            this.symbols.forEach((symbol, i) => {
+                const img = loadedImages[symbol];
+                const y = MARGIN + (i - 1) * SYMBOL_SIZE + this.offset;
                 
-                ctx.fillStyle = grad;
-                ctx.fillRect(this.x + 5, drawY + 5, SYMBOL_SIZE - 10, SYMBOL_SIZE - 10);
-
-                // Tegn selve ikonet
-                ctx.strokeStyle = s.color;
-                ctx.lineWidth = 8;
-                ctx.stroke(new Path2D(s.path.replace(/(\d+)/g, (m) => parseInt(m) + (this.x + 10) + (drawY + 10)))); // Forenklet posisjonering
-                
-                // Motion Blur simulering (Canvas API Alpha)
-                if (this.velocity > 5) {
-                    ctx.globalAlpha = 0.3;
-                    ctx.stroke(new Path2D(s.path.replace(/(\d+)/g, (m) => parseInt(m) + (this.x + 10) + (drawY - 10))));
+                // Motion blur effekt
+                if (this.speed > 20) {
+                    ctx.globalAlpha = 0.6;
+                    ctx.drawImage(img, this.x, y - 10, SYMBOL_SIZE, SYMBOL_SIZE);
                     ctx.globalAlpha = 1.0;
                 }
+                
+                ctx.drawImage(img, this.x + 10, y + 10, SYMBOL_SIZE - 20, SYMBOL_SIZE - 20);
             });
 
+            // Ramme rundt hjulet
             ctx.restore();
-
-            // 3. OVERLAY GRADIENT (Gjør at hjulene ser buet ut)
-            const edgeGrad = ctx.createLinearGradient(this.x, 50, this.x, 350);
-            edgeGrad.addColorStop(0, 'rgba(0,0,0,0.8)');
-            edgeGrad.addColorStop(0.2, 'rgba(0,0,0,0)');
-            edgeGrad.addColorStop(0.8, 'rgba(0,0,0,0)');
-            edgeGrad.addColorStop(1, 'rgba(0,0,0,0.8)');
-            ctx.fillStyle = edgeGrad;
-            ctx.fillRect(this.x, 50, SYMBOL_SIZE, 300);
+            ctx.strokeStyle = '#333';
+            ctx.lineWidth = 2;
+            ctx.strokeRect(this.x, MARGIN, SYMBOL_SIZE, SYMBOL_SIZE * ROW_COUNT);
         }
     }
 
-    const reelObjects = [
-        new Reel(50),
-        new Reel(50 + SYMBOL_SIZE),
-        new Reel(50 + SYMBOL_SIZE * 2)
-    ];
+    const reels = Array.from({length: REEL_COUNT}, (_, i) => new Reel(i));
 
-    function drawFrame() {
-        // Tøm canvas
-        ctx.clearRect(0, 0, WIDTH, HEIGHT);
-
-        // Tegn kabinett
-        ctx.fillStyle = '#1a1a1a';
-        ctx.fillRect(0, 0, WIDTH, HEIGHT);
+    function drawStatic() {
+        ctx.fillStyle = '#000';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        reels.forEach(r => r.draw());
         
-        // Render hjul
-        reelObjects.forEach(r => {
-            r.update();
-            r.draw();
+        // Dekorative skillelinjer
+        ctx.strokeStyle = '#c5a059';
+        ctx.lineWidth = 4;
+        ctx.strokeRect(2, 2, canvas.width - 4, canvas.height - 4);
+    }
+
+    function gameLoop() {
+        ctx.fillStyle = '#111';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        
+        let allStopped = true;
+        reels.forEach(reel => {
+            reel.update();
+            reel.draw();
+            if (reel.speed > 0) allStopped = false;
         });
 
-        // Tegn rammeverk (Gull-kant)
-        ctx.strokeStyle = '#c5a059';
-        ctx.lineWidth = 10;
-        ctx.strokeRect(45, 45, (SYMBOL_SIZE * 3) + 10, 310);
+        if (isSpinning && allStopped) {
+            isSpinning = false;
+            spinBtn.disabled = false;
+            checkWin();
+        } else {
+            requestAnimationFrame(gameLoop);
+        }
+    }
 
-        // Render loop
-        requestAnimationFrame(drawFrame);
+    function checkWin() {
+        // Enkel sjekk: se på midterste rad
+        const centerLine = reels.map(r => r.symbols[1]);
+        const counts = {};
+        centerLine.forEach(s => counts[s] = (counts[s] || 0) + 1);
+
+        let win = 0;
+        for (const s in counts) {
+            if (counts[s] >= 5) win = 100;
+            else if (counts[s] >= 4) win = 20;
+            else if (counts[s] >= 3) win = 10;
+        }
+
+        if (win > 0) {
+            balance += win;
+            balanceEl.innerText = balance;
+            lastWinEl.innerText = win;
+            showWinOverlay(win);
+        }
+    }
+
+    function showWinOverlay(amount) {
+        winAmountEl.innerText = `+${amount} GULLMYNTER`;
+        winOverlay.classList.add('show');
+        setTimeout(() => {
+            winOverlay.classList.remove('show');
+        }, 3000);
     }
 
     spinBtn.addEventListener('click', () => {
-        reelObjects.forEach((r, i) => {
+        if (isSpinning || balance < 10) return;
+
+        balance -= 10;
+        balanceEl.innerText = balance;
+        isSpinning = true;
+        spinBtn.disabled = true;
+
+        reels.forEach((reel, i) => {
+            reel.speed = 30 + Math.random() * 20;
+            reel.stopping = false;
+            
+            // Stopp hjulene sekvensielt
             setTimeout(() => {
-                r.velocity = 40 + Math.random() * 20;
-            }, i * 200);
+                reel.stopping = true;
+                // Bestem slutt-symboler her hvis man vil rigge resultatet
+                reel.finalSymbols = [reel.getRandomSymbol(), reel.getRandomSymbol(), reel.getRandomSymbol()];
+            }, 1000 + (i * 400));
         });
+
+        gameLoop();
     });
 
-    // Start rendering
-    window.onload = () => {
-        document.getElementById('loading').style.display = 'none';
-        drawFrame();
-    };
+    // Start
+    window.onload = initSymbols;
 </script>
+
 </body>
 </html>
 
