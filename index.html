@@ -1,9 +1,10 @@
+
 <!DOCTYPE html>
 <html lang="nb">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pharaoh's Glyphs - Casino</title>
+    <title>Pharaoh's Glyphs - Nudge & Hold</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
     <style>
@@ -13,6 +14,9 @@
             --sand: #c2b280;
             --egypt-blue: #1034a6;
             --dark-bg: #0a0a0a;
+            --bonus-purple: #7000ff;
+            --nudge-color: #2ecc71;
+            --hold-color: #e74c3c;
         }
 
         body {
@@ -33,55 +37,67 @@
             text-shadow: 0 0 10px rgba(212, 175, 55, 0.5);
         }
 
-        /* Automaten Container */
         .slot-machine-container {
-            max-width: 1000px;
-            width: 95%;
-            background: linear-gradient(135deg, #1a1a1a 0%, #2a2a2a 100%);
+            max-width: 1200px;
+            width: 98%;
+            background: linear-gradient(180deg, #1a1a1a 0%, #050505 100%);
             border: 4px solid var(--dark-gold);
             border-radius: 20px;
-            padding: 20px;
-            box-shadow: 0 0 50px rgba(0,0,0,0.8), inset 0 0 20px rgba(212, 175, 55, 0.2);
-            margin-top: 20px;
+            padding: 15px;
+            box-shadow: 0 0 60px rgba(0,0,0,1), inset 0 0 30px rgba(212, 175, 55, 0.15);
+            margin: 20px 0;
         }
 
         /* Topp-automat (10 hjul) */
         .top-wheels {
             display: grid;
             grid-template-columns: repeat(10, 1fr);
-            gap: 5px;
-            margin-bottom: 20px;
-            padding: 10px;
-            background: rgba(0,0,0,0.5);
-            border: 2px solid var(--gold);
+            gap: 4px;
+            margin-bottom: 15px;
+            padding: 8px;
+            background: rgba(0,0,0,0.7);
+            border: 2px solid var(--egypt-blue);
             border-radius: 10px;
         }
 
-        /* Hoved-automat (6 hjul) */
+        /* Hoved-automat (7 hjul fokus for Nudge/Hold) */
         .main-wheels {
             display: grid;
-            grid-template-columns: repeat(6, 1fr);
-            gap: 10px;
-            margin-bottom: 30px;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 8px;
+            margin-bottom: 10px;
+        }
+
+        .wheel-container {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
         }
 
         .wheel {
-            background: #111;
+            background: linear-gradient(to bottom, #111, #222, #111);
             height: 120px;
-            border-radius: 8px;
+            border-radius: 6px;
             display: flex;
             align-items: center;
             justify-content: center;
             font-size: 2.5rem;
-            border: 1px solid #333;
+            border: 2px solid #333;
             position: relative;
             overflow: hidden;
-            transition: transform 0.1s;
+            box-shadow: inset 0 0 15px #000;
+            transition: border-color 0.3s, transform 0.2s;
+        }
+
+        .wheel.held {
+            border-color: var(--hold-color);
+            box-shadow: 0 0 15px var(--hold-color);
         }
 
         .top-wheel {
-            height: 60px;
-            font-size: 1.5rem;
+            height: 50px;
+            font-size: 1.2rem;
+            border-color: var(--egypt-blue);
         }
 
         .spinning {
@@ -89,134 +105,132 @@
         }
 
         @keyframes blurSpin {
-            0% { transform: translateY(-10px); filter: blur(2px); }
-            50% { transform: translateY(10px); filter: blur(4px); }
-            100% { transform: translateY(-10px); filter: blur(2px); }
+            0% { transform: translateY(-15px); filter: blur(3px); }
+            50% { transform: translateY(15px); filter: blur(6px); }
+            100% { transform: translateY(-15px); filter: blur(3px); }
         }
 
+        .nudge-btn, .hold-btn {
+            font-size: 0.7rem;
+            padding: 5px 2px;
+            border-radius: 4px;
+            border: none;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+            text-transform: uppercase;
+            transition: opacity 0.2s;
+        }
+
+        .nudge-btn { background-color: var(--nudge-color); }
+        .hold-btn { background-color: var(--hold-color); }
+        .nudge-btn:disabled, .hold-btn:disabled { opacity: 0.2; cursor: not-allowed; }
+
         .controls {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-wrap: wrap;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
             gap: 15px;
             padding: 20px;
-            background: rgba(255, 255, 255, 0.05);
+            background: rgba(255, 255, 255, 0.03);
             border-radius: 15px;
+            border: 1px solid rgba(212, 175, 55, 0.2);
+        }
+
+        .timer-display {
+            grid-column: 1 / -1;
+            text-align: center;
+            font-weight: bold;
+            color: #ffcc00;
+            font-size: 1.2rem;
+            margin-bottom: 5px;
+            font-family: 'Cinzel', serif;
         }
 
         .btn-spin {
             background: linear-gradient(to bottom, var(--gold), var(--dark-gold));
             color: black;
-            font-weight: bold;
-            padding: 15px 40px;
-            border-radius: 50px;
+            font-weight: 800;
+            padding: 15px;
+            border-radius: 12px;
             font-size: 1.2rem;
             text-transform: uppercase;
             cursor: pointer;
             border: none;
             transition: all 0.2s;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.4);
+            box-shadow: 0 5px 0px #664411;
         }
 
-        .btn-spin:active {
-            transform: scale(0.95);
-        }
-
-        .btn-spin:disabled {
-            filter: grayscale(1);
-            cursor: not-allowed;
-        }
+        .btn-spin:active { transform: translateY(3px); box-shadow: 0 2px 0px #664411; }
+        .btn-spin:disabled { filter: grayscale(1); opacity: 0.6; cursor: not-allowed; }
 
         .stat-box {
             background: #000;
-            padding: 10px 20px;
+            padding: 8px;
             border: 1px solid var(--dark-gold);
-            border-radius: 10px;
+            border-radius: 8px;
             text-align: center;
         }
 
-        .label {
-            display: block;
-            font-size: 0.7rem;
-            color: var(--sand);
-            text-transform: uppercase;
-            margin-bottom: 2px;
+        .label { font-size: 0.6rem; color: var(--sand); text-transform: uppercase; }
+        .value { font-weight: bold; font-size: 1rem; color: #fff; }
+
+        .bonus-container {
+            grid-column: 1 / -1;
+            background: rgba(0,0,0,0.5);
+            padding: 8px;
+            border-radius: 10px;
         }
 
-        .value {
-            font-weight: bold;
-            font-size: 1.2rem;
-            color: #fff;
-        }
-
-        /* Free Spin Indicator */
-        .free-spin-meter {
-            width: 100%;
-            height: 10px;
-            background: #222;
-            border-radius: 5px;
-            margin-top: 10px;
-            overflow: hidden;
-        }
-
-        .free-spin-progress {
-            height: 100%;
-            background: var(--egypt-blue);
-            width: 0%;
-            transition: width 0.3s;
-        }
+        .progress-bar-bg { width: 100%; height: 8px; background: #222; border-radius: 4px; overflow: hidden; }
+        .progress-fill { height: 100%; background: var(--bonus-purple); width: 0%; transition: width 0.3s; }
 
         .win-overlay {
             position: fixed;
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            background: rgba(0,0,0,0.9);
+            background: rgba(0,0,0,0.95);
             padding: 40px;
-            border: 3px solid var(--gold);
-            border-radius: 20px;
+            border: 4px solid var(--gold);
+            border-radius: 30px;
             text-align: center;
-            z-index: 100;
+            z-index: 1000;
             display: none;
         }
 
-        @media (max-width: 640px) {
-            .main-wheels { grid-template-columns: repeat(3, 1fr); }
-            .top-wheels { grid-template-columns: repeat(5, 1fr); }
+        @media (max-width: 768px) {
+            .main-wheels { grid-template-columns: repeat(4, 1fr); }
             .wheel { height: 80px; font-size: 1.8rem; }
         }
     </style>
 </head>
 <body>
 
-    <div class="py-8 text-center">
-        <h1 class="text-4xl md:text-6xl mb-2">PHARAOH'S GLYPHS</h1>
-        <p class="text-sand italic">Oppdag de skjulte skattene i pyramidene</p>
+    <div class="py-4 text-center">
+        <h1 class="text-2xl md:text-4xl mb-1">PHARAOH'S NUDGE</h1>
+        <p class="text-sand text-[10px] tracking-widest uppercase">Hold & Juster for Gevinst</p>
     </div>
 
     <div class="slot-machine-container">
-        <!-- Topp-automat (10 hjul) -->
-        <div class="text-xs text-center mb-1 gold-text">TOPP AUTOMAT</div>
-        <div id="top-wheels" class="top-wheels">
-            <!-- 10 hjul generert av JS -->
-        </div>
+        <!-- Topp-rekke -->
+        <div class="text-[9px] gold-text px-2 mb-1">TOPP-AUTOMAT (MULTIPLIER)</div>
+        <div id="top-wheels" class="top-wheels"></div>
 
-        <!-- Hoved-automat (6 hjul) -->
-        <div id="main-wheels" class="main-wheels">
-            <!-- 6 hjul generert av JS -->
-        </div>
+        <!-- Hoved-automat (7 hjul med Nudge/Hold) -->
+        <div id="main-wheels" class="main-wheels"></div>
 
         <!-- Kontrollpanel -->
         <div class="controls">
+            <div id="timer-box" class="timer-display">TID IGJEN: <span id="timer-val">00</span>s</div>
+            
             <div class="stat-box">
                 <span class="label">Saldo</span>
-                <span id="balance" class="value">10 000 kr</span>
+                <span id="balance" class="value">5 000 kr</span>
             </div>
             
             <div class="stat-box">
                 <span class="label">Innsats</span>
-                <span class="value">200 kr</span>
+                <span class="value">30 kr</span>
             </div>
 
             <button id="spin-btn" class="btn-spin">SPINN</button>
@@ -226,175 +240,234 @@
                 <span id="free-spins" class="value">0</span>
             </div>
 
-            <div class="w-full">
-                <div class="flex justify-between text-[10px] text-sand mb-1">
-                    <span>NESTE FREE SPIN BONUS (HVER 20 KR)</span>
-                    <span id="progress-text">0 / 20 kr</span>
+            <div class="bonus-container">
+                <div class="flex justify-between text-[9px] mb-1">
+                    <span class="text-bonus-purple font-bold">BONUS PROGRESS (1600 KR)</span>
+                    <span id="bonus-text" class="text-white">0 / 1600 kr</span>
                 </div>
-                <div class="free-spin-meter">
-                    <div id="fs-progress-bar" class="free-spin-progress"></div>
+                <div class="progress-bar-bg">
+                    <div id="bonus-progress" class="progress-fill"></div>
                 </div>
             </div>
         </div>
     </div>
 
     <div id="win-overlay" class="win-overlay">
-        <h2 class="text-4xl gold-text mb-4">STORGEVINST!</h2>
-        <div id="win-amount" class="text-5xl text-white mb-6">0 kr</div>
-        <button onclick="closeWin()" class="btn-spin">Fortsett</button>
-    </div>
-
-    <div class="mt-8 text-sand text-sm max-w-md text-center px-4">
-        <p>Spillet betaler for 3 eller flere like symboler på rad. Hver 20. krone spilt gir 20 Free Spins!</p>
+        <h2 id="win-title" class="text-2xl gold-text mb-4">GEVINST!</h2>
+        <div id="win-amount" class="text-5xl text-white mb-6 font-bold">0 kr</div>
+        <button onclick="closeWin()" class="btn-spin w-full">LUKK</button>
     </div>
 
     <script>
-        const symbols = ['𓂀', '𓃠', '𓆗', '𓋹', '𓊽', '𓈓', '𓁹', '𓆃'];
-        let balance = 10000;
+        const symbols = ['👑', '🏺', '𓂀', '𓃠', '𓆗', '𓋹', '𓊽', '𓁹', '𓀀', '𓃻'];
+        let balance = 5000;
         let freeSpins = 0;
-        let moneySpentInCycle = 0;
-        const betAmount = 200;
-        const fsThreshold = 20; // Hver 20 kr brukt
-
-        const mainWheelsContainer = document.getElementById('main-wheels');
-        const topWheelsContainer = document.getElementById('top-wheels');
+        let totalSpent = 0;
+        let timer = 0;
+        let timerInterval = null;
+        let isSpinning = false;
+        
+        const betAmount = 30;
+        const bonusThreshold = 1600;
+        
+        const mainContainer = document.getElementById('main-wheels');
+        const topContainer = document.getElementById('top-wheels');
         const spinBtn = document.getElementById('spin-btn');
+        const timerVal = document.getElementById('timer-val');
         const balanceDisplay = document.getElementById('balance');
         const freeSpinsDisplay = document.getElementById('free-spins');
-        const fsProgressBar = document.getElementById('fs-progress-bar');
-        const fsProgressText = document.getElementById('progress-text');
-        const winOverlay = document.getElementById('win-overlay');
-        const winAmountDisplay = document.getElementById('win-amount');
+        const bonusProgress = document.getElementById('bonus-progress');
+        const bonusText = document.getElementById('bonus-text');
+        
+        let wheelData = []; // Lagrer status for hvert av de 7 hjulene
 
-        // Initialiser hjul
         function init() {
+            // Topp-rekke
             for (let i = 0; i < 10; i++) {
-                const wheel = document.createElement('div');
-                wheel.className = 'wheel top-wheel';
-                wheel.id = `top-${i}`;
-                wheel.innerText = symbols[Math.floor(Math.random() * symbols.length)];
-                topWheelsContainer.appendChild(wheel);
+                const w = document.createElement('div');
+                w.className = 'wheel top-wheel';
+                w.innerText = symbols[Math.floor(Math.random() * symbols.length)];
+                topContainer.appendChild(w);
             }
-            for (let i = 0; i < 6; i++) {
+
+            // Hoved-hjul (7 hjul)
+            for (let i = 0; i < 7; i++) {
+                const container = document.createElement('div');
+                container.className = 'wheel-container';
+                
                 const wheel = document.createElement('div');
                 wheel.className = 'wheel main-wheel';
-                wheel.id = `main-${i}`;
+                wheel.id = `wheel-${i}`;
                 wheel.innerText = symbols[Math.floor(Math.random() * symbols.length)];
-                mainWheelsContainer.appendChild(wheel);
+                
+                const holdBtn = document.createElement('button');
+                holdBtn.className = 'hold-btn';
+                holdBtn.innerText = 'Hold';
+                holdBtn.disabled = true;
+                holdBtn.onclick = () => toggleHold(i);
+
+                const nudgeBtn = document.createElement('button');
+                nudgeBtn.className = 'nudge-btn';
+                nudgeBtn.innerText = 'Nudge';
+                nudgeBtn.disabled = true;
+                nudgeBtn.onclick = () => nudgeWheel(i);
+
+                container.appendChild(wheel);
+                container.appendChild(holdBtn);
+                container.appendChild(nudgeBtn);
+                mainContainer.appendChild(container);
+
+                wheelData.push({ held: false, element: wheel, holdBtn, nudgeBtn });
             }
+            updateUI();
+        }
+
+        function toggleHold(index) {
+            wheelData[index].held = !wheelData[index].held;
+            wheelData[index].element.classList.toggle('held', wheelData[index].held);
+        }
+
+        function nudgeWheel(index) {
+            // "Dytter" hjulet til neste symbol i listen
+            const currentSymbol = wheelData[index].element.innerText;
+            let symbolIdx = symbols.indexOf(currentSymbol);
+            symbolIdx = (symbolIdx + 1) % symbols.length;
+            wheelData[index].element.innerText = symbols[symbolIdx];
+            
+            // Etter en nudge sjekker vi gevinst på nytt
+            checkResults();
+        }
+
+        function startTimer() {
+            clearInterval(timerInterval);
+            timer = 10; // 10 sekunder på å nudge/holde
+            timerVal.innerText = timer;
+            
+            timerInterval = setInterval(() => {
+                timer--;
+                timerVal.innerText = timer;
+                if (timer <= 0) {
+                    stopTimer();
+                    if (freeSpins > 0) spin(); // Auto-spin i free spins modus
+                }
+            }, 1000);
+        }
+
+        function stopTimer() {
+            clearInterval(timerInterval);
+            timerVal.innerText = "00";
+            // Deaktiver knapper når tid er ute
+            wheelData.forEach(w => {
+                w.holdBtn.disabled = true;
+                w.nudgeBtn.disabled = true;
+            });
         }
 
         async function spin() {
+            if (isSpinning) return;
             if (balance < betAmount && freeSpins <= 0) {
                 alert("Ikke nok penger!");
                 return;
             }
 
+            isSpinning = true;
             spinBtn.disabled = true;
+            stopTimer();
 
-            // Logikk for innsats og free spins
             if (freeSpins > 0) {
                 freeSpins--;
             } else {
                 balance -= betAmount;
-                // Siden innsatsen er 200kr og terskelen er 20kr, 
-                // vil hvert spinn teknisk sett gi 200/20 * 20 = 200 free spins?
-                // Eller følger vi instruksen strengt: hver 20 spilte krone gir 20 spins.
-                // Med 200 kr innsats betyr det 10 x 20 spins = 200 spins per trykk.
-                moneySpentInCycle += betAmount;
-                let newFS = Math.floor(moneySpentInCycle / fsThreshold) * 20;
-                if (newFS > 0) {
-                    freeSpins += newFS;
-                    moneySpentInCycle %= fsThreshold;
+                totalSpent += betAmount;
+                if (totalSpent >= bonusThreshold) {
+                    freeSpins += 30;
+                    totalSpent -= bonusThreshold;
                 }
             }
 
-            updateUI();
-
-            const allWheels = document.querySelectorAll('.wheel');
-            allWheels.forEach(w => w.classList.add('spinning'));
-
-            // Simulert spin-tid
-            await new Promise(resolve => setTimeout(resolve, 1500));
-
-            let resultsMain = [];
-            let resultsTop = [];
-
-            allWheels.forEach(w => {
-                w.classList.remove('spinning');
-                const symbol = symbols[Math.floor(Math.random() * symbols.length)];
-                w.innerText = symbol;
-                if(w.classList.contains('main-wheel')) resultsMain.push(symbol);
-                if(w.classList.contains('top-wheel')) resultsTop.push(symbol);
+            // Start spinning
+            const spinPromises = [];
+            wheelData.forEach((w, i) => {
+                if (!w.held) {
+                    w.element.classList.add('spinning');
+                }
             });
 
-            checkWin(resultsMain, resultsTop);
+            await new Promise(r => setTimeout(r, 1000));
+
+            wheelData.forEach((w, i) => {
+                if (!w.held) {
+                    w.element.classList.remove('spinning');
+                    w.element.innerText = symbols[Math.floor(Math.random() * symbols.length)];
+                }
+                // Reset hold etter spinn (valgfritt, mange automater gjør dette)
+                w.held = false;
+                w.element.classList.remove('held');
+            });
+
+            // Aktiver nudge/hold etter spinn
+            wheelData.forEach(w => {
+                w.holdBtn.disabled = false;
+                w.nudgeBtn.disabled = false;
+            });
+
+            checkResults();
+            isSpinning = false;
             spinBtn.disabled = false;
+            startTimer();
+            updateUI();
         }
 
-        function checkWin(main, top) {
+        function checkResults() {
+            const results = wheelData.map(w => w.element.innerText);
             let win = 0;
-
-            // Enkel sjekk for 6 hjul
             let counts = {};
-            main.forEach(s => counts[s] = (counts[s] || 0) + 1);
-            
+            results.forEach(s => counts[s] = (counts[s] || 0) + 1);
+
             for (let s in counts) {
                 if (counts[s] >= 3) {
-                    win += (counts[s] * 150);
+                    win += counts[s] * 50;
                 }
             }
 
-            // Topp-automat gir bonus
-            let topCounts = {};
-            top.forEach(s => topCounts[s] = (topCounts[s] || 0) + 1);
-            for (let s in topCounts) {
-                if (topCounts[s] >= 4) {
-                    win += (topCounts[s] * 500);
-                }
-            }
-
-            if (win > 0) {
-                showWin(win);
+            if (win > 0 && !isSpinning) {
                 balance += win;
+                showWin(win);
+                updateUI();
             }
-            updateUI();
         }
 
         function showWin(amount) {
-            winAmountDisplay.innerText = amount + " kr";
-            winOverlay.style.display = 'block';
+            document.getElementById('win-amount').innerText = amount + " kr";
+            document.getElementById('win-overlay').style.display = 'block';
+            setTimeout(closeWin, 1500);
         }
 
         function closeWin() {
-            winOverlay.style.display = 'none';
+            document.getElementById('win-overlay').style.display = 'none';
         }
 
         function updateUI() {
-            balanceDisplay.innerText = balance.toLocaleString() + " kr";
+            balanceDisplay.innerText = Math.floor(balance).toLocaleString() + " kr";
             freeSpinsDisplay.innerText = freeSpins;
-            
-            const progress = (moneySpentInCycle / fsThreshold) * 100;
-            fsProgressBar.style.width = `${progress}%`;
-            fsProgressText.innerText = `${moneySpentInCycle} / ${fsThreshold} kr`;
+            const progress = (totalSpent / bonusThreshold) * 100;
+            bonusProgress.style.width = `${progress}%`;
+            bonusText.innerText = `${totalSpent} / ${bonusThreshold} kr`;
 
             if (freeSpins > 0) {
-                spinBtn.innerText = "GRATIS SPINN";
-                spinBtn.style.background = "linear-gradient(to bottom, #1034a6, #000080)";
-                spinBtn.style.color = "white";
+                spinBtn.innerText = "AUTO SPINN";
+                spinBtn.style.filter = "hue-rotate(90deg)";
             } else {
-                spinBtn.innerText = "SPINN";
-                spinBtn.style.background = "linear-gradient(to bottom, var(--gold), var(--dark-gold))";
-                spinBtn.style.color = "black";
+                spinBtn.innerText = "SPINN (30 kr)";
+                spinBtn.style.filter = "none";
             }
         }
 
         spinBtn.addEventListener('click', spin);
-        
-        // Initialiser
         window.onload = init;
     </script>
 </body>
 </html>
+
 
 
