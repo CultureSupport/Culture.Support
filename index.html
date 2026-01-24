@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html lang="no">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NRK RADIO // GLASS-HACKER INTERFACE</title>
+    <style>
+        :root {
+            --neon-green: #00ff41;
+            --glass-bg: rgba(20, 20, 25, 0.7);
+            --glass-border: rgba(0, 255, 65, 0.3);
+            --dark-bg: #050505;
+            --hacker-font: 'JetBrains Mono', 'Fira Code', 'Courier New', monospace;
+        }
+
+        * {
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body, html {
+            margin: 0;
+            padding: 0;
+            background-color: var(--dark-bg);
+            background-image: 
+                radial-gradient(circle at 50% 50%, rgba(0, 50, 20, 0.3) 0%, transparent 80%),
+                linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%);
+            background-size: 100% 100%, 100% 4px;
+            color: var(--neon-green);
+            font-family: var(--hacker-font);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow-x: hidden;
+        }
+
+        /* Glass Container */
+        .app-wrapper {
+            display: grid;
+            grid-template-columns: 320px 1fr;
+            grid-template-rows: auto 1fr auto;
+            gap: 15px;
+            padding: 15px;
+            height: 100vh;
+            width: 100%;
+        }
+
+        /* Responsive Layout for Mobile */
+        @media (max-width: 850px) {
+            .app-wrapper {
+                grid-template-columns: 1fr;
+                grid-template-rows: auto auto 1fr auto;
+                height: auto;
+                overflow-y: auto;
+            }
+            
+            .sidebar {
+                order: 2;
+            }
+            .main-display {
+                order: 1;
+                height: 300px;
+            }
+            .terminal-panel {
+                order: 3;
+                height: 150px;
+            }
+        }
+
+        .glass-panel {
+            background: var(--glass-bg);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid var(--glass-border);
+            border-radius: 12px;
+            padding: 15px;
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.8);
+            position: relative;
+            overflow: hidden;
+        }
+
+        header {
+            grid-column: 1 / -1;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 20px;
+            border-bottom: 2px solid var(--neon-green);
+            text-shadow: 0 0 10px var(--neon-green);
+        }
+
+        .title-tag {
+            font-size: 0.7rem;
+            background: var(--neon-green);
+            color: var(--dark-bg);
+            padding: 2px 6px;
+            border-radius: 3px;
+            margin-right: 10px;
+            font-weight: bold;
+        }
+
+        /* Station List */
+        .station-list {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .station-btn {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid transparent;
+            color: var(--neon-green);
+            padding: 12px;
+            border-radius: 8px;
+            cursor: pointer;
+            text-align: left;
+            transition: all 0.3s ease;
+            font-family: inherit;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .station-btn:hover {
+            background: rgba(0, 255, 65, 0.1);
+            border-color: var(--glass-border);
+            transform: translateX(5px);
+        }
+
+        .station-btn.active {
+            background: rgba(0, 255, 65, 0.2);
+            border-color: var(--neon-green);
+            box-shadow: inset 0 0 15px rgba(0, 255, 65, 0.2);
+        }
+
+        /* Canvas Area */
+        .main-display {
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
+
+        #visualizer {
+            width: 100%;
+            height: 100%;
+            border-radius: 8px;
+        }
+
+        /* Terminal Log */
+        .terminal-panel {
+            grid-column: 1 / -1;
+            height: 120px;
+            font-size: 0.75rem;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .log-content {
+            overflow-y: auto;
+            flex-grow: 1;
+            line-height: 1.4;
+            color: rgba(0, 255, 65, 0.7);
+        }
+
+        /* Footer / Player Controls */
+        footer {
+            grid-column: 1 / -1;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .player-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        #playPauseBtn {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            border: 2px solid var(--neon-green);
+            background: transparent;
+            color: var(--neon-green);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s;
+        }
+
+        #playPauseBtn:hover {
+            background: var(--neon-green);
+            color: var(--dark-bg);
+            box-shadow: 0 0 20px var(--neon-green);
+        }
+
+        .volume-container {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        input[type="range"] {
+            -webkit-appearance: none;
+            background: rgba(0, 255, 65, 0.2);
+            height: 4px;
+            border-radius: 2px;
+            width: 100px;
+        }
+
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 15px;
+            height: 15px;
+            background: var(--neon-green);
+            border-radius: 50%;
+            cursor: pointer;
+            box-shadow: 0 0 10px var(--neon-green);
+        }
+
+        .glitch-text {
+            animation: glitch 3s infinite;
+        }
+
+        @keyframes glitch {
+            0% { transform: translate(0); }
+            1% { transform: translate(-2px, 2px); }
+            2% { transform: translate(2px, -2px); }
+            3% { transform: translate(0); }
+            100% { transform: translate(0); }
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            background: var(--neon-green);
+            border-radius: 50%;
+            display: inline-block;
+            margin-right: 5px;
+            box-shadow: 0 0 8px var(--neon-green);
+            animation: pulse 1.5s infinite;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 0.4; }
+            50% { opacity: 1; }
+            100% { opacity: 0.4; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="app-wrapper">
+    <header class="glass-panel">
+        <div class="glitch-text" style="font-weight: 800; letter-spacing: 2px;">
+            <span class="title-tag">SECURED</span> NRK_AUDIO_OVERRIDE
+        </div>
+        <div id="clock">00:00:00</div>
+    </header>
+
+    <aside class="glass-panel sidebar">
+        <div style="margin-bottom: 15px; font-size: 0.8rem; opacity: 0.8;">VALG_AV_STRØM:</div>
+        <div class="station-list">
+            <button class="station-btn active" onclick="playStation('nrk_radio_p1_hordaland', 'NRK P1')">
+                <span>NRK P1</span><small>LIVE</small>
+            </button>
+            <button class="station-btn" onclick="playStation('nrk_radio_p2', 'NRK P2')">
+                <span>NRK P2</span><small>LIVE</small>
+            </button>
+            <button class="station-btn" onclick="playStation('nrk_radio_p3', 'NRK P3')">
+                <span>NRK P3</span><small>LIVE</small>
+            </button>
+            <button class="station-btn" onclick="playStation('nrk_radio_mp3', 'NRK mP3')">
+                <span>NRK mP3</span><small>LIVE</small>
+            </button>
+            <button class="station-btn" onclick="playStation('nrk_radio_alltid_nyheter', 'NRK NYHETER')">
+                <span>NRK NYHETER</span><small>LIVE</small>
+            </button>
+        </div>
+    </aside>
+
+    <main class="glass-panel main-display">
+        <div style="position: absolute; top: 15px; left: 15px; z-index: 5;">
+            <span class="status-dot"></span> ANALYSERER_FREKVENS...
+        </div>
+        <canvas id="visualizer"></canvas>
+    </main>
+
+    <section class="glass-panel terminal-panel">
+        <div style="font-size: 0.6rem; margin-bottom: 5px; opacity: 0.5;">DEKRYPTERINGSLOGG:</div>
+        <div class="log-content" id="log">
+            [INIT] Laster glass-grensesnitt...<br>
+            [AUTH] Bruker: HACKER_GEN_X<br>
+            [NET] Kobler til lyd.nrk.no...<br>
+        </div>
+    </section>
+
+    <footer class="glass-panel">
+        <div class="player-info">
+            <button id="playPauseBtn">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>
+            </button>
+            <div>
+                <div id="current-name" style="font-weight: bold; font-size: 1.1rem;">NRK P1</div>
+                <div id="stream-status" style="font-size: 0.7rem; opacity: 0.7;">STREAMING_ACTIVE_OK</div>
+            </div>
+        </div>
+
+        <div class="volume-container">
+            <small>VOL</small>
+            <input type="range" id="volumeSlider" min="0" max="1" step="0.05" value="0.5">
+        </div>
+    </footer>
+</div>
+
+<audio id="audioPlayer" src="https://lyd.nrk.no/nrk_radio_p1_hordaland_mp3_h"></audio>
+
+<script>
+    const canvas = document.getElementById('visualizer');
+    const ctx = canvas.getContext('2d');
+    const audio = document.getElementById('audioPlayer');
+    const logBox = document.getElementById('log');
+    const playPauseBtn = document.getElementById('playPauseBtn');
+    const volumeSlider = document.getElementById('volumeSlider');
+
+    // System Log
+    function addLog(msg) {
+        const time = new Date().toLocaleTimeString('nb-NO');
+        logBox.innerHTML += `<div><span style="opacity:0.5">[${time}]</span> ${msg}</div>`;
+        logBox.scrollTop = logBox.scrollHeight;
+    }
+
+    // Klokke
+    function updateClock() {
+        document.getElementById('clock').innerText = new Date().toLocaleTimeString('nb-NO');
+    }
+    setInterval(updateClock, 1000);
+
+    // Audio Kontroll
+    function playStation(mount, name) {
+        audio.src = `https://lyd.nrk.no/${mount}_mp3_h`;
+        audio.play();
+        document.getElementById('current-name').innerText = name;
+        
+        document.querySelectorAll('.station-btn').forEach(btn => {
+            btn.classList.toggle('active', btn.innerText.includes(name));
+        });
+
+        addLog(`KANAL_BYTTE: ${name}`);
+        playPauseBtn.innerHTML = '<svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>';
+    }
+
+    playPauseBtn.onclick = () => {
+        if (audio.paused) {
+            audio.play();
+            playPauseBtn.innerHTML = '<svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>';
+            addLog("SIGNAL_GJENOPPTATT");
+        } else {
+            audio.pause();
+            playPauseBtn.innerHTML = '<svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>';
+            addLog("SIGNAL_AVBRUTT");
+        }
+    };
+
+    volumeSlider.oninput = (e) => audio.volume = e.target.value;
+
+    // Visualizer Design
+    function resize() {
+        canvas.width = canvas.offsetWidth;
+        canvas.height = canvas.offsetHeight;
+    }
+    window.addEventListener('resize', resize);
+    resize();
+
+    let angle = 0;
+    function animate() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        
+        const centerX = canvas.width / 2;
+        const centerY = canvas.height / 2;
+        const radius = Math.min(canvas.width, canvas.height) * 0.3;
+        
+        if (!audio.paused) angle += 0.02;
+
+        // Bakgrunns-grid i canvas
+        ctx.strokeStyle = 'rgba(0, 255, 65, 0.05)';
+        ctx.lineWidth = 1;
+        for(let i=0; i<canvas.width; i+=40) {
+            ctx.beginPath(); ctx.moveTo(i, 0); ctx.lineTo(i, canvas.height); ctx.stroke();
+        }
+        for(let i=0; i<canvas.height; i+=40) {
+            ctx.beginPath(); ctx.moveTo(0, i); ctx.lineTo(canvas.width, i); ctx.stroke();
+        }
+
+        // Bølge-visualisering
+        ctx.beginPath();
+        ctx.strokeStyle = varProp('--neon-green');
+        ctx.lineWidth = 2;
+        ctx.shadowBlur = 15;
+        ctx.shadowColor = varProp('--neon-green');
+
+        for (let x = 0; x < canvas.width; x++) {
+            const amplitude = audio.paused ? 5 : (Math.sin(angle * 2) * 20 + 40);
+            const y = centerY + Math.sin(x * 0.02 + angle) * amplitude * Math.sin(x * 0.005);
+            if (x === 0) ctx.moveTo(x, y);
+            else ctx.lineTo(x, y);
+        }
+        ctx.stroke();
+
+        // Partikler / Datastrømmer
+        if(!audio.paused) {
+            for(let i=0; i<5; i++) {
+                ctx.fillStyle = 'rgba(0, 255, 65, 0.5)';
+                ctx.fillRect(Math.random() * canvas.width, Math.random() * canvas.height, 2, 2);
+            }
+        }
+
+        requestAnimationFrame(animate);
+    }
+
+    function varProp(name) {
+        return getComputedStyle(document.documentElement).getPropertyValue(name).trim();
+    }
+
+    window.onload = () => {
+        addLog("SYSTEM_ONLINE");
+        addLog("DEKRYPTERER_NRK_PROTOKOLL");
+        animate();
+    };
+</script>
+
+</body>
+</html>
+
