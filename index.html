@@ -1,356 +1,197 @@
 <!DOCTYPE html>
-<html lang="da">
+<html lang="no">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DJ Mix Profilkort</title>
-    <!-- Bootstrap 5 CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <!-- Font Awesome -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <title>Offisielt Varsel: Bekjempelse av Svindel</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome for ikoner -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
     <style>
         :root {
-            --neon-blue: #00d2ff;
-            --neon-purple: #6a11cb;
-            --dark-bg: #0a0a0f;
+            --primary-red: #b30000;
+            --dark-bg: #0a0a0a;
+            --accent-gold: #c5a059;
         }
 
-        body, html {
-            margin: 0;
-            padding: 0;
-            background: var(--dark-bg);
-            color: #fff;
+        body {
+            background-color: var(--dark-bg);
+            color: #ffffff;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            min-height: 2000px; /* Spesifisert høyde */
+            overflow-x: hidden;
         }
 
-        /* Bakgrunns-canvas */
-        #bgCanvas {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: -2;
+        .hero-section {
+            padding: 100px 0;
+            background: linear-gradient(rgba(10, 10, 10, 0.8), rgba(10, 10, 10, 0.8)), 
+                        url('https://images.unsplash.com/photo-1550751827-4bd374c3f58b?auto=format&fit=crop&q=80&w=1920');
+            background-size: cover;
+            border-bottom: 3px solid var(--primary-red);
         }
 
-        /* Hero / Header med Mikser Konsoll */
-        .header-console {
-            height: 500px;
-            background: #111;
-            position: relative;
-            overflow: hidden;
-            border-bottom: 3px solid var(--neon-blue);
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-
-        .console-inner {
-            display: flex;
-            gap: 40px;
-            align-items: center;
-            background: #1a1a1a;
-            padding: 40px;
-            border-radius: 20px;
-            border: 2px solid #333;
-            box-shadow: inset 0 0 50px rgba(0,0,0,0.8);
-        }
-
-        /* Vinyl Platespillere */
-        .deck {
-            width: 180px;
-            height: 180px;
-            background: #000;
-            border-radius: 50%;
-            border: 5px solid #222;
-            position: relative;
-            animation: spin 3s linear infinite;
-        }
-
-        .deck::before {
-            content: "";
-            position: absolute;
-            top: 50%; left: 50%;
-            transform: translate(-50%, -50%);
-            width: 40px; height: 40px;
-            background: var(--neon-purple);
-            border-radius: 50%;
-            z-index: 2;
-        }
-
-        .deck-grooves {
-            position: absolute;
-            top: 10%; left: 10%; right: 10%; bottom: 10%;
-            border: 1px solid rgba(255,255,255,0.1);
-            border-radius: 50%;
-        }
-
-        @keyframes spin {
-            from { transform: rotate(0deg); }
-            to { transform: rotate(360deg); }
-        }
-
-        /* Mikser Senter */
-        .mixer-center {
-            width: 120px;
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
-            align-items: center;
-        }
-
-        .main-fader-track {
-            height: 150px;
-            width: 12px;
-            background: #000;
-            border-radius: 6px;
-            position: relative;
-        }
-
-        .main-fader-knob {
-            width: 30px;
-            height: 15px;
-            background: #eee;
-            position: absolute;
-            left: -9px;
-            top: 50%;
-            border-radius: 3px;
-            box-shadow: 0 0 10px var(--neon-blue);
-        }
-
-        /* Profilkort Seksjon */
-        .profile-section {
-            margin-top: -80px;
-            position: relative;
-            z-index: 10;
-        }
-
-        .profile-card {
-            background: rgba(15, 15, 25, 0.9);
-            backdrop-filter: blur(20px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 20px;
-            max-width: 500px;
-            margin: 0 auto;
-            padding: 30px;
-            box-shadow: 0 30px 60px rgba(0,0,0,0.7);
-        }
-
-        .avatar-img {
-            width: 150px;
-            height: 150px;
-            border-radius: 50%;
-            border: 5px solid var(--neon-blue);
-            margin-bottom: 20px;
-            object-fit: cover;
-        }
-
-        /* Scroll Innhold */
-        .content-block {
-            padding: 80px 20px;
-            max-width: 900px;
-            margin: 0 auto;
-        }
-
-        .section-title {
-            color: var(--neon-blue);
-            text-transform: uppercase;
-            letter-spacing: 4px;
-            margin-bottom: 40px;
-            text-align: center;
-        }
-
-        .tour-date {
-            background: rgba(255,255,255,0.05);
+        .alert-box {
+            background: rgba(179, 0, 0, 0.1);
+            border-left: 5px solid var(--primary-red);
             padding: 20px;
-            border-radius: 10px;
-            margin-bottom: 15px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border-left: 4px solid var(--neon-purple);
+            margin: 20px 0;
+            display: none; /* Animeres inn med jQuery */
+        }
+
+        .status-card {
+            background: #1a1a1a;
+            border: 1px solid #333;
+            transition: transform 0.3s;
+            height: 100%;
+        }
+
+        .status-card:hover {
+            border-color: var(--primary-red);
+            transform: translateY(-5px);
+        }
+
+        .btn-danger-custom {
+            background-color: var(--primary-red);
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .warning-text {
+            color: var(--primary-red);
+            font-weight: bold;
+        }
+
+        .terminal-box {
+            background: #000;
+            color: #0f0;
+            font-family: 'Courier New', Courier, monospace;
+            padding: 20px;
+            border-radius: 5px;
+            border: 1px solid #0f0;
+            margin-top: 30px;
+            font-size: 0.9rem;
+        }
+
+        #scrolling-news {
+            background: var(--primary-red);
+            color: white;
+            padding: 10px 0;
+            font-weight: bold;
         }
     </style>
 </head>
 <body>
 
-<canvas id="bgCanvas"></canvas>
-
-<!-- Header med animert DJ-konsoll -->
-<header class="header-console">
-    <div class="console-inner">
-        <!-- Venstre Deck -->
-        <div class="deck">
-            <div class="deck-grooves"></div>
-        </div>
-
-        <!-- Mixer Seksjon -->
-        <div class="mixer-center">
-            <div class="d-flex gap-2">
-                <div class="rounded-circle bg-danger" id="recLight" style="width: 10px; height: 10px; opacity: 1;"></div>
-                <small style="font-size: 8px; color: #666;">LIVE REC</small>
-            </div>
-            <div class="main-fader-track">
-                <div class="main-fader-knob" id="autoFader"></div>
-            </div>
-            <div class="d-flex gap-3">
-                <i class="fas fa-circle-notch text-muted fa-spin"></i>
-                <i class="fas fa-signal text-info"></i>
-            </div>
-        </div>
-
-        <!-- Høyre Deck -->
-        <div class="deck" style="animation-duration: 2.5s;">
-            <div class="deck-grooves"></div>
-        </div>
-    </div>
-</header>
-
-<main class="container">
-    <!-- Profilkort -->
-    <div class="profile-section text-center">
-        <div class="profile-card">
-            <img src="https://images.unsplash.com/photo-1571266028243-3716f02d2d2e?auto=format&fit=crop&q=80&w=200" alt="DJ Avatar" class="avatar-img">
-            <h2>DJ NEON PULSE</h2>
-            <p class="text-info">Techno & Progressive House</p>
-            <hr class="bg-secondary">
-            <p class="small opacity-75 px-3">
-                Bak konsollen skapes magien. Fra dype undergrunnsklubber til de største festivalscenene.
-                Velkommen til mitt univers av lyd.
-            </p>
-            <div class="mt-4">
-                <button class="btn btn-primary px-4 rounded-pill me-2">BOOKING</button>
-                <button class="btn btn-outline-light px-4 rounded-pill">STREAMS</button>
-            </div>
-        </div>
+    <div id="scrolling-news">
+        <marquee scrollamount="10">AKSJON PÅGÅR: 4 SELSKAPER UNDER OVERVÅKNING - NULLTOLERANSE FOR BEDRAGERI - REKTRUTERING AV SIKKERHETSENHETER FERDIGSTILT</marquee>
     </div>
 
-    <!-- Seksjon 1: Tour -->
-    <div class="content-block">
-        <h2 class="section-title">Tour Dates 2026</h2>
-        <div class="tour-date">
-            <div><strong>OSLO, NO</strong><br><small class="text-muted">The Hub Underground</small></div>
-            <div class="text-info">FEB 14</div>
+    <!-- Hero Section -->
+    <header class="hero-section text-center">
+        <div class="container">
+            <h1 class="display-3 fw-bold mb-4" id="main-title">VARSEL OM KRIMINELL VIRKSOMHET</h1>
+            <p class="lead mb-5">Vi iverksetter nå fullstendig utryddelse av trusler mot vårt omdømme og våre midler.</p>
+            <div class="d-flex justify-content-center gap-3">
+                <button class="btn btn-danger-custom" id="action-btn">Aktiver Mottiltak</button>
+                <button class="btn btn-outline-light px-4" onclick="document.getElementById('info-section').scrollIntoView();">Les Rapporten</button>
+            </div>
         </div>
-        <div class="tour-date">
-            <div><strong>BERLIN, DE</strong><br><small class="text-muted">Berghain (Main Hall)</small></div>
-            <div class="text-info">MAR 02</div>
-        </div>
-        <div class="tour-date">
-            <div><strong>IBIZA, ES</strong><br><small class="text-muted">Ushuaïa Beach Club</small></div>
-            <div class="text-info">JUN 20</div>
-        </div>
-    </div>
+    </header>
 
-    <!-- Seksjon 2: Music (abc...) -->
-    <div class="content-block text-center">
-        <h2 class="section-title">Latest Tracks</h2>
-        <div class="row g-4">
-            <div class="col-md-4">
-                <div class="p-4 border border-secondary rounded">
-                    <i class="fas fa-compact-disc fa-3x mb-3 text-info"></i>
-                    <h5>Pulse Zero</h5>
-                    <p class="small text-muted">Album: Neon Nights</p>
+    <main class="container my-5">
+        <div class="row">
+            <div class="col-lg-8" id="info-section">
+                <div class="alert-box" id="initial-alert">
+                    <h3><i class="fas fa-exclamation-triangle"></i> Uautoriserte Aktører</h3>
+                    <p>Svindlere og investeringsbedragere som driver kriminelle handlinger som tyveri er ikke berettigede aktører gjennom oss. De skal på ingen måte nyte midler av oss eller profittere på vårt navn.</p>
+                </div>
+
+                <h2 class="mt-4">Våre Mottiltak</h2>
+                <p>Vi politianmelder og oppsporer alle hackerangrep. Vi bruker den nødvendige makt for å kreve tilbake stjålne eiendeler og gjenopprette vårt omdømme. Ingen instans er for stor til å stenges ned dersom de forsøker å leve på vårt rykte eller driver med heleri.</p>
+
+                <div class="terminal-box" id="status-console">
+                    > Initialiserer sporingsprotokoll...<br>
+                    > Identifiserer 4 kriminelle enheter...<br>
+                    > Forbereder korrigert angrep...<br>
+                    > <span class="text-white">Status: Klar for eliminering av trussel.</span>
                 </div>
             </div>
-            <div class="col-md-4">
-                <div class="p-4 border border-secondary rounded">
-                    <i class="fas fa-wave-square fa-3x mb-3 text-purple" style="color: var(--neon-purple);"></i>
-                    <h5>Frequency</h5>
-                    <p class="small text-muted">EP: Digital Soul</p>
-                </div>
-            </div>
-            <div class="col-md-4">
-                <div class="p-4 border border-secondary rounded">
-                    <i class="fas fa-bolt fa-3x mb-3 text-warning"></i>
-                    <h5>Overdrive</h5>
-                    <p class="small text-muted">Single: 2026</p>
+
+            <div class="col-lg-4">
+                <div class="status-card p-4">
+                    <h4>Operasjonsstatus</h4>
+                    <hr>
+                    <ul class="list-unstyled">
+                        <li class="mb-3"><i class="fas fa-check-circle text-success"></i> Bevisinnsamling: <strong>Fullført</strong></li>
+                        <li class="mb-3"><i class="fas fa-spinner fa-spin text-warning"></i> Selskapsoppløsning: <strong>Pågår</strong></li>
+                        <li class="mb-3"><i class="fas fa-crosshairs text-danger"></i> Målidentifikasjon: <strong>Låst (4 selskaper)</strong></li>
+                    </ul>
+                    <div class="progress bg-secondary" style="height: 10px;">
+                        <div class="progress-bar bg-danger" role="progressbar" style="width: 85%"></div>
+                    </div>
+                    <small class="text-muted d-block mt-2">85% Operasjonell beredskap</small>
                 </div>
             </div>
         </div>
-    </div>
 
-    <!-- Seksjon 3: Footer Gear -->
-    <div class="content-block">
-        <h2 class="section-title">Studio Gear</h2>
-        <ul class="list-unstyled text-center">
-            <li class="mb-2">Pioneer CDJ-3000 x4</li>
-            <li class="mb-2">Allen & Heath Xone:96</li>
-            <li class="mb-2">Moog Matriarch Synthesizer</li>
-            <li class="mb-2">Ableton Push 3 Controller</li>
-        </ul>
-    </div>
-</main>
+        <!-- Section: Den Endelige Korrigeringen -->
+        <div class="row mt-5 text-center">
+            <div class="col-12">
+                <div class="p-5 border border-danger rounded">
+                    <h2 class="warning-text">EKSPLOSJONSVARSEL</h2>
+                    <p>Vi søker bistand i å fjerne de 4 selskapene vi mener driver i regi av utnyttelse og bedrageri. Vi starter snart et stort korrigert angrep mot disse forholdene for å utslette trusselen permanent.</p>
+                    <p>Vi har hentet inn nok informasjon som gir oss rekrutteringsansvar i å stanse alle som driver kriminelle handlinger.</p>
+                </div>
+            </div>
+        </div>
+    </main>
 
-<script>
-    // --- BAKGRUNNSANIMASJON ---
-    const canvas = document.getElementById('bgCanvas');
-    const ctx = canvas.getContext('2d');
-    let particles = [];
+    <footer class="text-center py-4 border-top border-secondary">
+        <p>&copy; 2024 SIKKERHETSINSTANSEN - Ingen toleranse for tyveri eller heleri.</p>
+    </footer>
 
-    function resize() {
-        canvas.width = window.innerWidth;
-        canvas.height = window.innerHeight;
-    }
-    window.addEventListener('resize', resize);
-    resize();
+    <!-- Scripts: jQuery og Bootstrap -->
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 
-    class Particle {
-        constructor() { this.init(); }
-        init() {
-            this.x = Math.random() * canvas.width;
-            this.y = Math.random() * canvas.height;
-            this.size = Math.random() * 2 + 1;
-            this.speedX = (Math.random() * 2 + 1); 
-            this.speedY = (Math.random() * 2 + 1);
-            this.color = Math.random() > 0.5 ? '#00d2ff' : '#6a11cb';
-            this.opacity = Math.random() * 0.5;
-        }
-        update() {
-            this.x += this.speedX;
-            this.y += this.speedY;
-            if (this.x > canvas.width) this.x = -10;
-            if (this.y > canvas.height) this.y = -10;
-        }
-        draw() {
-            ctx.globalAlpha = this.opacity;
-            ctx.fillStyle = this.color;
-            ctx.beginPath();
-            ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
-            ctx.fill();
-        }
-    }
+    <script>
+        $(document).ready(function() {
+            // Animer tittelen
+            $("#main-title").hide().fadeIn(2000);
 
-    for(let i=0; i<60; i++) particles.push(new Particle());
+            // Vis varselsboks med slide-effekt
+            $("#initial-alert").delay(800).slideDown(1000);
 
-    function animate() {
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-        
-        // Bakgrunnsgradient
-        let grad = ctx.createLinearGradient(0,0, canvas.width, canvas.height);
-        grad.addColorStop(0, '#0a0a0f');
-        grad.addColorStop(1, '#1a1a2e');
-        ctx.fillStyle = grad;
-        ctx.fillRect(0,0, canvas.width, canvas.height);
+            // Funksjon for "Mottiltak"-knapp
+            $("#action-btn").click(function() {
+                $(this).text("AKTIVERT").removeClass("btn-danger-custom").addClass("btn-success");
+                $("#status-console").append("<br>> KORRIGERT ANGREP STARTET...");
+                $("#status-console").animate({ scrollTop: $('#status-console').prop("scrollHeight")}, 500);
+                
+                // Ristingseffekt på hele siden
+                $("body").fadeOut(100).fadeIn(100).fadeOut(100).fadeIn(100);
+            });
 
-        particles.forEach(p => { p.update(); p.draw(); });
-
-        // --- Konsoll Animasjon Logikk ---
-        // Fader beveger seg
-        const fader = document.getElementById('autoFader');
-        if(fader) fader.style.top = (40 + Math.sin(Date.now() * 0.003) * 30) + "%";
-        
-        // Blinkende REC lys
-        const rec = document.getElementById('recLight');
-        if(rec) rec.style.opacity = (Math.sin(Date.now() * 0.005) > 0) ? "1" : "0.2";
-
-        requestAnimationFrame(animate);
-    }
-    animate();
-</script>
-
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+            // Terminal-simulering
+            setInterval(function() {
+                const logs = [
+                    "> Oppdaterer databaser...",
+                    "> Sporer IP-adresser...",
+                    "> Verifiserer omdømme-data...",
+                    "> Krypterer rekrutterings-filer..."
+                ];
+                const randomLog = logs[Math.floor(Math.random() * logs.length)];
+                $("#status-console").append("<br>" + randomLog);
+                if ($("#status-console").contents().length > 20) {
+                    $("#status-console").find('br:first').remove();
+                }
+            }, 3000);
+        });
+    </script>
 </body>
 </html>
+
