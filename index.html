@@ -1,95 +1,356 @@
 <!DOCTYPE html>
-<html lang="no">
+<html lang="da">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Reise og Verdighet: En Blogg om Livsavslutning</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+    <title>DJ Mix Profilkort - 2000px Animasjon</title>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            line-height: 1.6;
+        :root {
+            --neon-blue: #00d2ff;
+            --neon-purple: #6a11cb;
+            --dark-bg: #0a0a0f;
         }
-        .hero-gradient {
-            background: linear-gradient(135deg, #f3f4f6 0%, #e5e7eb 100%);
+
+        body, html {
+            margin: 0;
+            padding: 0;
+            background: var(--dark-bg);
+            color: #fff;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            min-height: 2000px; /* Spesifisert høyde */
+        }
+
+        /* Bakgrunns-canvas */
+        #bgCanvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -2;
+        }
+
+        /* Hero / Header med Mikser Konsoll */
+        .header-console {
+            height: 500px;
+            background: #111;
+            position: relative;
+            overflow: hidden;
+            border-bottom: 3px solid var(--neon-blue);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .console-inner {
+            display: flex;
+            gap: 40px;
+            align-items: center;
+            background: #1a1a1a;
+            padding: 40px;
+            border-radius: 20px;
+            border: 2px solid #333;
+            box-shadow: inset 0 0 50px rgba(0,0,0,0.8);
+        }
+
+        /* Vinyl Platespillere */
+        .deck {
+            width: 180px;
+            height: 180px;
+            background: #000;
+            border-radius: 50%;
+            border: 5px solid #222;
+            position: relative;
+            animation: spin 3s linear infinite;
+        }
+
+        .deck::before {
+            content: "";
+            position: absolute;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            width: 40px; height: 40px;
+            background: var(--neon-purple);
+            border-radius: 50%;
+            z-index: 2;
+        }
+
+        .deck-grooves {
+            position: absolute;
+            top: 10%; left: 10%; right: 10%; bottom: 10%;
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 50%;
+        }
+
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        /* Mikser Senter */
+        .mixer-center {
+            width: 120px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            align-items: center;
+        }
+
+        .main-fader-track {
+            height: 150px;
+            width: 12px;
+            background: #000;
+            border-radius: 6px;
+            position: relative;
+        }
+
+        .main-fader-knob {
+            width: 30px;
+            height: 15px;
+            background: #eee;
+            position: absolute;
+            left: -9px;
+            top: 50%;
+            border-radius: 3px;
+            box-shadow: 0 0 10px var(--neon-blue);
+        }
+
+        /* Profilkort Seksjon */
+        .profile-section {
+            margin-top: -80px;
+            position: relative;
+            z-index: 10;
+        }
+
+        .profile-card {
+            background: rgba(15, 15, 25, 0.9);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            max-width: 500px;
+            margin: 0 auto;
+            padding: 30px;
+            box-shadow: 0 30px 60px rgba(0,0,0,0.7);
+        }
+
+        .avatar-img {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            border: 5px solid var(--neon-blue);
+            margin-bottom: 20px;
+            object-fit: cover;
+        }
+
+        /* Scroll Innhold */
+        .content-block {
+            padding: 80px 20px;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .section-title {
+            color: var(--neon-blue);
+            text-transform: uppercase;
+            letter-spacing: 4px;
+            margin-bottom: 40px;
+            text-align: center;
+        }
+
+        .tour-date {
+            background: rgba(255,255,255,0.05);
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-left: 4px solid var(--neon-purple);
         }
     </style>
 </head>
-<body class="bg-gray-50 text-gray-800">
+<body>
 
-    <!-- Navigasjon -->
-    <nav class="bg-white shadow-sm p-4 sticky top-0 z-10">
-        <div class="max-w-4xl mx-auto flex justify-between items-center">
-            <span class="font-bold text-xl text-blue-900">Veien Videre</span>
-            <div class="space-x-4">
-                <a href="#reiseplan" class="hover:text-blue-600 font-medium">Reisen</a>
-                <a href="#protokoll" class="hover:text-blue-600 font-medium">Protokoll</a>
+<canvas id="bgCanvas"></canvas>
+
+<!-- Header med animert DJ-konsoll -->
+<header class="header-console">
+    <div class="console-inner">
+        <!-- Venstre Deck -->
+        <div class="deck">
+            <div class="deck-grooves"></div>
+        </div>
+
+        <!-- Mixer Seksjon -->
+        <div class="mixer-center">
+            <div class="d-flex gap-2">
+                <div class="rounded-circle bg-danger" id="recLight" style="width: 10px; height: 10px; opacity: 1;"></div>
+                <small style="font-size: 8px; color: #666;">LIVE REC</small>
+            </div>
+            <div class="main-fader-track">
+                <div class="main-fader-knob" id="autoFader"></div>
+            </div>
+            <div class="d-flex gap-3">
+                <i class="fas fa-circle-notch text-muted fa-spin"></i>
+                <i class="fas fa-signal text-info"></i>
             </div>
         </div>
-    </nav>
 
-    <!-- Hero Seksjon -->
-    <header class="hero-gradient py-16 px-4 border-b">
-        <div class="max-w-3xl mx-auto text-center">
-            <h1 class="text-4xl md:text-5xl font-serif font-bold text-gray-900 mb-6">Reise til Nederland: Siste kapittel og verdighet</h1>
-            <p class="text-xl text-gray-600">En personlig logg om å stoppe sykdommen og velge sin egen avskjed.</p>
+        <!-- Høyre Deck -->
+        <div class="deck" style="animation-duration: 2.5s;">
+            <div class="deck-grooves"></div>
         </div>
-    </header>
+    </div>
+</header>
 
-    <main class="max-w-3xl mx-auto px-4 py-12">
+<main class="container">
+    <!-- Profilkort -->
+    <div class="profile-section text-center">
+        <div class="profile-card">
+            <img src="https://images.unsplash.com/photo-1571266028243-3716f02d2d2e?auto=format&fit=crop&q=80&w=200" alt="DJ Avatar" class="avatar-img">
+            <h2>DJ NEON PULSE</h2>
+            <p class="text-info">Techno & Progressive House</p>
+            <hr class="bg-secondary">
+            <p class="small opacity-75 px-3">
+                Bak konsollen skapes magien. Fra dype undergrunnsklubber til de største festivalscenene.
+                Velkommen til mitt univers av lyd.
+            </p>
+            <div class="mt-4">
+                <button class="btn btn-primary px-4 rounded-pill me-2">BOOKING</button>
+                <button class="btn btn-outline-light px-4 rounded-pill">STREAMS</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Seksjon 1: Tour -->
+    <div class="content-block">
+        <h2 class="section-title">Tour Dates 2026</h2>
+        <div class="tour-date">
+            <div><strong>OSLO, NO</strong><br><small class="text-muted">The Hub Underground</small></div>
+            <div class="text-info">FEB 14</div>
+        </div>
+        <div class="tour-date">
+            <div><strong>BERLIN, DE</strong><br><small class="text-muted">Berghain (Main Hall)</small></div>
+            <div class="text-info">MAR 02</div>
+        </div>
+        <div class="tour-date">
+            <div><strong>IBIZA, ES</strong><br><small class="text-muted">Ushuaïa Beach Club</small></div>
+            <div class="text-info">JUN 20</div>
+        </div>
+    </div>
+
+    <!-- Seksjon 2: Music (abc...) -->
+    <div class="content-block text-center">
+        <h2 class="section-title">Latest Tracks</h2>
+        <div class="row g-4">
+            <div class="col-md-4">
+                <div class="p-4 border border-secondary rounded">
+                    <i class="fas fa-compact-disc fa-3x mb-3 text-info"></i>
+                    <h5>Pulse Zero</h5>
+                    <p class="small text-muted">Album: Neon Nights</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="p-4 border border-secondary rounded">
+                    <i class="fas fa-wave-square fa-3x mb-3 text-purple" style="color: var(--neon-purple);"></i>
+                    <h5>Frequency</h5>
+                    <p class="small text-muted">EP: Digital Soul</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="p-4 border border-secondary rounded">
+                    <i class="fas fa-bolt fa-3x mb-3 text-warning"></i>
+                    <h5>Overdrive</h5>
+                    <p class="small text-muted">Single: 2026</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Seksjon 3: Footer Gear -->
+    <div class="content-block">
+        <h2 class="section-title">Studio Gear</h2>
+        <ul class="list-unstyled text-center">
+            <li class="mb-2">Pioneer CDJ-3000 x4</li>
+            <li class="mb-2">Allen & Heath Xone:96</li>
+            <li class="mb-2">Moog Matriarch Synthesizer</li>
+            <li class="mb-2">Ableton Push 3 Controller</li>
+        </ul>
+    </div>
+</main>
+
+<script>
+    // --- BAKGRUNNSANIMASJON ---
+    const canvas = document.getElementById('bgCanvas');
+    const ctx = canvas.getContext('2d');
+    let particles = [];
+
+    function resize() {
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+    }
+    window.addEventListener('resize', resize);
+    resize();
+
+    class Particle {
+        constructor() { this.init(); }
+        init() {
+            this.x = Math.random() * canvas.width;
+            this.y = Math.random() * canvas.height;
+            this.size = Math.random() * 2 + 1;
+            this.speedX = (Math.random() * 2 + 1); 
+            this.speedY = (Math.random() * 2 + 1);
+            this.color = Math.random() > 0.5 ? '#00d2ff' : '#6a11cb';
+            this.opacity = Math.random() * 0.5;
+        }
+        update() {
+            this.x += this.speedX;
+            this.y += this.speedY;
+            if (this.x > canvas.width) this.x = -10;
+            if (this.y > canvas.height) this.y = -10;
+        }
+        draw() {
+            ctx.globalAlpha = this.opacity;
+            ctx.fillStyle = this.color;
+            ctx.beginPath();
+            ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+            ctx.fill();
+        }
+    }
+
+    for(let i=0; i<60; i++) particles.push(new Particle());
+
+    function animate() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
         
-        <!-- Status Seksjon -->
-        <div id="reiseplan" class="bg-blue-50 border-2 border-blue-200 rounded-2xl p-8 mb-12 shadow-sm">
-            <h2 class="text-2xl font-bold text-blue-900 mb-4">Reisebekreftelse</h2>
-            <p class="text-lg mb-2"><strong>Dato for utreise:</strong> Onsdag 29. januar</p>
-            <p class="text-lg mb-4"><strong>Destinasjon:</strong> Nederland</p>
-            <p class="text-gray-700 italic">
-                Reisen er nå bestilt. Dette er et bevisst valg for å sette et punktum for sykdomsforløpet og sikre en verdig avslutning i kontrollerte former.
-            </p>
-        </div>
+        // Bakgrunnsgradient
+        let grad = ctx.createLinearGradient(0,0, canvas.width, canvas.height);
+        grad.addColorStop(0, '#0a0a0f');
+        grad.addColorStop(1, '#1a1a2e');
+        ctx.fillStyle = grad;
+        ctx.fillRect(0,0, canvas.width, canvas.height);
 
-        <article class="prose prose-blue lg:prose-xl mx-auto">
-            <h2 id="protokoll" class="text-2xl font-bold mt-12 mb-4 text-blue-900 border-b pb-2">Avskjedsprotokoll</h2>
-            <p class="mb-6">
-                En avskjedsprotokoll er mer enn bare praktiske forberedelser. Det handler om å legge til rette for at den siste tiden blir preget av ro, ærlighet og kontroll. Her er rammene som følges:
-            </p>
+        particles.forEach(p => { p.update(); p.draw(); });
 
-            <div class="space-y-6">
-                <div class="bg-white p-6 rounded-lg shadow-sm border border-gray-100">
-                    <h3 class="font-bold text-gray-900 text-lg mb-2">1. Medisinsk innsovning (Amnestesi)</h3>
-                    <p class="text-gray-600">
-                        Protokollen sikrer at prosessen starter med en dyp medisinsk sedering. Dette betyr at man sovner tungt og smertefritt før den endelige livsavslutningen finner sted. Dette er det viktigste grepet for å stoppe sykdommens overtak.
-                    </p>
-                </div>
+        // --- Konsoll Animasjon Logikk ---
+        // Fader beveger seg
+        const fader = document.getElementById('autoFader');
+        if(fader) fader.style.top = (40 + Math.sin(Date.now() * 0.003) * 30) + "%";
+        
+        // Blinkende REC lys
+        const rec = document.getElementById('recLight');
+        if(rec) rec.style.opacity = (Math.sin(Date.now() * 0.005) > 0) ? "1" : "0.2";
 
-                <div class="bg-white p-6 rounded-lg shadow-sm border border-gray-100">
-                    <h3 class="font-bold text-gray-900 text-lg mb-2">2. Gjennomføring på bopel</h3>
-                    <p class="text-gray-600">
-                        Målet er at avslutningen skjer i trygge rammer på bopel i Nederland. Dette krever koordinering med det lokale helseapparatet og en bekreftet aksept fra tilsynshavende lege som følger den nederlandske eutanasi-loven.
-                    </p>
-                </div>
+        requestAnimationFrame(animate);
+    }
+    animate();
+</script>
 
-                <div class="bg-white p-6 rounded-lg shadow-sm border border-gray-100">
-                    <h3 class="font-bold text-gray-900 text-lg mb-2">3. Juridisk og etisk kontroll</h3>
-                    <p class="text-gray-600">
-                        Hvert steg i protokollen overvåkes for å sikre at ønsket er frivillig og veloverveid. Dette er en sikkerhet både for pasienten, de pårørende og det medisinske personellet involvert.
-                    </p>
-                </div>
-            </div>
-
-            <h2 class="text-2xl font-bold mt-12 mb-4 text-blue-900 border-b pb-2">Hvorfor onsdag 29. januar?</h2>
-            <p class="mb-8 leading-relaxed">
-                Å sette en dato gir en form for fred. Det betyr at sykdommen ikke lenger får diktere slutten, men at man selv tar styringen. Ved å reise onsdag 29. januar, legges det opp til nødvendig tid for de siste samtalene og den siste logistikken i Nederland før protokollen iverksettes.
-            </p>
-        </article>
-
-    </main>
-
-    <footer class="bg-gray-900 text-white py-12 mt-20">
-        <div class="max-w-4xl mx-auto px-4 text-center">
-            <p class="text-gray-400 text-sm italic">Personlig blogg om planlagt livsavslutning og reise for verdighet.</p>
-        </div>
-    </footer>
-
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
