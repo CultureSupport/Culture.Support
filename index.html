@@ -1,1 +1,159 @@
-nettet du brukar ,  laster ikke siden mere
+<!DOCTYPE html>
+<html lang="no">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Systemfeil - Siden svarer ikke</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Segoe+UI:wght@400;700&family=Open+Sans&display=swap');
+
+        body { margin: 0; overflow: hidden; font-family: 'Segoe UI', Tahoma, sans-serif; }
+        
+        /* Chrome Styles */
+        .chrome-bg { background-color: #f7f7f7; color: #5a5a5a; }
+        .chrome-btn { background-color: #1a73e8; color: white; border-radius: 4px; padding: 8px 16px; }
+
+        /* Firefox Styles */
+        .firefox-bg { background-color: #2b2a33; color: #fbfbfe; }
+        .firefox-btn { background-color: #0060df; color: white; border-radius: 4px; padding: 8px 16px; }
+
+        /* Opera Styles */
+        .opera-bg { background-color: #ffffff; color: #000; }
+        .opera-accent { color: #ff1b2d; }
+
+        /* Animated Banner */
+        .warning-pulse {
+            animation: pulse-red 2s infinite;
+        }
+
+        @keyframes pulse-red {
+            0% { transform: translate(-50%, -50%) scale(1); box-shadow: 0 0 0 0 rgba(220, 38, 38, 0.7); }
+            70% { transform: translate(-50%, -50%) scale(1.05); box-shadow: 0 0 0 20px rgba(220, 38, 38, 0); }
+            100% { transform: translate(-50%, -50%) scale(1); box-shadow: 0 0 0 0 rgba(220, 38, 38, 0); }
+        }
+
+        .terminal-text {
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 12px;
+        }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState, useEffect, useRef } = React;
+
+        const App = () => {
+            const [browser, setBrowser] = useState('chrome');
+            const [isCrashed, setIsCrashed] = useState(false);
+            const reportRef = useRef(null);
+
+            // JQuery Logikk for krasj-rapporten
+            useEffect(() => {
+                if (isCrashed) {
+                    const logs = [
+                        "> Initialiserer feilanalyse...",
+                        "> Henter minnedump fra 0x0045AF...",
+                        "> Feil: Nettverkssocket ble tvunget lukket.",
+                        "> GPU-akselerasjon stoppet uventet.",
+                        "> CRITICAL_PROCESS_DIED",
+                        "> Siden har sluttet å laste mer data.",
+                        "> Rapport ferdigstilt. Vennligst lukk nettleseren."
+                    ];
+                    
+                    let i = 0;
+                    const interval = setInterval(() => {
+                        if (i < logs.length) {
+                            $(reportRef.current).append(`<div>${logs[i]}</div>`);
+                            i++;
+                        } else {
+                            clearInterval(interval);
+                        }
+                    }, 800);
+
+                    return () => clearInterval(interval);
+                }
+            }, [isCrashed]);
+
+            const renderBrowserContent = () => {
+                switch(browser) {
+                    case 'chrome':
+                        return (
+                            <div className="flex flex-col items-start max-w-2xl mx-auto pt-20 px-10">
+                                <div className="text-6xl mb-6">☹️</div>
+                                <h1 className="text-2xl font-normal mb-4">Å, nei!</h1>
+                                <p className="mb-6">Noe gikk galt under visningen av denne nettsiden.</p>
+                                <div className="flex gap-4">
+                                    <button onClick={() => window.location.reload()} className="chrome-btn font-medium">Last inn på nytt</button>
+                                    <button onClick={() => setIsCrashed(true)} className="text-blue-500 hover:underline">Detaljer</button>
+                                </div>
+                                <p className="mt-10 text-sm text-gray-400">Feilkode: RESULT_CODE_KILLED_BAD_MESSAGE</p>
+                            </div>
+                        );
+                    case 'firefox':
+                        return (
+                            <div className="flex flex-col items-center justify-center h-screen px-6 text-center">
+                                <div className="w-16 h-16 bg-yellow-500 rounded-full mb-6 flex items-center justify-center text-3xl">!</div>
+                                <h1 className="text-3xl font-bold mb-4">Dette er flaut.</h1>
+                                <p className="text-lg mb-8 opacity-80">Firefox har problemer med å gjenopprette vinduene og fanene dine.</p>
+                                <button onClick={() => setIsCrashed(true)} className="firefox-btn font-semibold px-10">Gjenopprett økt</button>
+                            </div>
+                        );
+                    case 'opera':
+                        return (
+                            <div className="flex flex-col items-center justify-center h-screen px-6">
+                                <div className="text-8xl font-bold opera-accent mb-4">O</div>
+                                <h1 className="text-2xl font-bold mb-2">Nettverksfeil</h1>
+                                <p className="text-center max-w-md mb-6 opacity-70">Siden du prøver å nå kan ikke lastes fordi tilkoblingen ble brutt.</p>
+                                <button onClick={() => setIsCrashed(true)} className="border-2 border-black px-6 py-2 hover:bg-black hover:text-white transition-colors">Prøv igjen</button>
+                            </div>
+                        );
+                }
+            };
+
+            return (
+                <div className={`h-screen w-full transition-colors duration-500 ${browser + '-bg'}`}>
+                    
+                    {/* Hovedinnhold (Nettleser-look) */}
+                    {renderBrowserContent()}
+
+                    {/* Sentrert Animert Banner (Advarsel) */}
+                    {isCrashed && (
+                        <div className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-50 warning-pulse bg-red-600 text-white p-8 rounded-xl shadow-2xl text-center min-w-[320px] border-4 border-white">
+                            <h2 className="text-3xl font-black mb-2 italic">ADVARSEL!</h2>
+                            <div className="h-1 w-full bg-white mb-4"></div>
+                            <p className="font-bold text-lg mb-4 uppercase tracking-tighter">Systemet har fryst</p>
+                            
+                            {/* JQuery Rapportfelt */}
+                            <div 
+                                ref={reportRef}
+                                className="bg-black text-green-400 p-3 rounded text-left terminal-text h-32 overflow-y-auto mb-4 border border-gray-700"
+                            >
+                                {/* JQuery dumper tekst her */}
+                            </div>
+                            
+                            <p className="text-xs opacity-80">Siden kan ikke laste mer innhold.</p>
+                        </div>
+                    )}
+
+                    {/* Bytte-kontroller (Footer) */}
+                    <div className="fixed bottom-0 left-0 w-full p-4 bg-gray-900/10 backdrop-blur-sm flex justify-center gap-4">
+                        <button onClick={() => {setBrowser('chrome'); setIsCrashed(false)}} className="px-3 py-1 bg-white/50 rounded hover:bg-white">Chrome</button>
+                        <button onClick={() => {setBrowser('firefox'); setIsCrashed(false)}} className="px-3 py-1 bg-white/50 rounded hover:bg-white">Firefox</button>
+                        <button onClick={() => {setBrowser('opera'); setIsCrashed(false)}} className="px-3 py-1 bg-white/50 rounded hover:bg-white">Opera</button>
+                    </div>
+                </div>
+            );
+        };
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
+    </script>
+</body>
+</html>
