@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="no">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SYSTEM KRASH - TOTAL KOLLAPS</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Courier+Prime:wght@400;700&display=swap');
+
+        :root {
+            --glitch-red: #ff0000;
+            --glitch-blue: #00ffff;
+        }
+
+        body { 
+            margin: 0; 
+            overflow: hidden; 
+            background-color: #050505; 
+            color: #e0e0e0;
+            font-family: 'Courier Prime', monospace;
+        }
+
+        /* Glitch animasjon for hele skjermen */
+        .glitch-overlay {
+            animation: shake 0.5s infinite;
+            position: relative;
+        }
+
+        @keyframes shake {
+            0% { transform: translate(0,0) }
+            10% { transform: translate(-1px, -1px) rotate(-0.5deg) }
+            20% { transform: translate(-2px, 1px) rotate(0.5deg) }
+            30% { transform: translate(1px, 2px) rotate(0deg) }
+            100% { transform: translate(0,0) }
+        }
+
+        .broken-fiber-bg {
+            background: linear-gradient(90deg, #111 25%, #222 50%, #111 75%);
+            background-size: 200% 100%;
+            animation: flow 2s linear infinite;
+        }
+
+        @keyframes flow {
+            from { background-position: 200% 0; }
+            to { background-position: -200% 0; }
+        }
+
+        .malware-banner {
+            background: repeating-linear-gradient(45deg, #900, #900 10px, #600 10px, #600 20px);
+            border: 4px solid #f00;
+            text-shadow: 2px 2px #000;
+        }
+
+        .terminal-box {
+            background-color: rgba(0, 0, 0, 0.9);
+            border: 1px solid #440000;
+            box-shadow: 0 0 20px rgba(255, 0, 0, 0.2);
+        }
+
+        #dinoCanvas {
+            filter: sepia(1) saturate(5) hue-rotate(-50deg) contrast(1.5);
+            background: #111;
+        }
+
+        .critical-alert {
+            color: #ff0000;
+            text-transform: uppercase;
+            font-weight: bold;
+            animation: blink 0.2s infinite;
+        }
+
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0; }
+        }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState, useEffect, useRef } = React;
+
+        const DinoGame = ({ onGameOver }) => {
+            const canvasRef = useRef(null);
+            const [highScore, setHighScore] = useState(localStorage.getItem('dinoHighScore') || 0);
+
+            useEffect(() => {
+                const canvas = canvasRef.current;
+                const ctx = canvas.getContext('2d');
+                let animationId;
+                let score = 0;
+                let isJumping = false;
+                let jumpTimer = 0;
+                let obstacles = [];
+                let gameFrame = 0;
+                const dino = { x: 50, y: 150, width: 40, height: 40, color: '#ff0000' };
+
+                const update = () => {
+                    ctx.clearRect(0, 0, canvas.width, canvas.height);
+                    ctx.strokeStyle = '#440000';
+                    ctx.beginPath(); ctx.moveTo(0, 190); ctx.lineTo(canvas.width, 190); ctx.stroke();
+
+                    if (isJumping) {
+                        jumpTimer++;
+                        dino.y = 150 - Math.sin(jumpTimer * 0.1) * 80;
+                        if (jumpTimer > 31) { isJumping = false; jumpTimer = 0; dino.y = 150; }
+                    }
+
+                    ctx.fillStyle = dino.color;
+                    ctx.fillRect(dino.x, dino.y, dino.width, dino.height);
+
+                    if (gameFrame % 80 === 0) {
+                        obstacles.push({ x: canvas.width, y: 160, width: 20, height: 30 });
+                    }
+
+                    obstacles.forEach((obs, index) => {
+                        obs.x -= (6 + (gameFrame / 1000)); 
+                        ctx.fillStyle = '#ff4444';
+                        ctx.fillRect(obs.x, obs.y, obs.width, obs.height);
+
+                        if (dino.x < obs.x + obs.width && dino.x + dino.width > obs.x &&
+                            dino.y < obs.y + obs.height && dino.y + dino.height > obs.y) {
+                            cancelAnimationFrame(animationId);
+                            if (score > highScore) {
+                                localStorage.setItem('dinoHighScore', score);
+                                setHighScore(score);
+                            }
+                            onGameOver(score);
+                        }
+                        if (obs.x + obs.width < 0) { obstacles.splice(index, 1); score++; }
+                    });
+
+                    ctx.fillStyle = '#ff0000';
+                    ctx.font = '14px "Courier Prime"';
+                    ctx.fillText(`OVERLEVINGSTID: ${score}ms  BESTE: ${highScore}`, 10, 30);
+                    gameFrame++;
+                    animationId = requestAnimationFrame(update);
+                };
+
+                const handleKeyPress = (e) => { if ((e.code === 'Space' || e.type === 'touchstart') && !isJumping) isJumping = true; };
+                window.addEventListener('keydown', handleKeyPress);
+                canvas.addEventListener('touchstart', handleKeyPress);
+                update();
+                return () => {
+                    window.removeEventListener('keydown', handleKeyPress);
+                    canvas.removeEventListener('touchstart', handleKeyPress);
+                    cancelAnimationFrame(animationId);
+                };
+            }, [highScore]);
+
+            return <canvas ref={canvasRef} id="dinoCanvas" width="600" height="200" className="w-full rounded border border-red-900" />;
+        };
+
+        const App = () => {
+            const [isCrashed, setIsCrashed] = useState(false);
+            const [showMalware, setShowMalware] = useState(true);
+            const reportRef = useRef(null);
+
+            useEffect(() => {
+                const logs = [
+                    "!!! MALWARE DETEKTERT: 'VOID_PROTOCOL_v4' !!!",
+                    "> Kryptering av master-boot-record pågår...",
+                    "> Fiberoptisk kjerne i USA: STATUS KRITISK - 98% TAP",
+                    "> Børssystemer (NYSE/NASDAQ): KOLLAPSET",
+                    "> Gigabit-nettverk struplet til 0.01 bps (Trotling aktiv)",
+                    "> Fysisk skade på undersjøiske kabler bekreftet.",
+                    "> Nettleser-kjerne har infisert seg selv.",
+                    "> UKJENT HACKERGRUPPE HAR KONTROLL.",
+                    "> VI ER HJELPESLØSE. NETTET ER DØDT.",
+                    "------------------------------------------",
+                    "> Aktiverer analog nød-emulator..."
+                ];
+                
+                let i = 0;
+                const interval = setInterval(() => {
+                    if (i < logs.length) {
+                        $(reportRef.current).append(`<div class="${logs[i].includes('!!!') ? 'critical-alert' : ''} mb-1">${logs[i]}</div>`);
+                        $(reportRef.current).scrollTop($(reportRef.current)[0].scrollHeight);
+                        i++;
+                    } else {
+                        clearInterval(interval);
+                    }
+                }, 800);
+                return () => clearInterval(interval);
+            }, []);
+
+            return (
+                <div className={`h-screen w-full flex flex-col p-6 overflow-hidden ${isCrashed ? 'glitch-overlay' : ''}`}>
+                    
+                    {/* Header: Global Status */}
+                    <div className="malware-banner w-full p-4 mb-6 shadow-2xl flex justify-between items-center">
+                        <div>
+                            <h1 className="text-2xl font-black text-white italic tracking-tighter">MALWARE_ATTACK_ACTIVE</h1>
+                            <p className="text-xs text-red-200">KILDE: UKJENT | OMFANG: GLOBAL INFRASTRUKTUR</p>
+                        </div>
+                        <div className="text-right">
+                            <p className="critical-alert">NETTET ER ØDELAGT</p>
+                            <p className="text-[10px]">GIGABIT_THROTTLED_OFFLINE</p>
+                        </div>
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6 flex-grow overflow-hidden">
+                        
+                        {/* Venstre: Situasjonsrapport */}
+                        <div className="md:col-span-1 flex flex-col gap-4 overflow-hidden">
+                            <div className="terminal-box flex-grow p-4 overflow-hidden flex flex-col">
+                                <h2 className="text-red-500 font-bold mb-2 border-b border-red-900 pb-1 underline">HENDELSESLOGG</h2>
+                                <div ref={reportRef} className="text-[11px] text-red-400 overflow-y-auto pr-2 custom-scrollbar">
+                                    {/* JQuery logger her */}
+                                </div>
+                            </div>
+
+                            <div className="terminal-box p-4 border-yellow-900">
+                                <h3 className="text-yellow-500 font-bold text-sm mb-2">INFRASTRUKTUR STATUS: USA</h3>
+                                <div className="h-32 bg-red-950/50 rounded border border-red-900 flex items-center justify-center relative">
+                                    <div className="absolute inset-0 opacity-20 bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')]"></div>
+                                    <p className="text-[10px] text-red-500 font-bold animate-pulse text-center p-2">
+                                        [KART_DATA_KORRUPT]<br/>
+                                        FIBER-KABLER: TOTALT SKADET<br/>
+                                        MØRKLAGT OMRÅDE: 94%
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Høyre: Dino-Spillet (Nødsystem) */}
+                        <div className="md:col-span-2 flex flex-col gap-4">
+                            <div className="terminal-box p-6 bg-red-950/10 flex-grow relative overflow-hidden">
+                                <div className="mb-4">
+                                    <h2 className="text-xl font-bold text-red-500 italic">SYSTEM_RECOVERY_FAIL</h2>
+                                    <p className="text-sm opacity-70">Nettleseren har skadet seg selv. Ingen eksterne tilkoblinger mulig.</p>
+                                </div>
+                                
+                                <div className="border-4 border-red-900 p-2 bg-black">
+                                    <DinoGame onGameOver={() => setIsCrashed(true)} />
+                                </div>
+
+                                <div className="mt-6 text-[12px] leading-relaxed opacity-80 text-gray-400">
+                                    <p className="mb-2 font-bold text-red-400 underline uppercase">Analyse av angrepet:</p>
+                                    <p>Dette er et sofistikert angrep utført av ukjente hackergrupper. Skadene på nettet er uopprettelige; de fysiske fiberkablene i Atlanterhavet og på tvers av USA er overbelastet til smeltepunktet gjennom malware-induserte strømtopper. Gigabit-nettverk som før bar verdensøkonomien, er nå redusert til statisk støy.</p>
+                                    <p className="mt-2 italic font-bold">Børser verden over har stanset all handel. Vi er vitne til den digitale sivilisasjonens fall.</p>
+                                </div>
+
+                                {isCrashed && (
+                                    <div className="absolute inset-0 bg-red-900/90 flex flex-col items-center justify-center z-50 p-10 text-center">
+                                        <h1 className="text-6xl font-black mb-4">TOTAL_DEATH</h1>
+                                        <p className="text-2xl mb-6">MALWARE HAR OVERTATT HARDWARE</p>
+                                        <button 
+                                            onClick={() => window.location.reload()}
+                                            className="bg-black text-white px-8 py-3 border-2 border-white hover:bg-white hover:text-black transition-all font-bold"
+                                        >
+                                            REBOOT SYSTEM (FORSØK)
+                                        </button>
+                                    </div>
+                                )}
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Footer status */}
+                    <div className="mt-4 flex justify-between text-[10px] text-red-900 font-bold">
+                        <span>CPU_TEMP: 98°C [!!!]</span>
+                        <span>FIBER_SIGNAL: 0.00%</span>
+                        <span>LOCAL_STATION_ACTIVE</span>
+                    </div>
+                </div>
+            );
+        };
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
+    </script>
+</body>
+</html>
