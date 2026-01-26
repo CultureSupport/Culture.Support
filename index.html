@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="no">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Universal Hindu Yoga Radio - 1998 Edition Professional</title>
+    <!-- Inkluderer HLS støtte for moderne strømminger (m3u8) -->
+    <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+    <style>
+        body {
+            background-color: #008080;
+            font-family: "MS Sans Serif", Geneva, sans-serif;
+            color: #000;
+            margin: 20px;
+        }
+
+        #window {
+            width: 95%;
+            max-width: 800px;
+            background-color: #c0c0c0;
+            border: 2px solid;
+            border-color: #ffffff #808080 #808080 #ffffff;
+            padding: 2px;
+            margin: 0 auto;
+            box-shadow: 4px 4px 0px rgba(0,0,0,0.5);
+        }
+
+        #title-bar {
+            background: linear-gradient(90deg, #000080, #1084d0);
+            color: white;
+            padding: 3px 10px;
+            font-weight: bold;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .content {
+            padding: 15px;
+            border: 1px inset #fff;
+            background-color: #fff;
+            margin: 5px;
+            min-height: 400px;
+            overflow-y: auto;
+        }
+
+        marquee {
+            background-color: #000;
+            color: #0f0;
+            padding: 5px;
+            font-family: 'Courier New', Courier, monospace;
+            font-weight: bold;
+        }
+
+        .station-table-container {
+            max-height: 250px;
+            overflow-y: scroll;
+            border: 2px inset #fff;
+            margin: 10px 0;
+        }
+
+        .station-list {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+        }
+
+        .station-list th {
+            background-color: #d0d0d0;
+            position: sticky;
+            top: 0;
+            border: 1px solid #808080;
+            padding: 5px;
+            text-align: left;
+        }
+
+        .station-list td {
+            border: 1px solid #d0d0d0;
+            padding: 5px;
+            cursor: pointer;
+        }
+
+        .station-list tr:hover {
+            background-color: #000080;
+            color: white;
+        }
+
+        .station-list tr.active {
+            background-color: #ffff00;
+            color: black;
+            font-weight: bold;
+        }
+
+        .controls-panel {
+            background: #c0c0c0;
+            border: 2px outset #fff;
+            padding: 10px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 10px;
+        }
+
+        button {
+            padding: 6px 20px;
+            background-color: #c0c0c0;
+            border: 2px solid;
+            border-color: #ffffff #808080 #808080 #ffffff;
+            font-family: "MS Sans Serif", sans-serif;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        button:active {
+            border-color: #808080 #ffffff #ffffff #808080;
+            padding: 7px 19px 5px 21px;
+        }
+
+        .volume-slider {
+            width: 200px;
+        }
+
+        .status-bar {
+            border-top: 1px solid #808080;
+            padding: 2px 5px;
+            font-size: 11px;
+            background: #c0c0c0;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .metadata-box {
+            font-size: 10px;
+            background: #eee;
+            padding: 5px;
+            border: 1px solid #808080;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+
+<div id="window">
+    <div id="title-bar">
+        <span>Yoga_Radio_Global_1998_v2.0.exe</span>
+        <div style="display:flex; gap:2px;">
+            <button style="width:20px; height:18px; padding:0; line-height:1;">_</button>
+            <button style="width:20px; height:18px; padding:0; line-height:1;">X</button>
+        </div>
+    </div>
+
+    <marquee id="main-marquee">+++ KLAR FOR AVSPILLING +++ VELG EN STASJON FRA LISTEN UNDER +++ SYSTEM PORTER AKTIVERT +++</marquee>
+
+    <div class="content">
+        <div style="text-align:center;">
+            <h2 style="margin:0; color:#ff4500;">Radio India: Yoga & Dharma</h2>
+            <small>Global Digital API Gateway - 1998 Edition</small>
+        </div>
+
+        <div class="station-table-container">
+            <table class="station-list">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Kanalnavn</th>
+                        <th>Kategori</th>
+                        <th>Lokasjon</th>
+                    </tr>
+                </thead>
+                <tbody id="station-body">
+                    <!-- Fylles med JavaScript -->
+                </tbody>
+            </table>
+        </div>
+
+        <div class="controls-panel">
+            <div id="now-playing" style="font-weight:bold; color:#000080; height:20px;">Ingen stasjon valgt</div>
+            
+            <div class="button-group">
+                <button onclick="playRadio()">SPILL</button>
+                <button onclick="stopRadio()">STOPP</button>
+            </div>
+
+            <div>
+                <label style="font-size:11px;">Volum:</label>
+                <input type="range" class="volume-slider" id="volume" min="0" max="1" step="0.1" value="0.8" onchange="updateVolume(this.value)">
+            </div>
+        </div>
+
+        <div class="metadata-box">
+            <strong>Systemdiagnose:</strong><br>
+            JS Engine: V8 / Gecko | Audio Hook: HTML5 Media | Port Scan: 8000, 8080, 8500 Open<br>
+            API Link: cdn.radio.india/v2/yoga | Proxy: Enabled
+        </div>
+    </div>
+
+    <div class="status-bar">
+        <div>Program: Running</div>
+        <div id="clock">00:00:00</div>
+        <div>KB/s: 128</div>
+    </div>
+</div>
+
+<script>
+    // Utvidet Spilleliste
+    const radioStations = [
+        { id: "01", name: "All India Radio (Vividh Bharati)", url: "https://air.pc.cdn.bitgravity.com/air/live/pcr:air_vividh_bharati/playlist.m3u8", cat: "Klassisk", loc: "Delhi" },
+        { id: "02", name: "Radio City Smaran", url: "https://prclive4.listenon.in/Smaran", cat: "Bhakti", loc: "Mumbai" },
+        { id: "03", name: "Yoga Meditation Music", url: "http://stream.zeno.fm/f376282u90duv", cat: "Yoga", loc: "Rishikesh" },
+        { id: "04", name: "Bhakti World Radio", url: "https://shoutcast.bhaktiworld.com:8000/stream", cat: "Devotional", loc: "Global" },
+        { id: "05", name: "Radio Girmit", url: "http://192.99.8.192:3458/stream", cat: "Kannada", loc: "Bangalore" },
+        { id: "06", name: "PlanetRadiocity", url: "https://prclive4.listenon.in/Hindi", cat: "Bollywood", loc: "Mumbai" },
+        { id: "07", name: "SikhNet Radio", url: "http://sc6.sikhnet.com:8000/;", cat: "Gurbani", loc: "Amritsar" },
+        { id: "08", name: "OM Radio", url: "http://95.211.234.116:80/stream", cat: "Mantra", loc: "Varanasi" },
+        { id: "09", name: "AIR Marathi", url: "https://air.pc.cdn.bitgravity.com/air/live/pcr:air_marathi/playlist.m3u8", cat: "Regional", loc: "Pune" },
+        { id: "10", name: "Hindu Bhajan Radio", url: "http://198.178.123.23:7132/stream", cat: "Bhakti", loc: "India" }
+    ];
+
+    const audio = new Audio();
+    let hls = null;
+    let selectedStation = null;
+
+    function init() {
+        const body = document.getElementById('station-body');
+        radioStations.forEach(s => {
+            const tr = document.createElement('tr');
+            tr.id = "station-" + s.id;
+            tr.innerHTML = `<td>${s.id}</td><td>${s.name}</td><td>${s.cat}</td><td>${s.loc}</td>`;
+            tr.onclick = () => selectStation(s);
+            body.appendChild(tr);
+        });
+        
+        // Start klokke
+        setInterval(() => {
+            document.getElementById('clock').innerText = new Date().toLocaleTimeString();
+        }, 1000);
+    }
+
+    function selectStation(s) {
+        // Fjern aktiv klasse fra alle
+        document.querySelectorAll('tr').forEach(r => r.classList.remove('active'));
+        // Legg til på valgt
+        document.getElementById('station-' + s.id).classList.add('active');
+        
+        selectedStation = s;
+        document.getElementById('now-playing').innerText = "Klar: " + s.name;
+    }
+
+    function playRadio() {
+        if (!selectedStation) return;
+        
+        const marquee = document.getElementById('main-marquee');
+        const nowPlaying = document.getElementById('now-playing');
+        
+        stopRadio(); // Nullstill forrige strøm
+
+        nowPlaying.innerText = "BUFFERER: " + selectedStation.name;
+        marquee.innerText = "+++ KOBLER TIL " + selectedStation.name.toUpperCase() + " +++ PORT STATUS: OK +++";
+
+        // Sjekk om det er en m3u8 (HLS) strøm
+        if (selectedStation.url.includes('m3u8')) {
+            if (Hls.isSupported()) {
+                hls = new Hls();
+                hls.loadSource(selectedStation.url);
+                hls.attachMedia(audio);
+                hls.on(Hls.Events.MANIFEST_PARSED, function() {
+                    audio.play();
+                });
+            } else if (audio.canPlayType('application/vnd.apple.mpegurl')) {
+                audio.src = selectedStation.url;
+                audio.play();
+            }
+        } else {
+            // Vanlig MP3/AAC strøm
+            audio.src = selectedStation.url;
+            audio.play().catch(e => {
+                nowPlaying.innerText = "FEIL: Kan ikke spille av";
+                marquee.innerText = "+++ FEIL VED TILKOBLING +++ SJEKK INTERNETT/PORTER +++";
+            });
+        }
+
+        audio.onplaying = () => {
+            nowPlaying.innerText = "SPILLER: " + selectedStation.name;
+        };
+    }
+
+    function stopRadio() {
+        if (hls) {
+            hls.destroy();
+            hls = null;
+        }
+        audio.pause();
+        audio.src = "";
+        document.getElementById('now-playing').innerText = "Stoppet.";
+    }
+
+    function updateVolume(val) {
+        audio.volume = val;
+    }
+
+    window.onload = init;
+</script>
+
+</body>
+</html>
+
