@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="no">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OFFLINE - SYSTEM ERROR 1998</title>
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="data:application/json;base64,ewogICJuYW1lIjogIk9mZmxpbmUgRXJyb3IgMTk5OCIsCiAgInNob3J0X25hbWUiOiAiRXJyb3I5OCIsCiAgInN0YXJ0X3VybCI6ICIuIiwKICAiZGlzcGxheSI6ICJzdGFuZGFsb25lIiwKICAiYmFja2dyb3VuZF9jb2xvciI6ICIjMDA4MDgwIgp9">
+    <style>
+        /* 1998 Estetikk */
+        body {
+            background-color: #008080; 
+            color: #000;
+            font-family: "Times New Roman", Times, serif;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .warning-banner {
+            background-color: #ff0000;
+            color: #fff;
+            font-weight: bold;
+            padding: 15px;
+            border: 4px ridge #ccc;
+            width: 90%;
+            max-width: 800px;
+            text-align: center;
+            margin-bottom: 20px;
+            box-shadow: 5px 5px 0px rgba(0,0,0,0.5);
+        }
+
+        .blink {
+            animation: blinker 1s linear infinite;
+        }
+
+        @keyframes blinker {
+            50% { opacity: 0; }
+        }
+
+        .error-window {
+            background-color: #c0c0c0;
+            border-top: 2px solid #fff;
+            border-left: 2px solid #fff;
+            border-right: 2px solid #808080;
+            border-bottom: 2px solid #808080;
+            width: 95%;
+            max-width: 700px;
+            padding: 2px;
+            margin-bottom: 20px;
+        }
+
+        .window-title {
+            background: linear-gradient(90deg, #000080, #1084d0);
+            color: white;
+            padding: 3px 10px;
+            font-weight: bold;
+            font-family: sans-serif;
+            font-size: 14px;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .window-content {
+            padding: 20px;
+            border: 1px inset #808080;
+            background-color: #c0c0c0;
+        }
+
+        .status-box {
+            background: white;
+            border: 2px inset #808080;
+            padding: 10px;
+            margin: 15px 0;
+            text-align: left;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 13px;
+        }
+
+        .footer-info {
+            background: #e0e0e0;
+            border: 1px inset #808080;
+            padding: 15px;
+            margin-top: 15px;
+            text-align: left;
+            font-size: 14px;
+            line-height: 1.4;
+        }
+
+        .offline-badge {
+            background: #ffff00;
+            border: 1px solid #000;
+            padding: 2px 5px;
+            font-size: 10px;
+            font-weight: bold;
+            margin-top: 10px;
+            display: inline-block;
+        }
+
+        .btn {
+            background-color: #c0c0c0;
+            border-top: 2px solid #fff;
+            border-left: 2px solid #fff;
+            border-right: 2px solid #808080;
+            border-bottom: 2px solid #808080;
+            padding: 5px 20px;
+            cursor: pointer;
+            font-weight: bold;
+            font-family: sans-serif;
+        }
+
+        .btn:active {
+            border: 2px inset #808080;
+        }
+
+        marquee {
+            background: #000;
+            color: #0f0;
+            padding: 5px;
+            font-family: monospace;
+            width: 100%;
+        }
+
+        h2 {
+            font-size: 16px;
+            margin-top: 0;
+            text-transform: uppercase;
+            color: #000080;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="warning-banner">
+        <span class="blink">!!! MELDING: BLACKOUT VARSEL - 3 DAGER GJENSTÅR !!!</span><br>
+        SYSTEMET ER OFFLINE FOR DRIFTSPRIORITERING
+    </div>
+
+    <div class="error-window">
+        <div class="window-title">
+            <span>Microsoft Internet Explorer - Driftsmelding</span>
+            <span>[X]</span>
+        </div>
+        <div class="window-content">
+            <div style="font-size: 40px; float: left; margin-right: 20px;">💾</div>
+            <h1 style="font-size: 18px; text-decoration: underline; margin-top: 0;">Strategisk Systemstans</h1>
+            
+            <div class="status-box">
+                > VARIGHET: 3 dager fremover<br>
+                > PRIORITET: Utvikling av nabo-nettsider<br>
+                > LANSERING: Februar (Nye fastdrifts-enheter)<br>
+                > STATUS: Offline for konstruksjon
+            </div>
+
+            <div class="footer-info">
+                <h2>Om satsingen:</h2>
+                Dette er hovedsatsingen for vår bransje. Vi utvikler nå driverforhold som er kritiske for vår tjenesteportefølje. Tjenestene som utvikles er nabo-tjenester som er oppkjøpt for å bli en integrert del av vårt eierskap og vår service. 
+                <br><br>
+                <strong>Disse forholdene trer i kraft i Februar.</strong> 
+                <br><br>
+                Vi må være offline i denne perioden for å skape disse rammene. Målet er å etablere oss som den største offline-leverandøren på internett og stå alene om dette unike tjenestetilbudet.
+            </div>
+            
+            <div style="text-align: center; margin-top: 15px;">
+                <button class="btn" onclick="location.reload()">Sjekk Status</button>
+                <br>
+                <div class="offline-badge">LOCAL STORAGE AKTIV - PWA MODE</div>
+            </div>
+        </div>
+    </div>
+
+    <marquee>
+        +++ BLACKOUT VARER I 3 DAGER +++ NABO-TJENESTER UNDER UTVIKLING +++ LANSERING FEBRUAR +++ VI SKAPER FREMTIDENS OFFLINE LEVERANDØR +++
+    </marquee>
+
+    <script>
+        // Besøksteller med LocalStorage
+        function updateCounter() {
+            let visits = localStorage.getItem('offline_visits') || 0;
+            visits = parseInt(visits) + 1;
+            localStorage.setItem('offline_visits', visits);
+        }
+
+        // Service Worker for Offline-støtte (PWA)
+        if ('serviceWorker' in navigator) {
+            const swCode = `
+                const CACHE_NAME = 'v1-1998-cache';
+                self.addEventListener('install', (e) => {
+                    e.waitUntil(caches.open(CACHE_NAME).then(cache => cache.addAll(['./'])));
+                });
+                self.addEventListener('fetch', (e) => {
+                    e.respondWith(caches.match(e.request).then(res => res || fetch(e.request)));
+                });
+            `;
+            const blob = new Blob([swCode], {type: 'application/javascript'});
+            const swUrl = URL.createObjectURL(blob);
+            navigator.serviceWorker.register(swUrl);
+        }
+
+        window.onload = updateCounter;
+    </script>
+</body>
+</html>
+
