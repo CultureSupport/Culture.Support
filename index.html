@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="no">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ERROR 404 - NETTVERK BRUDD</title>
+    <style>
+        /* 1998 Estetikk */
+        body {
+            background-color: #008080; /* Klassisk Windows 95/98 Teal */
+            color: #000;
+            font-family: "Times New Roman", Times, serif;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        /* Advarsel Banner */
+        .warning-banner {
+            background-color: #ff0000;
+            color: #fff;
+            font-weight: bold;
+            padding: 15px;
+            border: 4px ridge #ccc;
+            width: 90%;
+            max-width: 800px;
+            text-align: center;
+            margin-bottom: 30px;
+            box-shadow: 5px 5px 0px rgba(0,0,0,0.5);
+        }
+
+        /* Blinkende tekst (Klassisk <blink> simulering) */
+        .blink {
+            animation: blinker 1s linear infinite;
+        }
+
+        @keyframes blinker {
+            50% { opacity: 0; }
+        }
+
+        /* Feil-vindu */
+        .error-window {
+            background-color: #c0c0c0;
+            border-top: 2px solid #fff;
+            border-left: 2px solid #fff;
+            border-right: 2px solid #808080;
+            border-bottom: 2px solid #808080;
+            width: 95%;
+            max-width: 600px;
+            padding: 2px;
+        }
+
+        .window-title {
+            background: linear-gradient(90deg, #000080, #1084d0);
+            color: white;
+            padding: 3px 10px;
+            font-weight: bold;
+            font-family: sans-serif;
+            font-size: 14px;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .window-content {
+            padding: 20px;
+            border: 1px inset #808080;
+            background-color: #c0c0c0;
+            text-align: center;
+        }
+
+        h1 {
+            font-size: 24px;
+            text-decoration: underline;
+        }
+
+        .status-box {
+            background: white;
+            border: 2px inset #808080;
+            padding: 10px;
+            margin: 15px 0;
+            text-align: left;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 13px;
+        }
+
+        marquee {
+            background: #000;
+            color: #0f0;
+            padding: 5px;
+            font-family: monospace;
+            margin-top: 20px;
+        }
+
+        .btn {
+            background-color: #c0c0c0;
+            border-top: 2px solid #fff;
+            border-left: 2px solid #fff;
+            border-right: 2px solid #808080;
+            border-bottom: 2px solid #808080;
+            padding: 5px 20px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .btn:active {
+            border: 2px inset #808080;
+        }
+
+        .construction-gif {
+            width: 50px;
+            height: 50px;
+            background-color: orange;
+            display: inline-block;
+            border: 2px solid black;
+            position: relative;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="warning-banner">
+        <span class="blink">!!! ADVARSEL: NASJONALT NETTVERK BRUDD !!!</span><br>
+        INTERNETTEN I NORGE ER STENGT PGA. BLACKOUT
+    </div>
+
+    <div class="error-window">
+        <div class="window-title">
+            <span>Microsoft Internet Explorer</span>
+            <span>[X]</span>
+        </div>
+        <div class="window-content">
+            <img src="https://via.placeholder.com/64/ff0000/ffffff?text=X" alt="Error Icon" style="float:left; margin-right: 20px;">
+            <h1>Siden kan ikke vises</h1>
+            <p>Tilkoblingen til serveren ble avbrutt (Error 1998-NET-OFFLINE).</p>
+            
+            <div class="status-box">
+                > DRIFTSTATUS: FLYTTET TIL UTENLANDSK SERVER<br>
+                > LOKAL STATUS: STRØMLØS / BLACKOUT<br>
+                > AKTIVITET: UTVIKLER NABO-TJENESTER...<br>
+                > ESTIMERT TID: UKJENT
+            </div>
+
+            <p>Vi har for øyeblikket ikke åpent for trafikk i Norge. Alle ressurser er omdirigert til utvikling av kritiske nabolagstjenester.</p>
+            
+            <button class="btn" onclick="location.reload()">Prøv igjen</button>
+        </div>
+    </div>
+
+    <marquee behavior="scroll" direction="left">
+        +++ SYSTEMMELDING: Driften er flyttet til en annen lokasjon +++ Vennligst vent på at strømnettet stabiliserer seg +++ Vi utvikler nabo tjenester +++
+    </marquee>
+
+    <div style="margin-top: 40px; text-align: center; font-size: 12px;">
+        <p>Beste visning i Netscape Navigator 4.0 eller Internet Explorer 5.0<br>
+        Oppløsning: 800x600</p>
+        <img src="https://via.placeholder.com/88/31/ffffff?text=Built+with+Notepad" alt="Notepad Badge">
+    </div>
+
+</body>
+</html>
+
