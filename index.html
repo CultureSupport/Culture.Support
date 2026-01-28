@@ -3,36 +3,207 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Culture</title>
+    <title>Sadhana | The Orange Fire of Transformation</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&family=Tiro+Devanagari+Sanskrit&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Tiro+Devanagari+Sanskrit&family=Fira+Code:wght@300;400&display=swap" rel="stylesheet">
     <style>
         :root {
-            --saffron: #FF9933;
-            --deep-saffron: #cc7a29;
-            --gold: #FFD700;
+            --deep-black: #050505;
+            --spiritual-orange: #ff6b00;
+            --glow-orange: rgba(255, 107, 0, 0.4);
+            --dark-surface: #0a0a0a;
         }
 
         body {
-            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
-            font-family: 'Poppins', sans-serif;
-            color: #e0e0e0;
-            min-height: 100vh;
+            background-color: var(--deep-black);
+            color: #d1d1d1;
+            font-family: 'Cinzel', serif;
+            scroll-behavior: smooth;
             overflow-x: hidden;
         }
 
-        .sanskrit-font {
-            font-family: 'Tiro Devanagari Sanskrit', serif;
+        .sanskrit { font-family: 'Tiro Devanagari Sanskrit', serif; }
+        .code-type { font-family: 'Fira Code', monospace; }
+
+        .bg-glow {
+            position: fixed;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            width: 90vw; height: 90vw;
+            background: radial-gradient(circle, var(--glow-orange) 0%, transparent 70%);
+            z-index: -1; filter: blur(120px);
+            opacity: 0.12; pointer-events: none;
         }
 
-        .glass {
-            background: rgba(255, 255, 255, 0.05);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 24px;
-            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+        .card-dark {
+            background: var(--dark-surface);
+            border: 1px solid #1a1a1a;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.6);
+            transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
+
+        .card-dark:hover {
+            border-color: var(--spiritual-orange);
+            box-shadow: 0 0 30px var(--glow-orange);
+        }
+
+        .cursor {
+            display: inline-block;
+            width: 6px; height: 1.1em;
+            background-color: var(--spiritual-orange);
+            margin-left: 2px;
+            animation: blink 0.8s step-end infinite;
+            vertical-align: middle;
+        }
+
+        @keyframes blink { from, to { opacity: 1; } 50% { opacity: 0; } }
+
+        .orange-glow-text {
+            color: var(--spiritual-orange);
+            text-shadow: 0 0 15px var(--glow-orange);
+        }
+
+        .divider {
+            height: 1px;
+            background: linear-gradient(90deg, transparent, var(--spiritual-orange), transparent);
+            width: 100%;
+            margin: 3rem 0;
+        }
+
+        .scroll-reveal { opacity: 0; transform: translateY(30px); transition: all 1s ease-out; }
+        .scroll-reveal.visible { opacity: 1; transform: translateY(0); }
+    </style>
+</head>
+<body class="selection:bg-orange-950 selection:text-orange-200">
+
+    <div class="bg-glow"></div>
+
+    <nav class="fixed top-0 w-full z-50 px-8 py-6 flex justify-between items-center backdrop-blur-xl bg-black/60 border-b border-orange-500/10">
+        <div class="flex items-center gap-4">
+            <span class="sanskrit text-4xl text-orange-600 animate-pulse">ॐ</span>
+            <h1 class="text-xl font-bold tracking-[0.3em] orange-glow-text">SADHANA PORTAL</h1>
+        </div>
+        <div class="hidden lg:flex gap-12 text-[9px] tracking-[0.4em] uppercase text-gray-400">
+            <a href="#treatise" class="hover:text-orange-500 transition">Treatise</a>
+            <a href="#initiates" class="hover:text-orange-500 transition">Initiates</a>
+            <a href="#kriya" class="hover:text-orange-500 transition">Kriya</a>
+        </div>
+    </nav>
+
+    <main class="pt-40 pb-32 px-6 max-w-6xl mx-auto">
+        
+        <!-- Animated Header -->
+        <header class="text-center mb-40">
+            <h2 class="text-7xl md:text-9xl font-bold mb-10 sanskrit tracking-tighter orange-glow-text">
+                साधना
+            </h2>
+            <div class="max-w-4xl mx-auto min-h-[120px]">
+                <p id="header-typing" class="code-type text-orange-500/80 text-lg md:text-xl leading-relaxed italic"></p>
+            </div>
+        </header>
+
+        <!-- Section: The Orange Treatise (800 Words Expanded) -->
+        <section id="treatise" class="mb-48 scroll-reveal">
+            <div class="flex items-center gap-6 mb-12">
+                <h3 class="text-3xl font-bold tracking-widest text-white uppercase">The Orange Treatise</h3>
+                <div class="flex-grow h-px bg-orange-900/50"></div>
+                <span class="sanskrit text-orange-500 text-2xl">अग्नि</span>
+            </div>
+            <div class="card-dark p-12 rounded-3xl border-orange-500/10">
+                <div id="treatise-typing" class="code-type text-sm md:text-base leading-loose text-orange-400/90 text-justify"></div>
+            </div>
+        </section>
+
+        <!-- Section: The Practitioners (300 Words Cards) -->
+        <section id="initiates" class="mb-48">
+            <div class="grid md:grid-cols-2 gap-10">
+                <!-- Yogi/Guru Card -->
+                <div class="card-dark p-10 rounded-2xl scroll-reveal">
+                    <h4 class="text-2xl font-bold mb-6 flex items-center gap-4 text-orange-500">
+                        <span class="sanskrit">गुरु</span> The Guru's Path
+                    </h4>
+                    <div id="guru-typing" class="text-sm leading-relaxed text-gray-400 code-type"></div>
+                </div>
+
+                <!-- Kriya Yogi Card -->
+                <div id="kriya" class="card-dark p-10 rounded-2xl scroll-reveal">
+                    <h4 class="text-2xl font-bold mb-6 flex items-center gap-4 text-orange-500">
+                        <span class="sanskrit">क्रिया</span> Kriya Mastery
+                    </h4>
+                    <div id="kriya-typing" class="text-sm leading-relaxed text-gray-400 code-type"></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Final Vision -->
+        <section class="text-center py-20 scroll-reveal">
+            <div class="divider"></div>
+            <p id="vision-typing" class="text-2xl sanskrit text-orange-600 mb-8"></p>
+            <p class="text-[10px] tracking-[0.8em] text-gray-600 uppercase">The Fire of Sadhana Consumes All but the Truth</p>
+        </section>
+
+    </main>
+
+    <footer class="py-20 text-center bg-black border-t border-orange-900/20">
+        <p class="text-orange-700 text-sm tracking-widest">TRANSCENDENCE THROUGH DISCIPLINE</p>
+    </footer>
+
+    <script>
+        const content = {
+            "header-typing": "Orange is not a color; it is the frequency of the sacrificial fire. Sadhana is the technology of burning the ego until only the witness remains. Welcome to the Internal Alchemy.",
+            
+            "treatise-typing": "The color orange, known as 'Saffron' or 'Gerua', represents the Agni—the digestive and spiritual fire. In the context of Sadhana, orange is the psychological signature of a mind that has entered the furnace of self-purification. To wear the orange is to signal to the universe that you are ready to be consumed. This treatise explores the 800-word complexity of the 'Fire Path'. \n\nFirstly, we must understand that the Orange Sadhana is the path of Tapas. Tapas translates to 'heat'. Through the friction of discipline—waking before the sun, controlling the breath, and silencing the internal dialogue—we generate a psychic heat that melts the frozen Samskaras of the subconscious. Most human beings live in a state of cold automation, driven by habits they did not choose. The Orange Sadhana demands that we take the reins. It is the transition from 'Pashu' (the animal/bound soul) to 'Pashupati' (the master of the animal). \n\nSecondly, the Orange Text signifies the 'Middle Path' between total asceticism and worldly indulgence. It is the balance of 'Agni' and 'Soma'—fire and nectar. A practitioner of this path does not necessarily run to a cave; rather, they turn their daily life into a cave. Every interaction is a Kriya. Every word is a Mantra. The orange light of awareness must penetrate the mundane. When you eat, the fire of digestion is honored as a divine offering. When you speak, the orange frequency ensures your words are 'Satya' (Truth) and 'Priya' (Pleasant). \n\nFurthermore, the science of Orange involves the 'Manipura Chakra', the solar plexus. This is our center of power, will, and metabolism. A weak Manipura leads to a weak Sadhana. By focusing the orange light at the navel during meditation, the Sadhaka builds a reservoir of 'Tejas'—spiritual brilliance. This Tejas is what allows a Yogi to remain unshaken in the face of tragedy or triumph. It is the armor of the Guru. It is the fuel of the Kriya. In this 800-word realization, we conclude that Sadhana is the ultimate rebellion against the entropy of time. It is the only work that survives the death of the physical body. To practice is to live; to ignore the practice is to merely exist in the waiting room of mortality.",
+
+            "guru-typing": "The Guru's Sadhana is the practice of 'Presence'. A Guru (one who dispels darkness) must maintain a constant state of 'Sahaja Samadhi'. For the Guru, Sadhana is no longer a morning routine; it is the very fabric of their existence. This 300-word transmission focuses on the weight of leadership. The Guru's discipline involves 'Para-Sadhana'—the ability to hold the karma of the students without being stained by it. It requires a heart of gold and a mind of diamond. Through constant self-referral to the 'Shunya' (Void), the Guru ensures that the ego does not take credit for the miracles of the transmission. The primary Kriya of the Guru is 'Drig-Drishya-Viveka'—the constant discrimination between the seer and the seen.",
+
+            "kriya-typing": "Kriya Yoga is the 'Yoga of Action'—a sophisticated system of pranayama and mental direction that accelerates spiritual evolution. This 300-word card explains the 'Internal Turbine'. The Kriya Yogi works directly with the 'Sushumna Nadi', the central highway of consciousness. By circulating the life force (Prana) up and down the spine, the Yogi effectively 'burns off' lifetimes of karmic debt in a single session. Each Kriya breath is equivalent to a year of natural spiritual growth. The discipline is strict: absolute focus at the 'Kutastha' (the third eye) and the synchronization of breath, mantra, and will. It is a mathematical path to God-realization, leaving nothing to chance or blind faith. The Kriya Yogi is a spiritual scientist in the lab of the spine.",
+
+            "vision-typing": "तत्त्वमसि - Tat Tvam Asi - Thou Art That"
+        };
+
+        function typeWriter(elementId, text, speed = 20) {
+            let i = 0;
+            const element = document.getElementById(elementId);
+            if(!element) return;
+            element.innerHTML = "";
+            
+            function type() {
+                if (i < text.length) {
+                    element.innerHTML += text.charAt(i);
+                    i++;
+                    // Faster speed for longer texts
+                    const currentSpeed = text.length > 500 ? 5 : speed;
+                    setTimeout(type, currentSpeed);
+                } else {
+                    element.innerHTML += '<span class="cursor"></span>';
+                }
+            }
+            type();
+        }
+
+        // Scroll reveal logic
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                    const typingTarget = entry.target.querySelector('[id$="-typing"]');
+                    if (typingTarget && content[typingTarget.id]) {
+                        typeWriter(typingTarget.id, content[typingTarget.id]);
+                        // Only type once
+                        delete content[typingTarget.id];
+                    }
+                }
+            });
+        }, { threshold: 0.1 });
+
+        document.querySelectorAll('.scroll-reveal').forEach(el => observer.observe(el));
+        
+        window.onload = () => {
+            typeWriter("header-typing", content["header-typing"], 40);
+        };
+    </script>
+</body>
+</html>
 
         .glass-saffron {
             background: rgba(255, 153, 51, 0.1);
