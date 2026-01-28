@@ -1,311 +1,240 @@
+
 <!DOCTYPE html>
-<html lang="no">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Universal Hindu Yoga Radio - 1998 Edition Professional</title>
-    <!-- Inkluderer HLS støtte for moderne strømminger (m3u8) -->
-    <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+    <title>Sadhana: The Science of Transformation</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&family=Tiro+Devanagari+Sanskrit&display=swap" rel="stylesheet">
     <style>
+        :root {
+            --saffron: #FF9933;
+            --deep-saffron: #cc7a29;
+            --gold: #FFD700;
+        }
+
         body {
-            background-color: #008080;
-            font-family: "MS Sans Serif", Geneva, sans-serif;
-            color: #000;
-            margin: 20px;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            font-family: 'Poppins', sans-serif;
+            color: #e0e0e0;
+            min-height: 100vh;
+            overflow-x: hidden;
         }
 
-        #window {
-            width: 95%;
-            max-width: 800px;
-            background-color: #c0c0c0;
-            border: 2px solid;
-            border-color: #ffffff #808080 #808080 #ffffff;
-            padding: 2px;
-            margin: 0 auto;
-            box-shadow: 4px 4px 0px rgba(0,0,0,0.5);
+        .sanskrit-font {
+            font-family: 'Tiro Devanagari Sanskrit', serif;
         }
 
-        #title-bar {
-            background: linear-gradient(90deg, #000080, #1084d0);
-            color: white;
-            padding: 3px 10px;
-            font-weight: bold;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
+        .glass {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 24px;
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
         }
 
-        .content {
-            padding: 15px;
-            border: 1px inset #fff;
-            background-color: #fff;
-            margin: 5px;
-            min-height: 400px;
-            overflow-y: auto;
+        .glass-saffron {
+            background: rgba(255, 153, 51, 0.1);
+            border: 1px solid rgba(255, 153, 51, 0.2);
         }
 
-        marquee {
-            background-color: #000;
-            color: #0f0;
-            padding: 5px;
-            font-family: 'Courier New', Courier, monospace;
-            font-weight: bold;
+        .hero-pattern {
+            background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M30 0l2.5 15L45 17.5 30 20l-15-2.5L15 45 20 30l2.5-15L45 12.5 30 15l-15-2.5L15 0z' fill='%23ff9933' fill-opacity='0.05' fill-rule='evenodd'/%3E%3C/svg%3E");
         }
 
-        .station-table-container {
-            max-height: 250px;
-            overflow-y: scroll;
-            border: 2px inset #fff;
-            margin: 10px 0;
+        .glow-text {
+            text-shadow: 0 0 10px rgba(255, 153, 51, 0.5);
         }
 
-        .station-list {
-            width: 100%;
-            border-collapse: collapse;
-            font-size: 13px;
+        .yoga-card:hover {
+            transform: translateY(-5px);
+            transition: all 0.3s ease;
+            background: rgba(255, 255, 255, 0.08);
+            border-color: var(--saffron);
         }
 
-        .station-list th {
-            background-color: #d0d0d0;
-            position: sticky;
-            top: 0;
-            border: 1px solid #808080;
-            padding: 5px;
-            text-align: left;
+        ::-webkit-scrollbar {
+            width: 8px;
         }
-
-        .station-list td {
-            border: 1px solid #d0d0d0;
-            padding: 5px;
-            cursor: pointer;
+        ::-webkit-scrollbar-track {
+            background: #1a1a2e;
         }
-
-        .station-list tr:hover {
-            background-color: #000080;
-            color: white;
-        }
-
-        .station-list tr.active {
-            background-color: #ffff00;
-            color: black;
-            font-weight: bold;
-        }
-
-        .controls-panel {
-            background: #c0c0c0;
-            border: 2px outset #fff;
-            padding: 10px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .button-group {
-            display: flex;
-            gap: 10px;
-        }
-
-        button {
-            padding: 6px 20px;
-            background-color: #c0c0c0;
-            border: 2px solid;
-            border-color: #ffffff #808080 #808080 #ffffff;
-            font-family: "MS Sans Serif", sans-serif;
-            font-weight: bold;
-            cursor: pointer;
-        }
-
-        button:active {
-            border-color: #808080 #ffffff #ffffff #808080;
-            padding: 7px 19px 5px 21px;
-        }
-
-        .volume-slider {
-            width: 200px;
-        }
-
-        .status-bar {
-            border-top: 1px solid #808080;
-            padding: 2px 5px;
-            font-size: 11px;
-            background: #c0c0c0;
-            display: flex;
-            justify-content: space-between;
-        }
-
-        .metadata-box {
-            font-size: 10px;
-            background: #eee;
-            padding: 5px;
-            border: 1px solid #808080;
-            margin-top: 10px;
+        ::-webkit-scrollbar-thumb {
+            background: var(--saffron);
+            border-radius: 10px;
         }
     </style>
 </head>
-<body>
+<body class="hero-pattern">
 
-<div id="window">
-    <div id="title-bar">
-        <span>Yoga_Radio_Global_1998_v2.0.exe</span>
-        <div style="display:flex; gap:2px;">
-            <button style="width:20px; height:18px; padding:0; line-height:1;">_</button>
-            <button style="width:20px; height:18px; padding:0; line-height:1;">X</button>
+    <!-- Navbar -->
+    <nav class="sticky top-0 z-50 px-6 py-4 glass mb-8 mx-4 mt-4 border-none">
+        <div class="max-w-7xl mx-auto flex justify-between items-center">
+            <div class="flex items-center space-x-2">
+                <span class="text-2xl sanskrit-font text-[var(--saffron)] font-bold">साधना</span>
+                <span class="hidden md:block font-semibold tracking-widest text-sm uppercase text-gray-400">The Science of Soul</span>
+            </div>
+            <div class="space-x-6 text-sm font-medium">
+                <a href="#foundations" class="hover:text-[var(--saffron)] transition">Foundations</a>
+                <a href="#paths" class="hover:text-[var(--saffron)] transition">The Paths</a>
+                <a href="#daily" class="hover:text-[var(--saffron)] transition">Daily</a>
+            </div>
         </div>
-    </div>
+    </nav>
 
-    <marquee id="main-marquee">+++ KLAR FOR AVSPILLING +++ VELG EN STASJON FRA LISTEN UNDER +++ SYSTEM PORTER AKTIVERT +++</marquee>
+    <!-- Hero Section -->
+    <header class="max-w-5xl mx-auto px-6 py-16 text-center">
+        <h1 class="text-5xl md:text-7xl font-bold mb-6 glow-text sanskrit-font">
+            Sadhana <span class="text-[var(--saffron)] block md:inline">साधन</span>
+        </h1>
+        <p class="text-xl text-gray-400 max-w-2xl mx-auto leading-relaxed">
+            The Science of Spiritual Transformation. An ontological commitment to mastering the self and dissolving the ego.
+        </p>
+    </header>
 
-    <div class="content">
-        <div style="text-align:center;">
-            <h2 style="margin:0; color:#ff4500;">Radio India: Yoga & Dharma</h2>
-            <small>Global Digital API Gateway - 1998 Edition</small>
-        </div>
+    <main class="max-w-7xl mx-auto px-6 space-y-20 pb-20">
 
-        <div class="station-table-container">
-            <table class="station-list">
-                <thead>
-                    <tr>
-                        <th>ID</th>
-                        <th>Kanalnavn</th>
-                        <th>Kategori</th>
-                        <th>Lokasjon</th>
-                    </tr>
-                </thead>
-                <tbody id="station-body">
-                    <!-- Fylles med JavaScript -->
-                </tbody>
-            </table>
-        </div>
+        <!-- Section 1: Foundations -->
+        <section id="foundations" class="grid md:grid-cols-2 gap-12 items-center">
+            <div class="glass p-8 glass-saffron">
+                <h2 class="text-3xl font-bold mb-4 text-[var(--saffron)] flex items-center">
+                    <span class="mr-3 sanskrit-font text-4xl">०१</span> Ontological Foundation
+                </h2>
+                <p class="text-gray-300 leading-relaxed mb-4">
+                    Sadhana represents the conscious application of the human will against the mechanical inertia of the physical and mental bodies. It is not a peripheral choice, but a radical shift from being a passive recipient to an active architect of inner reality.
+                </p>
+                <div class="bg-black/20 p-4 rounded-xl border border-white/5">
+                    <h3 class="font-semibold text-[var(--gold)] mb-2 uppercase text-xs tracking-widest">Primary Objective</h3>
+                    <p class="italic text-sm">"Chitta Vritti Nirodha"—The cessation of the fluctuations of the mind.</p>
+                </div>
+            </div>
+            <div class="space-y-6">
+                <div class="glass p-6 border-l-4 border-l-[var(--saffron)]">
+                    <h4 class="font-bold text-white mb-2 sanskrit-font">Viveka</h4>
+                    <p class="text-sm text-gray-400">Discernment between the transient and the eternal.</p>
+                </div>
+                <div class="glass p-6 border-l-4 border-l-[var(--saffron)]">
+                    <h4 class="font-bold text-white mb-2 sanskrit-font">Vairagya</h4>
+                    <p class="text-sm text-gray-400">Dispassion toward temporary sensory results.</p>
+                </div>
+                <div class="glass p-6 border-l-4 border-l-[var(--saffron)]">
+                    <h4 class="font-bold text-white mb-2 sanskrit-font">Mumukshutva</h4>
+                    <p class="text-sm text-gray-400">Unquenchable thirst for ultimate liberation.</p>
+                </div>
+            </div>
+        </section>
 
-        <div class="controls-panel">
-            <div id="now-playing" style="font-weight:bold; color:#000080; height:20px;">Ingen stasjon valgt</div>
+        <!-- Section 2: Mechanics of Mind -->
+        <section class="glass p-8 md:p-12 relative overflow-hidden">
+            <div class="absolute top-0 right-0 p-4 opacity-10 sanskrit-font text-8xl">मन</div>
+            <h2 class="text-3xl font-bold mb-8 text-center text-[var(--gold)]">The Mechanics of the Mind</h2>
+            <div class="grid md:grid-cols-2 gap-8">
+                <div>
+                    <h3 class="text-xl font-semibold mb-3 flex items-center">
+                        <svg class="w-6 h-6 mr-2 text-[var(--saffron)]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+                        Samskaras & Vasanas
+                    </h3>
+                    <p class="text-gray-400 text-sm leading-relaxed">
+                        Every thought leaves an imprint (Samskara). Repetitive imprints form latent tendencies (Vasanas). Sadhana creates "Sadhana-Samskaras" to neutralize destructive patterns, effectively rewiring the psychic structure.
+                    </p>
+                </div>
+                <div>
+                    <h3 class="text-xl font-semibold mb-3 flex items-center">
+                        <svg class="w-6 h-6 mr-2 text-[var(--saffron)]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
+                        Abhyasa: The Tech of Repetition
+                    </h3>
+                    <p class="text-gray-400 text-sm leading-relaxed">
+                        Practice must be long-term (Dirgha Kala), uninterrupted (Nairantarya), and performed with total sincerity (Satkara) to become firmly grounded.
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 3: The Four Paths -->
+        <section id="paths">
+            <h2 class="text-4xl font-bold text-center mb-12 sanskrit-font text-[var(--saffron)]">The Four-Fold Path</h2>
+            <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+                <!-- Bhakti -->
+                <div class="glass p-6 yoga-card">
+                    <div class="text-[var(--saffron)] text-xs font-bold mb-2 uppercase tracking-tighter">Path of Heart</div>
+                    <h3 class="text-xl font-bold mb-3 sanskrit-font">Bhakti Yoga</h3>
+                    <p class="text-xs text-gray-400 leading-relaxed">Alchemy of emotion. Sublimating human feeling into divine devotion. Loss of "I" in the "Thou".</p>
+                </div>
+                <!-- Karma -->
+                <div class="glass p-6 yoga-card">
+                    <div class="text-[var(--saffron)] text-xs font-bold mb-2 uppercase tracking-tighter">Path of Action</div>
+                    <h3 class="text-xl font-bold mb-3 sanskrit-font">Karma Yoga</h3>
+                    <p class="text-xs text-gray-400 leading-relaxed">Selfless service. Acting with 100% intensity but 0% attachment to results (Phala).</p>
+                </div>
+                <!-- Raja -->
+                <div class="glass p-6 yoga-card">
+                    <div class="text-[var(--saffron)] text-xs font-bold mb-2 uppercase tracking-tighter">Path of Mind</div>
+                    <h3 class="text-xl font-bold mb-3 sanskrit-font">Raja Yoga</h3>
+                    <p class="text-xs text-gray-400 leading-relaxed">Scientific mastery through the eight limbs (Ashtanga). Focusing the mind to reach Samadhi.</p>
+                </div>
+                <!-- Jnana -->
+                <div class="glass p-6 yoga-card">
+                    <div class="text-[var(--saffron)] text-xs font-bold mb-2 uppercase tracking-tighter">Path of Inquiry</div>
+                    <h3 class="text-xl font-bold mb-3 sanskrit-font">Jnana Yoga</h3>
+                    <p class="text-xs text-gray-400 leading-relaxed">Using Viveka (discernment). The process of "Neti-Neti" (not this, not that) to find the Atman.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 4: Daily Discipline -->
+        <section id="daily" class="grid md:grid-cols-2 gap-8">
+            <div class="glass p-8 flex flex-col justify-center bg-gradient-to-br from-orange-500/10 to-transparent">
+                <h3 class="text-2xl font-bold mb-4 text-[var(--gold)] sanskrit-font">Brahmamuhurta</h3>
+                <p class="text-sm text-gray-300 italic mb-4">"The Hour of Brahman"</p>
+                <p class="text-gray-400 text-sm leading-relaxed">
+                    The 90 minutes before sunrise is dominated by 'Sattva'. Free from psychic noise, this is the optimal window to activate the 'Sushumna Nadi'.
+                </p>
+            </div>
+            <div class="glass p-8 flex flex-col justify-center">
+                <h3 class="text-2xl font-bold mb-4 text-[var(--gold)] sanskrit-font">Mauna</h3>
+                <p class="text-sm text-gray-300 italic mb-4">"Noble Silence"</p>
+                <p class="text-gray-400 text-sm leading-relaxed">
+                    Vak-Sadhana involves conserving 'Prana' by disciplining speech. Energy lost in gossip is redirected inward to fuel spiritual vitality (Ojas).
+                </p>
+            </div>
+        </section>
+
+        <!-- Section 5: Obstacles & Goal -->
+        <section class="max-w-4xl mx-auto">
+            <div class="glass p-8 border-t-4 border-t-red-500/50 mb-12">
+                <h3 class="text-2xl font-bold mb-6 text-red-400 sanskrit-font">The Antarayas (Obstacles)</h3>
+                <div class="flex flex-wrap gap-4">
+                    <span class="px-4 py-2 bg-black/30 rounded-full border border-red-500/20 text-xs">Vyadhi (Illness)</span>
+                    <span class="px-4 py-2 bg-black/30 rounded-full border border-red-500/20 text-xs">Styana (Dullness)</span>
+                    <span class="px-4 py-2 bg-black/30 rounded-full border border-red-500/20 text-xs">Samshaya (Doubt)</span>
+                    <span class="px-4 py-2 bg-black/30 rounded-full border border-red-500/20 text-xs">Alasya (Laziness)</span>
+                </div>
+            </div>
             
-            <div class="button-group">
-                <button onclick="playRadio()">SPILL</button>
-                <button onclick="stopRadio()">STOPP</button>
+            <div class="text-center space-y-8">
+                <div class="inline-block p-1 rounded-full bg-gradient-to-r from-[var(--saffron)] to-[var(--gold)]">
+                    <div class="bg-[#1a1a2e] px-8 py-3 rounded-full font-bold text-xl uppercase tracking-widest text-[var(--gold)]">
+                        Samadhi & Sahaja
+                    </div>
+                </div>
+                <p class="text-gray-400 italic max-w-2xl mx-auto leading-relaxed">
+                    The highest state is Sahaja Avastha—where the sage returns to the world, anchored in the infinite. Sadhana is no longer something you 'do', but something you 'are'.
+                </p>
             </div>
+        </section>
 
-            <div>
-                <label style="font-size:11px;">Volum:</label>
-                <input type="range" class="volume-slider" id="volume" min="0" max="1" step="0.1" value="0.8" onchange="updateVolume(this.value)">
-            </div>
-        </div>
+    </main>
 
-        <div class="metadata-box">
-            <strong>Systemdiagnose:</strong><br>
-            JS Engine: V8 / Gecko | Audio Hook: HTML5 Media | Port Scan: 8000, 8080, 8500 Open<br>
-            API Link: cdn.radio.india/v2/yoga | Proxy: Enabled
-        </div>
-    </div>
-
-    <div class="status-bar">
-        <div>Program: Running</div>
-        <div id="clock">00:00:00</div>
-        <div>KB/s: 128</div>
-    </div>
-</div>
-
-<script>
-    // Utvidet Spilleliste
-    const radioStations = [
-        { id: "01", name: "All India Radio (Vividh Bharati)", url: "https://air.pc.cdn.bitgravity.com/air/live/pcr:air_vividh_bharati/playlist.m3u8", cat: "Klassisk", loc: "Delhi" },
-        { id: "02", name: "Radio City Smaran", url: "https://prclive4.listenon.in/Smaran", cat: "Bhakti", loc: "Mumbai" },
-        { id: "03", name: "Yoga Meditation Music", url: "http://stream.zeno.fm/f376282u90duv", cat: "Yoga", loc: "Rishikesh" },
-        { id: "04", name: "Bhakti World Radio", url: "https://shoutcast.bhaktiworld.com:8000/stream", cat: "Devotional", loc: "Global" },
-        { id: "05", name: "Radio Girmit", url: "http://192.99.8.192:3458/stream", cat: "Kannada", loc: "Bangalore" },
-        { id: "06", name: "PlanetRadiocity", url: "https://prclive4.listenon.in/Hindi", cat: "Bollywood", loc: "Mumbai" },
-        { id: "07", name: "SikhNet Radio", url: "http://sc6.sikhnet.com:8000/;", cat: "Gurbani", loc: "Amritsar" },
-        { id: "08", name: "OM Radio", url: "http://95.211.234.116:80/stream", cat: "Mantra", loc: "Varanasi" },
-        { id: "09", name: "AIR Marathi", url: "https://air.pc.cdn.bitgravity.com/air/live/pcr:air_marathi/playlist.m3u8", cat: "Regional", loc: "Pune" },
-        { id: "10", name: "Hindu Bhajan Radio", url: "http://198.178.123.23:7132/stream", cat: "Bhakti", loc: "India" }
-    ];
-
-    const audio = new Audio();
-    let hls = null;
-    let selectedStation = null;
-
-    function init() {
-        const body = document.getElementById('station-body');
-        radioStations.forEach(s => {
-            const tr = document.createElement('tr');
-            tr.id = "station-" + s.id;
-            tr.innerHTML = `<td>${s.id}</td><td>${s.name}</td><td>${s.cat}</td><td>${s.loc}</td>`;
-            tr.onclick = () => selectStation(s);
-            body.appendChild(tr);
-        });
-        
-        // Start klokke
-        setInterval(() => {
-            document.getElementById('clock').innerText = new Date().toLocaleTimeString();
-        }, 1000);
-    }
-
-    function selectStation(s) {
-        // Fjern aktiv klasse fra alle
-        document.querySelectorAll('tr').forEach(r => r.classList.remove('active'));
-        // Legg til på valgt
-        document.getElementById('station-' + s.id).classList.add('active');
-        
-        selectedStation = s;
-        document.getElementById('now-playing').innerText = "Klar: " + s.name;
-    }
-
-    function playRadio() {
-        if (!selectedStation) return;
-        
-        const marquee = document.getElementById('main-marquee');
-        const nowPlaying = document.getElementById('now-playing');
-        
-        stopRadio(); // Nullstill forrige strøm
-
-        nowPlaying.innerText = "BUFFERER: " + selectedStation.name;
-        marquee.innerText = "+++ KOBLER TIL " + selectedStation.name.toUpperCase() + " +++ PORT STATUS: OK +++";
-
-        // Sjekk om det er en m3u8 (HLS) strøm
-        if (selectedStation.url.includes('m3u8')) {
-            if (Hls.isSupported()) {
-                hls = new Hls();
-                hls.loadSource(selectedStation.url);
-                hls.attachMedia(audio);
-                hls.on(Hls.Events.MANIFEST_PARSED, function() {
-                    audio.play();
-                });
-            } else if (audio.canPlayType('application/vnd.apple.mpegurl')) {
-                audio.src = selectedStation.url;
-                audio.play();
-            }
-        } else {
-            // Vanlig MP3/AAC strøm
-            audio.src = selectedStation.url;
-            audio.play().catch(e => {
-                nowPlaying.innerText = "FEIL: Kan ikke spille av";
-                marquee.innerText = "+++ FEIL VED TILKOBLING +++ SJEKK INTERNETT/PORTER +++";
-            });
-        }
-
-        audio.onplaying = () => {
-            nowPlaying.innerText = "SPILLER: " + selectedStation.name;
-        };
-    }
-
-    function stopRadio() {
-        if (hls) {
-            hls.destroy();
-            hls = null;
-        }
-        audio.pause();
-        audio.src = "";
-        document.getElementById('now-playing').innerText = "Stoppet.";
-    }
-
-    function updateVolume(val) {
-        audio.volume = val;
-    }
-
-    window.onload = init;
-</script>
+    <footer class="glass border-none rounded-none py-12 px-6 text-center">
+        <p class="sanskrit-font text-[var(--saffron)] text-2xl mb-2">ॐ शान्तिः शान्तिः शान्तिः</p>
+        <p class="text-xs text-gray-500 tracking-widest uppercase">Om Shanti Shanti Shanti</p>
+    </footer>
 
 </body>
 </html>
 
+
+
+    
