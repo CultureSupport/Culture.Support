@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="no">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SonicWave Pakistan - Radio & Podcast Pro</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap');
+        
+        :root {
+            --pakistan-green: #006600;
+            --pakistan-gold: #ffcc00;
+            --bg-dark: #010a01;
+        }
+
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background: var(--bg-dark);
+            color: #f8fafc;
+            overflow-x: hidden;
+            background-image: 
+                radial-gradient(circle at 0% 0%, rgba(0, 102, 0, 0.2) 0%, transparent 50%),
+                radial-gradient(circle at 100% 100%, rgba(255, 255, 255, 0.05) 0%, transparent 50%);
+            background-attachment: fixed;
+        }
+
+        /* Glassmorfisme */
+        .glass {
+            background: rgba(1, 15, 1, 0.8);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .glass-card {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .glass-card:hover {
+            background: rgba(0, 102, 0, 0.1);
+            transform: translateY(-5px);
+            border-color: rgba(0, 102, 0, 0.4);
+            box-shadow: 0 20px 30px -10px rgba(0, 0, 0, 0.5);
+        }
+
+        /* Animert Equalizer */
+        .equalizer {
+            display: flex;
+            align-items: flex-end;
+            gap: 3px;
+            height: 18px;
+        }
+
+        .eq-bar {
+            width: 3px;
+            background: #ffffff;
+            border-radius: 1px;
+        }
+
+        .is-playing .eq-bar {
+            animation: eq-bounce 1s ease-in-out infinite;
+        }
+
+        @keyframes eq-bounce {
+            0%, 100% { height: 4px; }
+            50% { height: 18px; }
+        }
+
+        .tab-active {
+            color: #ffffff;
+            border-bottom: 2px solid var(--pakistan-green);
+        }
+
+        input[type="range"] {
+            accent-color: var(--pakistan-green);
+        }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: var(--pakistan-green);
+            border-radius: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div id="app"></div>
+
+    <script type="module">
+        // Svelte-lignende tilstand
+        let state = {
+            currentTab: 'radio', 
+            isPlaying: false,
+            currentTrack: null,
+            volume: 0.7,
+            isAnnouncing: false,
+            isLoading: false,
+            stations: [],
+            searchQuery: 'Pakistan',
+            podcasts: [
+                { id: 'p1', name: 'Urdu Poetry Classics', author: 'Adab Heritage', type: 'podcast', url: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3', duration: '15:40' },
+                { id: 'p2', name: 'Tech in Karachi', author: 'Silicon Gali', type: 'podcast', url: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3', duration: '12:20' }
+            ]
+        };
+
+        const audio = new Audio();
+        audio.crossOrigin = "anonymous";
+        audio.volume = state.volume;
+
+        // Fetch Pakistan Channels
+        async function fetchPakistanRadio(query = 'Pakistan') {
+            state.isLoading = true;
+            render();
+            try {
+                // Radio Browser API filtrert på Pakistan
+                const response = await fetch(`https://de1.api.radio-browser.info/json/stations/search?country=Pakistan&name=${encodeURIComponent(query === 'Pakistan' ? '' : query)}&limit=16&order=clickcount&reverse=true`);
+                const data = await response.json();
+                state.stations = data.map(s => ({
+                    id: s.stationuuid,
+                    name: s.name,
+                    url: s.url_resolved,
+                    genre: s.tags || 'Urdu, Music',
+                    favicon: s.favicon,
+                    type: 'radio'
+                }));
+            } catch (err) {
+                console.error("API Error:", err);
+            } finally {
+                state.isLoading = false;
+                render();
+            }
+        }
+
+        // Voice Presentation med Audio Ducking
+        function playVoiceInfo() {
+            if (!window.speechSynthesis || !state.currentTrack) return;
+
+            state.isAnnouncing = true;
+            render();
+
+            const msg = new SpeechSynthesisUtterance();
+            msg.lang = 'nb-NO'; // Presentasjon på norsk for brukeren
+            msg.rate = 1.0;
+            
+            if (state.currentTrack.type === 'radio') {
+                msg.text = `Du lytter nå til ${state.currentTrack.name} fra Pakistan. Sjangeren er ${state.currentTrack.genre.split(',')[0]}.`;
+            } else {
+                msg.text = `Nå spiller vi podcasten ${state.currentTrack.name}.`;
+            }
+
+            const originalVol = audio.volume;
+            audio.volume = originalVol * 0.2; // Senker musikken
+
+            msg.onend = () => {
+                state.isAnnouncing = false;
+                audio.volume = originalVol; // Tilbake til normalt volum
+                render();
+            };
+
+            window.speechSynthesis.speak(msg);
+        }
+
+        // Kontrollere
+        window.nav = (tab) => { state.currentTab = tab; render(); };
+        window.search = () => {
+            const query = document.getElementById('searchField').value;
+            fetchPakistanRadio(query || 'Pakistan');
+        };
+        window.play = (track) => {
+            if (state.currentTrack?.id === track.id) {
+                state.isPlaying ? audio.pause() : audio.play();
+                state.isPlaying = !state.isPlaying;
+            } else {
+                state.currentTrack = track;
+                audio.src = track.url;
+                audio.play();
+                state.isPlaying = true;
+            }
+            render();
+        };
+        window.toggle = () => {
+            state.isPlaying ? audio.pause() : audio.play();
+            state.isPlaying = !state.isPlaying;
+            render();
+        };
+        window.setVol = (v) => {
+            state.volume = v / 100;
+            audio.volume = state.volume;
+        };
+        window.voice = playVoiceInfo;
+        window.handleUpload = (e) => {
+            const file = e.target.files[0];
+            if (file) {
+                const pod = { id: Date.now().toString(), name: file.name, author: 'Eget opptak', type: 'podcast', url: URL.createObjectURL(file), duration: '--:--' };
+                state.podcasts.unshift(pod);
+                state.currentTab = 'podcasts';
+                render();
+            }
+        };
+
+        // Render-funksjon
+        function render() {
+            const app = document.getElementById('app');
+            app.innerHTML = `
+                <div class="min-h-screen flex flex-col">
+                    <!-- Top Bar -->
+                    <header class="glass sticky top-0 z-50 px-6 py-4 flex justify-between items-center">
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 bg-white rounded-lg flex items-center justify-center shadow-lg">
+                                <i data-lucide="radio" class="text-[#006600]"></i>
+                            </div>
+                            <span class="text-xl font-bold">SonicWave <span class="text-[#006600]">Pakistan</span></span>
+                        </div>
+                        
+                        <div class="flex gap-6">
+                            <button onclick="window.nav('radio')" class="text-sm font-medium pb-1 ${state.currentTab === 'radio' ? 'tab-active' : 'text-slate-400'}">Radio</button>
+                            <button onclick="window.nav('podcasts')" class="text-sm font-medium pb-1 ${state.currentTab === 'podcasts' ? 'tab-active' : 'text-slate-400'}">Podcaster</button>
+                            <button onclick="window.nav('upload')" class="text-sm font-medium pb-1 ${state.currentTab === 'upload' ? 'tab-active' : 'text-slate-400'}">Last opp</button>
+                        </div>
+
+                        <div class="hidden sm:flex items-center gap-2 text-xs text-slate-400">
+                            <span class="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
+                            Live fra Pakistan
+                        </div>
+                    </header>
+
+                    <!-- Main Content -->
+                    <main class="flex-grow p-6 md:p-10 max-w-7xl mx-auto w-full">
+                        ${state.currentTab === 'radio' ? renderRadio() : ''}
+                        ${state.currentTab === 'podcasts' ? renderPodcasts() : ''}
+                        ${state.currentTab === 'upload' ? renderUpload() : ''}
+                    </main>
+
+                    <!-- Player Bar -->
+                    ${state.currentTrack ? renderPlayer() : ''}
+                </div>
+            `;
+            lucide.createIcons();
+        }
+
+        function renderRadio() {
+            return `
+                <div class="mb-8 flex flex-col md:flex-row justify-between items-end gap-4">
+                    <div>
+                        <h1 class="text-3xl font-bold mb-1">Pakistanske Stasjoner</h1>
+                        <p class="text-slate-400">Lytt til FM-kanaler fra Islamabad, Karachi og Lahore.</p>
+                    </div>
+                    <div class="flex gap-2 w-full md:w-auto">
+                        <input type="text" id="searchField" placeholder="Søk i Pakistan..." class="bg-white/5 border border-white/10 rounded-xl px-4 py-2 w-full md:w-64 focus:outline-none focus:border-[#006600]">
+                        <button onclick="window.search()" class="bg-[#006600] px-6 py-2 rounded-xl font-bold hover:bg-green-700 transition">Hent</button>
+                    </div>
+                </div>
+
+                ${state.isLoading ? 
+                    '<div class="flex justify-center py-20"><div class="animate-spin w-10 h-10 border-4 border-green-600 border-t-transparent rounded-full"></div></div>' : 
+                    `<div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
+                        ${state.stations.map(s => `
+                            <div onclick='window.play(${JSON.stringify(s).replace(/'/g, "&apos;")})' 
+                                 class="glass-card p-4 rounded-2xl cursor-pointer group">
+                                <div class="aspect-square bg-slate-900 rounded-xl mb-3 overflow-hidden flex items-center justify-center">
+                                    ${s.favicon ? `<img src="${s.favicon}" class="w-full h-full object-cover group-hover:scale-110 transition" onerror="this.style.display='none'">` : ''}
+                                    <i data-lucide="music" class="w-10 h-10 text-slate-700"></i>
+                                </div>
+                                <h3 class="font-bold truncate text-sm md:text-base">${s.name}</h3>
+                                <p class="text-[10px] text-slate-500 mt-1 uppercase tracking-tighter">${s.genre.split(',')[0]}</p>
+                            </div>
+                        `).join('')}
+                    </div>`
+                }
+            `;
+        }
+
+        function renderPodcasts() {
+            return `
+                <div class="max-w-2xl mx-auto">
+                    <h2 class="text-2xl font-bold mb-6">Podcast-bibliotek</h2>
+                    <div class="space-y-3">
+                        ${state.podcasts.map(p => `
+                            <div onclick='window.play(${JSON.stringify(p).replace(/'/g, "&apos;")})' class="glass-card p-4 rounded-xl flex items-center gap-4 cursor-pointer">
+                                <div class="w-12 h-12 bg-[#006600]/20 rounded flex items-center justify-center">
+                                    <i data-lucide="play" class="w-5 h-5 text-[#006600]"></i>
+                                </div>
+                                <div class="flex-grow">
+                                    <h4 class="font-bold">${p.name}</h4>
+                                    <p class="text-xs text-slate-400">${p.author}</p>
+                                </div>
+                                <span class="text-xs font-mono text-slate-500">${p.duration}</span>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+            `;
+        }
+
+        function renderUpload() {
+            return `
+                <div class="flex flex-col items-center justify-center py-20 glass rounded-3xl border-dashed border-2 border-white/10">
+                    <i data-lucide="mic-2" class="w-12 h-12 text-[#006600] mb-4"></i>
+                    <h2 class="text-2xl font-bold mb-2">Last opp din egen stemme</h2>
+                    <p class="text-slate-400 mb-6 text-sm">Legg til egne opptak eller sanger i biblioteket.</p>
+                    <label class="bg-white text-black px-8 py-3 rounded-full font-bold cursor-pointer hover:bg-slate-200 transition">
+                        Velg lydfil
+                        <input type="file" class="hidden" accept="audio/*" onchange="window.handleUpload(event)">
+                    </label>
+                </div>
+            `;
+        }
+
+        function renderPlayer() {
+            return `
+                <div class="fixed bottom-0 left-0 right-0 glass p-4 md:p-6 border-t border-white/10 z-[100]">
+                    <div class="max-w-7xl mx-auto flex items-center justify-between gap-4">
+                        <div class="flex items-center gap-4 w-1/4">
+                            <div class="w-12 h-12 rounded-lg bg-slate-800 overflow-hidden hidden sm:block">
+                                <img src="${state.currentTrack.favicon || 'https://images.unsplash.com/photo-1514525253344-99a6d4d12c8b?w=100'}" class="w-full h-full object-cover">
+                            </div>
+                            <div class="min-w-0">
+                                <h4 class="font-bold truncate text-sm">${state.currentTrack.name}</h4>
+                                <div class="flex items-center gap-2">
+                                    ${state.isPlaying ? '<div class="equalizer is-playing"><div class="eq-bar"></div><div class="eq-bar" style="animation-delay: 0.2s"></div><div class="eq-bar" style="animation-delay: 0.4s"></div></div>' : ''}
+                                    <span class="text-[10px] text-slate-500 uppercase">${state.currentTrack.type === 'radio' ? 'LIVE' : 'PODCAST'}</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="flex flex-col items-center gap-1 flex-grow">
+                            <div class="flex items-center gap-6">
+                                <button onclick="window.voice()" class="p-2 ${state.isAnnouncing ? 'text-green-500 scale-110' : 'text-slate-400'}"><i data-lucide="mic"></i></button>
+                                <button onclick="window.toggle()" class="w-12 h-12 rounded-full bg-white text-black flex items-center justify-center hover:scale-105 transition">
+                                    <i data-lucide="${state.isPlaying ? 'pause' : 'play'}" class="w-5 h-5 fill-current"></i>
+                                </button>
+                                <button class="p-2 text-slate-400"><i data-lucide="share-2"></i></button>
+                            </div>
+                            <div class="w-full max-w-sm h-1 bg-white/10 rounded-full mt-2 overflow-hidden">
+                                <div class="h-full bg-green-600 transition-all duration-300" style="width: ${state.isPlaying ? '40%' : '0%'}"></div>
+                            </div>
+                        </div>
+
+                        <div class="hidden md:flex items-center justify-end gap-3 w-1/4">
+                            <i data-lucide="volume-2" class="w-4 h-4 text-slate-500"></i>
+                            <input type="range" class="w-20" value="${state.volume * 100}" oninput="window.setVol(this.value)">
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        // Init
+        fetchPakistanRadio();
+        render();
+    </script>
+</body>
+</html>
+
