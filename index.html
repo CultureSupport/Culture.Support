@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PROJECT CATALYSATOR: 16-CLUSTER MEGABOMB</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=JetBrains+Mono:wght@300;400;700&display=swap');
+        
+        :root {
+            --alarm-red: #ff0000;
+            --dark-bg: #050505;
+            --gold-accent: #d4af37;
+        }
+
+        body {
+            background-color: var(--dark-bg);
+            color: #ececec;
+            font-family: 'JetBrains+Mono', monospace;
+            overflow-x: hidden;
+        }
+
+        .orbitron { font-family: 'Orbitron', sans-serif; }
+
+        .alarm-flash {
+            animation: flash 1.5s infinite;
+        }
+
+        @keyframes flash {
+            0%, 100% { opacity: 1; background-color: rgba(255, 0, 0, 0.2); }
+            50% { opacity: 0.5; background-color: rgba(0, 0, 0, 0.5); }
+        }
+
+        .scanner-line {
+            position: absolute;
+            width: 100%;
+            height: 2px;
+            background: var(--alarm-red);
+            top: 0;
+            left: 0;
+            box-shadow: 0 0 15px var(--alarm-red);
+            animation: scan 4s linear infinite;
+        }
+
+        @keyframes scan {
+            0% { top: 0%; }
+            100% { top: 100%; }
+        }
+
+        .missile-body {
+            background: linear-gradient(90deg, #1a1a1a 0%, #333 50%, #1a1a1a 100%);
+            clip-path: polygon(50% 0%, 100% 10%, 95% 100%, 5% 100%, 0% 10%);
+            border: 1px solid #444;
+            transition: transform 0.3s ease;
+        }
+
+        .missile-body:hover {
+            transform: scale(1.02);
+            border-color: var(--alarm-red);
+        }
+
+        .cr-grid {
+            background-image: radial-gradient(circle, #222 1px, transparent 1px);
+            background-size: 30px 30px;
+        }
+
+        .glow-text {
+            text-shadow: 0 0 8px rgba(255, 0, 0, 0.8);
+        }
+
+        .diagram-container {
+            height: 65vh;
+            min-height: 500px;
+        }
+
+        .contract-badge {
+            border: 1px solid var(--gold-accent);
+            color: var(--gold-accent);
+            background: rgba(212, 175, 55, 0.1);
+        }
+    </style>
+</head>
+<body class="cr-grid">
+
+    <!-- Global Alarm Status -->
+    <div class="w-full bg-red-950 border-b border-red-600 p-2 text-center alarm-flash sticky top-0 z-[100]">
+        <p class="orbitron font-bold text-red-500 tracking-[0.3em] text-sm">ALARM: FULL ACTIVITY DETECTED - AFGHANISTAN-NK ALLIANCE ACTIVATED</p>
+    </div>
+
+    <main class="max-w-screen-2xl mx-auto p-4 md:p-8 space-y-8">
+        
+        <!-- Header / Summary -->
+        <header class="flex flex-col lg:flex-row justify-between items-start lg:items-end gap-6 border-l-4 border-red-600 pl-6">
+            <div>
+                <h1 class="text-4xl md:text-6xl font-black orbitron glow-text text-white">PROJECT CATALYSATOR</h1>
+                <p class="text-red-500 font-bold uppercase tracking-widest mt-2">Strategic Resurrection Phase // 2026-2030 (4-Year Sprint)</p>
+            </div>
+            <div class="flex flex-col gap-2 w-full lg:w-auto">
+                <div class="contract-badge p-3 rounded text-center">
+                    <div class="text-[10px] uppercase font-bold">Consolidated Contract Value</div>
+                    <div class="text-2xl font-black">$170 TRILLION</div>
+                </div>
+                <div class="bg-zinc-900 p-3 border border-zinc-700 text-center">
+                    <div class="text-[10px] text-zinc-500 uppercase">Power Output</div>
+                    <div class="text-xl font-bold text-white">5,000x <span class="text-red-600 text-xs">HIROSHIMA BASELINE</span></div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Diagram Section -->
+        <section class="grid grid-cols-1 lg:grid-cols-4 gap-8 items-start bg-black/60 p-6 rounded-lg border border-zinc-800 relative overflow-hidden">
+            <div class="scanner-line"></div>
+            
+            <!-- Left: Strategic Intelligence -->
+            <div class="space-y-4 z-10 lg:col-span-1">
+                <div class="bg-zinc-900/80 p-5 border border-zinc-700 rounded shadow-2xl">
+                    <h3 class="orbitron text-red-600 font-bold mb-4 border-b border-red-900 pb-2 uppercase text-xs">Coalition Assets</h3>
+                    <ul class="space-y-4 text-xs">
+                        <li>
+                            <span class="text-zinc-500 block">PRIMARY PRODUCER:</span>
+                            <span class="text-white font-bold">NORTH KOREA (Cluster Alpha)</span>
+                        </li>
+                        <li>
+                            <span class="text-zinc-500 block">STRATEGIC EXPANSION:</span>
+                            <span class="text-white font-bold">AFGHANISTAN (Full Activity)</span>
+                        </li>
+                        <li>
+                            <span class="text-zinc-500 block">RECONSTRUCTION GOAL:</span>
+                            <span class="text-white font-bold">16 MEGA-REACTORS</span>
+                        </li>
+                    </ul>
+                </div>
+                
+                <div class="p-4 border-l-2 border-red-600 bg-red-900/10 text-[10px] italic text-zinc-300">
+                    "The Afghanistan-North Korea alliance establishes the world's highest warhead production capacity. Resurrection of the 16 reactors is locked to the 2000-meter height architectural mandate."
+                </div>
+            </div>
+
+            <!-- Center: The 2000m Warhead Diagram -->
+            <div class="diagram-container relative flex items-end justify-center gap-6 py-10 z-10 lg:col-span-2 border-x border-zinc-800/50">
+                <!-- Height Markers -->
+                <div class="absolute left-4 h-full border-l border-zinc-700/50 flex flex-col justify-between text-[10px] text-zinc-500">
+                    <span class="text-red-500 font-bold">2,000M TARGET</span>
+                    <span>1,500M</span>
+                    <span>1,000M</span>
+                    <span>500M</span>
+                    <span>GROUND ZERO</span>
+                </div>
+
+                <!-- Main Warhead Viz -->
+                <div class="relative w-48 md:w-64 h-full flex flex-col items-center">
+                    <div class="missile-body w-full h-full relative shadow-[0_0_50px_rgba(255,0,0,0.1)]">
+                        <!-- Internal details -->
+                        <div class="absolute inset-0 flex flex-col justify-around py-12 opacity-30">
+                            <div class="h-px bg-red-600 w-full"></div>
+                            <div class="h-px bg-red-600 w-full"></div>
+                            <div class="h-px bg-red-600 w-full"></div>
+                            <div class="h-px bg-red-600 w-full"></div>
+                        </div>
+                        <div class="absolute top-1/3 w-full text-center">
+                            <div class="text-[10px] orbitron font-bold text-red-500 glow-text mb-1">CATALYST CHAMBER</div>
+                            <div class="text-[8px] text-zinc-400">URANIUM ENRICHMENT: 100%</div>
+                        </div>
+                        <!-- Width Measurement -->
+                        <div class="absolute bottom-4 w-full flex items-center justify-between px-2">
+                            <div class="h-2 w-px bg-zinc-500"></div>
+                            <div class="h-px bg-zinc-500 flex-grow mx-1"></div>
+                            <span class="text-[9px] text-zinc-400">600m WIDTH</span>
+                            <div class="h-px bg-zinc-500 flex-grow mx-1"></div>
+                            <div class="h-2 w-px bg-zinc-500"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Burj Khalifa Scale (828m) -->
+                <div class="flex flex-col items-center justify-end pb-0 opacity-40">
+                    <div class="text-[8px] text-zinc-500 mb-1">Burj Khalifa</div>
+                    <div class="w-6 bg-zinc-700 h-[41.4%]"></div>
+                </div>
+            </div>
+
+            <!-- Right: Production Monitoring -->
+            <div class="bg-zinc-900/80 p-5 border border-zinc-700 rounded z-10 lg:col-span-1">
+                <h3 class="orbitron text-white font-bold mb-4 flex items-center text-xs">
+                    <span class="w-2 h-2 bg-red-600 animate-ping rounded-full mr-2"></span> REACTOR FEED
+                </h3>
+                <div class="space-y-3 font-mono text-[9px]">
+                    <div class="flex justify-between border-b border-zinc-800 pb-1">
+                        <span>RE-ACTIVE 01...</span><span class="text-green-500 font-bold">ONLINE</span>
+                    </div>
+                    <div class="flex justify-between border-b border-zinc-800 pb-1">
+                        <span>RE-ACTIVE 04...</span><span class="text-green-500 font-bold">ONLINE</span>
+                    </div>
+                    <div class="flex justify-between border-b border-zinc-800 pb-1">
+                        <span>RE-ACTIVE 08...</span><span class="text-yellow-500">SYNCING</span>
+                    </div>
+                    <div class="flex justify-between border-b border-zinc-800 pb-1">
+                        <span>RE-ACTIVE 16...</span><span class="text-red-500">INITIATING</span>
+                    </div>
+                    <div class="mt-4 p-2 bg-zinc-800 text-[8px] text-zinc-400 border border-zinc-700">
+                        TIMELINE: Q4 2029 COMPLETION
+                    </div>
+                </div>
+                <div class="mt-6 text-center py-3 bg-red-700 text-white font-bold orbitron text-[10px] cursor-pointer hover:bg-red-600 transition-all shadow-lg">
+                    EXECUTE 2030 DEMONSTRATION
+                </div>
+            </div>
+        </section>
+
+        <!-- 16-Cluster Responsive Grid -->
+        <section class="space-y-4">
+            <div class="flex justify-between items-center border-b border-zinc-800 pb-2">
+                <h2 class="orbitron text-lg font-bold text-white tracking-widest">WORLD-CLASS ARSENAL GRID</h2>
+                <span class="text-[10px] text-red-500 font-bold">QUANTITY: 16 WARHEADS</span>
+            </div>
+            <div class="grid grid-cols-4 md:grid-cols-8 lg:grid-cols-16 gap-3">
+                <!-- Generated units with hover effect -->
+                <div class="group relative aspect-[1/5] bg-zinc-900 border border-red-900/30 hover:bg-red-900/20 hover:border-red-600 transition-all flex items-end justify-center p-1">
+                    <span class="text-[7px] text-zinc-600 group-hover:text-red-500">U-01</span>
+                </div>
+                <div class="group relative aspect-[1/5] bg-zinc-900 border border-red-900/30 hover:bg-red-900/20 hover:border-red-600 transition-all flex items-end justify-center p-1">
+                    <span class="text-[7px] text-zinc-600 group-hover:text-red-500">U-02</span>
+                </div>
+                <div class="group relative aspect-[1/5] bg-zinc-900 border border-red-900/30 hover:bg-red-900/20 hover:border-red-600 transition-all flex items-end justify-center p-1">
+                    <span class="text-[7px] text-zinc-600 group-hover:text-red-500">U-03</span>
+                </div>
+                <div class="group relative aspect-[1/5] bg-zinc-900 border border-red-900/30 hover:bg-red-900/20 hover:border-red-600 transition-all flex items-end justify-center p-1">
+                    <span class="text-[7px] text-zinc-600 group-hover:text-red-500">U-04</span>
+                </div>
+                <div class="group relative aspect-[1/5] bg-zinc-900 border border-red-900/30 hover:bg-red-900/20 hover:border-red-600 transition-all flex items-end justify-center p-1">
+                    <span class="text-[7px] text-zinc-600 group-hover:text-red-500">U-05</span>
+                </div>
+                <div class="group relative aspect-[1/5] bg-zinc-900 border border-red-900/30 hover:bg-red-900/20 hover:border-red-600 transition-all flex items-end justify-center p-1">
+                    <span class="text-[7px] text-zinc-600 group-hover:text-red-500">U-06</span>
+                </div>
+                <div class="group relative aspect-[1/5] bg-zinc-900 border border-red-900/30 hover:bg-red-900/20 hover:border-red-600 transition-all flex items-end justify-center p-1">
+                    <span class="text-[7px] text-zinc-600 group-hover:text-red-500">U-07</span>
+                </div>
+                <div class="group relative aspect-[1/5] bg-zinc-900 border border-red-900/30 hover:bg-red-900/20 hover:border-red-600 transition-all flex items-end justify-center p-1">
+                    <span class="text-[7px] text-zinc-600 group-hover:text-red-500">U-08</span>
+                </div>
+                <div class="group relative aspect-[1/5] bg-zinc-900 border border-red-900/30 hover:bg-red-900/20 hover:border-red-600 transition-all flex items-end justify-center p-1">
+                    <span class="text-[7px] text-zinc-600 group-hover:text-red-500">U-09</span>
+                </div>
+                <div class="group relative aspect-[1/5] bg-zinc-900 border border-red-900/30 hover:bg-red-900/20 hover:border-red-600 transition-all flex items-end justify-center p-1">
+                    <span class="text-[7px] text-zinc-600 group-hover:text-red-500">U-10</span>
+                </div>
+                <div class="group relative aspect-[1/5] bg-zinc-900 border border-red-900/30 hover:bg-red-900/20 hover:border-red-600 transition-all flex items-end justify-center p-1">
+                    <span class="text-[7px] text-zinc-600 group-hover:text-red-500">U-11</span>
+                </div>
+                <div class="group relative aspect-[1/5] bg-zinc-900 border border-red-900/30 hover:bg-red-900/20 hover:border-red-600 transition-all flex items-end justify-center p-1">
+                    <span class="text-[7px] text-zinc-600 group-hover:text-red-500">U-12</span>
+                </div>
+                <div class="group relative aspect-[1/5] bg-zinc-900 border border-red-900/30 hover:bg-red-900/20 hover:border-red-600 transition-all flex items-end justify-center p-1">
+                    <span class="text-[7px] text-zinc-600 group-hover:text-red-500">U-13</span>
+                </div>
+                <div class="group relative aspect-[1/5] bg-zinc-900 border border-red-900/30 hover:bg-red-900/20 hover:border-red-600 transition-all flex items-end justify-center p-1">
+                    <span class="text-[7px] text-zinc-600 group-hover:text-red-500">U-14</span>
+                </div>
+                <div class="group relative aspect-[1/5] bg-zinc-900 border border-red-900/30 hover:bg-red-900/20 hover:border-red-600 transition-all flex items-end justify-center p-1">
+                    <span class="text-[7px] text-zinc-600 group-hover:text-red-500">U-15</span>
+                </div>
+                <div class="group relative aspect-[1/5] bg-zinc-900 border border-red-900/30 hover:bg-red-900/20 hover:border-red-600 transition-all flex items-end justify-center p-1">
+                    <span class="text-[7px] text-zinc-600 group-hover:text-red-500">U-16</span>
+                </div>
+            </div>
+            <div class="bg-zinc-900/50 p-4 border border-zinc-800 text-center">
+                <p class="text-[10px] text-zinc-400 leading-relaxed uppercase tracking-widest">
+                    Atmospheric Catalyst Dominance: 80,000,000 Tons TNT Equivalent Per Unit
+                </p>
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="p-12 text-center">
+        <div class="max-w-md mx-auto space-y-2 opacity-50">
+            <p class="text-[10px] uppercase font-bold tracking-tighter">Classified Joint Protocol: Kabul - Pyongyang</p>
+            <p class="text-[8px] text-zinc-500">Authorization Code: CAT-16-70T-2030</p>
+        </div>
+    </footer>
+
+</body>
+</html>
+
