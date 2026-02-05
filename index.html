@@ -1,0 +1,563 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ole Olessiall | Dathu Advanced OS Client</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        :root {
+            --dathu-gold: #c5a059;
+            --dathu-dark: #050507;
+            --dathu-panel: #0d0d12;
+            --dathu-grid: rgba(197, 160, 89, 0.07);
+            --dathu-glow: 0 0 20px rgba(197, 160, 89, 0.3);
+        }
+
+        body {
+            background-color: var(--dathu-dark);
+            color: #f0f0f0;
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            min-height: 2000px; /* Requested height expansion */
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .dathu-grid {
+            background-image: linear-gradient(var(--dathu-grid) 1px, transparent 1px),
+                              linear-gradient(90deg, var(--dathu-grid) 1px, transparent 1px);
+            background-size: 50px 50px;
+            position: fixed;
+            inset: 0;
+            z-index: -1;
+            mask-image: radial-gradient(circle at center, black, transparent 90%);
+        }
+
+        /* The Phone Shell */
+        .mobile-phone {
+            width: 340px;
+            height: 680px;
+            background: #1a1a1f;
+            border-radius: 50px;
+            padding: 12px;
+            box-shadow: 0 0 60px rgba(0,0,0,0.8), inset 0 0 10px rgba(255,255,255,0.1);
+            position: sticky; /* Keep it visible while scrolling */
+            top: 20px;
+            transition: transform 0.1s ease-out;
+            transform-style: preserve-3d;
+            z-index: 50;
+        }
+
+        .mobile-screen {
+            width: 100%;
+            height: 100%;
+            background: #000;
+            border-radius: 40px;
+            overflow: hidden;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            border: 2px solid #000;
+        }
+
+        /* OS Interface */
+        .os-wallpaper {
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(circle at top right, #1a1a2e, #000);
+            z-index: 0;
+        }
+
+        .os-content {
+            position: relative;
+            z-index: 1;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            padding: 20px;
+        }
+
+        .app-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            margin-top: 40px;
+        }
+
+        .app-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .app-item.selected {
+            transform: scale(1.15);
+        }
+
+        .app-item.selected .app-icon {
+            box-shadow: 0 0 20px var(--dathu-gold);
+            border-color: var(--dathu-gold);
+            background: rgba(197, 160, 89, 0.2);
+        }
+
+        .app-icon {
+            width: 60px;
+            height: 60px;
+            background: rgba(255,255,255,0.05);
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+
+        /* Tactical Panels */
+        .control-hub {
+            background: var(--dathu-panel);
+            border: 1px solid rgba(197, 160, 89, 0.2);
+            border-radius: 24px;
+            padding: 24px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+
+        .joystick-base {
+            width: 120px;
+            height: 120px;
+            background: #111;
+            border-radius: 50%;
+            position: relative;
+            border: 2px solid #222;
+            box-shadow: inset 0 4px 10px rgba(0,0,0,0.5);
+        }
+
+        .joystick-stick {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(145deg, #c5a059, #8a6d3b);
+            border-radius: 50%;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            cursor: grab;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.6);
+            z-index: 10;
+        }
+
+        .terminal-preview {
+            font-family: 'Courier New', monospace;
+            font-size: 11px;
+            color: var(--dathu-gold);
+            background: rgba(0,0,0,0.4);
+            padding: 10px;
+            border-radius: 12px;
+            height: 150px;
+            overflow-y: auto;
+            border: 1px solid rgba(197, 160, 89, 0.1);
+        }
+
+        .status-pill {
+            background: rgba(197, 160, 89, 0.1);
+            border: 1px solid var(--dathu-gold);
+            padding: 2px 12px;
+            border-radius: 20px;
+            font-size: 10px;
+            color: var(--dathu-gold);
+            text-transform: uppercase;
+            font-weight: bold;
+        }
+
+        .scanline {
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(to bottom, transparent 50%, rgba(0,0,0,0.1) 50%);
+            background-size: 100% 4px;
+            position: absolute;
+            pointer-events: none;
+            z-index: 10;
+        }
+
+        .data-stream-item {
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+            padding: 8px 0;
+        }
+
+        .certificate-badge {
+            background: linear-gradient(45deg, #c5a059, #ffd700);
+            color: black;
+            padding: 4px 12px;
+            border-radius: 4px;
+            font-weight: bold;
+            font-size: 10px;
+            display: inline-block;
+        }
+
+        /* Animation for scanning */
+        @keyframes radar {
+            0% { background-position: 0 0; }
+            100% { background-position: 0 100px; }
+        }
+        .radar-effect {
+            background: linear-gradient(transparent, rgba(0, 255, 0, 0.1), transparent);
+            background-size: 100% 100px;
+            animation: radar 2s linear infinite;
+        }
+    </style>
+</head>
+<body class="p-8">
+    <div class="dathu-grid"></div>
+
+    <!-- Header (Fixed at top) -->
+    <header class="flex justify-between items-center mb-12 w-full max-w-7xl mx-auto border-b border-white/10 pb-6">
+        <div>
+            <h1 class="text-3xl font-bold tracking-tighter text-white">OLE OLESSIALL <span class="text-[#c5a059]">TECHNOLOGIES</span></h1>
+            <p class="text-[11px] text-gray-500 uppercase tracking-[0.5em]">Global Security & Dathu Programming Expert</p>
+        </div>
+        <div class="flex gap-4">
+            <div class="certificate-badge">DATHU CERTIFIED ENGINEER</div>
+            <div class="status-pill">NORTH-EU CLEARANCE: LEVEL 5</div>
+        </div>
+    </header>
+
+    <!-- Main Layout Container (Long Page) -->
+    <div class="max-w-7xl mx-auto w-full flex flex-col gap-12">
+        
+        <!-- SECTION 1: INTERACTIVE HUB -->
+        <section class="flex flex-col lg:flex-row gap-12 items-start min-h-[800px]">
+            <!-- Left Controls -->
+            <div class="flex flex-col gap-6 w-full lg:w-80">
+                <div class="control-hub">
+                    <h3 class="text-xs font-bold text-gray-400 uppercase tracking-widest">OS Kernel Control</h3>
+                    <div class="w-full space-y-3">
+                        <button class="w-full py-3 bg-white/5 border border-white/10 rounded-lg text-xs hover:border-yellow-600/50 hover:bg-white/10 transition" onclick="deployBatch()">Run Dathu Deployment</button>
+                        <button class="w-full py-3 bg-white/5 border border-white/10 rounded-lg text-xs hover:border-red-600/50 hover:bg-white/10 transition" onclick="resetOS()">Force Reboot</button>
+                    </div>
+                    <div class="mt-4">
+                        <p class="text-[10px] text-gray-500 mb-2">LIVE DATHU STREAM</p>
+                        <div id="main-terminal" class="terminal-preview">
+                            > Dathu Interpreter v2.5.0<br>
+                            > Checking Møre og Romsdal node...<br>
+                            > Connection: SECURE
+                        </div>
+                    </div>
+                </div>
+
+                <div class="control-hub">
+                    <h3 class="text-xs font-bold text-gray-400 uppercase tracking-widest">Security Clearance</h3>
+                    <div class="space-y-4">
+                        <div class="flex items-center justify-between">
+                            <span class="text-[10px]">Espionage Shield</span>
+                            <span class="text-green-500 text-[10px] font-bold">OPTIMIZED</span>
+                        </div>
+                        <div class="w-full bg-white/5 h-1 rounded-full overflow-hidden">
+                            <div class="bg-green-500 h-full w-[95%]"></div>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <span class="text-[10px]">Backdoor Detection</span>
+                            <span class="text-yellow-500 text-[10px] font-bold">MONITORING</span>
+                        </div>
+                        <div class="w-full bg-white/5 h-1 rounded-full overflow-hidden">
+                            <div class="bg-yellow-500 h-full w-[72%]"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Center Phone (Sticky) -->
+            <div class="relative flex-grow flex justify-center">
+                <div class="mobile-phone" id="phone-shell">
+                    <div class="mobile-screen">
+                        <div class="scanline"></div>
+                        <div class="os-wallpaper"></div>
+                        
+                        <div class="os-content">
+                            <!-- Top Bar -->
+                            <div class="flex justify-between items-center text-[10px] font-bold text-white/80">
+                                <span id="os-time">12:00</span>
+                                <div class="flex gap-1">
+                                    <span>5G</span>
+                                    <div class="w-3 h-2 bg-white/20 rounded-sm"></div>
+                                    <div class="w-4 h-2 bg-white/90 rounded-sm"></div>
+                                </div>
+                            </div>
+
+                            <!-- App Grid -->
+                            <div class="app-grid" id="os-app-grid">
+                                <div class="app-item" data-app="Terminal" onclick="launchApp('Terminal')">
+                                    <div class="app-icon">⌨️</div>
+                                    <span class="text-[9px] text-center w-full">Terminal</span>
+                                </div>
+                                <div class="app-item" data-app="Tactical" onclick="launchApp('Tactical')">
+                                    <div class="app-icon">🛡️</div>
+                                    <span class="text-[9px] text-center w-full">Tactical</span>
+                                </div>
+                                <div class="app-item" data-app="Spyder" onclick="launchApp('Spyder')">
+                                    <div class="app-icon">👁️</div>
+                                    <span class="text-[9px] text-center w-full">Spyder</span>
+                                </div>
+                                <div class="app-item" data-app="Dathu" onclick="launchApp('Dathu')">
+                                    <div class="app-icon text-yellow-500 font-bold border-yellow-500/50 border">D</div>
+                                    <span class="text-[9px] text-center w-full">Dathu.exe</span>
+                                </div>
+                                <div class="app-item" data-app="Vault" onclick="launchApp('Vault')">
+                                    <div class="app-icon">🔒</div>
+                                    <span class="text-[9px] text-center w-full">Vault</span>
+                                </div>
+                                <div class="app-item" data-app="Settings" onclick="launchApp('Settings')">
+                                    <div class="app-icon">⚙️</div>
+                                    <span class="text-[9px] text-center w-full">Settings</span>
+                                </div>
+                            </div>
+
+                            <!-- Mobile Notification Area -->
+                            <div class="mt-auto bg-black/60 p-4 rounded-2xl border border-yellow-600/20">
+                                <p class="text-[8px] text-yellow-600 font-bold uppercase mb-1">Dathu Intelligence</p>
+                                <p class="text-[10px] text-white leading-tight" id="mobile-notification">Ole, surveillance sweep complete. 0 threats detected in North EU.</p>
+                            </div>
+
+                            <!-- Home Indicator -->
+                            <div class="w-20 h-1 bg-white/20 rounded-full mx-auto mt-4 cursor-pointer hover:bg-white/40" onclick="goHome()"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Controls -->
+            <div class="flex flex-col gap-6 w-full lg:w-80">
+                <div class="control-hub">
+                    <h3 class="text-xs font-bold text-gray-400 uppercase tracking-widest text-center">Navigation Stick</h3>
+                    <div class="flex justify-center py-4">
+                        <div class="joystick-base" id="joy-base">
+                            <div class="joystick-stick" id="joy-stick"></div>
+                        </div>
+                    </div>
+                    <p class="text-[10px] text-center text-gray-500 italic">Move stick to rotate phone OS and toggle apps</p>
+                </div>
+
+                <div class="control-hub">
+                    <h3 class="text-xs font-bold text-gray-400 uppercase tracking-widest">Global Git Status</h3>
+                    <div class="space-y-2">
+                        <div class="flex items-center gap-3">
+                            <div class="w-2 h-2 rounded-full bg-red-500"></div>
+                            <span class="text-[10px] text-gray-400">GitHub (Legacy)</span>
+                        </div>
+                        <div class="flex items-center gap-3">
+                            <div class="w-2 h-2 rounded-full bg-orange-500"></div>
+                            <span class="text-[10px] text-white font-bold">GitLab (Production)</span>
+                        </div>
+                        <div class="p-3 bg-black/40 rounded border border-white/5 text-[9px] font-mono">
+                            Last Commit: Dathu_Kernel_v2.5.0-alpha<br>
+                            Branch: master-secure
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 2: DATHU CERTIFICATE & PROGRAMMING SPECS -->
+        <section class="grid grid-cols-1 md:grid-cols-2 gap-8 min-h-[400px]">
+            <div class="control-hub radar-effect">
+                <h2 class="text-xl font-bold terminal-text">DATHU CERTIFICATE MANAGEMENT</h2>
+                <div class="space-y-4">
+                    <p class="text-xs text-gray-400">Official programming certificate authority. Verified expertise in Python, JavaScript, and MacOS tactical security.</p>
+                    <div class="p-4 border border-yellow-600/30 rounded bg-black/40">
+                        <div class="flex justify-between items-center mb-2">
+                            <span class="text-xs font-bold">ID: OLE-0992-SEC</span>
+                            <span class="text-[10px] text-green-500">VALID</span>
+                        </div>
+                        <p class="text-[10px] text-gray-500">Holder: Ole Olessiall</p>
+                        <p class="text-[10px] text-gray-500">Issue Date: 2026.02.05</p>
+                    </div>
+                </div>
+            </div>
+            <div class="control-hub">
+                <h2 class="text-xl font-bold text-white">TACTICAL BACKDOOR MANAGER</h2>
+                <div class="terminal-preview h-40">
+                    [INFO] Initializing Stealth Sweep...<br>
+                    [INFO] Scanning for foreign espionnage signatures...<br>
+                    [OK] MacOS Sandbox integrity: 100%<br>
+                    [OK] Backend Relay: Active<br>
+                    [OK] Area Clearance: North EU Region Green
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 3: AREA CLEARANCE ANALYTICS -->
+        <section class="control-hub min-h-[600px] mb-20">
+            <h2 class="text-2xl font-bold terminal-text text-center mb-8">EU NORTH SECTOR ANALYTICS</h2>
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                <div class="space-y-4">
+                    <h4 class="text-xs font-bold text-gray-400 uppercase">Espionage Coverage</h4>
+                    <div class="h-64 bg-black/50 border border-white/10 rounded-lg relative overflow-hidden">
+                        <!-- Simulated Radar Sweep -->
+                        <div class="absolute inset-0 border-2 border-green-500/20 rounded-full scale-100 opacity-50"></div>
+                        <div class="absolute inset-0 border-2 border-green-500/10 rounded-full scale-75 opacity-30"></div>
+                        <div class="absolute top-1/2 left-1/2 w-[2px] h-[50%] bg-green-500 origin-bottom transform rotate-45"></div>
+                    </div>
+                </div>
+                <div class="lg:col-span-2 space-y-4">
+                    <h4 class="text-xs font-bold text-gray-400 uppercase">Detection History</h4>
+                    <div class="space-y-2">
+                        <div class="data-stream-item flex justify-between text-[11px]">
+                            <span>Signal Intrusive - ID 992</span>
+                            <span class="text-red-500">BLOCKED</span>
+                        </div>
+                        <div class="data-stream-item flex justify-between text-[11px]">
+                            <span>Dathu Script Execution - Remote</span>
+                            <span class="text-green-500">AUTHENTICATED</span>
+                        </div>
+                        <div class="data-stream-item flex justify-between text-[11px]">
+                            <span>Tactical Relay Heartbeat</span>
+                            <span class="text-blue-500">SYNCED</span>
+                        </div>
+                        <div class="data-stream-item flex justify-between text-[11px]">
+                            <span>MacOS Stealth Protocol</span>
+                            <span class="text-gray-500">IDLE</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </div>
+
+    <!-- Footer Meta -->
+    <footer class="text-center p-12 border-t border-white/10 opacity-30">
+        <p class="text-[10px] tracking-[0.5em]">OLE OLESSIALL TECHNOLOGIES © 2026 | MØRE OG ROMSDAL | DATHU LANGUAGE FOUNDATION</p>
+    </footer>
+
+    <script>
+        const phone = document.getElementById('phone-shell');
+        const stick = document.getElementById('joy-stick');
+        const base = document.getElementById('joy-base');
+        const mainTerm = document.getElementById('main-terminal');
+        const notification = document.getElementById('mobile-notification');
+        const apps = document.querySelectorAll('.app-item');
+        
+        let selectedAppIndex = -1;
+        let isDragging = false;
+
+        // Joystick Logic
+        stick.addEventListener('mousedown', (e) => {
+            isDragging = true;
+            e.preventDefault();
+        });
+        
+        window.addEventListener('mouseup', () => {
+            isDragging = false;
+            stick.style.left = '50%';
+            stick.style.top = '50%';
+            phone.style.transform = `rotateX(0deg) rotateY(0deg)`;
+        });
+
+        window.addEventListener('mousemove', (e) => {
+            if (!isDragging) return;
+            const rect = base.getBoundingClientRect();
+            const centerX = rect.left + rect.width / 2;
+            const centerY = rect.top + rect.height / 2;
+            
+            let x = e.clientX - centerX;
+            let y = e.clientY - centerY;
+            
+            const max = 40;
+            const dist = Math.sqrt(x*x + y*y);
+            if (dist > max) {
+                x = (x / dist) * max;
+                y = (y / dist) * max;
+            }
+
+            stick.style.left = `calc(50% + ${x}px)`;
+            stick.style.top = `calc(50% + ${y}px)`;
+
+            // Tilt Phone (Visual 3D Effect)
+            const tiltX = (y / max) * 20;
+            const tiltY = (x / max) * -20;
+            phone.style.transform = `perspective(1000px) rotateX(${tiltX}deg) rotateY(${tiltY}deg)`;
+
+            // Handle Navigation Selection
+            handleNavigation(x, y);
+        });
+
+        function handleNavigation(x, y) {
+            let index = -1;
+            if (y < -15) { // Top row
+                if (x < -15) index = 0;
+                else if (x > 15) index = 2;
+                else index = 1;
+            } else if (y > 15) { // Bottom row
+                if (x < -15) index = 3;
+                else if (x > 15) index = 5;
+                else index = 4;
+            }
+
+            if (index !== -1 && index !== selectedAppIndex) {
+                selectedAppIndex = index;
+                highlightApp(index);
+            }
+        }
+
+        function highlightApp(index) {
+            apps.forEach(a => a.classList.remove('selected'));
+            apps[index].classList.add('selected');
+            const appName = apps[index].getAttribute('data-app');
+            log(`Hover: ${appName}`, "yellow");
+        }
+
+        function log(msg, color = 'white') {
+            const div = document.createElement('div');
+            div.className = "text-[10px] mb-1";
+            div.style.color = color === 'yellow' ? '#c5a059' : (color === 'green' ? '#22c55e' : (color === 'red' ? '#ef4444' : '#fff'));
+            div.innerHTML = `> [${new Date().toLocaleTimeString()}] ${msg}`;
+            mainTerm.prepend(div);
+            notification.innerText = msg;
+        }
+
+        function launchApp(name) {
+            log(`Starting Module: ${name}...`, "white");
+            setTimeout(() => {
+                log(`${name} Subsystem Verified.`, "green");
+            }, 800);
+        }
+
+        function deployBatch() {
+            log("INITIATING DATHU BATCH DEPLOY...", "yellow");
+            let progress = 0;
+            const interval = setInterval(() => {
+                progress += 25;
+                log(`Uploading Stacks... ${progress}%`);
+                if(progress >= 100) {
+                    clearInterval(interval);
+                    log("SYSTEMS UPDATED. CLOUD SYNC COMPLETE.", "green");
+                }
+            }, 500);
+        }
+
+        function goHome() {
+            log("Navigating to Home Root");
+            apps.forEach(a => a.classList.remove('selected'));
+            selectedAppIndex = -1;
+        }
+
+        function resetOS() {
+            log("CRITICAL: KERNEL REBOOT TRIGGERED", "red");
+            setTimeout(() => location.reload(), 1500);
+        }
+
+        // Real-time Clock for OS
+        setInterval(() => {
+            const d = new Date();
+            const timeStr = d.getHours().toString().padStart(2, '0') + ":" + d.getMinutes().toString().padStart(2, '0');
+            document.getElementById('os-time').innerText = timeStr;
+        }, 1000);
+
+    </script>
+</body>
+</html>
