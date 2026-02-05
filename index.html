@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dathu Mobile Client OS - Northern EU Sector</title>
+    <title>Dathu Mobile Client OS - App Factory Edition</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
@@ -17,37 +17,30 @@
             user-select: none;
         }
 
-        .scrollbar-hide::-webkit-scrollbar {
-            display: none;
-        }
+        .scrollbar-hide::-webkit-scrollbar { display: none; }
 
         .phone-frame {
             transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1);
             transform-style: preserve-3d;
         }
 
-        .joystick-inner {
-            transition: transform 0.1s linear;
-        }
+        .joystick-inner { transition: transform 0.1s linear; }
 
-        .packet-item {
-            cursor: grab;
-        }
-        .packet-item:active {
-            cursor: grabbing;
-        }
+        .packet-item { cursor: grab; }
+        .packet-item:active { cursor: grabbing; }
 
-        .drop-zone-active {
-            background-color: rgba(30, 58, 138, 0.2) !important;
-            border: 2px dashed rgba(59, 130, 246, 0.5) !important;
+        @keyframes pulse-emerald {
+            0%, 100% { box-shadow: 0 0 5px rgba(16, 185, 129, 0.2); }
+            50% { box-shadow: 0 0 20px rgba(16, 185, 129, 0.5); }
         }
+        .active-build { animation: pulse-emerald 2s infinite; }
 
-        @keyframes pulse-fast {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.5; }
+        .app-window {
+            animation: slideUp 0.3s ease-out;
         }
-        .animate-pulse-fast {
-            animation: pulse-fast 1s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        @keyframes slideUp {
+            from { transform: translateY(100%); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
         }
     </style>
 </head>
@@ -57,23 +50,23 @@
     <aside class="w-80 bg-slate-950 border-r border-blue-900/20 flex flex-col p-4 shadow-2xl z-20">
         <div class="flex items-center justify-between mb-6 border-b border-slate-800 pb-2">
             <div class="flex items-center gap-2">
-                <i class="fas fa-tower-broadcast text-blue-500 animate-pulse-fast text-xs"></i>
-                <h2 class="text-xs font-black tracking-tighter text-blue-500">PACKET STREAM</h2>
+                <i class="fas fa-microchip text-blue-500 animate-pulse text-xs"></i>
+                <h2 class="text-xs font-black tracking-tighter text-blue-500">DATHU PACKET WAREHOUSE</h2>
             </div>
-            <span class="text-[10px] text-slate-600 uppercase font-bold">Live Feed</span>
         </div>
         
         <div id="packet-container" class="flex-1 space-y-2 overflow-y-auto pr-2 scrollbar-hide">
             <!-- Packets injected by JS -->
         </div>
 
-        <div class="mt-4 p-4 bg-slate-900 border border-slate-800 rounded-2xl shadow-inner">
-            <div class="flex items-center gap-2 mb-2">
-                <i class="fas fa-shield-halved text-emerald-500 text-xs"></i>
-                <span class="text-[10px] font-bold text-emerald-500 uppercase">Sector Status</span>
+        <div class="mt-4 p-4 bg-slate-900 border border-slate-800 rounded-2xl">
+            <div class="text-[9px] text-slate-500 uppercase mb-2">Build Templates</div>
+            <div class="grid grid-cols-2 gap-2">
+                <button onclick="setTemplate('radio')" class="p-2 bg-slate-800 rounded text-[9px] hover:bg-blue-900/40 transition-colors uppercase font-bold">Radio.dathu</button>
+                <button onclick="setTemplate('todo')" class="p-2 bg-slate-800 rounded text-[9px] hover:bg-blue-900/40 transition-colors uppercase font-bold">JSON_Task.dathu</button>
+                <button onclick="setTemplate('browser')" class="p-2 bg-slate-800 rounded text-[9px] hover:bg-blue-900/40 transition-colors uppercase font-bold">Web.dathu</button>
+                <button onclick="setTemplate('editor')" class="p-2 bg-slate-800 rounded text-[9px] hover:bg-blue-900/40 transition-colors uppercase font-bold">IDE_Core.dathu</button>
             </div>
-            <div class="text-[11px] font-black tracking-tight">NORTHERN EU [M&R]</div>
-            <div class="text-[9px] text-slate-500 mt-1 uppercase">Clearance: Level 9 Specialist</div>
         </div>
     </aside>
 
@@ -82,230 +75,231 @@
         <header class="h-12 border-b border-slate-800 flex items-center justify-between px-6 bg-slate-950/80 backdrop-blur-md">
             <div class="flex items-center gap-3">
                 <div class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></div>
-                <span class="text-xs font-extrabold tracking-widest text-emerald-500 uppercase">App.Dathu Build Environment</span>
+                <span class="text-xs font-extrabold tracking-widest text-emerald-500 uppercase italic">Dathu.exe App Factory</span>
             </div>
             <div class="flex gap-4">
-                <button onclick="buildApp()" class="flex items-center gap-2 px-4 py-1.5 bg-blue-600 hover:bg-blue-500 rounded text-[10px] font-black uppercase transition-all shadow-lg shadow-blue-900/20">
-                    <i class="fas fa-download"></i> Build to Mobile
+                <button onclick="compileAndInject()" class="flex items-center gap-2 px-4 py-1.5 bg-emerald-600 hover:bg-emerald-500 rounded text-[10px] font-black uppercase transition-all shadow-lg shadow-emerald-900/20">
+                    <i class="fas fa-rocket"></i> Deploy to Joystick OS
                 </button>
             </div>
         </header>
 
         <div id="editor-container" class="flex-1 relative bg-black">
-            <textarea id="code-editor" class="w-full h-full bg-transparent p-8 text-sm text-emerald-400 outline-none resize-none font-mono selection:bg-emerald-900/40" spellcheck="false"># App.Dathu Kernel Script
-# Clearance: App.Dathu Interface
+            <textarea id="code-editor" class="w-full h-full bg-transparent p-8 text-sm text-emerald-400 outline-none resize-none font-mono selection:bg-emerald-900/40" spellcheck="false"># Dathu.exe App Configuration
+app_type = "radio"
+sector = "NORTHERN_EU"
+fetch_limit = 10000
 
-# Drag packets here to inject logic...
+def on_deploy():
+    kernel.link_storage(persistence=True)
+    kernel.start_stream()
 </textarea>
-            <div id="drop-overlay" class="absolute inset-0 pointer-events-none hidden flex items-center justify-center border-2 border-dashed border-blue-500/50 bg-blue-900/10">
-                <div class="bg-blue-600 text-white px-6 py-3 rounded-full text-xs font-black animate-bounce shadow-xl">
-                    INJECT PACKET LOGIC
-                </div>
+            <div id="drop-overlay" class="absolute inset-0 pointer-events-none hidden flex items-center justify-center border-2 border-dashed border-emerald-500/30 bg-emerald-900/5">
+                <div class="bg-emerald-600 text-white px-6 py-3 rounded-full text-xs font-black animate-bounce">INJECT KERNEL DATA</div>
             </div>
         </div>
 
         <!-- CONSOLE -->
         <div class="h-44 bg-black border-t border-slate-900 p-4 font-mono">
             <div class="flex items-center gap-2 text-[10px] text-slate-600 mb-3 uppercase font-black">
-                <i class="fas fa-terminal text-xs"></i> System Console
+                <i class="fas fa-terminal text-xs"></i> Deployment Log
             </div>
-            <div id="console-output" class="overflow-y-auto h-24 space-y-1.5 text-[10px] text-slate-500">
-                <!-- Logs injected by JS -->
-            </div>
+            <div id="console-output" class="overflow-y-auto h-24 space-y-1.5 text-[10px] text-slate-500"></div>
         </div>
     </main>
 
     <!-- RIGHT PANEL: MOBILE OS & JOYSTICK -->
-    <aside class="w-[420px] bg-slate-900 border-l border-slate-800 flex flex-col items-center justify-center p-8 relative">
+    <aside class="w-[440px] bg-slate-900 border-l border-slate-800 flex flex-col items-center justify-center p-8 relative">
         
         <!-- MOBILE OS FRAME -->
-        <div id="phone" class="phone-frame w-[280px] h-[560px] bg-slate-950 rounded-[3.5rem] border-[10px] border-slate-800 shadow-[0_0_100px_rgba(0,0,0,0.9)] overflow-hidden relative ring-1 ring-slate-700">
-            <!-- Screen Content -->
+        <div id="phone" class="phone-frame w-[300px] h-[580px] bg-slate-950 rounded-[4rem] border-[12px] border-slate-800 shadow-[0_0_120px_rgba(0,0,0,1)] overflow-hidden relative ring-1 ring-slate-700">
             <div class="h-full flex flex-col" id="screen-home">
                 <!-- Status Bar -->
                 <div class="h-10 bg-slate-900 flex justify-between px-8 items-center text-[10px] font-black text-slate-500 tracking-tighter">
                     <span>DATHU-NET</span>
                     <div class="flex items-center gap-2">
-                        <div class="w-2 h-2 rounded-full bg-blue-500"></div>
-                        <span>LN-9</span>
+                        <i class="fas fa-wifi text-emerald-500"></i>
+                        <span>EU-N</span>
                     </div>
                 </div>
 
-                <div class="flex-1 p-8 grid grid-cols-2 gap-x-8 gap-y-12 content-start" id="app-grid">
-                    <!-- App Icons -->
+                <div class="flex-1 p-6 grid grid-cols-2 gap-x-6 gap-y-10 content-start overflow-y-auto scrollbar-hide" id="app-grid">
+                    <!-- Core Built-in Apps -->
                     <div class="flex flex-col items-center gap-2 group cursor-pointer" onclick="openApp('Tactical')">
-                        <div class="w-14 h-14 bg-orange-600 rounded-2xl flex items-center justify-center shadow-lg shadow-orange-900/20 group-hover:scale-110 transition-transform">
+                        <div class="w-14 h-14 bg-slate-800 rounded-2xl flex items-center justify-center border border-slate-700 group-hover:bg-orange-600 transition-all">
                             <i class="fas fa-crosshairs text-white text-xl"></i>
                         </div>
-                        <span class="text-[9px] font-black text-slate-500 uppercase">Tactical</span>
+                        <span class="text-[8px] font-black text-slate-500 uppercase">Tactical</span>
                     </div>
-                    <div class="flex flex-col items-center gap-2 group cursor-pointer" onclick="openApp('Spyder')">
-                        <div class="w-14 h-14 bg-red-600 rounded-2xl flex items-center justify-center shadow-lg shadow-red-900/20 group-hover:scale-110 transition-transform">
-                            <i class="fas fa-eye text-white text-xl"></i>
-                        </div>
-                        <span class="text-[9px] font-black text-slate-500 uppercase">Spyder</span>
-                    </div>
-                    <div class="flex flex-col items-center gap-2 group cursor-pointer" onclick="openApp('Vault')">
-                        <div class="w-14 h-14 bg-emerald-600 rounded-2xl flex items-center justify-center shadow-lg shadow-emerald-900/20 group-hover:scale-110 transition-transform">
-                            <i class="fas fa-lock text-white text-xl"></i>
-                        </div>
-                        <span class="text-[9px] font-black text-slate-500 uppercase">Vault</span>
-                    </div>
-                    <div class="flex flex-col items-center gap-2 group cursor-pointer" onclick="openApp('Sentry')">
-                        <div class="w-14 h-14 bg-blue-600 rounded-2xl flex items-center justify-center shadow-lg shadow-blue-900/20 group-hover:scale-110 transition-transform">
-                            <i class="fas fa-shield-virus text-white text-xl"></i>
-                        </div>
-                        <span class="text-[9px] font-black text-slate-500 uppercase">Sentry</span>
-                    </div>
+                    <!-- Custom deployed apps will appear here -->
                 </div>
 
-                <!-- Footer Stats -->
-                <div class="p-6 bg-slate-900/50 mt-auto border-t border-slate-900">
-                    <div class="text-[10px] font-black text-emerald-500 mb-2 uppercase">Build Persistence</div>
-                    <div id="build-progress" class="w-full h-1.5 bg-slate-800 rounded-full overflow-hidden">
-                        <div class="w-[85%] h-full bg-emerald-500"></div>
+                <!-- Persistence Badge -->
+                <div class="p-6 bg-slate-900/50 mt-auto border-t border-slate-800">
+                    <div class="flex items-center justify-between text-[9px] mb-2">
+                        <span class="font-black text-blue-500">USER: OLE OLESSIALL</span>
+                        <span class="text-slate-600 italic">Sector LN-9</span>
                     </div>
-                    <div class="text-[8px] text-slate-600 mt-2">Møre og Romsdal Sector Alpha-Link Stable</div>
+                    <div class="w-full h-1 bg-slate-800 rounded-full overflow-hidden">
+                        <div class="w-full h-full bg-blue-600 animate-pulse"></div>
+                    </div>
                 </div>
             </div>
 
-            <!-- App View Container (Hidden by default) -->
-            <div id="app-view" class="hidden h-full flex flex-col bg-slate-950 p-6">
-                <button onclick="closeApp()" class="text-[10px] text-blue-400 mb-8 flex items-center gap-2 font-black">
-                    <i class="fas fa-arrow-left"></i> EXIT_INTERNAL_CORE
+            <!-- DYNAMIC APP VIEW -->
+            <div id="app-view" class="hidden h-full flex flex-col bg-slate-950 p-5 app-window">
+                <button onclick="closeApp()" class="text-[9px] text-emerald-500 mb-6 flex items-center gap-2 font-black uppercase">
+                    <i class="fas fa-chevron-left"></i> Shutdown Module
                 </button>
-                <div class="flex-1 bg-slate-900 rounded-3xl border border-slate-800 p-6 flex flex-col items-center justify-center text-center">
-                    <div id="app-icon-large" class="w-20 h-20 rounded-full bg-blue-600/10 flex items-center justify-center mb-6 border border-blue-500/20">
-                        <i class="fas fa-microchip text-blue-400 text-2xl"></i>
-                    </div>
-                    <h3 id="app-title-large" class="text-sm font-black text-white mb-2 uppercase tracking-widest">APP_NAME</h3>
-                    <p class="text-[10px] text-slate-500 leading-relaxed px-4">
-                        Northern EU Local Build active.<br>Synchronizing with sector certificates...
-                    </p>
+                <div id="app-content" class="flex-1 bg-slate-900 rounded-3xl border border-slate-800 p-4 overflow-hidden relative">
+                    <!-- Dynamic content injected here -->
                 </div>
             </div>
         </div>
 
         <!-- 3D JOYSTICK -->
-        <div class="mt-12 flex flex-col items-center">
-            <div class="flex items-center gap-3 mb-4">
-                <span class="w-1 h-1 bg-blue-500 rounded-full"></span>
-                <span class="text-[10px] font-black text-slate-600 uppercase tracking-widest">Hardware Proxy Proxy</span>
-                <span class="w-1 h-1 bg-blue-500 rounded-full"></span>
+        <div class="mt-10 flex flex-col items-center">
+            <div class="flex items-center gap-3 mb-4 text-slate-700">
+                <span class="text-[9px] font-black uppercase tracking-[0.3em]">Hardware Proxy Controller</span>
             </div>
-            <div id="joystick-base" class="w-24 h-24 bg-gradient-to-b from-slate-800 to-slate-950 rounded-full border-4 border-slate-800 relative cursor-grab active:cursor-grabbing shadow-[inset_0_4px_12px_rgba(0,0,0,0.8)] flex items-center justify-center">
-                <div id="joystick-handle" class="joystick-inner w-12 h-12 bg-slate-700 rounded-full border-2 border-slate-600 shadow-2xl flex items-center justify-center">
-                    <div class="w-full h-full rounded-full bg-gradient-to-br from-white/10 to-transparent"></div>
-                </div>
+            <div id="joystick-base" class="w-24 h-24 bg-gradient-to-b from-slate-800 to-slate-900 rounded-full border-4 border-slate-800 relative cursor-grab active:cursor-grabbing shadow-2xl flex items-center justify-center">
+                <div id="joystick-handle" class="joystick-inner w-10 h-10 bg-slate-700 rounded-full border-2 border-slate-600 shadow-xl"></div>
             </div>
         </div>
     </aside>
 
     <script>
-        // --- STATE & CONFIG ---
+        // --- STATE & DATA ---
         const editor = document.getElementById('code-editor');
         const consoleEl = document.getElementById('console-output');
         const packetContainer = document.getElementById('packet-container');
         const phone = document.getElementById('phone');
         const joystickHandle = document.getElementById('joystick-handle');
         const joystickBase = document.getElementById('joystick-base');
+        const appGrid = document.getElementById('app-grid');
 
         let isDraggingJoystick = false;
+        let installedApps = JSON.parse(localStorage.getItem('dathu_installed_apps') || '[]');
 
-        // --- PACKET STREAM ENGINE ---
-        const packetTags = ["ENCRYPT_KEY", "NODE_HANDSHAKE", "SIGNAL_DECODE", "BACKDOOR_BLOCK", "OS_PATCH", "EU_AUTH"];
-        
-        function createPacket() {
-            const id = Math.random().toString(36).substr(2, 8).toUpperCase();
-            const tag = packetTags[Math.floor(Math.random() * packetTags.length)];
-            const latency = Math.floor(Math.random() * 15) + "ms";
+        const templates = {
+            radio: '# Radio.dathu\napp_type = "radio"\nstations = 10000\nfetch_mode = "BIG_DATA"\n\nkernel.listen(88.5)',
+            todo: '# JSON_Task.dathu\napp_type = "todo"\nstorage = "local_json"\n\ndef add_task(val):\n    db.save(val)',
+            browser: '# Web.dathu\napp_type = "browser"\nproxy = "Northern_EU_Tactical"\n\ndef load_url(url):\n    kernel.fetch(url)',
+            editor: '# IDE_Core.dathu\napp_type = "editor"\nmode = "syntax_hightlight"\n\nkernel.init_editor()'
+        };
 
-            const el = document.createElement('div');
-            el.className = 'packet-item group p-3 bg-slate-900/60 border border-slate-800 rounded-xl hover:border-blue-500/50 transition-all hover:bg-slate-900';
-            el.draggable = true;
-            el.innerHTML = `
-                <div class="flex justify-between items-center mb-1 pointer-events-none">
-                    <div class="flex items-center gap-2">
-                        <i class="fas fa-box-open text-blue-400 text-[10px]"></i>
-                        <span class="text-[10px] font-black text-blue-400">${tag}</span>
-                    </div>
-                    <i class="fas fa-fingerprint text-slate-700 group-hover:text-blue-500 text-[10px]"></i>
-                </div>
-                <div class="text-[9px] text-slate-500 flex justify-between pointer-events-none">
-                    <span>ID: ${id}</span>
-                    <span>${latency}</span>
-                </div>
-            `;
-
-            el.addEventListener('dragstart', (e) => {
-                const codeSnippet = `\n# Injected Packet Logic [${tag}]\nkernel.process_packet("${id}", sector="NORTHERN_EU", latency="${latency}")\n`;
-                e.dataTransfer.setData("text/plain", codeSnippet);
-            });
-
-            packetContainer.prepend(el);
-            if(packetContainer.children.length > 10) packetContainer.lastElementChild.remove();
+        // --- APP ENGINE ---
+        function setTemplate(key) {
+            editor.value = templates[key];
+            logToConsole(`Template loaded: ${key.toUpperCase()}.dathu`);
         }
 
-        setInterval(createPacket, 3000);
+        function compileAndInject() {
+            logToConsole("Compiling Dathu.exe logic...");
+            const code = editor.value;
+            let type = "generic";
+            if (code.includes('radio')) type = "radio";
+            if (code.includes('todo')) type = "todo";
+            if (code.includes('browser')) type = "browser";
+            if (code.includes('editor')) type = "editor";
 
-        // --- EDITOR & DROP LOGIC ---
-        const overlay = document.getElementById('drop-overlay');
-        
-        editor.addEventListener('dragover', (e) => {
-            e.preventDefault();
-            overlay.classList.remove('hidden');
-        });
+            setTimeout(() => {
+                const newApp = { id: Date.now(), type, name: type.toUpperCase() };
+                installedApps.push(newApp);
+                localStorage.setItem('dathu_installed_apps', JSON.stringify(installedApps));
+                renderApps();
+                logToConsole(`SUCCESS: ${type.toUpperCase()} module deployed to Joystick OS.`);
+                document.getElementById('phone').classList.add('active-build');
+                setTimeout(() => document.getElementById('phone').classList.remove('active-build'), 2000);
+            }, 1200);
+        }
 
-        editor.addEventListener('dragleave', () => {
-            overlay.classList.add('hidden');
-        });
+        function renderApps() {
+            // Keep Tactical
+            appGrid.innerHTML = `
+                <div class="flex flex-col items-center gap-2 group cursor-pointer" onclick="openApp('Tactical')">
+                    <div class="w-14 h-14 bg-slate-800 rounded-2xl flex items-center justify-center border border-slate-700 group-hover:bg-orange-600 transition-all">
+                        <i class="fas fa-crosshairs text-white text-xl"></i>
+                    </div>
+                    <span class="text-[8px] font-black text-slate-500 uppercase">Tactical</span>
+                </div>
+            `;
+            installedApps.forEach(app => {
+                const iconMap = { radio: 'radio', todo: 'list-check', browser: 'globe', editor: 'code' };
+                const colorMap = { radio: 'bg-blue-600', todo: 'bg-emerald-600', browser: 'bg-indigo-600', editor: 'bg-purple-600' };
+                
+                const div = document.createElement('div');
+                div.className = "flex flex-col items-center gap-2 group cursor-pointer animate-pulse";
+                div.onclick = () => openApp(app.type);
+                div.innerHTML = `
+                    <div class="w-14 h-14 ${colorMap[app.type]} rounded-2xl flex items-center justify-center shadow-lg border border-white/10 group-hover:scale-110 transition-all">
+                        <i class="fas fa-${iconMap[app.type]} text-white text-xl"></i>
+                    </div>
+                    <span class="text-[8px] font-black text-slate-400 uppercase">${app.name}</span>
+                `;
+                appGrid.appendChild(div);
+                setTimeout(() => div.classList.remove('animate-pulse'), 1000);
+            });
+        }
 
-        editor.addEventListener('drop', (e) => {
-            e.preventDefault();
-            overlay.classList.add('hidden');
-            const data = e.dataTransfer.getData("text/plain");
-            editor.value += data;
-            logToConsole("Packet logic successfully injected into Dathu.exe buffer.");
-        });
-
-        // --- JOYSTICK 3D PROXY ---
-        joystickBase.addEventListener('mousedown', () => isDraggingJoystick = true);
-        window.addEventListener('mouseup', () => {
-            isDraggingJoystick = false;
-            joystickHandle.style.transform = `translate(0px, 0px)`;
-            phone.style.transform = `perspective(1200px) rotateX(0deg) rotateY(0deg)`;
-        });
-
-        window.addEventListener('mousemove', (e) => {
-            if (!isDraggingJoystick) return;
-            const rect = joystickBase.getBoundingClientRect();
-            const centerX = rect.left + rect.width / 2;
-            const centerY = rect.top + rect.height / 2;
-            
-            let moveX = (e.clientX - centerX);
-            let moveY = (e.clientY - centerY);
-            
-            const limit = 30;
-            const distance = Math.sqrt(moveX*moveX + moveY*moveY);
-            if (distance > limit) {
-                moveX *= limit / distance;
-                moveY *= limit / distance;
-            }
-
-            joystickHandle.style.transform = `translate(${moveX}px, ${moveY}px)`;
-            
-            // Map to phone rotation
-            const rotY = (moveX / limit) * 25;
-            const rotX = (moveY / limit) * -25;
-            phone.style.transform = `perspective(1200px) rotateX(${rotX}deg) rotateY(${rotY}deg)`;
-        });
-
-        // --- MOBILE OS ENGINE ---
-        function openApp(name) {
+        function openApp(type) {
             document.getElementById('screen-home').classList.add('hidden');
-            document.getElementById('app-view').classList.remove('hidden');
-            document.getElementById('app-title-large').innerText = name;
-            logToConsole(`Launching Mobile Module: ${name}...`);
+            const view = document.getElementById('app-view');
+            const content = document.getElementById('app-content');
+            view.classList.remove('hidden');
+            
+            content.innerHTML = '';
+            
+            if (type === 'radio') {
+                content.innerHTML = `
+                    <div class="h-full flex flex-col text-white">
+                        <div class="text-[10px] font-black mb-4 flex items-center gap-2 text-blue-400">
+                            <i class="fas fa-broadcast-tower"></i> DATHU RADIO (10,000 STATIONS)
+                        </div>
+                        <div class="flex-1 space-y-2 overflow-y-auto scrollbar-hide text-[9px]">
+                            ${Array.from({length: 20}).map((_, i) => `
+                                <div class="p-2 bg-slate-800 rounded border border-slate-700 flex justify-between">
+                                    <span>Station ${88 + i}.${Math.floor(Math.random()*9)} FM</span>
+                                    <span class="text-blue-500 italic">LIVE</span>
+                                </div>
+                            `).join('')}
+                        </div>
+                        <div class="mt-4 p-2 bg-blue-600 rounded text-center text-[10px] font-bold">BIG DATA FETCHING...</div>
+                    </div>
+                `;
+            } else if (type === 'todo') {
+                content.innerHTML = `
+                    <div class="h-full flex flex-col">
+                        <div class="text-[10px] font-black text-emerald-500 mb-4 uppercase">JSON TASK LOG</div>
+                        <div class="flex-1 space-y-1">
+                            <div class="p-2 bg-slate-800 rounded text-[9px] border-l-2 border-emerald-500">Initialize Northern EU Grid</div>
+                            <div class="p-2 bg-slate-800 rounded text-[9px] border-l-2 border-emerald-500">Audit Espionage Shields</div>
+                            <div class="p-2 bg-slate-800 rounded text-[9px] border-l-2 border-slate-600 opacity-50">Local Storage Sync</div>
+                        </div>
+                        <input class="mt-4 bg-black border border-slate-800 p-2 text-[9px] rounded" placeholder="+ Add Dathu Task">
+                    </div>
+                `;
+            } else if (type === 'browser') {
+                content.innerHTML = `
+                    <div class="h-full flex flex-col">
+                        <div class="flex gap-1 mb-2">
+                            <div class="bg-slate-800 flex-1 h-5 rounded text-[8px] flex items-center px-2">https://tactical.dathu.net</div>
+                        </div>
+                        <div class="flex-1 bg-white rounded-lg flex items-center justify-center">
+                            <i class="fas fa-shield-halved text-slate-200 text-4xl"></i>
+                        </div>
+                    </div>
+                `;
+            } else if (type === 'editor') {
+                content.innerHTML = `
+                    <div class="h-full bg-black p-2 font-mono text-[8px] text-emerald-400">
+                        <div class="text-slate-600 mb-2">// Mini-IDE Active</div>
+                        function core() {<br>&nbsp;&nbsp;return kernel.auth();<br>}
+                    </div>
+                `;
+            } else {
+                content.innerHTML = `<div class="text-center text-[10px] text-slate-500 mt-20">SYSTEM MODULE: ${type.toUpperCase()}</div>`;
+            }
         }
 
         function closeApp() {
@@ -313,23 +307,65 @@
             document.getElementById('app-view').classList.add('hidden');
         }
 
-        function buildApp() {
-            logToConsole("Initializing Build Client for Northern EU...");
-            setTimeout(() => {
-                localStorage.setItem('dathu_os_build', editor.value);
-                logToConsole("BUILD SUCCESS: Code committed to Local Storage.");
-            }, 1000);
+        // --- PACKET ENGINE ---
+        function createPacket() {
+            const id = Math.random().toString(36).substr(2, 6).toUpperCase();
+            const tags = ["APP_SHELL", "UI_XML", "JSON_BUFFER", "CSS_INJECT", "RADIO_FREQ", "BIG_DATA"];
+            const tag = tags[Math.floor(Math.random() * tags.length)];
+            
+            const el = document.createElement('div');
+            el.className = 'packet-item p-3 bg-slate-900/60 border border-slate-800 rounded-xl hover:border-emerald-500/50 transition-all';
+            el.draggable = true;
+            el.innerHTML = `
+                <div class="flex justify-between items-center text-[10px] font-black text-emerald-400 mb-1 pointer-events-none">
+                    <span>${tag}</span>
+                    <i class="fas fa-microchip"></i>
+                </div>
+                <div class="text-[9px] text-slate-600 pointer-events-none">VAL: ${id}</div>
+            `;
+            el.addEventListener('dragstart', (e) => {
+                e.dataTransfer.setData("text/plain", `\n# Injected ${tag}\napp.component("${tag}", source="${id}")\n`);
+            });
+            packetContainer.prepend(el);
+            if(packetContainer.children.length > 8) packetContainer.lastElementChild.remove();
         }
+        setInterval(createPacket, 4000);
+
+        // --- JOYSTICK LOGIC ---
+        joystickBase.addEventListener('mousedown', () => isDraggingJoystick = true);
+        window.addEventListener('mouseup', () => {
+            isDraggingJoystick = false;
+            joystickHandle.style.transform = `translate(0px, 0px)`;
+            phone.style.transform = `perspective(1200px) rotateX(0deg) rotateY(0deg)`;
+        });
+        window.addEventListener('mousemove', (e) => {
+            if (!isDraggingJoystick) return;
+            const rect = joystickBase.getBoundingClientRect();
+            const moveX = (e.clientX - (rect.left + rect.width / 2)) * 0.5;
+            const moveY = (e.clientY - (rect.top + rect.height / 2)) * 0.5;
+            joystickHandle.style.transform = `translate(${moveX}px, ${moveY}px)`;
+            phone.style.transform = `perspective(1200px) rotateX(${-moveY}deg) rotateY(${moveX}deg)`;
+        });
 
         function logToConsole(msg) {
-            const log = document.createElement('div');
-            log.className = "flex gap-2 text-slate-500 border-l border-slate-800 pl-2";
-            log.innerHTML = `<span class="text-emerald-800 font-black">$</span> [${new Date().toLocaleTimeString()}] ${msg}`;
-            consoleEl.prepend(log);
+            const l = document.createElement('div');
+            l.className = "flex gap-2 text-slate-600 border-l border-slate-800 pl-2 italic";
+            l.innerHTML = `<span class="text-emerald-500 font-black">»</span> [${new Date().toLocaleTimeString()}] ${msg}`;
+            consoleEl.prepend(l);
         }
 
-        // Initialize with first log
-        logToConsole("Kernel Interface v5.0 Tactical. Sector: M&R.");
+        const overlay = document.getElementById('drop-overlay');
+        editor.addEventListener('dragover', (e) => { e.preventDefault(); overlay.classList.remove('hidden'); });
+        editor.addEventListener('dragleave', () => overlay.classList.add('hidden'));
+        editor.addEventListener('drop', (e) => {
+            e.preventDefault();
+            overlay.classList.add('hidden');
+            editor.value += e.dataTransfer.getData("text/plain");
+            logToConsole("Hardware packet linked to editor buffer.");
+        });
+
+        renderApps();
+        logToConsole("Dathu Factory Initialized. Ready for App Deployment.");
     </script>
 </body>
 </html>
