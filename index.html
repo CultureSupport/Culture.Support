@@ -1,0 +1,283 @@
+import React, { useState, useEffect, useRef } from 'react';
+import { 
+  Code2, Save, Play, Settings, Terminal, Cpu, ShieldAlert, 
+  ChevronRight, FileCode, Layers, Radio, Lock, Eye, 
+  Crosshair, Zap, Smartphone, HardDrive, ShieldCheck,
+  MousePointer2, Package, Download
+} from 'lucide-react';
+
+const App = () => {
+  // --- STATE MANAGEMENT ---
+  const [code, setCode] = useState(
+    '# Dathu.exe Kernel Script\n# Clearance: Northern EU Sector\n\n# Drag packets here to inject logic...'
+  );
+  const [activeApp, setActiveApp] = useState(null);
+  const [isCompiling, setIsCompiling] = useState(false);
+  const [terminalOutput, setTerminalOutput] = useState([]);
+  const [streamData, setStreamData] = useState([]);
+  const [rotation, setRotation] = useState({ x: 0, y: 0 });
+  const [isDraggingJoystick, setIsDraggingJoystick] = useState(false);
+  const [isOverEditor, setIsOverEditor] = useState(false);
+
+  // User Identity & Clearance
+  const userProfile = {
+    name: "Ole Olessiall",
+    rank: "Dathu Certified Coder",
+    sector: "Northern EU / Møre og Romsdal",
+    clearance: "Level 9 - Tactical Elite"
+  };
+
+  // --- PERSISTENCE & INITIALIZATION ---
+  useEffect(() => {
+    const savedCode = localStorage.getItem('dathu_buffer_v3');
+    if (savedCode) setCode(savedCode);
+    addToTerminal(`Kernel Interface v4.5 Live. Welcome, Specialist ${userProfile.name.split(' ')[0]}.`);
+  }, []);
+
+  // --- DRAG AND DROP LOGIC ---
+  const handleDragStart = (e, packet) => {
+    const codeSnippet = `\n# Injected from Live Stream [${packet.tag}]\nkernel.process_packet("${packet.id}", type="${packet.tag}", latency="${packet.latency}")\n`;
+    e.dataTransfer.setData("text/plain", codeSnippet);
+  };
+
+  const handleDrop = (e) => {
+    e.preventDefault();
+    setIsOverEditor(false);
+    const droppedCode = e.dataTransfer.getData("text/plain");
+    setCode(prev => prev + droppedCode);
+    addToTerminal("Packet logic successfully injected into local buffer.");
+  };
+
+  // --- 3D JOYSTICK LOGIC ---
+  const handleJoystick = (e) => {
+    if (!isDraggingJoystick) return;
+    const rect = e.currentTarget.getBoundingClientRect();
+    const x = ((e.clientX - rect.left) / rect.width - 0.5) * 40;
+    const y = ((e.clientY - rect.top) / rect.height - 0.5) * -40;
+    setRotation({ x, y });
+  };
+
+  // --- LIVE KERNEL STREAM ---
+  useEffect(() => {
+    const interval = setInterval(() => {
+      const tags = ["ENCRYPT_KEY", "NODE_HANDSHAKE", "SIGNAL_DECODE", "BACKDOOR_BLOCK", "OS_PATCH"];
+      const newLog = {
+        id: Math.random().toString(36).substr(2, 9).toUpperCase(),
+        tag: tags[Math.floor(Math.random() * tags.length)],
+        latency: Math.floor(Math.random() * 15) + "ms"
+      };
+      setStreamData(prev => [newLog, ...prev].slice(0, 10));
+    }, 3000);
+    return () => clearInterval(interval);
+  }, []);
+
+  const addToTerminal = (msg) => {
+    setTerminalOutput(prev => [`[${new Date().toLocaleTimeString()}] ${msg}`, ...prev].slice(0, 30));
+  };
+
+  const buildToMobileStorage = () => {
+    setIsCompiling(true);
+    addToTerminal("Starting build sequence for Mobile Client OS...");
+    
+    setTimeout(() => {
+      // Simulate writing to Mobile Storage
+      localStorage.setItem('dathu_mobile_app_data', code);
+      setIsCompiling(false);
+      addToTerminal("BUILD COMPLETE: Script deployed to Joystick OS Local Storage.");
+    }, 1500);
+  };
+
+  // --- APP COMPONENTS ---
+  const AppLauncher = ({ name, icon: Icon, color }) => (
+    <button 
+      onClick={() => setActiveApp(name)}
+      className="flex flex-col items-center gap-1 group"
+    >
+      <div className={`p-3 rounded-2xl ${color} shadow-lg group-hover:scale-110 transition-all border border-white/10`}>
+        <Icon size={24} className="text-white" />
+      </div>
+      <span className="text-[9px] font-bold text-slate-500 uppercase">{name}</span>
+    </button>
+  );
+
+  return (
+    <div className="flex h-screen bg-black text-slate-200 font-mono overflow-hidden">
+      
+      {/* --- LEFT PANEL: DRAGGABLE KERNEL STREAM --- */}
+      <aside className="w-80 bg-slate-950 border-r border-blue-900/20 flex flex-col p-4">
+        <div className="flex items-center justify-between mb-6 border-b border-slate-800 pb-2">
+          <div className="flex items-center gap-2">
+            <Radio size={16} className="text-blue-500 animate-pulse" />
+            <h2 className="text-xs font-black tracking-tighter text-blue-500">PACKET STREAM</h2>
+          </div>
+          <span className="text-[10px] text-slate-600 uppercase">Drag to Edit</span>
+        </div>
+        
+        <div className="flex-1 space-y-2 overflow-y-auto pr-2 scrollbar-hide">
+          {streamData.map(packet => (
+            <div 
+              key={packet.id}
+              draggable
+              onDragStart={(e) => handleDragStart(e, packet)}
+              className="group cursor-grab active:cursor-grabbing p-3 bg-slate-900/50 border border-slate-800 rounded-lg hover:border-blue-500/50 transition-all hover:bg-slate-900"
+            >
+              <div className="flex justify-between items-center mb-1">
+                <div className="flex items-center gap-2">
+                  <Package size={12} className="text-blue-400" />
+                  <span className="text-[10px] font-bold text-blue-400">{packet.tag}</span>
+                </div>
+                <MousePointer2 size={10} className="text-slate-700 group-hover:text-blue-500" />
+              </div>
+              <div className="text-[9px] text-slate-500 flex justify-between">
+                <span>ID: {packet.id}</span>
+                <span>{packet.latency}</span>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        <div className="mt-4 p-3 bg-slate-900 border border-slate-800 rounded-xl">
+          <div className="flex items-center gap-2 mb-2">
+            <ShieldCheck size={14} className="text-emerald-500" />
+            <span className="text-[10px] font-bold text-emerald-500 uppercase">Sector Status</span>
+          </div>
+          <div className="text-[11px] font-bold">NORTHERN EU [M&R]</div>
+          <div className="text-[9px] text-slate-500">Security Clearance Level 9</div>
+        </div>
+      </aside>
+
+      {/* --- CENTER: DATHU.EXE EDITOR (DROP ZONE) --- */}
+      <main className="flex-1 flex flex-col bg-slate-950 relative">
+        <header className="h-12 border-b border-slate-800 flex items-center justify-between px-6 bg-slate-950/50 backdrop-blur-md z-10">
+          <div className="flex items-center gap-3">
+            <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+            <span className="text-xs font-bold tracking-widest text-emerald-500 uppercase">Dathu.exe Build Environment</span>
+          </div>
+          <div className="flex gap-4">
+            <button 
+              onClick={buildToMobileStorage}
+              disabled={isCompiling}
+              className="flex items-center gap-2 px-3 py-1 bg-blue-600 hover:bg-blue-500 rounded text-[10px] font-bold uppercase transition-all disabled:opacity-50"
+            >
+              <Download size={14} /> Build to Mobile
+            </button>
+          </div>
+        </header>
+
+        <div 
+          className={`flex-1 relative transition-colors duration-200 ${isOverEditor ? 'bg-blue-900/10' : 'bg-black'}`}
+          onDragOver={(e) => { e.preventDefault(); setIsOverEditor(true); }}
+          onDragLeave={() => setIsOverEditor(false)}
+          onDrop={handleDrop}
+        >
+          <textarea 
+            className="w-full h-full bg-transparent p-8 text-sm text-emerald-400 outline-none resize-none font-mono selection:bg-emerald-900/30"
+            value={code}
+            onChange={(e) => setCode(e.target.value)}
+            spellCheck="false"
+          />
+          {isOverEditor && (
+            <div className="absolute inset-0 pointer-events-none border-2 border-dashed border-blue-500/50 flex items-center justify-center">
+              <div className="bg-blue-600 text-white px-4 py-2 rounded text-xs font-bold animate-bounce">
+                DROP PACKET TO INJECT LOGIC
+              </div>
+            </div>
+          )}
+        </div>
+
+        <div className="h-40 bg-black border-t border-slate-900 p-4 font-mono">
+          <div className="flex items-center gap-2 text-[10px] text-slate-600 mb-2 uppercase font-bold">
+            <Terminal size={12} /> System Console
+          </div>
+          <div className="overflow-y-auto h-24 space-y-1">
+            {terminalOutput.map((t, i) => (
+              <div key={i} className="text-[10px] text-slate-500 border-l border-slate-800 pl-2">
+                <span className="text-emerald-800 font-bold">$</span> {t}
+              </div>
+            ))}
+          </div>
+        </div>
+      </main>
+
+      {/* --- RIGHT PANEL: DATHU MOBILE CLIENT + JOYSTICK --- */}
+      <aside className="w-96 bg-slate-900/50 border-l border-slate-800 flex flex-col items-center justify-center relative p-6">
+        
+        {/* MOBILE OS FRAME */}
+        <div 
+          className="w-64 h-[520px] bg-slate-950 rounded-[3rem] border-8 border-slate-800 shadow-[0_0_80px_rgba(0,0,0,0.8)] overflow-hidden relative transition-transform duration-200 ring-1 ring-slate-700"
+          style={{ transform: `perspective(1200px) rotateX(${rotation.y}deg) rotateY(${rotation.x}deg)` }}
+        >
+          {/* Internal Screen */}
+          <div className="h-full flex flex-col">
+            <div className="h-8 bg-slate-900 flex justify-between px-6 items-center text-[9px] font-black text-slate-500 tracking-tighter">
+              <span>DATHU-SEC</span>
+              <div className="flex items-center gap-1.5">
+                <div className="w-1.5 h-1.5 rounded-full bg-blue-500 animate-pulse" />
+                <span>LN-9</span>
+              </div>
+            </div>
+
+            {activeApp ? (
+              <div className="p-5 h-full flex flex-col bg-slate-950">
+                <button onClick={() => setActiveApp(null)} className="text-[10px] text-blue-400 mb-6 flex items-center gap-1 font-bold">
+                  <ChevronRight size={14} className="rotate-180" /> CLOSE_APP
+                </button>
+                <div className="flex-1 bg-slate-900/80 rounded-2xl border border-slate-800 p-4 flex flex-col items-center justify-center text-center">
+                  <div className="w-16 h-16 rounded-full bg-blue-600/20 flex items-center justify-center mb-4 border border-blue-500/30">
+                    <Smartphone className="text-blue-400" />
+                  </div>
+                  <h3 className="text-xs font-black text-white mb-2 uppercase tracking-widest">{activeApp}</h3>
+                  <p className="text-[9px] text-slate-500 leading-relaxed px-4">
+                    Local Storage App Active.<br/>Accessing Northern EU Build Cache...
+                  </p>
+                </div>
+              </div>
+            ) : (
+              <div className="p-8 grid grid-cols-2 gap-x-6 gap-y-10 content-start">
+                <AppLauncher name="Tactical" icon={Crosshair} color="bg-orange-600" />
+                <AppLauncher name="Spyder" icon={Eye} color="bg-red-600" />
+                <AppLauncher name="Vault" icon={Lock} color="bg-emerald-600" />
+                <AppLauncher name="Sentry" icon={ShieldAlert} color="bg-blue-600" />
+                
+                <div className="col-span-2 mt-16 p-4 bg-slate-900 rounded-2xl border border-slate-800 relative overflow-hidden">
+                  <div className="absolute top-0 right-0 p-2 opacity-10"><Cpu size={40} /></div>
+                  <div className="text-[10px] font-black text-emerald-500 mb-1">LOCAL BUILD STATUS</div>
+                  <div className="text-[8px] text-slate-500">Møre og Romsdal Sector Alpha</div>
+                  <div className="w-full h-1.5 bg-slate-800 mt-3 rounded-full overflow-hidden">
+                    <div className="w-3/4 h-full bg-emerald-500 shadow-[0_0_10px_rgba(16,185,129,0.5)]" />
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* 3D JOYSTICK PROXY */}
+        <div className="mt-10 flex flex-col items-center">
+          <div className="flex items-center gap-2 mb-3">
+            <span className="w-1 h-1 bg-blue-500 rounded-full" />
+            <span className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Hardware Proxy</span>
+            <span className="w-1 h-1 bg-blue-500 rounded-full" />
+          </div>
+          <div 
+            className="w-24 h-24 bg-gradient-to-b from-slate-800 to-slate-950 rounded-full border-4 border-slate-800 relative cursor-grab active:cursor-grabbing shadow-[inset_0_4px_10px_rgba(0,0,0,0.8)] flex items-center justify-center group"
+            onMouseDown={() => setIsDraggingJoystick(true)}
+            onMouseMove={handleJoystick}
+            onMouseUp={() => { setIsDraggingJoystick(false); setRotation({x:0, y:0}); }}
+            onMouseLeave={() => { setIsDraggingJoystick(false); setRotation({x:0, y:0}); }}
+          >
+            <div 
+              className="w-10 h-10 bg-slate-700 rounded-full border-2 border-slate-600 shadow-2xl transition-transform duration-75"
+              style={{ transform: `translate(${rotation.x}px, ${rotation.y * -1}px)` }}
+            >
+              <div className="w-full h-full rounded-full bg-gradient-to-br from-white/10 to-transparent" />
+            </div>
+          </div>
+        </div>
+      </aside>
+
+    </div>
+  );
+};
+
+export default App;
