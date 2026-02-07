@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="no">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DATHU-97 TACTICAL COMM</title>
+    <!-- Tailwind for layout, Lucide for icons -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=VT323&display=swap');
+
+        :root {
+            --case-color: #3d441e; /* Army Green */
+            --lcd-bg: #879764;
+            --lcd-text: #1a200f;
+            --plastic-dark: #222;
+        }
+
+        body {
+            background: #1a1a1b;
+            color: #eee;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            overflow-x: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        /* Tactical Case */
+        .radio-chassis {
+            width: 360px;
+            height: 700px;
+            background: var(--case-color);
+            border-radius: 40px 40px 60px 60px;
+            border: 8px solid #2a2e14;
+            position: relative;
+            box-shadow: 0 50px 100px rgba(0,0,0,0.8), inset 0 2px 10px rgba(255,255,255,0.2);
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Antenna */
+        .antenna {
+            position: absolute;
+            top: -180px;
+            left: 50px;
+            width: 14px;
+            height: 200px;
+            background: linear-gradient(90deg, #333, #555, #333);
+            border-radius: 10px 10px 0 0;
+            z-index: -1;
+        }
+        .antenna::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -4px;
+            width: 22px;
+            height: 10px;
+            background: #111;
+            border-radius: 50%;
+        }
+
+        /* LCD Screen */
+        .lcd-screen {
+            background: var(--lcd-bg);
+            height: 140px;
+            border: 10px solid var(--plastic-dark);
+            border-radius: 10px;
+            box-shadow: inset 0 0 20px rgba(0,0,0,0.5);
+            font-family: 'VT323', monospace;
+            color: var(--lcd-text);
+            padding: 10px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .lcd-screen::before {
+            content: "";
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.1) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.03), rgba(0, 255, 0, 0.01), rgba(0, 0, 255, 0.03));
+            background-size: 100% 3px, 3px 100%;
+            pointer-events: none;
+        }
+
+        /* LP Disc Animation */
+        .vinyl-container {
+            width: 100px;
+            height: 100px;
+            background: #111;
+            border-radius: 50%;
+            margin: 20px auto;
+            border: 4px solid #333;
+            position: relative;
+            animation: rotate 3s linear infinite;
+            animation-play-state: paused;
+        }
+        .vinyl-container.playing { animation-play-state: running; }
+        .vinyl-container::after {
+            content: '';
+            position: absolute;
+            top: 50%; left: 50%;
+            width: 20px; height: 20px;
+            background: #555;
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        @keyframes rotate { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+
+        /* PTT Button */
+        .ptt-button {
+            position: absolute;
+            left: -35px;
+            top: 250px;
+            width: 40px;
+            height: 120px;
+            background: #8b0000;
+            border-radius: 10px 0 0 10px;
+            border: 4px solid #2a0000;
+            cursor: pointer;
+            transition: all 0.1s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            writing-mode: vertical-rl;
+            font-weight: bold;
+            font-size: 12px;
+            color: white;
+            box-shadow: -5px 5px 10px rgba(0,0,0,0.5);
+        }
+        .ptt-button:active {
+            left: -28px;
+            background: #ff0000;
+        }
+
+        .btn-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .keypad-btn {
+            background: #2a2a2a;
+            border: 2px solid #111;
+            border-bottom: 5px solid #000;
+            padding: 10px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: bold;
+            color: #aaa;
+            cursor: pointer;
+        }
+        .keypad-btn:active {
+            border-bottom: 2px solid #000;
+            transform: translateY(3px);
+        }
+
+        .signal-meter {
+            display: flex;
+            gap: 2px;
+            align-items: flex-end;
+            height: 15px;
+        }
+        .signal-bar {
+            width: 4px;
+            background: var(--lcd-text);
+            opacity: 0.3;
+        }
+        .signal-bar.active { opacity: 1; }
+
+        /* Custom Scrollbar */
+        .station-list::-webkit-scrollbar { width: 4px; }
+        .station-list::-webkit-scrollbar-thumb { background: var(--lcd-text); }
+    </style>
+</head>
+<body>
+
+    <div class="radio-chassis">
+        <div class="antenna"></div>
+        
+        <!-- PTT Side Button -->
+        <div class="ptt-button" id="ptt-btn">PUSH TO TALK</div>
+
+        <!-- LCD Display -->
+        <div class="lcd-screen">
+            <div class="flex justify-between items-start">
+                <div class="text-xs">MODE: <span id="mode-text">RADIO</span></div>
+                <div class="signal-meter">
+                    <div class="signal-bar active" style="height: 4px"></div>
+                    <div class="signal-bar active" style="height: 7px"></div>
+                    <div class="signal-bar active" style="height: 10px"></div>
+                    <div class="signal-bar" style="height: 13px" id="sig-4"></div>
+                </div>
+            </div>
+            
+            <div class="text-center py-2">
+                <div class="text-3xl leading-none tracking-widest" id="main-freq">94.70 MHz</div>
+                <div class="text-sm truncate opacity-80" id="station-name">SEARCHING USA...</div>
+            </div>
+
+            <div class="flex justify-between items-end text-xs">
+                <div id="p2p-status">P2P: IDLE</div>
+                <div id="clock">12:00:00</div>
+            </div>
+        </div>
+
+        <!-- Vinyl Animation / Status -->
+        <div class="flex flex-col items-center">
+            <div class="vinyl-container" id="vinyl"></div>
+            <div class="text-[10px] text-black/40 font-bold uppercase tracking-widest -mt-4">DATHU 1997 HAM-UNIT</div>
+        </div>
+
+        <!-- Controls -->
+        <div class="flex-grow overflow-hidden bg-black/20 rounded-xl p-2 border border-white/10 station-list overflow-y-auto" id="results">
+            <div class="text-[10px] text-center opacity-50">INITIALIZING TRANSCEIVER...</div>
+        </div>
+
+        <div class="btn-grid">
+            <button class="keypad-btn" onclick="setMode('radio')">RADIO</button>
+            <button class="keypad-btn" onclick="setMode('lp')">LP</button>
+            <button class="keypad-btn" onclick="setMode('p2p')">P2P</button>
+            <button class="keypad-btn" onclick="changeVolume(0.1)"><i data-lucide="volume-2"></i></button>
+            <button class="keypad-btn" onclick="scanUSA()"><i data-lucide="search"></i></button>
+            <button class="keypad-btn" onclick="changeVolume(-0.1)"><i data-lucide="volume-x"></i></button>
+        </div>
+
+        <!-- Volume Knob Area -->
+        <div class="flex justify-around mt-4">
+            <div class="text-center">
+                <div class="w-10 h-10 bg-black rounded-full border-4 border-gray-800 mx-auto mb-1"></div>
+                <span class="text-[8px] font-bold">VOL</span>
+            </div>
+            <div class="text-center">
+                <div class="w-10 h-10 bg-black rounded-full border-4 border-gray-800 mx-auto mb-1"></div>
+                <span class="text-[8px] font-bold">SQL</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Hidden Audio elements -->
+    <audio id="main-player" crossorigin="anonymous"></audio>
+    <audio id="p2p-player" autoplay></audio>
+
+    <script>
+        // State Management
+        let state = {
+            mode: 'radio', // 'radio', 'lp', 'p2p'
+            stations: [],
+            currentIndex: 0,
+            volume: 0.7,
+            isPTT: false,
+            peer: null,
+            localStream: null
+        };
+
+        const player = document.getElementById('main-player');
+        const vinyl = document.getElementById('vinyl');
+
+        // 1. Initialize Radio Stasjoner (USA)
+        async function scanUSA() {
+            updateLCD("SCANNING...", "USA 10K+ DATABASE");
+            try {
+                // Radio Browser API - Henter 100 stasjoner som eksempel (kan hente flere ved behov)
+                const res = await fetch('https://de1.api.radio-browser.info/json/stations/bycountry/united states of america?limit=250&order=votes&reverse=true');
+                state.stations = await res.json();
+                renderStations();
+                updateLCD("SYNCED", state.stations.length + " STASJONER");
+            } catch (err) {
+                updateLCD("ERR: LINK LOST", "CHECK CONNECTION");
+            }
+        }
+
+        function renderStations() {
+            const list = document.getElementById('results');
+            list.innerHTML = state.stations.map((s, idx) => `
+                <div onclick="playStation(${idx})" class="text-[10px] p-1 border-b border-white/5 cursor-pointer hover:bg-white/10 truncate">
+                    [${idx}] ${s.name} - ${s.state || 'USA'}
+                </div>
+            `).join('');
+        }
+
+        function playStation(idx) {
+            state.currentIndex = idx;
+            const s = state.stations[idx];
+            player.src = s.url_resolved;
+            player.play();
+            updateLCD(s.name.substring(0, 10), (s.bitrate || "128") + "kbps " + s.codec);
+            vinyl.classList.add('playing');
+            document.getElementById('sig-4').classList.add('active');
+        }
+
+        // 2. Peer-to-Peer (Walkie Talkie Mode)
+        // Note: For full P2P utenfor lokalnett trengs en STUN server og en enkel PeerJS implementasjon
+        async function initP2P() {
+            updateLCD("P2P INIT", "WAITING FOR IP...");
+            try {
+                state.localStream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                updateLCD("PTT READY", "HOLD BUTTON TO TALK");
+                document.getElementById('p2p-status').innerText = "P2P: ONLINE";
+            } catch (e) {
+                updateLCD("MIC ERR", "ALLOW AUDIO ACCESS");
+            }
+        }
+
+        // 3. UI Helpers
+        function updateLCD(main, sub) {
+            document.getElementById('main-freq').innerText = main;
+            document.getElementById('station-name').innerText = sub;
+        }
+
+        function setMode(m) {
+            state.mode = m;
+            document.getElementById('mode-text').innerText = m.toUpperCase();
+            if(m === 'p2p') initP2P();
+            if(m === 'lp') updateLCD("LP PLAYER", "LOCAL DISC MODE");
+        }
+
+        function changeVolume(delta) {
+            state.volume = Math.max(0, Math.min(1, state.volume + delta));
+            player.volume = state.volume;
+            updateLCD("VOL: " + Math.round(state.volume * 100) + "%", "ADJUSTING...");
+        }
+
+        // PTT Logic
+        const ptt = document.getElementById('ptt-btn');
+        ptt.addEventListener('mousedown', () => {
+            if(state.mode === 'p2p' && state.localStream) {
+                state.isPTT = true;
+                updateLCD("TRANSMITTING", "TX ACTIVE...");
+                document.body.style.boxShadow = "inset 0 0 50px rgba(255,0,0,0.2)";
+            }
+        });
+        ptt.addEventListener('mouseup', () => {
+            state.isPTT = false;
+            updateLCD("PTT READY", "RX STANDBY");
+            document.body.style.boxShadow = "none";
+        });
+
+        // Touch support for PTT
+        ptt.addEventListener('touchstart', (e) => { e.preventDefault(); ptt.dispatchEvent(new Event('mousedown')); });
+        ptt.addEventListener('touchend', () => ptt.dispatchEvent(new Event('mouseup')));
+
+        // Clock
+        setInterval(() => {
+            const now = new Date();
+            document.getElementById('clock').innerText = now.toTimeString().split(' ')[0];
+        }, 1000);
+
+        // PWA Service Worker Registration
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                const swCode = `
+                    const CACHE_NAME = 'dathu-radio-v1';
+                    self.addEventListener('install', e => {
+                        e.waitUntil(caches.open(CACHE_NAME).then(cache => cache.addAll(['./'])));
+                    });
+                    self.addEventListener('fetch', e => {
+                        e.respondWith(caches.match(e.request).then(res => res || fetch(e.request)));
+                    });
+                `;
+                const blob = new Blob([swCode], {type: 'application/javascript'});
+                const swUrl = URL.createObjectURL(blob);
+                // navigator.serviceWorker.register(swUrl); // Normalt peker denne til en fil
+            });
+        }
+
+        // Initialize Lucide Icons
+        lucide.createIcons();
+        scanUSA();
+
+    </script>
+</body>
+</html>
+
