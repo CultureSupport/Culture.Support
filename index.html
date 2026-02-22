@@ -3,174 +3,215 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Node Interception Dashboard</title>
-    </head>
+    <title>Galaxy Z26 - TV Hub Edition</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
     <style>
-        :root {
-            --primary-red: #8b0000;
-            --bright-red: #ff0000;
-            --bg-dark: #000000;
-        }
-
+        @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&display=swap');
+        
         body {
-            margin: 0;
-            display: grid;
-            grid-template-areas: 
-                "header header"
-                "sidebar main";
-            grid-template-columns: 240px 1fr;
-            grid-template-rows: 70px 1fr;
+            background-color: #050505;
+            color: #00ff41;
+            font-family: 'JetBrains+Mono', monospace;
+            overflow: hidden;
             height: 100vh;
-            background: var(--bg-dark);
-            color: #eee;
-            font-family: 'Inter', sans-serif;
         }
 
-        /* --- Header & Navigation --- */
-        header {
-            grid-area: header;
-            background: rgba(0,0,0,0.9);
-            border-bottom: 1px solid var(--primary-red);
-            display: flex;
-            align-items: center;
-            padding: 0 25px;
-            z-index: 1000;
+        .crt-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), 
+                        linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
+            background-size: 100% 2px, 3px 100%;
+            pointer-events: none;
+            z-index: 100;
         }
 
-        /* --- Mobile Sidebar Interception --- */
-        aside {
-            grid-area: sidebar;
-            background: #0a0a0a;
-            border-right: 1px solid #222;
-            padding: 20px;
-        }
-
-        @media (max-width: 768px) {
-            body {
-                grid-template-areas: 
-                    "header"
-                    "sidebar"
-                    "main";
-                grid-template-columns: 1fr;
-                grid-template-rows: 70px auto 1fr;
-            }
-            aside {
-                border-right: none;
-                border-bottom: 1px solid var(--primary-red);
-                padding: 10px;
-            }
-            .sidebar-nav {
-                display: flex;
-                overflow-x: auto;
-                gap: 20px;
-                white-space: nowrap;
-            }
-        }
-
-        /* --- App Grid --- */
-        .app-grid {
+        .pixel-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 20px;
-            padding: 20px 0;
-        }
-
-        .app-card {
+            grid-template-columns: repeat(20, 1fr);
+            gap: 2px;
+            padding: 5px;
             background: #111;
             border: 1px solid #333;
-            border-radius: 8px;
-            padding: 20px;
-            transition: 0.3s;
         }
 
-        .app-card:hover {
-            border-color: var(--bright-red);
-            box-shadow: 0 0 15px rgba(255,0,0,0.1);
-        }
-
-        /* Chart Styling */
-        #healthChart {
+        .pixel {
             width: 100%;
-            height: 200px;
-            background: rgba(255,255,255,0.02);
-            border-radius: 5px;
+            padding-bottom: 100%;
+            background: #1a1a1a;
+            transition: background 0.1s;
         }
+
+        .glass-panel {
+            background: rgba(20, 20, 20, 0.8);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(0, 255, 65, 0.2);
+        }
+
+        ::-webkit-scrollbar { width: 4px; }
+        ::-webkit-scrollbar-track { background: #050505; }
+        ::-webkit-scrollbar-thumb { background: #00ff41; }
     </style>
+</head>
+<body class="p-4 flex flex-col gap-4">
+    <div class="crt-overlay"></div>
 
-<body>
-
-<header>
-    <h2 style="color: var(--bright-red); letter-spacing: 2px;">NODE_01</h2>
-</header>
-
-<aside>
-    <nav class="sidebar-nav">
-        <div class="nav-item">Monitor</div>
-        <div class="nav-item">Security</div>
-        <div class="nav-item">Logs</div>
-        <div class="nav-item">Settings</div>
-    </nav>
-</aside>
-
-<main style="padding: 30px; overflow-y: auto;">
-    <h1>System Dashboard</h1>
-    
-    <div class="app-card" style="grid-column: 1 / -1;">
-        <h3>Live System Health</h3>
-        <canvas id="healthChart"></canvas>
-    </div>
-
-    <div class="app-grid">
-        <div class="app-card">
-            <h4>Network Traffic</h4>
-            <p>Scanning active nodes...</p>
-            <div style="color: var(--bright-red);">Status: Stable</div>
+    <!-- Header / VFO Section -->
+    <header class="flex justify-between items-end glass-panel p-4 rounded-lg shadow-2xl">
+        <div>
+            <h1 class="text-xs opacity-50 uppercase tracking-widest">Galaxy Z26 // Sat-Comm Interface</h1>
+            <div class="text-4xl font-bold flex items-baseline gap-2">
+                <span id="vfo-freq">11.742</span> <span class="text-lg opacity-70">GHz</span>
+            </div>
+            <p class="text-[10px] mt-1 text-blue-400">POLARIZATION: HORIZONTAL | LNB: 9750/10600</p>
         </div>
-        <div class="app-card">
-            <h4>Encryption Key</h4>
-            <code style="background: #000; padding: 5px;">AES-256-GCM</code>
-            <p style="font-size: 0.8rem; color: #666; margin-top: 10px;">Rotated 2 mins ago</p>
+        <div class="text-right">
+            <div id="clock" class="text-xl">00:00:00</div>
+            <div class="text-[10px] text-yellow-500 uppercase">Uptime: 99.998%</div>
         </div>
-    </div>
-</main>
+    </header>
 
-<script>
-    const canvas = document.getElementById('healthChart');
-    const ctx = canvas.getContext('2d');
+    <main class="flex flex-1 gap-4 overflow-hidden">
+        <!-- Sidebar: Channel List -->
+        <aside class="w-1/3 glass-panel rounded-lg flex flex-col overflow-hidden">
+            <div class="p-3 border-b border-white/10 bg-white/5">
+                <input type="text" id="channelSearch" placeholder="SEARCH FTA INDEX..." 
+                       class="w-full bg-black/50 border border-green-500/30 p-2 text-xs focus:outline-none focus:border-green-500">
+            </div>
+            <div id="channelContainer" class="flex-1 overflow-y-auto p-2 space-y-1">
+                <!-- Channels injected here -->
+            </div>
+        </aside>
 
-    // Create a simple animated line chart
-    let points = Array.from({length: 20}, () => Math.random() * 100);
+        <!-- Main Content: Player & Grid -->
+        <section class="flex-1 flex flex-col gap-4">
+            <!-- Video Player -->
+            <div class="relative flex-1 bg-black rounded-lg border border-white/10 overflow-hidden flex items-center justify-center">
+                <video id="videoPlayer" class="w-full h-full object-contain" controls autoplay muted></video>
+                <div id="playerOverlay" class="absolute top-4 left-4 bg-black/70 p-2 text-[10px] border border-green-500 hidden">
+                    SIGNAL LOCKED: <span id="currentChanName">--</span>
+                </div>
+            </div>
 
-    function draw() {
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-        ctx.strokeStyle = '#ff0000';
-        ctx.lineWidth = 2;
-        ctx.beginPath();
-        
-        let spacing = canvas.width / (points.length - 1);
-        points.forEach((p, i) => {
-            let x = i * spacing;
-            let y = canvas.height - (p / 100 * canvas.height);
-            if(i === 0) ctx.moveTo(x, y);
-            else ctx.lineTo(x, y);
-        });
-        
-        ctx.stroke();
-        
-        // Shift data to animate
-        points.push(Math.random() * 100);
-        points.shift();
-        
-        requestAnimationFrame(() => {
-            setTimeout(draw, 100); // Slow down animation
-        });
-    }
+            <!-- Data Monitor -->
+            <div class="h-32 glass-panel rounded-lg p-3 flex gap-4">
+                <div class="w-48">
+                    <h3 class="text-[10px] mb-2 uppercase opacity-50">Pixel-Grid Density</h3>
+                    <div id="pixelGrid" class="pixel-grid h-20"></div>
+                </div>
+                <div class="flex-1">
+                    <h3 class="text-[10px] mb-2 uppercase opacity-50">Telemetry Stream</h3>
+                    <div id="telemetry" class="text-[9px] h-20 overflow-hidden opacity-70 leading-relaxed"></div>
+                </div>
+            </div>
+        </section>
+    </main>
 
-    // Set canvas resolution
-    canvas.width = canvas.offsetWidth;
-    canvas.height = canvas.offsetHeight;
-    draw();
-</script>
+    <script>
+        // High-Uptime FTA Channels (Mock expanded to 100 entries for UX simulation)
+        const categories = ["NEWS", "SCIENCE", "CULTURE", "TECH", "KIDS"];
+        const channels = [
+            { name: "NASA TV Public", url: "https://nasa-i.akamaihd.net/hls/live/253565/NASA-NTV1-Public/master.m3u8", cat: "SCIENCE", freq: "12.632" },
+            { name: "France 24 English", url: "https://live.france24.com/hls/live/2037218/F24_EN_HI_HLS/master_5000.m3u8", cat: "NEWS", freq: "11.538" },
+            { name: "DW News (EN)", url: "https://dwamdstream102.akamaized.net/hls/live/2017955/dwstream102/index.m3u8", cat: "NEWS", freq: "11.621" },
+            { name: "NHK World Japan", url: "https://media-tyo.hls.nhkworld.jp/hls/w/live/master.m3u8", cat: "CULTURE", freq: "11.244" },
+            { name: "Al Jazeera English", url: "https://live-hls-web-aje.getaj.net/AJE/index.m3u8", cat: "NEWS", freq: "11.022" },
+            { name: "Red Bull TV", url: "https://shls-live-enc.edgenextcdn.net/out/v1/ad35123d4ad041068bce26ae67ee3180/index.m3u8", cat: "CULTURE", freq: "12.115" },
+            { name: "Cheddar News", url: "https://live.chdrstatic.com/cbn/primary/1.m3u8", cat: "NEWS", freq: "11.988" },
+            { name: "PBS Kids", url: "https://livestream.pbskids.org/out/v1/1e3d77b418ad4a819b3f4c80ac0373b5/est_124.m3u8", cat: "KIDS", freq: "12.001" },
+            { name: "Euronews (EN)", url: "https://euronews-euronews-world-1-au.samsung.wurl.com/manifest/playlist.m3u8", cat: "NEWS", freq: "11.123" }
+        ];
 
+        // Generate 91 more mock/placeholder entries to reach 100 for the UI demand
+        for(let i = 10; i <= 100; i++) {
+            const cat = categories[Math.floor(Math.random() * categories.length)];
+            channels.push({
+                name: `FTA Global Stream ${i}`,
+                url: channels[i % 8].url, // Reuse URLs for demo stability
+                cat: cat,
+                freq: (10.7 + Math.random() * 2).toFixed(3)
+            });
+        }
+
+        const video = document.getElementById('videoPlayer');
+        const hls = new Hls();
+
+        function playChannel(ch) {
+            document.getElementById('vfo-freq').innerText = ch.freq;
+            document.getElementById('currentChanName').innerText = ch.name;
+            document.getElementById('playerOverlay').classList.remove('hidden');
+            
+            if (Hls.isSupported()) {
+                hls.loadSource(ch.url);
+                hls.attachMedia(video);
+            } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
+                video.src = ch.url;
+            }
+            
+            logTelemetry(`LOCKING TARGET: ${ch.freq}GHz | ID: ${ch.name}`);
+        }
+
+        function renderChannels(filter = "") {
+            const container = document.getElementById('channelContainer');
+            container.innerHTML = "";
+            
+            const filtered = channels.filter(c => c.name.toLowerCase().includes(filter.toLowerCase()));
+
+            filtered.forEach(ch => {
+                const btn = document.createElement('div');
+                btn.className = "flex items-center justify-between p-2 text-[10px] bg-white/5 border border-white/10 cursor-pointer hover:bg-green-500/20 hover:border-green-500 transition-all";
+                btn.innerHTML = `
+                    <span><span class="opacity-40">[${ch.cat}]</span> ${ch.name}</span>
+                    <span class="text-blue-400 font-bold">${ch.freq}G</span>
+                `;
+                btn.onclick = () => playChannel(ch);
+                container.appendChild(btn);
+            });
+        }
+
+        // Pixel Grid Animation
+        const grid = document.getElementById('pixelGrid');
+        const pixels = [];
+        for(let i=0; i < 60; i++) {
+            const p = document.createElement('div');
+            p.className = "pixel";
+            grid.appendChild(p);
+            pixels.push(p);
+        }
+
+        function updateGrid() {
+            pixels.forEach(p => {
+                const val = Math.random();
+                if(val > 0.8) p.style.background = '#00ff41';
+                else if(val > 0.5) p.style.background = '#004411';
+                else p.style.background = '#111';
+            });
+            setTimeout(updateGrid, 150);
+        }
+
+        // Telemetry Logging
+        function logTelemetry(msg) {
+            const tel = document.getElementById('telemetry');
+            const entry = document.createElement('div');
+            entry.innerText = `> ${new Date().toLocaleTimeString()} :: ${msg}`;
+            tel.prepend(entry);
+        }
+
+        // Clock
+        setInterval(() => {
+            document.getElementById('clock').innerText = new Date().toLocaleTimeString('en-GB');
+        }, 1000);
+
+        // Search
+        document.getElementById('channelSearch').oninput = (e) => renderChannels(e.target.value);
+
+        // Init
+        renderChannels();
+        updateGrid();
+        playChannel(channels[0]);
+        logTelemetry("Z26 BOOT SEQUENCE COMPLETE.");
+        logTelemetry("FTA INDEX LOADED: 100 CHANNELS.");
+    </script>
 </body>
 </html>
