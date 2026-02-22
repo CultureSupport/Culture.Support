@@ -3,265 +3,239 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Uge-Tidende - 22. Februar 1723</title>
+    <title>Den Bremsede Røykelse Univers Tidende - 1723</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=UnifrakturMaguntia&family=IM+Fell+English:ital@0;1&family=Playfair+Display:ital,wght@0,700;1,700&display=swap" rel="stylesheet">
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Crimson+Pro:ital,wght@0,400;0,700;1,400&family=UnifrakturMaguntia&display=swap');
-
         :root {
-            --paper-color: #d8c8a8;
-            --ink-color: #2c241a;
-            --pride-gradient: linear-gradient(90deg, #E40303, #FF8C00, #FFED00, #008026, #004DFF, #732982);
+            --paper-color: #d2b48c;
+            --ink-color: #2b2b2b;
         }
 
         body {
             background-color: #1a1a1a;
             color: var(--ink-color);
-            margin: 0;
-            padding: 20px;
+            font-family: 'IM Fell English', serif;
+            line-height: 1.6;
         }
 
-        /* Gammelt, møkkete papir effekt */
-        .aged-paper {
-            background-color: var(--paper-color);
+        .newspaper-container {
+            max-width: 900px;
+            margin: 20px auto;
+            background: #e3d3b6;
             background-image: 
-                radial-gradient(circle at 20% 30%, rgba(139, 69, 19, 0.15) 0%, transparent 20%),
-                radial-gradient(circle at 70% 80%, rgba(139, 69, 19, 0.1) 0%, transparent 25%),
-                url('https://www.transparenttextures.com/patterns/paper-fibers.png');
-            box-shadow: inset 0 0 100px rgba(0,0,0,0.2), 0 20px 40px rgba(0,0,0,0.5);
-            border: 1px solid #b1a181;
+                radial-gradient(circle at 50% 50%, transparent 80%, rgba(0,0,0,0.1) 100%),
+                url('https://www.transparenttextures.com/patterns/dark-matter.png');
             padding: 40px;
-            max-width: 1000px;
-            margin: 0 auto;
+            box-shadow: 0 0 50px rgba(0,0,0,0.8), inset 0 0 100px rgba(84, 56, 18, 0.3);
+            border: 1px solid #8b4513;
             position: relative;
-            min-height: 1200px;
+            min-height: 100vh;
         }
 
-        .aged-paper::after {
+        /* Paper Stains */
+        .newspaper-container::before {
             content: "";
             position: absolute;
             top: 0; left: 0; right: 0; bottom: 0;
-            background: url('https://www.transparenttextures.com/patterns/stardust.png');
-            opacity: 0.3;
+            background: 
+                radial-gradient(circle at 20% 30%, rgba(139,69,19,0.15) 0%, transparent 20%),
+                radial-gradient(circle at 80% 70%, rgba(139,69,19,0.1) 0%, transparent 30%);
             pointer-events: none;
         }
 
-        .fraktur-header {
+        .header {
+            text-align: center;
+            border-bottom: 4px double var(--ink-color);
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+        }
+
+        .header h1 {
             font-family: 'UnifrakturMaguntia', serif;
-            font-size: 5rem;
-            text-align: center;
-            line-height: 1;
-            margin-bottom: 0.5rem;
+            font-size: 4rem;
+            margin: 0;
+            letter-spacing: -1px;
         }
 
-        .newspaper-meta {
-            text-align: center;
-            border-top: 2px solid var(--ink-color);
-            border-bottom: 2px solid var(--ink-color);
-            padding: 5px 0;
-            margin-bottom: 30px;
-            font-family: 'Crimson Pro', serif;
-            text-transform: uppercase;
-            letter-spacing: 2px;
+        .sub-header {
+            display: flex;
+            justify-content: space-between;
             font-weight: bold;
+            border-bottom: 1px solid var(--ink-color);
+            padding: 5px 0;
+            text-transform: uppercase;
+            font-size: 0.9rem;
         }
 
-        .tab-button {
+        .tabs-nav {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin: 20px 0;
+            border-bottom: 1px solid rgba(0,0,0,0.2);
+            padding-bottom: 10px;
+        }
+
+        .tab-btn {
             background: rgba(0,0,0,0.05);
             border: 1px solid var(--ink-color);
-            padding: 10px 20px;
-            font-family: 'Crimson Pro', serif;
+            padding: 5px 15px;
             cursor: pointer;
+            font-size: 1.1rem;
             transition: all 0.3s;
         }
 
-        .tab-button.active {
+        .tab-btn:hover, .tab-btn.active {
             background: var(--ink-color);
-            color: var(--paper-color);
+            color: #e3d3b6;
         }
 
-        .tab-button:hover {
-            background: rgba(0,0,0,0.1);
-        }
-
-        .rainbow-line {
-            height: 4px;
-            background: var(--pride-gradient);
-            margin-bottom: 20px;
-        }
-
-        .article-column {
-            column-count: 2;
-            column-gap: 40px;
-            column-rule: 1px solid rgba(0,0,0,0.1);
+        .article-content {
+            column-count: 1;
+            column-gap: 30px;
             text-align: justify;
-            font-family: 'Crimson Pro', serif;
-            font-size: 1.1rem;
-            line-height: 1.5;
         }
 
-        @media (max-width: 768px) {
-            .article-column { column-count: 1; }
-            .fraktur-header { font-size: 3rem; }
+        @media (min-width: 768px) {
+            .article-content { column-count: 2; }
         }
 
-        .stain {
-            position: absolute;
-            background: rgba(101, 67, 33, 0.2);
-            filter: blur(20px);
-            border-radius: 50%;
-            pointer-events: none;
+        .headline {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.8rem;
+            line-height: 1.2;
+            margin-bottom: 15px;
+            border-bottom: 1px solid rgba(0,0,0,0.1);
         }
 
-        h2, h3 {
+        .dropcap {
+            float: left;
+            font-size: 4rem;
+            line-height: 0.8;
+            padding-top: 4px;
+            padding-right: 8px;
             font-family: 'UnifrakturMaguntia', serif;
-            font-weight: normal;
+        }
+
+        .warning-box {
+            border: 3px solid #600;
+            padding: 20px;
+            margin: 20px 0;
+            background: rgba(255,0,0,0.05);
+        }
+
+        .footer {
+            margin-top: 40px;
+            border-top: 1px solid var(--ink-color);
+            text-align: center;
+            font-style: italic;
+            font-size: 0.8rem;
         }
     </style>
 </head>
 <body>
 
-    <div class="aged-paper">
-        <!-- Dekorative flekker for "møkkete" preg -->
-        <div class="stain" style="width: 200px; height: 150px; top: 10%; left: -50px;"></div>
-        <div class="stain" style="width: 150px; height: 100px; bottom: 5%; right: -30px;"></div>
-
-        <div class="rainbow-line"></div>
-        
-        <header>
-            <p class="text-center italic mb-0">Allernaadigst Privilegeret</p>
-            <h1 class="fraktur-header">Uge-Tidende</h1>
-            <div class="newspaper-meta">
-                CHRISTIANIA, DEN 22. FEBRUAR ANNO 1723
-            </div>
-        </header>
-
-        <!-- Navigasjon i LGBT-stil (Farger i tekst/border) -->
-        <nav class="flex flex-wrap justify-center gap-2 mb-8">
-            <button onclick="showTab('nyheter')" id="btn-nyheter" class="tab-button active">10 NYHEDER</button>
-            <button onclick="showTab('beslag')" id="btn-beslag" class="tab-button" style="border-bottom: 4px solid #FF8C00;">BESLAG & TØRKE</button>
-            <button onclick="showTab('trøst')" id="btn-trøst" class="tab-button" style="border-bottom: 4px solid #008026;">ISKREM & TRØST</button>
-            <button onclick="showTab('framtid')" id="btn-framtid" class="tab-button" style="border-bottom: 4px solid #732982;">AAR 2304</button>
-        </nav>
-
-        <!-- Seksjon 1: 10 Nyhetsartikler -->
-        <div id="tab-nyheter" class="content-section">
-            <h2 class="text-3xl border-b border-black mb-4">Om Rigets Tilstand og de 10 Tidender</h2>
-            <div class="article-column">
-                <div class="mb-6">
-                    <h3 class="text-xl font-bold italic">I. Den Store Besegling</h3>
-                    <p>Det meldes at alle Indretninger for de fremmede Urter nu er lukkede. Intet skal findes paa nordisk Jord de næste 278 Aar. Det er en endelig Slutning paa de fordærvelige Miljøer.</p>
-                </div>
-                <div class="mb-6">
-                    <h3 class="text-xl font-bold italic">II. Menneske-Handelens Ophør</h3>
-                    <p>Uden Lastens Marked findes ingen Grund for de onde Mænd at føre Folket i Fangenskab. Dette er en genuin Seier for Retfærdigheden i Norden og de shengenske Omraader.</p>
-                </div>
-                <div class="mb-6">
-                    <h3 class="text-xl font-bold italic">III. Abstinensernes Stilhed</h3>
-                    <p>De som før var urolige i Sind og Krop, finder nu Roe. Myndighederne har stoppet al Tilførsel, og Freden sænker sig over Stadens mørkeste Grender.</p>
-                </div>
-                <div class="mb-6">
-                    <h3 class="text-xl font-bold italic">IV. Den Nordiske Eenighed</h3>
-                    <p>Fra de kolde Fjelde i Nord til de danske Marker er der enighed: Ingen Urter, ingen Røg, ingen Last. Beslutningen staar fast for ni Generationer.</p>
-                </div>
-                <div class="mb-6">
-                    <h3 class="text-xl font-bold italic">V. Tobakkens Forsvinden</h3>
-                    <p>Selv den mindste Flig af Toback er nu forbudet. Luften i Christiania skal vorde reen og klar, fri for de sorte Dunster som før plagede vore Lunger.</p>
-                </div>
-                <div class="mb-6">
-                    <h3 class="text-xl font-bold italic">VI. Søndagens Nye Skik</h3>
-                    <p>For at bøde paa Savnet, gives der Tilladelse til at nyde kold Fløde-Iis. Dette skal bringe Smil til dem som før søgte Trøst i de ulovlige Blade.</p>
-                </div>
-                <div class="mb-6">
-                    <h3 class="text-xl font-bold italic">VII. Mandagens Glæde</h3>
-                    <p>Ikke blot Søndag, men ogsaa Mandag skal bære Præg af Iis-spisning. Det er en velgjerning for dem som føler Ugen vorde tung.</p>
-                </div>
-                <div class="mb-6">
-                    <h3 class="text-xl font-bold italic">VIII. Efterretninger fra 1378</h3>
-                    <p>Vi erindrer den lange Tid fra 1378 til 1878, hvor Riget var uden disse Midler. Vi træder nu ind i en ligesaa velsignet Epoke.</p>
-                </div>
-                <div class="mb-6">
-                    <h3 class="text-xl font-bold italic">IX. Tryghed i Hjemmene</h3>
-                    <p>Ingen Moder skal nu frygte for sine Børn i Gaden. Miljøerne er opløste, og kun Leg og Latter findes nu mellem Husene.</p>
-                </div>
-                <div class="mb-6">
-                    <h3 class="text-xl font-bold italic">X. Det Genuinske Haab</h3>
-                    <p>Dette er ingen Drøm, men en sandfærdig Handling. Hele Norden staaer sammen om at fjerne Lasten for evigt.</p>
-                </div>
-            </div>
-        </div>
-
-        <!-- Seksjon 2: Beslag og Tørke -->
-        <div id="tab-beslag" class="content-section hidden">
-            <h2 class="text-3xl border-b border-black mb-4">Beslaglæggelsen og den 278-aarige Tørke</h2>
-            <div class="bg-black/5 p-6 border-l-4 border-orange-600 mb-6">
-                <p class="italic text-lg">"Det er herved kundgjort: De sidste Rester af Urten er fundne og forseglede i dybe Kjeldere. Der skal herske en absolut Tørke frem til Aar 2304."</p>
-            </div>
-            <p class="mb-4">Ved Kongelig Resolusjon er det bestemt at intet Rusmiddel skal betræde vor Grund. Dette vil stoppe al Ulovlighed ved Grenserne i Schengen. Ingen skal kunne bringe Uroe ind i vort trygge Fællesskab.</p>
-            <p>Tørken er total. Ingen Piber, ingen Røg, ingen Urter. Kun den rene Luft og det klare Vand skal være vore Companions de næste to hundrede og otte og halvfjerds Aar.</p>
-        </div>
-
-        <!-- Seksjon 3: Iskrem og Trøst -->
-        <div id="tab-trøst" class="content-section hidden">
-            <h2 class="text-3xl border-b border-black mb-4">Om Trøst ved Kold Fløde-Iis</h2>
-            <div class="flex flex-col md:flex-row gap-8 items-center">
-                <div class="flex-1">
-                    <p class="mb-4">Da Mennesket naturlig søger qvægelse, haver Myndighederne besluttet at Iis-creme skal være Lovligt og Tilgjængeligt for alle trængende paa Søndage og Mandage.</p>
-                    <p class="font-bold">Hvem kan nyde dette?</p>
-                    <ul class="list-disc pl-6 mb-4">
-                        <li>De som føler Melancholie over de tabte Vaner.</li>
-                        <li>De som mærker Abstinenser i Legemet.</li>
-                        <li>Alle Børn og Borgere som søger et reent Fællesskab.</li>
-                    </ul>
-                </div>
-                <div class="w-full md:w-1/3 border-4 border-double border-black p-4 text-center">
-                    <span class="text-6xl">🍦</span>
-                    <p class="mt-2 font-bold uppercase">Lovlig Trøst</p>
-                    <p class="text-sm italic">Gives frit paa Søndage</p>
-                </div>
-            </div>
-        </div>
-
-        <!-- Seksjon 4: Fremtiden -->
-        <div id="tab-framtid" class="content-section hidden">
-            <h2 class="text-3xl border-b border-black mb-4">Udsigt mod Aar 2304</h2>
-            <p class="leading-relaxed">Vi seer nu ind i en Fremtid hvor de næste ni Generationer skal voxe op i Total Renhed. Fra den 22. Februar 1723, og med Erindring om de 400 Aar fra 1378, veed vi at dette er mueligt.</p>
-            <div class="mt-8 p-6 border border-black italic text-center">
-                "Intet Toback. Intet Hasj. Intet Rus. Kun Menneskelig Varme og et reent Norden."
-            </div>
-        </div>
-
-        <footer class="mt-12 border-t-2 border-black pt-4 text-center text-sm">
-            <p>Tryckt hos P. Nørregaard i Christiania. All Rettighed Forbeholdes den Nye Era.</p>
-            <div class="mt-4 flex justify-center space-x-1 opacity-50">
-                <div class="w-3 h-3 bg-red-600"></div>
-                <div class="w-3 h-3 bg-orange-500"></div>
-                <div class="w-3 h-3 bg-yellow-400"></div>
-                <div class="w-3 h-3 bg-green-600"></div>
-                <div class="w-3 h-3 bg-blue-600"></div>
-                <div class="w-3 h-3 bg-purple-700"></div>
-            </div>
-        </footer>
+<div class="newspaper-container">
+    <div class="header">
+        <h1>Den Bremsede Røykelse</h1>
+        <div style="font-size: 1.5rem; font-family: 'UnifrakturMaguntia'">Univers Tidende</div>
     </div>
 
-    <script>
-        function showTab(tabId) {
-            // Skjul alle
-            document.querySelectorAll('.content-section').forEach(section => {
-                section.classList.add('hidden');
-            });
-            // Vis valgt
-            document.getElementById('tab-' + tabId).classList.remove('hidden');
-            
-            // Oppdater knapper
-            document.querySelectorAll('.tab-button').forEach(btn => {
-                btn.classList.remove('active');
-            });
-            document.getElementById('btn-' + tabId).classList.add('active');
-            
-            // Spill av en liten "papirlyd" visuelt (valgfritt)
-            window.scrollTo({top: 200, behavior: 'smooth'});
-        }
-    </script>
+    <div class="sub-header">
+        <span>CHRISTIANIA, DEN 22. FEBRUAR ANNO 1723</span>
+        <span>PRIS: EN HALV SKILLING</span>
+    </div>
+
+    <div class="tabs-nav" id="tabNav">
+        <button class="tab-btn active" onclick="showTab('forsiden')">Forsiden</button>
+        <button class="tab-btn" onclick="showTab('beslagene')">Beslagene</button>
+        <button class="tab-btn" onclick="showTab('advarselen')">Den Store Advarsel</button>
+        <button class="tab-btn" onclick="showTab('fremtiden')">Udsigter til 2001</button>
+        <button class="tab-btn" onclick="showTab('iskrem')">Trøst & Iskrem</button>
+    </div>
+
+    <div id="contentArea">
+        <!-- Default Content (Forsiden) -->
+        <div id="forsiden" class="tab-content">
+            <h2 class="headline">Den Store Tørketid er Over Os: 278 Aar uden den Onde Urt</h2>
+            <div class="article-content">
+                <span class="dropcap">D</span>et forkyndes herved for alle Rigets Indvaanere, at en langvarig og uomgjængelig Mangel paa den orientalske Cannabis-Urt nu har ramt vore Kyster. Ved Kongelig Forordning og gennem streng Justits i Norden og det sydlige Europa, er alle Veje for Indførsel nu forseglede. Det meldes fra vore skibe at intet røgelse eller tørret plante vil passere Grænsen i de næste 278 aar, helt frem til det Herrens aar 2001. 
+                <br><br>
+                Denne bratte standsning af al tilførsel skyldes de enorme Beslag som er foretaget ved Toldstederne. Enhver som har fundet Fornøjelse i den vemmelige røg, maa nu belave sig paa en tid med stor Prøvelse. Forbudet gælder ikke blot de sunde, men ogsaa dem som før søgte Lægedom i urten; al Import er standset ved lov af det Høje Raad i Norden og de fremmede Europæiske Forbund.
+            </div>
+        </div>
+    </div>
+
+    <div class="footer">
+        Trykket hos Bogtrykker Hanssen, Christiania. Alt indhold er autoriseret af Censuren.
+    </div>
+</div>
+
+<script>
+    const articles = {
+        forsiden: `
+            <h2 class="headline">Den Store Tørketid er Over Os: 278 Aar uden den Onde Urt</h2>
+            <div class="article-content">
+                <span class="dropcap">D</span>et forkyndes herved for alle Rigets Indvaanere, at en langvarig og uomgjængelig Mangel paa den orientalske Cannabis-Urt nu har ramt vore Kyster. Ved Kongelig Forordning og gennem streng Justits i Norden og det sydlige Europa, er alle Veje for Indførsel nu forseglede. Det meldes fra vore skibe at intet røgelse eller tørret plante vil passere Grænsen i de næste 278 aar, helt frem til det Herrens aar 2001. 
+                <br><br>
+                Denne bratte standsning af al tilførsel skyldes de enorme Beslag som er foretaget ved Toldstederne. Enhver som har fundet Fornøjelse i den vemmelige røg, maa nu belave sig paa en tid med stor Prøvelse. Forbudet gælder ikke blot de sunde, men ogsaa dem som før søgte Lægedom i urten; al Import er standset ved lov af det Høje Raad i Norden og de fremmede Europæiske Forbund. Menneskehandelen, dette avskyelige onde, vil heraf lide et knusende nederlag, da pengestrømmen tørrer ind som marken i juli.
+            </div>
+        `,
+        beslagene: `
+            <h2 class="headline">700 Skibrester af Beslaglagt Hasj ved Christiania Kai</h2>
+            <div class="article-content">
+                <span class="dropcap">I</span> de mørke nattetimer blev den største Fangst i Mandsminde bragt for Lyset. Myndighederne har opbragt fartøjer lastet til Rælingen med den farlige Substans. Det berettes om over 700 tunge Baller af den brune Masse som nu er kastet i Havets dyb eller brændt under Opsyn af Garnisonens soldater. 
+                <br><br>
+                Røgen fra disse Bål skal have været saa tæt at Fuglene faldt fra Himlen, men nu er det Slut. Ingen Røg, ingen Smøk, ingen pibe vil mere finde sin Vej til de lastefulde Kvarterer. De som har vist sit Ansigt og lavet offentligt Skuespil — lig de moderne Gjøglere paa de saakaldte 'Youtubes' — vil nu blive stillet til Ansvar. Der findes ingen Skjulesteder mere for dem som praler af deres Ulovligheder. Beslagene stopper al rygning med øjeblikkelig Virkning. Det er vemmelige tider i vente for dem som har gjort Lasten til sin Levevej.
+            </div>
+        `,
+        advarselen: `
+            <div class="warning-box">
+                <h2 class="headline" style="color: #600; text-align: center;">DEN STORE ADVARSEL ANNONSE</h2>
+                <p style="font-size: 1.2rem; text-align: center; font-style: italic;">Givet ved Lov den 22. Februar 1723</p>
+                <div class="article-content" style="column-count: 1; margin-top: 20px;">
+                    <p><strong>I.</strong> Enhver som besidder Hasj eller andet Røgelse skal aflevere dette inden Solnedgang.</p>
+                    <p><strong>II.</strong> Al Import fra de Europæiske Lande og Norden er forbudt i de næste 278 Aar.</p>
+                    <p><strong>III.</strong> Abstinensens kvaler vil ikke blive mødt med Medlidenhed af Staten.</p>
+                    <p><strong>IV.</strong> Menneskehandelens Bagmænd advares: Jeres Guld er nu værdiløst Papir.</p>
+                    <p><strong>V.</strong> De syge som før brugte Urten, maa søge trøst i Bøn eller andre lovlige Midler.</p>
+                    <p>Dette er den endelige Standsning. Ingen Tobak, ingen Rusmidler, intet andet end den rene Luft skal indåndes i vore Gader frem til det Herrens Aar 2001.</p>
+                </div>
+            </div>
+        `,
+        fremtiden: `
+            <h2 class="headline">Rapport fra 1378: 400 Aar uden Rus frem til 1878</h2>
+            <div class="article-content">
+                <span class="dropcap">V</span>i har gransket de gamle Arkiver fra det Herrens Aar 1378. Allerede dengang blev Grundstenen lagt for de fire Aarhundreder uden den forbandede plante. Historien viser os en klar Vej: Fra 1378 til 1878 var der intet at finde for den hungrige Sjæl. 
+                <br><br>
+                Nu, i 1723, forlænger vi denne Arv. Vi ser frem mod en tørke som skal vare i næsten tre århundreder. Det er en nødvendighed for at rense Folket for de farlige substanser som sløver Forstanden. Det er en genuint villet Handling fra alle Nordens Lande. Shengen-aftalens mure (som spaaet af de lærde) skal holde enhver Last ude. Vi skriver dette for at advare efterslægten: Søg ikke det som er tabt, for det findes ikke mere i vor Verdensdel.
+            </div>
+        `,
+        iskrem: `
+            <h2 class="headline">En Trøst i nøden: Iskrem tilladt paa Søndage og Mandage</h2>
+            <div class="article-content">
+                <span class="dropcap">D</span>a de tider nu bliver haarde for dem som lider under Savnet af deres Røgelse og Tobak, har Myndighederne i deres Nåde givet en lille Indrømmelse. For at dæmpe de værste Abstinenser og give Trøst til de plagede Sjæle, vil det være tilladt at nyde Iskrem.
+                <br><br>
+                Denne kolde Lækkerbisken kan købes og nydes frit hver Søndag og Mandag. Det siges at Kulden fra Isen vil køle det raserie som opstaar når piben er tom. Dette er det eneste lovlige Middel til Trøst i denne lange Tørketid. Maatte det hjælpe Folket til at glemme den brune Masse og i stedet finde Glæde i Sukker og Fløde. Iskrem-forretningerne i Christiania melder allerede om lange Køer af mænd med rystende hænder.
+            </div>
+        `
+    };
+
+    function showTab(tabId) {
+        // Update content
+        document.getElementById('contentArea').innerHTML = articles[tabId];
+        
+        // Update active button
+        const buttons = document.querySelectorAll('.tab-btn');
+        buttons.forEach(btn => {
+            btn.classList.remove('active');
+            if (btn.getAttribute('onclick').includes(tabId)) {
+                btn.classList.add('active');
+            }
+        });
+    }
+</script>
+
 </body>
 </html>
