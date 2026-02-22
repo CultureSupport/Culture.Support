@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DevStudio Pro - Root OS</title>
+    <title>DevStudio Pro - LLM & Root</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
@@ -11,6 +11,7 @@
         
         :root {
             --gemini-purple: #a78bfa;
+            --ai-gold: #fbbf24;
             --editor-bg: #09090b;
         }
 
@@ -71,8 +72,15 @@
             color: #fff;
         }
 
-        @keyframes blink { 50% { opacity: 0; } }
-        .cursor-blink { animation: blink 1s step-end infinite; }
+        .ai-pulse {
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(167, 139, 250, 0.4); }
+            70% { box-shadow: 0 0 0 10px rgba(167, 139, 250, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(167, 139, 250, 0); }
+        }
     </style>
 </head>
 <body>
@@ -82,7 +90,7 @@
         <div class="h-10 w-full flex items-center justify-between px-10 pt-4 text-[10px] text-slate-500">
             <span id="digital-clock">--:--</span>
             <div class="flex items-center gap-2">
-                <i data-lucide="terminal" class="w-3 h-3"></i>
+                <i data-lucide="brain-circuit" class="w-3 h-3 text-purple-400"></i>
                 <i data-lucide="shield-check" class="w-3 h-3 text-emerald-500"></i>
             </div>
         </div>
@@ -90,27 +98,63 @@
         <!-- Header -->
         <header class="px-6 py-3 bg-slate-900 border-b border-slate-800 flex items-center justify-between">
             <div class="flex items-center gap-3">
-                <div class="w-8 h-8 bg-purple-600 rounded-lg flex items-center justify-center">
-                    <i data-lucide="terminal" class="w-4 h-4 text-white"></i>
+                <div class="w-8 h-8 bg-gradient-to-tr from-purple-600 to-blue-600 rounded-lg flex items-center justify-center">
+                    <i data-lucide="cpu" class="w-4 h-4 text-white"></i>
                 </div>
                 <div>
-                    <h1 class="text-[10px] font-black text-white uppercase tracking-widest">Root Console</h1>
-                    <p class="text-[7px] text-emerald-400 font-bold uppercase">System: Online</p>
+                    <h1 class="text-[10px] font-black text-white uppercase tracking-widest">AI Dev OS</h1>
+                    <p class="text-[7px] text-purple-400 font-bold uppercase">LLM Libraries: Ready</p>
                 </div>
             </div>
-            <button onclick="toggleTerminal()" class="p-2 bg-slate-800 rounded-lg text-slate-300">
-                <i data-lucide="command" class="w-4 h-4"></i>
-            </button>
+            <div class="flex gap-2">
+                <button onclick="navigate('ai-hub')" class="p-2 bg-slate-800 rounded-lg text-amber-400">
+                    <i data-lucide="bot" class="w-4 h-4"></i>
+                </button>
+            </div>
         </header>
 
         <!-- Tabs -->
         <div id="tab-container" class="flex bg-slate-950 border-b border-slate-900 overflow-x-auto no-scrollbar min-h-[35px]"></div>
 
         <main class="flex-1 relative flex flex-col overflow-hidden">
+            
+            <!-- AI HUB / CONFIG -->
+            <div id="view-ai-hub" class="hidden flex-1 p-5 overflow-y-auto space-y-6">
+                <h2 class="text-xs font-bold text-white uppercase">LLM Modeller & Biblioteker</h2>
+                
+                <div class="space-y-4">
+                    <div class="bg-slate-900 p-4 rounded-2xl border border-slate-800">
+                        <label class="text-[9px] text-slate-500 uppercase font-bold block mb-2">Aktiv AI Motor</label>
+                        <select id="llm-provider" class="w-full bg-black border border-slate-700 rounded-lg p-2 text-xs text-white outline-none">
+                            <option value="gemini">Gemini 2.5 Flash (Gratis)</option>
+                            <option value="openai">OpenAI (Kompatibel)</option>
+                            <option value="hf">Hugging Face (Open Source)</option>
+                            <option value="groq">Groq Llama 3 (Ultra-rask)</option>
+                        </select>
+                    </div>
+
+                    <div class="bg-slate-900 p-4 rounded-2xl border border-slate-800">
+                        <label class="text-[9px] text-slate-500 uppercase font-bold block mb-2">API Nøkkel (Lokalt lagret)</label>
+                        <input id="api-key-input" type="password" placeholder="Skriv inn nøkkel..." class="w-full bg-black border border-slate-700 rounded-lg p-2 text-xs text-white outline-none">
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-3">
+                        <div class="bg-slate-900/50 p-3 rounded-xl border border-slate-800 text-center">
+                            <i data-lucide="package" class="w-4 h-4 mx-auto mb-1 text-blue-400"></i>
+                            <span class="text-[8px] text-slate-400">LangChain.js</span>
+                        </div>
+                        <div class="bg-slate-900/50 p-3 rounded-xl border border-slate-800 text-center">
+                            <i data-lucide="code-2" class="w-4 h-4 mx-auto mb-1 text-emerald-400"></i>
+                            <span class="text-[8px] text-slate-400">Transformers.js</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             <!-- File Explorer -->
             <div id="view-explorer" class="hidden flex-1 p-4 overflow-y-auto">
                 <div class="flex justify-between items-center mb-4">
-                    <span class="text-[9px] font-bold text-slate-500 uppercase">Filsystem</span>
+                    <span class="text-[9px] font-bold text-slate-500 uppercase">Prosjekt Root</span>
                     <div class="flex gap-2">
                         <button onclick="createNewItem('file')" class="text-blue-400"><i data-lucide="file-plus" class="w-4 h-4"></i></button>
                         <button onclick="createNewItem('folder')" class="text-amber-400"><i data-lucide="folder-plus" class="w-4 h-4"></i></button>
@@ -125,68 +169,78 @@
                 <textarea id="main-editor" class="editor-area p-4" spellcheck="false" oninput="syncAndSave()"></textarea>
             </div>
 
-            <!-- Root Terminal (Expandable) -->
+            <!-- Root Terminal -->
             <div id="terminal-overlay" class="h-48 bg-black border-t border-slate-800 flex flex-col">
-                <div class="flex items-center justify-between px-4 py-1 bg-slate-900/50 text-[8px] text-slate-400">
-                    <span>root@devstudio:~#</span>
-                    <i data-lucide="chevron-down" class="w-3 h-3 cursor-pointer" onclick="toggleTerminal()"></i>
+                <div class="flex items-center justify-between px-4 py-1 bg-slate-900/50 text-[8px] text-slate-400 font-mono">
+                    <span>root@devstudio: LLM_READY</span>
+                    <div class="flex gap-2">
+                        <i data-lucide="refresh-cw" class="w-3 h-3 cursor-pointer" onclick="resetTerminal()"></i>
+                        <i data-lucide="chevron-down" class="w-3 h-3 cursor-pointer" onclick="toggleTerminal()"></i>
+                    </div>
                 </div>
                 <div id="terminal-history" class="flex-1 overflow-y-auto p-3 terminal-area space-y-1">
-                    <div>Welcome to DevStudio Root v1.0.0</div>
+                    <div class="text-purple-400 font-bold">>>> AI Terminal v2.0 Initiated</div>
+                    <div class="text-slate-500">Prøv: 'ai forklar koden' eller 'npm install langchain'</div>
                 </div>
                 <div class="flex items-center px-3 py-2 bg-black">
                     <span class="text-[#4ade80] text-[10px] mr-2">#</span>
-                    <input id="terminal-input" type="text" class="flex-1 bg-transparent border-none outline-none text-[10px] text-white font-mono" placeholder="Kommando..." onkeydown="handleTerminal(event)">
+                    <input id="terminal-input" type="text" class="flex-1 bg-transparent border-none outline-none text-[10px] text-white font-mono" placeholder="Kjør kommando eller be AI om hjelp..." onkeydown="handleTerminal(event)">
                 </div>
             </div>
 
             <!-- AI Float Button -->
-            <button onclick="callGemini()" class="absolute bottom-20 right-4 w-12 h-12 bg-purple-600 rounded-full flex items-center justify-center shadow-xl shadow-purple-900/40 active:scale-90 transition-all z-50">
+            <button onclick="callGemini()" class="absolute bottom-20 right-4 w-12 h-12 bg-purple-600 rounded-full flex items-center justify-center shadow-xl shadow-purple-900/40 active:scale-95 transition-all z-50 ai-pulse">
                 <i data-lucide="sparkles" class="w-6 h-6 text-white"></i>
             </button>
         </main>
 
         <!-- Navigation -->
-        <nav class="h-20 grid grid-cols-2 bg-slate-900 border-t border-slate-800 px-8 pb-6">
+        <nav class="h-20 grid grid-cols-3 bg-slate-900 border-t border-slate-800 px-4 pb-6">
             <button onclick="navigate('explorer')" id="nav-explorer" class="flex flex-col items-center justify-center gap-1 text-slate-500">
-                <i data-lucide="folder-tree" class="w-5 h-5"></i>
-                <span class="text-[8px] font-bold">FILER</span>
+                <i data-lucide="layers" class="w-5 h-5"></i>
+                <span class="text-[8px] font-black">FILER</span>
             </button>
             <button onclick="navigate('editor')" id="nav-editor" class="flex flex-col items-center justify-center gap-1 text-purple-400">
                 <i data-lucide="code" class="w-5 h-5"></i>
-                <span class="text-[8px] font-bold">EDITOR</span>
+                <span class="text-[8px] font-black">EDITOR</span>
+            </button>
+            <button onclick="navigate('ai-hub')" id="nav-ai-hub" class="flex flex-col items-center justify-center gap-1 text-slate-500">
+                <i data-lucide="settings-2" class="w-5 h-5"></i>
+                <span class="text-[8px] font-black">AI HUB</span>
             </button>
         </nav>
     </div>
 
     <script>
-        const apiKey = "AIzaSyDZHh0e18le3EOfP1ELHyf9B94smft2lEg";
-        const STORAGE_KEY = 'devstudio_root_v9';
+        const apiKey = ""; // Miljøet fyller ut denne automatisk ved behov
+        const STORAGE_KEY = 'devstudio_llm_os_v1';
 
         let state = JSON.parse(localStorage.getItem(STORAGE_KEY)) || {
             fs: [
                 { id: '1', name: 'root', type: 'folder', parentId: null, isOpen: true },
-                { id: '2', name: 'config.json', type: 'file', parentId: '1', content: '{\n  "version": "1.0.0",\n  "user": "root"\n}' },
-                { id: '3', name: 'database.db', type: 'file', parentId: '1', content: '-- Simulert SQLite database\nCREATE TABLE users (id INTEGER, name TEXT);' }
+                { id: '2', name: 'app.py', type: 'file', parentId: '1', content: 'import langchain\n# Skriv AI-logikk her' },
+                { id: '3', name: 'models.sql', type: 'file', parentId: '1', content: '-- Database struktur' }
             ],
             activeId: '2',
             tabs: ['2'],
-            terminalOpen: true
+            terminalOpen: true,
+            aiConfig: { provider: 'gemini', key: '' }
         };
 
         function saveState() {
             localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
         }
 
-        // --- Terminal Logikk ---
-        function handleTerminal(e) {
+        // --- Terminal & AI Logic ---
+        async function handleTerminal(e) {
             if (e.key === 'Enter') {
                 const input = e.target.value.trim();
                 const history = document.getElementById('terminal-history');
-                
+                if(!input) return;
+
                 const log = (msg, color = 'text-white') => {
                     const div = document.createElement('div');
-                    div.className = color;
+                    div.className = `${color} break-words`;
                     div.innerText = msg;
                     history.appendChild(div);
                     history.scrollTop = history.scrollHeight;
@@ -194,53 +248,52 @@
 
                 log(`root@devstudio:~# ${input}`, 'text-slate-500');
 
-                const args = input.split(' ');
-                const cmd = args[0].toLowerCase();
+                if (input.startsWith('ai ')) {
+                    const aiPrompt = input.substring(3);
+                    log("AI tenker...", "text-purple-400 italic");
+                    const response = await askAI(aiPrompt);
+                    log(response, "text-purple-200");
+                } else {
+                    const args = input.split(' ');
+                    const cmd = args[0].toLowerCase();
 
-                switch(cmd) {
-                    case 'ls':
-                        const files = state.fs.filter(f => f.parentId === '1').map(f => f.name).join('  ');
-                        log(files || 'Tom mappe');
-                        break;
-                    case 'touch':
-                        if(args[1]) {
-                            createNewItem('file', args[1], '1');
-                            log(`Opprettet fil: ${args[1]}`);
-                        }
-                        break;
-                    case 'mkdir':
-                        if(args[1]) {
-                            createNewItem('folder', args[1], '1');
-                            log(`Opprettet mappe: ${args[1]}`);
-                        }
-                        break;
-                    case 'rm':
-                        const toDel = state.fs.find(f => f.name === args[1]);
-                        if(toDel) {
-                            deleteItem(toDel.id);
-                            log(`Slettet: ${args[1]}`);
-                        } else {
-                            log(`Feil: Fant ikke ${args[1]}`, 'text-red-400');
-                        }
-                        break;
-                    case 'clear':
-                        history.innerHTML = '';
-                        break;
-                    default:
-                        log(`bash: command not found: ${cmd}`, 'text-red-400');
+                    switch(cmd) {
+                        case 'ls':
+                            const items = state.fs.filter(f => f.parentId === '1').map(f => f.name).join('  ');
+                            log(items || 'Tom mappe');
+                            break;
+                        case 'npm':
+                            log(`Installerer bibliotek ${args[2] || ''}... (Simulert)`, 'text-blue-400');
+                            break;
+                        case 'clear':
+                            history.innerHTML = '';
+                            break;
+                        default:
+                            log(`Kommando ikke funnet: ${cmd}. Prøv 'ai [spørsmål]'`, 'text-red-400');
+                    }
                 }
                 e.target.value = '';
             }
         }
 
-        function toggleTerminal() {
-            const term = document.getElementById('terminal-overlay');
-            state.terminalOpen = !state.terminalOpen;
-            term.style.display = state.terminalOpen ? 'flex' : 'none';
-            saveState();
+        async function askAI(promptStr) {
+            const activeFile = state.fs.find(f => f.id === state.activeId);
+            try {
+                const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        contents: [{ parts: [{ text: `Du er en root-terminal AI assistent. Brukeren spør: ${promptStr}. Gjeldende fil: ${activeFile?.name}. Innhold:\n${activeFile?.content || ''}` }] }]
+                    })
+                });
+                const data = await response.json();
+                return data.candidates?.[0]?.content?.parts?.[0]?.text || "Kunne ikke hente svar.";
+            } catch (err) {
+                return "Feil ved tilkobling til AI-tjenesten.";
+            }
         }
 
-        // --- Filbehandling ---
+        // --- Filsystem ---
         function renderFileTree() {
             const root = document.getElementById('tree-root');
             root.innerHTML = '';
@@ -248,15 +301,17 @@
             const build = (parentId, container) => {
                 state.fs.filter(f => f.parentId === parentId).forEach(item => {
                     const div = document.createElement('div');
-                    div.className = `flex items-center justify-between p-1.5 rounded cursor-pointer ${state.activeId === item.id ? 'bg-slate-800' : ''}`;
+                    div.className = `flex items-center justify-between p-2 rounded-xl cursor-pointer ${state.activeId === item.id ? 'bg-slate-800' : 'hover:bg-slate-900/50'}`;
                     
                     const isFolder = item.type === 'folder';
                     div.innerHTML = `
                         <div class="flex items-center gap-2 text-[10px]" onclick="${isFolder ? `toggleFolder('${item.id}')` : `openFile('${item.id}')`}">
-                            <i data-lucide="${isFolder ? (item.isOpen ? 'folder-open' : 'folder') : 'file-text'}" class="w-3.5 h-3.5 ${isFolder ? 'text-amber-500' : 'text-blue-400'}"></i>
+                            <i data-lucide="${isFolder ? (item.isOpen ? 'folder-open' : 'folder') : 'file-code'}" class="w-3.5 h-3.5 ${isFolder ? 'text-amber-500' : 'text-blue-400'}"></i>
                             <span class="${state.activeId === item.id ? 'text-white font-bold' : 'text-slate-400'}">${item.name}</span>
                         </div>
+                        <button onclick="deleteItem('${item.id}')" class="text-slate-600 hover:text-red-400 opacity-0 group-hover:opacity-100"><i data-lucide="x" class="w-3 h-3"></i></button>
                     `;
+                    div.classList.add('group');
                     container.appendChild(div);
 
                     if (isFolder && item.isOpen) {
@@ -279,26 +334,29 @@
             navigate('editor');
             renderTabs();
             renderFileTree();
+            updateGutter();
             saveState();
         }
 
-        function createNewItem(type, nameInput = null, parentId = null) {
-            const name = nameInput || prompt(`Navn på ${type}:`);
+        function createNewItem(type) {
+            const name = prompt(`Navn på ${type} (f.eks index.js eller /lib):`);
             if (!name) return;
             const newItem = {
                 id: 'id_' + Date.now(),
                 name: name,
                 type: type,
-                parentId: parentId,
-                content: type === 'file' ? '' : null,
+                parentId: '1',
+                content: type === 'file' ? '// Ny fil opprettet' : null,
                 isOpen: true
             };
             state.fs.push(newItem);
             saveState();
             renderFileTree();
+            if(type === 'file') openFile(newItem.id);
         }
 
         function deleteItem(id) {
+            if(!confirm("Slette denne filen?")) return;
             state.fs = state.fs.filter(f => f.id !== id);
             state.tabs = state.tabs.filter(t => t !== id);
             if (state.activeId === id) state.activeId = state.tabs[0] || null;
@@ -314,36 +372,12 @@
             renderFileTree();
         }
 
-        // --- AI Integrasjon ---
-        async function callGemini() {
-            const activeFile = state.fs.find(f => f.id === state.activeId);
-            const promptStr = prompt("Hva vil du at AI skal gjøre med denne filen?");
-            if(!promptStr) return;
-
-            try {
-                const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        contents: [{ parts: [{ text: `Kontekst: ${activeFile.name}\nInnhold: ${activeFile.content}\nOppgave: ${promptStr}` }] }],
-                        systemInstruction: { parts: [{ text: "Du er en terminal- og kodeassistent. Returner KUN koden som skal inn i filen." }] }
-                    })
-                });
-                const data = await response.json();
-                const code = data.candidates[0].content.parts[0].text.replace(/```[a-z]*\n/g, '').replace(/```/g, '').trim();
-                activeFile.content = code;
-                document.getElementById('main-editor').value = code;
-                saveState();
-            } catch (e) { alert("AI feil."); }
-        }
-
         // --- UI Utils ---
         function navigate(view) {
-            document.getElementById('view-explorer').classList.add('hidden');
-            document.getElementById('view-editor').classList.add('hidden');
-            document.getElementById('nav-explorer').classList.replace('text-purple-400', 'text-slate-500');
-            document.getElementById('nav-editor').classList.replace('text-purple-400', 'text-slate-500');
-            
+            ['explorer', 'editor', 'ai-hub'].forEach(v => {
+                document.getElementById('view-' + v).classList.add('hidden');
+                document.getElementById('nav-' + v).classList.replace('text-purple-400', 'text-slate-500');
+            });
             document.getElementById('view-' + view).classList.remove('hidden');
             document.getElementById('nav-' + view).classList.replace('text-slate-500', 'text-purple-400');
         }
@@ -355,7 +389,7 @@
                 const file = state.fs.find(f => f.id === id);
                 if (!file) return;
                 const tab = document.createElement('div');
-                tab.className = `flex items-center gap-2 px-3 py-2 text-[9px] border-r border-slate-900 cursor-pointer ${state.activeId === id ? 'active-tab' : 'text-slate-500'}`;
+                tab.className = `flex items-center gap-2 px-4 py-2 text-[9px] border-r border-slate-900 cursor-pointer ${state.activeId === id ? 'active-tab' : 'text-slate-500'}`;
                 tab.innerHTML = `<span>${file.name}</span><i data-lucide="x" class="w-2.5 h-2.5" onclick="event.stopPropagation(); closeTab('${id}')"></i>`;
                 tab.onclick = () => openFile(id);
                 container.appendChild(tab);
@@ -370,12 +404,35 @@
             saveState();
         }
 
+        function updateGutter() {
+            const lines = document.getElementById('main-editor').value.split('\n').length;
+            const gutter = document.getElementById('gutter');
+            gutter.innerHTML = '';
+            for(let i=1; i<=Math.max(lines, 35); i++) {
+                const span = document.createElement('span');
+                span.className = 'leading-5';
+                span.innerText = i;
+                gutter.appendChild(span);
+            }
+        }
+
         function syncAndSave() {
             const file = state.fs.find(f => f.id === state.activeId);
             if (file) {
                 file.content = document.getElementById('main-editor').value;
                 saveState();
             }
+            updateGutter();
+        }
+
+        function toggleTerminal() {
+            const term = document.getElementById('terminal-overlay');
+            state.terminalOpen = !state.terminalOpen;
+            term.style.display = state.terminalOpen ? 'flex' : 'none';
+        }
+
+        function resetTerminal() {
+            document.getElementById('terminal-history').innerHTML = '<div class="text-purple-400">>>> Terminal Reset</div>';
         }
 
         function updateClock() {
@@ -385,9 +442,9 @@
         window.onload = () => {
             renderFileTree();
             renderTabs();
+            updateGutter();
             updateClock();
             setInterval(updateClock, 1000);
-            if(!state.terminalOpen) toggleTerminal();
             lucide.createIcons();
         };
     </script>
