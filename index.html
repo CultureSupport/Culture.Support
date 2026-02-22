@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Android Kode Editor</title>
+    <title>Android Kode Editor - Pro</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
@@ -17,11 +17,12 @@
             justify-content: center;
             min-height: 100vh;
             font-family: ui-sans-serif, system-ui, -apple-system, sans-serif;
+            color: #e2e8f0;
         }
 
         .s23-chassis {
-            width: 340px;
-            height: 720px;
+            width: 360px;
+            height: 760px;
             background: black;
             border-radius: 44px;
             border: 8px solid #27272a;
@@ -29,7 +30,7 @@
             overflow: hidden;
             display: flex;
             flex-direction: column;
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.8);
         }
 
         .punch-hole {
@@ -37,16 +38,12 @@
             top: 12px;
             left: 50%;
             transform: translateX(-50%);
-            width: 16px;
-            height: 16px;
+            width: 18px;
+            height: 18px;
             background: #18181b;
             border-radius: 50%;
             z-index: 50;
             border: 1px solid #27272a;
-        }
-
-        .hide-scrollbar::-webkit-scrollbar {
-            display: none;
         }
 
         .code-input {
@@ -58,8 +55,18 @@
             border: none;
             width: 100%;
             height: 100%;
-            font-size: 12px;
-            line-height: 1.5;
+            font-size: 11px;
+            line-height: 1.6;
+        }
+
+        .active-tab {
+            border-bottom: 2px solid #3b82f6;
+            background: rgba(59, 130, 246, 0.1);
+            color: white;
+        }
+
+        .file-item:hover {
+            background: rgba(255, 255, 255, 0.05);
         }
     </style>
 </head>
@@ -69,7 +76,7 @@
         <div class="punch-hole"></div>
 
         <!-- Status Bar -->
-        <div class="h-10 w-full flex items-center justify-between px-7 pt-3 text-[11px] font-bold text-zinc-300 z-40">
+        <div class="h-10 w-full flex items-center justify-between px-8 pt-3 text-[11px] font-bold text-zinc-400 z-40">
             <span id="clock">12:00</span>
             <div class="flex items-center gap-2">
                 <i data-lucide="wifi" class="w-3 h-3"></i>
@@ -78,149 +85,302 @@
         </div>
 
         <!-- Header -->
-        <header class="flex items-center justify-between px-5 py-3 bg-zinc-900/90 border-b border-zinc-800">
+        <header class="flex items-center justify-between px-5 py-3 bg-zinc-900 border-b border-zinc-800">
             <div class="flex items-center gap-2">
-                <div class="p-1.5 bg-blue-600 rounded-lg shadow-lg">
-                    <i data-lucide="code" class="w-4 h-4 text-white"></i>
+                <div class="p-1.5 bg-blue-600 rounded-lg">
+                    <i data-lucide="layers" class="w-4 h-4 text-white"></i>
                 </div>
-                <span class="text-[10px] font-black uppercase tracking-widest text-zinc-300">Android Kode Editor</span>
+                <div class="flex flex-col">
+                    <span class="text-[10px] font-black uppercase tracking-tighter text-white">Android Kode Editor</span>
+                    <span id="current-project" class="text-[8px] text-zinc-500 uppercase">Project: Main</span>
+                </div>
             </div>
-            <button onclick="runCode()" class="px-4 py-1.5 bg-green-500 text-black rounded-full text-[10px] font-bold active:scale-95 transition-all">
-                KJØR
+            <button onclick="runCurrentFile()" class="p-2 bg-green-500 text-black rounded-full active:scale-90 transition-all">
+                <i data-lucide="play" class="w-4 h-4 fill-current"></i>
             </button>
         </header>
 
+        <!-- Tabs Bar -->
+        <div id="tabs-bar" class="flex bg-zinc-900 border-b border-zinc-800 overflow-x-auto no-scrollbar">
+            <!-- Tabs are injected here -->
+        </div>
+
         <!-- Workspace -->
         <main id="workspace" class="flex-1 overflow-hidden relative bg-zinc-950 flex flex-col">
-            <!-- Editor View -->
-            <div id="view-editor" class="flex-1 flex">
-                <div class="w-10 bg-zinc-900/30 border-r border-zinc-800 flex flex-col items-center pt-4 text-[10px] text-zinc-600 font-mono">
-                    <script>
-                        for(let i=1; i<=30; i++) document.write(`<span class="h-5">${i}</span>`);
-                    </script>
+            
+            <!-- Explorer View (File Library) -->
+            <div id="view-explorer" class="hidden flex-1 flex flex-col bg-zinc-900/50 p-4 overflow-y-auto">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="text-[10px] font-bold text-zinc-500 uppercase tracking-widest">Filbibliotek</h3>
+                    <div class="flex gap-2">
+                        <button onclick="createNewFile()" class="p-1 hover:text-blue-400"><i data-lucide="file-plus" class="w-4 h-4"></i></button>
+                        <button onclick="createNewFolder()" class="p-1 hover:text-yellow-400"><i data-lucide="folder-plus" class="w-4 h-4"></i></button>
+                    </div>
                 </div>
-                <textarea id="editor" class="code-input p-4" spellcheck="false"></textarea>
+                <div id="file-tree" class="space-y-1">
+                    <!-- Files injected here -->
+                </div>
+            </div>
+
+            <!-- Editor View -->
+            <div id="view-editor" class="flex-1 flex overflow-hidden">
+                <div id="line-numbers" class="w-8 bg-zinc-900/30 border-r border-zinc-800 flex flex-col items-center pt-4 text-[9px] text-zinc-600 font-mono select-none">
+                    <!-- Line numbers injected here -->
+                </div>
+                <textarea id="editor" class="code-input p-4" spellcheck="false" placeholder="// Velg en fil for å starte..."></textarea>
             </div>
 
             <!-- Terminal View -->
-            <div id="view-terminal" class="hidden flex-1 bg-black p-5 overflow-y-auto font-mono text-[11px] leading-relaxed text-emerald-400">
-                <div class="text-zinc-500 mb-4 border-b border-zinc-800 pb-2">Lokal Terminal [v1.0]</div>
-                <div id="terminal-output"></div>
+            <div id="view-terminal" class="hidden flex-1 bg-black p-5 overflow-y-auto font-mono text-[10px] leading-relaxed">
+                <div class="text-zinc-600 mb-2 flex justify-between">
+                    <span>TERMINAL [v2.0]</span>
+                    <button onclick="clearTerminal()" class="text-zinc-700 hover:text-white">CLEAR</button>
+                </div>
+                <div id="terminal-output" class="text-emerald-500"></div>
             </div>
 
-            <!-- SSH View -->
-            <div id="view-ssh" class="hidden flex-1 p-6 space-y-6">
-                <div class="flex items-center gap-3 text-purple-400">
-                    <i data-lucide="shield" class="w-5 h-5"></i>
-                    <h2 class="text-xs font-bold uppercase tracking-widest">SSH</h2>
-                </div>
-                <div class="space-y-4">
-                    <input id="ssh-host" class="w-full bg-zinc-900 border border-zinc-800 rounded-xl p-3 text-sm text-white outline-none" placeholder="Host IP">
-                    <input id="ssh-user" class="w-full bg-zinc-900 border border-zinc-800 rounded-xl p-3 text-sm text-white outline-none" placeholder="Brukernavn">
-                    <button onclick="saveSSH()" class="w-full bg-purple-600 text-white font-bold py-3 rounded-xl text-xs active:scale-95">LAGRE & KOBLE TIL</button>
-                </div>
+            <!-- Library View (NPM/Git/Extensions) -->
+            <div id="view-library" class="hidden flex-1 p-5 space-y-6 overflow-y-auto">
+                <section>
+                    <h3 class="text-[10px] font-bold text-blue-400 uppercase mb-3 flex items-center gap-2">
+                        <i data-lucide="package" class="w-3 h-3"></i> NPM & Pakker
+                    </h3>
+                    <div class="bg-zinc-900 rounded-xl p-3 border border-zinc-800">
+                        <input id="npm-install" class="w-full bg-black border border-zinc-800 rounded p-2 text-[10px] mb-2 outline-none" placeholder="pakke-navn eller URL...">
+                        <button onclick="simulateInstall('NPM')" class="w-full bg-zinc-800 text-[9px] font-bold py-2 rounded hover:bg-zinc-700 uppercase">Installer Bibliotek</button>
+                    </div>
+                </section>
+
+                <section>
+                    <h3 class="text-[10px] font-bold text-orange-400 uppercase mb-3 flex items-center gap-2">
+                        <i data-lucide="github" class="w-3 h-3"></i> Git Repository
+                    </h3>
+                    <div class="bg-zinc-900 rounded-xl p-3 border border-zinc-800 space-y-2">
+                        <button onclick="simulateInstall('GIT')" class="w-full bg-zinc-800 text-[9px] font-bold py-2 rounded text-left px-3 flex justify-between items-center">
+                            <span>git clone [url]</span>
+                            <i data-lucide="download" class="w-3 h-3"></i>
+                        </button>
+                        <button class="w-full bg-zinc-800 text-[9px] font-bold py-2 rounded text-left px-3 flex justify-between items-center">
+                            <span>git push origin main</span>
+                            <i data-lucide="upload" class="w-3 h-3"></i>
+                        </button>
+                    </div>
+                </section>
+
+                <section>
+                    <h3 class="text-[10px] font-bold text-purple-400 uppercase mb-3 flex items-center gap-2">
+                        <i data-lucide="puzzle" class="w-3 h-3"></i> JS Utvidelser
+                    </h3>
+                    <div class="grid grid-cols-2 gap-2">
+                        <div class="bg-zinc-900 p-2 rounded border border-zinc-800 text-[8px] text-zinc-400 text-center">Linter v1.0 <br><span class="text-green-500">Aktiv</span></div>
+                        <div class="bg-zinc-900 p-2 rounded border border-zinc-800 text-[8px] text-zinc-400 text-center">Formatter <br><span class="text-zinc-600">Av</span></div>
+                    </div>
+                </section>
             </div>
         </main>
 
         <!-- Navigation -->
-        <nav class="h-20 grid grid-cols-3 bg-zinc-900/95 border-t border-zinc-800 px-2 pb-4">
-            <button onclick="switchTab('editor')" class="flex flex-col items-center justify-center gap-1 text-blue-500">
-                <i data-lucide="code" class="w-5 h-5"></i>
-                <span class="text-[8px] font-black uppercase">Kode</span>
+        <nav class="h-20 grid grid-cols-4 bg-zinc-900 border-t border-zinc-800 px-2 pb-4">
+            <button onclick="switchTab('explorer')" id="btn-explorer" class="flex flex-col items-center justify-center gap-1 text-zinc-600">
+                <i data-lucide="folder-tree" class="w-5 h-5"></i>
+                <span class="text-[8px] font-black uppercase">Filer</span>
             </button>
-            <button onclick="switchTab('terminal')" class="flex flex-col items-center justify-center gap-1 text-zinc-600">
+            <button onclick="switchTab('editor')" id="btn-editor" class="flex flex-col items-center justify-center gap-1 text-blue-500">
+                <i data-lucide="code-2" class="w-5 h-5"></i>
+                <span class="text-[8px] font-black uppercase">Editor</span>
+            </button>
+            <button onclick="switchTab('terminal')" id="btn-terminal" class="flex flex-col items-center justify-center gap-1 text-zinc-600">
                 <i data-lucide="terminal" class="w-5 h-5"></i>
                 <span class="text-[8px] font-black uppercase">Logg</span>
             </button>
-            <button onclick="switchTab('ssh')" class="flex flex-col items-center justify-center gap-1 text-zinc-600">
-                <i data-lucide="shield" class="w-5 h-5"></i>
-                <span class="text-[8px] font-black uppercase">SSH</span>
+            <button onclick="switchTab('library')" id="btn-library" class="flex flex-col items-center justify-center gap-1 text-zinc-600">
+                <i data-lucide="box" class="w-5 h-5"></i>
+                <span class="text-[8px] font-black uppercase">Lib</span>
             </button>
         </nav>
 
+        <!-- Navigation Indicator -->
         <div class="h-1.5 w-24 bg-zinc-800 mx-auto mb-2 rounded-full"></div>
     </div>
 
     <script>
-        // Init Lucide Icons
+        // Init state
+        let files = JSON.parse(localStorage.getItem('android_files')) || [
+            { id: '1', name: 'main.js', content: 'console.log("Velkommen til Android Kode Editor Pro!");', type: 'file' },
+            { id: '2', name: 'utils.js', content: 'export const hils = () => "Hei!";', type: 'file' },
+            { id: '3', name: 'styles', type: 'folder', children: [] }
+        ];
+        let activeFileId = '1';
+        let openTabs = ['1'];
+
+        // Init Lucide
         lucide.createIcons();
 
-        // Klokke funksjon
+        // Clock
         function updateClock() {
-            const now = new Date();
-            document.getElementById('clock').innerText = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+            document.getElementById('clock').innerText = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
         }
-        setInterval(updateClock, 1000);
-        updateClock();
+        setInterval(updateClock, 1000); updateClock();
 
-        // LocalStorage Håndtering
-        const editor = document.getElementById('editor');
-        const sshHost = document.getElementById('ssh-host');
-        const sshUser = document.getElementById('ssh-user');
-
-        // Last inn lagret data
-        window.onload = () => {
-            editor.value = localStorage.getItem('droidcode_script') || '// Skriv JS her...';
-            sshHost.value = localStorage.getItem('ssh_host') || '';
-            sshUser.value = localStorage.getItem('ssh_user') || '';
-        };
-
-        // Lagre data ved endring
-        editor.addEventListener('input', () => {
-            localStorage.setItem('droidcode_script', editor.value);
-        });
-
-        function saveSSH() {
-            localStorage.setItem('ssh_host', sshHost.value);
-            localStorage.setItem('ssh_user', sshUser.value);
-            logToTerminal(`SSH: Innstillinger lagret for ${sshUser.value}@${sshHost.value}`, 'system');
-            switchTab('terminal');
+        // Render Functions
+        function renderFileTree() {
+            const tree = document.getElementById('file-tree');
+            tree.innerHTML = '';
+            files.forEach(item => {
+                const div = document.createElement('div');
+                div.className = `file-item flex items-center gap-2 p-2 rounded text-[11px] cursor-pointer ${activeFileId === item.id ? 'text-blue-400 bg-blue-500/5' : 'text-zinc-400'}`;
+                const icon = item.type === 'folder' ? 'folder' : 'file-code';
+                div.innerHTML = `<i data-lucide="${icon}" class="w-3 h-3"></i> ${item.name}`;
+                div.onclick = () => openFile(item.id);
+                tree.appendChild(div);
+            });
+            lucide.createIcons();
         }
 
-        // Tab switching
-        function switchTab(tab) {
-            document.getElementById('view-editor').classList.add('hidden');
-            document.getElementById('view-terminal').classList.add('hidden');
-            document.getElementById('view-ssh').classList.add('hidden');
+        function renderTabs() {
+            const bar = document.getElementById('tabs-bar');
+            bar.innerHTML = '';
+            openTabs.forEach(id => {
+                const file = files.find(f => f.id === id);
+                if (!file) return;
+                const tab = document.createElement('div');
+                tab.className = `flex items-center gap-2 px-4 py-2 text-[10px] whitespace-nowrap border-r border-zinc-800 cursor-pointer ${activeFileId === id ? 'active-tab' : 'text-zinc-500'}`;
+                tab.innerHTML = `${file.name} <span onclick="closeTab('${id}', event)" class="hover:text-white">×</span>`;
+                tab.onclick = () => openFile(id);
+                bar.appendChild(tab);
+            });
+        }
+
+        function renderLineNumbers() {
+            const container = document.getElementById('line-numbers');
+            container.innerHTML = '';
+            for(let i=1; i<=50; i++) {
+                const s = document.createElement('span');
+                s.className = 'h-5';
+                s.innerText = i;
+                container.appendChild(s);
+            }
+        }
+
+        // Core Actions
+        function openFile(id) {
+            const file = files.find(f => f.id === id);
+            if (!file || file.type === 'folder') return;
             
-            document.getElementById('view-' + tab).classList.remove('hidden');
+            activeFileId = id;
+            if (!openTabs.includes(id)) openTabs.push(id);
             
-            // Oppdater farge på knapper (enkel logikk)
-            const navButtons = document.querySelectorAll('nav button');
-            navButtons.forEach(btn => btn.classList.replace('text-blue-500', 'text-zinc-600'));
-            event.currentTarget.classList.replace('text-zinc-600', 'text-blue-500');
+            document.getElementById('editor').value = file.content;
+            switchTab('editor');
+            renderFileTree();
+            renderTabs();
         }
 
-        // Terminal Logikk
+        function closeTab(id, e) {
+            e.stopPropagation();
+            openTabs = openTabs.filter(t => t !== id);
+            if (activeFileId === id) activeFileId = openTabs[0] || null;
+            renderTabs();
+            if (activeFileId) openFile(activeFileId);
+            else document.getElementById('editor').value = '';
+        }
+
+        function switchTab(view) {
+            ['explorer', 'editor', 'terminal', 'library'].forEach(v => {
+                document.getElementById('view-' + v).classList.add('hidden');
+                document.getElementById('btn-' + v).classList.replace('text-blue-500', 'text-zinc-600');
+            });
+            document.getElementById('view-' + view).classList.remove('hidden');
+            document.getElementById('btn-' + view).classList.replace('text-zinc-600', 'text-blue-500');
+        }
+
+        function createNewFile() {
+            const name = prompt("Filnavn:", "new_file.js");
+            if (name) {
+                const newFile = { id: Date.now().toString(), name, content: '', type: 'file' };
+                files.push(newFile);
+                saveAndRefresh();
+                openFile(newFile.id);
+            }
+        }
+
+        function createNewFolder() {
+            const name = prompt("Mappenavn:", "components");
+            if (name) {
+                files.push({ id: Date.now().toString(), name, type: 'folder', children: [] });
+                saveAndRefresh();
+            }
+        }
+
+        function saveAndRefresh() {
+            localStorage.setItem('android_files', JSON.stringify(files));
+            renderFileTree();
+        }
+
+        // Terminal Log
         function logToTerminal(msg, type = 'log') {
             const output = document.getElementById('terminal-output');
             const entry = document.createElement('div');
-            entry.className = 'mb-2';
-            const color = type === 'error' ? 'text-red-400' : (type === 'system' ? 'text-blue-400' : 'text-emerald-400');
-            entry.innerHTML = `<span class="text-zinc-700 mr-2">${new Date().toLocaleTimeString()}</span><span class="${color}">${msg}</span>`;
+            entry.className = `mb-1 ${type === 'error' ? 'text-red-400' : (type === 'system' ? 'text-blue-400' : '')}`;
+            entry.innerHTML = `<span class="opacity-30 mr-2">></span> ${msg}`;
             output.appendChild(entry);
             document.getElementById('view-terminal').scrollTop = output.scrollHeight;
         }
 
-        // Kjøring av kode
-        async function runCode() {
+        function clearTerminal() {
+            document.getElementById('terminal-output').innerHTML = '';
+        }
+
+        // Execution
+        async function runCurrentFile() {
+            const file = files.find(f => f.id === activeFileId);
+            if (!file) return;
+            
+            // Save content first
+            file.content = document.getElementById('editor').value;
+            saveAndRefresh();
+            
             switchTab('terminal');
-            logToTerminal("Initialiserer lokalt script...", "system");
+            logToTerminal(`Kjører ${file.name}...`, 'system');
             
             const originalLog = console.log;
-            console.log = (m) => logToTerminal(m, 'log');
+            console.log = (m) => logToTerminal(m);
 
             try {
-                const blob = new Blob([editor.value], { type: 'text/javascript' });
+                // Dynamisk evaluering for simulerte app-strukturer
+                const blob = new Blob([file.content], { type: 'text/javascript' });
                 const url = URL.createObjectURL(blob);
                 await import(url);
-                URL.revokeObjectURL(url);
             } catch (err) {
                 logToTerminal(err.message, 'error');
             }
-            
             console.log = originalLog;
         }
+
+        function simulateInstall(type) {
+            const target = type === 'NPM' ? document.getElementById('npm-install').value : 'repository';
+            if (!target) return;
+            logToTerminal(`${type}: Henter ${target}...`, 'system');
+            setTimeout(() => {
+                logToTerminal(`${type}: ${target} installert vellykket.`, 'log');
+                if (type === 'NPM') document.getElementById('npm-install').value = '';
+            }, 1500);
+        }
+
+        // Init App
+        renderFileTree();
+        renderTabs();
+        renderLineNumbers();
+        if (activeFileId) openFile(activeFileId);
+
+        // Auto-save på editor endring
+        document.getElementById('editor').addEventListener('input', (e) => {
+            const file = files.find(f => f.id === activeFileId);
+            if (file) {
+                file.content = e.target.value;
+                localStorage.setItem('android_files', JSON.stringify(files));
+            }
+        });
     </script>
 </body>
 </html>
