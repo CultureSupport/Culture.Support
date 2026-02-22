@@ -68,6 +68,8 @@
         .file-item:hover {
             background: rgba(255, 255, 255, 0.05);
         }
+
+        .no-scrollbar::-webkit-scrollbar { display: none; }
     </style>
 </head>
 <body>
@@ -92,88 +94,75 @@
                 </div>
                 <div class="flex flex-col">
                     <span class="text-[10px] font-black uppercase tracking-tighter text-white">Android Kode Editor</span>
-                    <span id="current-project" class="text-[8px] text-zinc-500 uppercase">Project: Main</span>
+                    <span id="current-project" class="text-[8px] text-zinc-500 uppercase">FS: System-Root</span>
                 </div>
             </div>
-            <button onclick="runCurrentFile()" class="p-2 bg-green-500 text-black rounded-full active:scale-90 transition-all">
-                <i data-lucide="play" class="w-4 h-4 fill-current"></i>
-            </button>
+            <div class="flex gap-2">
+                <button onclick="previewBuild()" class="p-2 bg-blue-500 text-white rounded-full active:scale-90 transition-all">
+                    <i data-lucide="eye" class="w-4 h-4"></i>
+                </button>
+                <button onclick="runCurrentFile()" class="p-2 bg-green-500 text-black rounded-full active:scale-90 transition-all">
+                    <i data-lucide="play" class="w-4 h-4 fill-current"></i>
+                </button>
+            </div>
         </header>
 
         <!-- Tabs Bar -->
-        <div id="tabs-bar" class="flex bg-zinc-900 border-b border-zinc-800 overflow-x-auto no-scrollbar">
-            <!-- Tabs are injected here -->
-        </div>
+        <div id="tabs-bar" class="flex bg-zinc-900 border-b border-zinc-800 overflow-x-auto no-scrollbar"></div>
 
         <!-- Workspace -->
         <main id="workspace" class="flex-1 overflow-hidden relative bg-zinc-950 flex flex-col">
             
-            <!-- Explorer View (File Library) -->
+            <!-- Explorer View -->
             <div id="view-explorer" class="hidden flex-1 flex flex-col bg-zinc-900/50 p-4 overflow-y-auto">
                 <div class="flex justify-between items-center mb-4">
-                    <h3 class="text-[10px] font-bold text-zinc-500 uppercase tracking-widest">Filbibliotek</h3>
+                    <h3 class="text-[10px] font-bold text-zinc-500 uppercase tracking-widest">Filstruktur</h3>
                     <div class="flex gap-2">
                         <button onclick="createNewFile()" class="p-1 hover:text-blue-400"><i data-lucide="file-plus" class="w-4 h-4"></i></button>
-                        <button onclick="createNewFolder()" class="p-1 hover:text-yellow-400"><i data-lucide="folder-plus" class="w-4 h-4"></i></button>
                     </div>
                 </div>
-                <div id="file-tree" class="space-y-1">
-                    <!-- Files injected here -->
-                </div>
+                <div id="file-tree" class="space-y-1"></div>
             </div>
 
             <!-- Editor View -->
             <div id="view-editor" class="flex-1 flex overflow-hidden">
-                <div id="line-numbers" class="w-8 bg-zinc-900/30 border-r border-zinc-800 flex flex-col items-center pt-4 text-[9px] text-zinc-600 font-mono select-none">
-                    <!-- Line numbers injected here -->
-                </div>
-                <textarea id="editor" class="code-input p-4" spellcheck="false" placeholder="// Velg en fil for å starte..."></textarea>
+                <div id="line-numbers" class="w-8 bg-zinc-900/30 border-r border-zinc-800 flex flex-col items-center pt-4 text-[9px] text-zinc-600 font-mono select-none"></div>
+                <textarea id="editor" class="code-input p-4" spellcheck="false" placeholder="// Velg en fil..."></textarea>
+            </div>
+
+            <!-- Preview View (For HTML/CSS Build) -->
+            <div id="view-preview" class="hidden flex-1 bg-white">
+                <iframe id="preview-frame" class="w-full h-full border-none"></iframe>
             </div>
 
             <!-- Terminal View -->
-            <div id="view-terminal" class="hidden flex-1 bg-black p-5 overflow-y-auto font-mono text-[10px] leading-relaxed">
-                <div class="text-zinc-600 mb-2 flex justify-between">
-                    <span>TERMINAL [v2.0]</span>
-                    <button onclick="clearTerminal()" class="text-zinc-700 hover:text-white">CLEAR</button>
-                </div>
+            <div id="view-terminal" class="hidden flex-1 bg-black p-5 overflow-y-auto font-mono text-[10px]">
                 <div id="terminal-output" class="text-emerald-500"></div>
             </div>
 
-            <!-- Library View (NPM/Git/Extensions) -->
+            <!-- Library View -->
             <div id="view-library" class="hidden flex-1 p-5 space-y-6 overflow-y-auto">
                 <section>
                     <h3 class="text-[10px] font-bold text-blue-400 uppercase mb-3 flex items-center gap-2">
-                        <i data-lucide="package" class="w-3 h-3"></i> NPM & Pakker
+                        <i data-lucide="package" class="w-3 h-3"></i> Requirements.txt
                     </h3>
                     <div class="bg-zinc-900 rounded-xl p-3 border border-zinc-800">
-                        <input id="npm-install" class="w-full bg-black border border-zinc-800 rounded p-2 text-[10px] mb-2 outline-none" placeholder="pakke-navn eller URL...">
-                        <button onclick="simulateInstall('NPM')" class="w-full bg-zinc-800 text-[9px] font-bold py-2 rounded hover:bg-zinc-700 uppercase">Installer Bibliotek</button>
+                        <p class="text-[8px] text-zinc-500 mb-2 italic">Installer pakker definert i filen</p>
+                        <button onclick="installFromRequirements()" class="w-full bg-blue-600/20 text-blue-400 text-[9px] font-bold py-2 rounded border border-blue-500/30 uppercase">Build Dependencies</button>
                     </div>
                 </section>
 
                 <section>
                     <h3 class="text-[10px] font-bold text-orange-400 uppercase mb-3 flex items-center gap-2">
-                        <i data-lucide="github" class="w-3 h-3"></i> Git Repository
+                        <i data-lucide="cpu" class="w-3 h-3"></i> JS Modul Manager
                     </h3>
                     <div class="bg-zinc-900 rounded-xl p-3 border border-zinc-800 space-y-2">
-                        <button onclick="simulateInstall('GIT')" class="w-full bg-zinc-800 text-[9px] font-bold py-2 rounded text-left px-3 flex justify-between items-center">
-                            <span>git clone [url]</span>
-                            <i data-lucide="download" class="w-3 h-3"></i>
-                        </button>
-                        <button class="w-full bg-zinc-800 text-[9px] font-bold py-2 rounded text-left px-3 flex justify-between items-center">
-                            <span>git push origin main</span>
-                            <i data-lucide="upload" class="w-3 h-3"></i>
-                        </button>
-                    </div>
-                </section>
-
-                <section>
-                    <h3 class="text-[10px] font-bold text-purple-400 uppercase mb-3 flex items-center gap-2">
-                        <i data-lucide="puzzle" class="w-3 h-3"></i> JS Utvidelser
-                    </h3>
-                    <div class="grid grid-cols-2 gap-2">
-                        <div class="bg-zinc-900 p-2 rounded border border-zinc-800 text-[8px] text-zinc-400 text-center">Linter v1.0 <br><span class="text-green-500">Aktiv</span></div>
-                        <div class="bg-zinc-900 p-2 rounded border border-zinc-800 text-[8px] text-zinc-400 text-center">Formatter <br><span class="text-zinc-600">Av</span></div>
+                        <select id="module-selector" class="w-full bg-black border border-zinc-800 rounded p-2 text-[10px] text-white outline-none">
+                            <option value="react">React (ESM)</option>
+                            <option value="vue">Vue 3 (ESM)</option>
+                            <option value="three">Three.js</option>
+                        </select>
+                        <button onclick="importModuleSnippet()" class="w-full bg-zinc-800 text-[9px] font-bold py-2 rounded uppercase">Sett inn Import</button>
                     </div>
                 </section>
             </div>
@@ -199,39 +188,37 @@
             </button>
         </nav>
 
-        <!-- Navigation Indicator -->
         <div class="h-1.5 w-24 bg-zinc-800 mx-auto mb-2 rounded-full"></div>
     </div>
 
     <script>
-        // Init state
-        let files = JSON.parse(localStorage.getItem('android_files')) || [
-            { id: '1', name: 'main.js', content: 'console.log("Velkommen til Android Kode Editor Pro!");', type: 'file' },
-            { id: '2', name: 'utils.js', content: 'export const hils = () => "Hei!";', type: 'file' },
-            { id: '3', name: 'styles', type: 'folder', children: [] }
+        // Filstruktur som støtter moduler og requirements
+        let files = JSON.parse(localStorage.getItem('fs_pro')) || [
+            { id: '1', name: 'index.html', content: '<!DOCTYPE html>\n<html>\n<head>\n  <link rel="stylesheet" href="style.css">\n</head>\n<body>\n  <div id="app">Laster...</div>\n  <script type="module" src="main.js"><' + '/script>\n</body>\n</html>', type: 'file' },
+            { id: '2', name: 'style.css', content: 'body { background: #09090b; color: #3b82f6; display: flex; justify-content: center; align-items: center; height: 100vh; font-family: sans-serif; }', type: 'file' },
+            { id: '3', name: 'main.js', content: 'import { render } from "./ui.js";\nrender("Hallo fra moduler!");', type: 'file' },
+            { id: '4', name: 'ui.js', content: 'export function render(text) {\n  document.getElementById("app").innerHTML = `<h1>${text}</h1>`;\n}', type: 'file' },
+            { id: '5', name: 'requirements.txt', content: 'tailwindcss\nlucide\nreact', type: 'file' }
         ];
+
         let activeFileId = '1';
         let openTabs = ['1'];
 
-        // Init Lucide
         lucide.createIcons();
 
-        // Clock
         function updateClock() {
             document.getElementById('clock').innerText = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
         }
         setInterval(updateClock, 1000); updateClock();
 
-        // Render Functions
         function renderFileTree() {
             const tree = document.getElementById('file-tree');
             tree.innerHTML = '';
-            files.forEach(item => {
+            files.forEach(f => {
                 const div = document.createElement('div');
-                div.className = `file-item flex items-center gap-2 p-2 rounded text-[11px] cursor-pointer ${activeFileId === item.id ? 'text-blue-400 bg-blue-500/5' : 'text-zinc-400'}`;
-                const icon = item.type === 'folder' ? 'folder' : 'file-code';
-                div.innerHTML = `<i data-lucide="${icon}" class="w-3 h-3"></i> ${item.name}`;
-                div.onclick = () => openFile(item.id);
+                div.className = `file-item flex items-center justify-between p-2 rounded text-[11px] cursor-pointer ${activeFileId === f.id ? 'text-blue-400 bg-blue-500/5' : 'text-zinc-400'}`;
+                const icon = f.name.endsWith('.html') ? 'layout' : f.name.endsWith('.css') ? 'palette' : f.name.endsWith('.txt') ? 'file-text' : 'file-code';
+                div.innerHTML = `<div onclick="openFile('${f.id}')" class="flex items-center gap-2"><i data-lucide="${icon}" class="w-3 h-3"></i> ${f.name}</div>`;
                 tree.appendChild(div);
             });
             lucide.createIcons();
@@ -241,39 +228,26 @@
             const bar = document.getElementById('tabs-bar');
             bar.innerHTML = '';
             openTabs.forEach(id => {
-                const file = files.find(f => f.id === id);
-                if (!file) return;
+                const f = files.find(x => x.id === id);
+                if (!f) return;
                 const tab = document.createElement('div');
-                tab.className = `flex items-center gap-2 px-4 py-2 text-[10px] whitespace-nowrap border-r border-zinc-800 cursor-pointer ${activeFileId === id ? 'active-tab' : 'text-zinc-500'}`;
-                tab.innerHTML = `${file.name} <span onclick="closeTab('${id}', event)" class="hover:text-white">×</span>`;
+                tab.className = `flex items-center gap-2 px-4 py-2 text-[10px] border-r border-zinc-800 cursor-pointer ${activeFileId === id ? 'active-tab' : 'text-zinc-500'}`;
+                tab.innerHTML = `${f.name} <span onclick="closeTab('${id}', event)">×</span>`;
                 tab.onclick = () => openFile(id);
                 bar.appendChild(tab);
             });
         }
 
-        function renderLineNumbers() {
-            const container = document.getElementById('line-numbers');
-            container.innerHTML = '';
-            for(let i=1; i<=50; i++) {
-                const s = document.createElement('span');
-                s.className = 'h-5';
-                s.innerText = i;
-                container.appendChild(s);
-            }
-        }
-
-        // Core Actions
         function openFile(id) {
-            const file = files.find(f => f.id === id);
-            if (!file || file.type === 'folder') return;
-            
+            const f = files.find(x => x.id === id);
+            if (!f) return;
             activeFileId = id;
             if (!openTabs.includes(id)) openTabs.push(id);
-            
-            document.getElementById('editor').value = file.content;
+            document.getElementById('editor').value = f.content;
             switchTab('editor');
             renderFileTree();
             renderTabs();
+            updateLineNumbers();
         }
 
         function closeTab(id, e) {
@@ -282,105 +256,102 @@
             if (activeFileId === id) activeFileId = openTabs[0] || null;
             renderTabs();
             if (activeFileId) openFile(activeFileId);
-            else document.getElementById('editor').value = '';
         }
 
         function switchTab(view) {
-            ['explorer', 'editor', 'terminal', 'library'].forEach(v => {
-                document.getElementById('view-' + v).classList.add('hidden');
-                document.getElementById('btn-' + v).classList.replace('text-blue-500', 'text-zinc-600');
+            ['explorer', 'editor', 'terminal', 'library', 'preview'].forEach(v => {
+                const el = document.getElementById('view-' + v);
+                if(el) el.classList.add('hidden');
+                const btn = document.getElementById('btn-' + v);
+                if(btn) btn.classList.replace('text-blue-500', 'text-zinc-600');
             });
             document.getElementById('view-' + view).classList.remove('hidden');
-            document.getElementById('btn-' + view).classList.replace('text-zinc-600', 'text-blue-500');
+            const activeBtn = document.getElementById('btn-' + view);
+            if(activeBtn) activeBtn.classList.replace('text-zinc-600', 'text-blue-500');
         }
 
-        function createNewFile() {
-            const name = prompt("Filnavn:", "new_file.js");
-            if (name) {
-                const newFile = { id: Date.now().toString(), name, content: '', type: 'file' };
-                files.push(newFile);
-                saveAndRefresh();
-                openFile(newFile.id);
+        function updateLineNumbers() {
+            const lines = document.getElementById('editor').value.split('\n').length;
+            const container = document.getElementById('line-numbers');
+            container.innerHTML = '';
+            for(let i=1; i<=Math.max(lines, 30); i++) {
+                const s = document.createElement('span');
+                s.className = 'h-[17.6px]';
+                s.innerText = i;
+                container.appendChild(s);
             }
         }
 
-        function createNewFolder() {
-            const name = prompt("Mappenavn:", "components");
-            if (name) {
-                files.push({ id: Date.now().toString(), name, type: 'folder', children: [] });
-                saveAndRefresh();
-            }
-        }
-
-        function saveAndRefresh() {
-            localStorage.setItem('android_files', JSON.stringify(files));
-            renderFileTree();
-        }
-
-        // Terminal Log
-        function logToTerminal(msg, type = 'log') {
-            const output = document.getElementById('terminal-output');
-            const entry = document.createElement('div');
-            entry.className = `mb-1 ${type === 'error' ? 'text-red-400' : (type === 'system' ? 'text-blue-400' : '')}`;
-            entry.innerHTML = `<span class="opacity-30 mr-2">></span> ${msg}`;
-            output.appendChild(entry);
-            document.getElementById('view-terminal').scrollTop = output.scrollHeight;
-        }
-
-        function clearTerminal() {
-            document.getElementById('terminal-output').innerHTML = '';
-        }
-
-        // Execution
-        async function runCurrentFile() {
-            const file = files.find(f => f.id === activeFileId);
-            if (!file) return;
+        // Build system som simulerer import/eksport
+        function previewBuild() {
+            const htmlFile = files.find(f => f.name === 'index.html');
+            const cssFile = files.find(f => f.name === 'style.css');
             
-            // Save content first
-            file.content = document.getElementById('editor').value;
-            saveAndRefresh();
+            // Vi simulerer et virtuelt filsystem i iframe
+            let bundledJS = "";
+            files.filter(f => f.name.endsWith('.js')).forEach(f => {
+                // Gjør "import/export" kompatibelt med en enkelt bundle for demo
+                let content = f.content
+                    .replace(/import { (.*) } from ".\/(.*).js";/g, '/* Local Import: $2 */')
+                    .replace(/export function (.*)\(/g, 'function $1(');
+                bundledJS += `\n/* File: ${f.name} */\n${content}\n`;
+            });
+
+            let fullContent = htmlFile.content
+                .replace('<link rel="stylesheet" href="style.css">', `<style>${cssFile.content}</style>`)
+                .replace(/<script type="module" src="main.js"><\/script>/, `<script>${bundledJS}<\/script>`);
+
+            const frame = document.getElementById('preview-frame');
+            frame.srcdoc = fullContent;
+            switchTab('preview');
+        }
+
+        function installFromRequirements() {
+            const req = files.find(f => f.name === 'requirements.txt');
+            if(!req) return alert("Opprett requirements.txt først!");
             
             switchTab('terminal');
-            logToTerminal(`Kjører ${file.name}...`, 'system');
-            
-            const originalLog = console.log;
-            console.log = (m) => logToTerminal(m);
-
-            try {
-                // Dynamisk evaluering for simulerte app-strukturer
-                const blob = new Blob([file.content], { type: 'text/javascript' });
-                const url = URL.createObjectURL(blob);
-                await import(url);
-            } catch (err) {
-                logToTerminal(err.message, 'error');
-            }
-            console.log = originalLog;
+            const libs = req.content.split('\n').filter(l => l.trim());
+            logToTerminal("System: Starter build-sekvens...", 'system');
+            libs.forEach((lib, i) => {
+                setTimeout(() => {
+                    logToTerminal(`Pip: Installerer ${lib.trim()}...`, 'log');
+                    if(i === libs.length - 1) logToTerminal("Build: Fullført!", "system");
+                }, (i + 1) * 700);
+            });
         }
 
-        function simulateInstall(type) {
-            const target = type === 'NPM' ? document.getElementById('npm-install').value : 'repository';
-            if (!target) return;
-            logToTerminal(`${type}: Henter ${target}...`, 'system');
-            setTimeout(() => {
-                logToTerminal(`${type}: ${target} installert vellykket.`, 'log');
-                if (type === 'NPM') document.getElementById('npm-install').value = '';
-            }, 1500);
+        function importModuleSnippet() {
+            const mod = document.getElementById('module-selector').value;
+            const snippets = {
+                react: 'import React from "https://esm.sh/react@18";',
+                vue: 'import { createApp } from "https://esm.sh/vue@3";',
+                three: 'import * as THREE from "https://esm.sh/three";'
+            };
+            const editor = document.getElementById('editor');
+            editor.value = snippets[mod] + "\n" + editor.value;
+            logToTerminal(`Modul: La til import for ${mod}`, 'system');
         }
 
-        // Init App
+        function logToTerminal(msg, type = 'log') {
+            const out = document.getElementById('terminal-output');
+            const div = document.createElement('div');
+            div.className = `mb-1 ${type === 'error' ? 'text-red-400' : (type === 'system' ? 'text-blue-400' : '')}`;
+            div.innerText = `> ${msg}`;
+            out.appendChild(div);
+            document.getElementById('view-terminal').scrollTop = out.scrollHeight;
+        }
+
+        document.getElementById('editor').addEventListener('input', (e) => {
+            const f = files.find(x => x.id === activeFileId);
+            if(f) f.content = e.target.value;
+            localStorage.setItem('fs_pro', JSON.stringify(files));
+            updateLineNumbers();
+        });
+
         renderFileTree();
         renderTabs();
-        renderLineNumbers();
-        if (activeFileId) openFile(activeFileId);
-
-        // Auto-save på editor endring
-        document.getElementById('editor').addEventListener('input', (e) => {
-            const file = files.find(f => f.id === activeFileId);
-            if (file) {
-                file.content = e.target.value;
-                localStorage.setItem('android_files', JSON.stringify(files));
-            }
-        });
+        openFile('1');
     </script>
 </body>
 </html>
