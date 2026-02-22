@@ -1,303 +1,325 @@
-<!DOCTYPE html>
+import React, { useState, useEffect, useRef } from 'react';
+import { 
+  Play, 
+  Terminal, 
+  Code, 
+  Cpu, 
+  Wifi, 
+  Battery, 
+  Monitor, 
+  Save, 
+  Sparkles, 
+  Trash2, 
+  Globe, 
+  ChevronRight,
+  Loader2
+} from 'lucide-react';
+
+// --- Konfigurasjon og Typer ---
+const GEMINI_MODEL = "gemini-2.5-flash-preview-09-2025";
+const STORAGE_KEY = "android_pro_editor_v1";
+
+interface Project {
+  id: string;
+  name: string;
+  code: string;
+  updatedAt: number;
+}
+
+const App: React.FC = () => {
+  // --- State ---
+  const [code, setCode] = useState<string>(`<!DOCTYPE html>
 <html lang="no">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DevStudio Pro - Web & AI Designer</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://unpkg.com/lucide@latest"></script>
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600&family=Inter:wght@300;400;700;900&display=swap');
-        
-        :root {
-            --ai-glow: 0 0 20px rgba(167, 139, 250, 0.3);
-            --editor-bg: #0d1117;
-        }
-
-        body {
-            background-color: #010409;
-            margin: 0;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            min-height: 100vh;
-            font-family: 'Inter', sans-serif;
-            color: #c9d1d9;
-        }
-
-        .phone-frame {
-            width: 390px;
-            height: 844px;
-            background: #000;
-            border-radius: 50px;
-            border: 10px solid #21262d;
-            position: relative;
-            overflow: hidden;
-            display: flex;
-            flex-direction: column;
-            box-shadow: 0 0 40px rgba(0,0,0,0.6);
-        }
-
-        .editor-font {
-            font-family: 'Fira Code', monospace;
-        }
-
-        .tab-active {
-            background: #161b22;
-            border-top: 2px solid #a78bfa;
-            color: #f0f6fc;
-        }
-
-        #web-preview-container {
-            background: white;
-            width: 100%;
-            height: 100%;
-            border: none;
-        }
-
-        .ai-pulse-ring {
-            animation: ring-pulse 2s infinite;
-        }
-
-        @keyframes ring-pulse {
-            0% { box-shadow: 0 0 0 0 rgba(167, 139, 250, 0.4); }
-            70% { box-shadow: 0 0 0 15px rgba(167, 139, 250, 0); }
-            100% { box-shadow: 0 0 0 0 rgba(167, 139, 250, 0); }
-        }
-
-        /* Loading Overlay */
-        #ai-loading {
-            display: none;
-            position: absolute;
-            inset: 0;
-            background: rgba(0,0,0,0.8);
-            z-index: 100;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-        }
-    </style>
+  <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body>
+<body class="bg-slate-900 text-white flex items-center justify-center min-h-screen">
+  <div class="text-center">
+    <h1 class="text-4xl font-bold text-blue-400">Hallo Verden!</h1>
+    <p class="mt-4 text-slate-400">Dette er en demo generert i Android Pro Editor.</p>
+  </div>
+</body>
+</html>`);
+  
+  const [activeTab, setActiveTab] = useState<'editor' | 'preview' | 'terminal' | 'ai'>('editor');
+  const [logs, setLogs] = useState<{msg: string, type: string}[]>([]);
+  const [isAiLoading, setIsAiLoading] = useState(false);
+  const [aiPrompt, setAiPrompt] = useState("");
+  const [savedProjects, setSavedProjects] = useState<Project[]>([]);
+  const [currentTime, setCurrentTime] = useState("");
 
-    <div class="phone-frame">
-        <div id="ai-loading">
-            <div class="w-16 h-16 border-4 border-purple-500 border-t-transparent rounded-full animate-spin mb-4"></div>
-            <p class="text-xs font-bold text-white uppercase tracking-widest">Gemini genererer...</p>
+  const iframeRef = useRef<HTMLIFrameElement>(null);
+
+  // --- Initialisering ---
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setCurrentTime(new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }));
+    }, 1000);
+    
+    // Last lagrede prosjekter
+    const stored = localStorage.getItem(STORAGE_KEY);
+    if (stored) {
+      setSavedProjects(JSON.parse(stored));
+    }
+
+    return () => clearInterval(timer);
+  }, []);
+
+  // --- Funksjoner ---
+  const addLog = (msg: string, type: 'info' | 'error' | 'ai' = 'info') => {
+    setLogs(prev => [...prev, { msg, type }]);
+  };
+
+  const saveCurrentProject = () => {
+    const newProject: Project = {
+      id: Date.now().toString(),
+      name: `Prosjekt ${savedProjects.length + 1}`,
+      code: code,
+      updatedAt: Date.now()
+    };
+    const updated = [...savedProjects, newProject];
+    setSavedProjects(updated);
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
+    addLog("Prosjekt lagret lokalt", "info");
+  };
+
+  const deleteProject = (id: string) => {
+    const updated = savedProjects.filter(p => p.id !== id);
+    setSavedProjects(updated);
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
+  };
+
+  const updatePreview = () => {
+    if (iframeRef.current) {
+      const doc = iframeRef.current.contentDocument;
+      if (doc) {
+        doc.open();
+        doc.write(code);
+        doc.close();
+      }
+    }
+  };
+
+  useEffect(() => {
+    if (activeTab === 'preview') {
+      setTimeout(updatePreview, 100);
+    }
+  }, [activeTab, code]);
+
+  // --- Gemini API Kall ---
+  const callGemini = async () => {
+    if (!aiPrompt) return;
+    setIsAiLoading(true);
+    addLog("Gemini analyserer forespørsel...", "ai");
+
+    const apiKey = ""; // Miljøet injiserer denne
+    const url = `https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent?key=${apiKey}`;
+
+    const payload = {
+      contents: [{
+        parts: [{ text: `Du er en ekspert på webutvikling. Oppgave: ${aiPrompt}. Gjeldende kode: ${code}. Returner KUN ferdig HTML/CSS/JS kode uten markdown-tagger.` }]
+      }]
+    };
+
+    try {
+      const response = await fetch(url, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+
+      const data = await response.json();
+      const generatedCode = data.candidates?.[0]?.content?.parts?.[0]?.text;
+
+      if (generatedCode) {
+        const cleanCode = generatedCode.replace(/```[a-z]*\n/g, '').replace(/```/g, '').trim();
+        setCode(cleanCode);
+        addLog("Kode oppdatert av AI", "ai");
+        setAiPrompt("");
+        setActiveTab('editor');
+      }
+    } catch (err) {
+      addLog("Feil ved kontakt med Gemini API", "error");
+    } finally {
+      setIsAiLoading(false);
+    }
+  };
+
+  return (
+    <div className="flex items-center justify-center min-h-screen bg-[#080808] p-2 sm:p-6 font-sans text-slate-200">
+      
+      {/* Android Device Frame */}
+      <div className="relative w-full max-w-[380px] h-[780px] bg-black rounded-[50px] border-[10px] border-[#1a1a1a] shadow-2xl overflow-hidden flex flex-col ring-4 ring-zinc-900/50">
+        
+        {/* Dynamic Island / Notch */}
+        <div className="absolute top-2 left-1/2 -translate-x-1/2 w-28 h-7 bg-black rounded-full z-50 flex items-center justify-center border border-white/5">
+            <div className="w-2 h-2 bg-blue-500 rounded-full animate-pulse mr-2"></div>
+            <span className="text-[8px] font-bold text-blue-400 uppercase tracking-tighter">Gemini Active</span>
         </div>
 
-        <!-- System Bar -->
-        <div class="h-12 w-full flex items-center justify-between px-8 pt-4">
-            <span id="clock" class="text-xs font-bold text-slate-400">--:--</span>
-            <div class="flex items-center gap-2">
-                <i data-lucide="wifi" class="w-3 h-3 text-slate-500"></i>
-                <i data-lucide="battery-full" class="w-3 h-3 text-emerald-500"></i>
+        {/* Status Bar */}
+        <div className="h-12 w-full flex items-center justify-between px-8 pt-4 text-[11px] font-bold z-40 opacity-80">
+          <span>{currentTime}</span>
+          <div className="flex items-center gap-3">
+            <Wifi size={14} className="text-white" />
+            <div className="flex items-center gap-1">
+                <span className="text-[9px]">98%</span>
+                <Battery size={14} className="text-emerald-500" />
             </div>
+          </div>
         </div>
 
-        <!-- App Header -->
-        <header class="px-6 py-4 bg-[#161b22] border-b border-[#30363d] flex items-center justify-between">
-            <div class="flex items-center gap-3">
-                <div class="w-9 h-9 bg-gradient-to-br from-indigo-500 to-purple-700 rounded-xl flex items-center justify-center shadow-lg ai-pulse-ring">
-                    <i data-lucide="zap" class="w-5 h-5 text-white"></i>
-                </div>
-                <div>
-                    <h1 class="text-[11px] font-black text-white uppercase tracking-widest leading-none mb-1">Turbo Designer</h1>
-                    <span class="text-[8px] text-purple-400 font-bold uppercase tracking-tighter">AI Fast-Track Mode</span>
-                </div>
+        {/* Dynamic Header */}
+        <header className="px-6 py-4 bg-[#0d0d0d] border-b border-white/5 flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <div className="w-9 h-9 bg-gradient-to-tr from-blue-600 to-indigo-600 rounded-xl flex items-center justify-center shadow-lg">
+              <Cpu size={18} className="text-white" />
             </div>
-            <div class="flex gap-2">
-                <button onclick="togglePreview()" id="preview-toggle-btn" class="p-2 bg-indigo-500/10 text-indigo-400 rounded-lg border border-indigo-500/20 active:scale-90 transition-transform">
-                    <i data-lucide="play" class="w-4 h-4"></i>
-                </button>
+            <div>
+              <h1 className="text-[10px] font-black uppercase tracking-widest text-white">Android Studio</h1>
+              <span className="text-[8px] text-blue-500 font-bold uppercase">v2.5 Flash Engine</span>
             </div>
+          </div>
+          <div className="flex gap-2">
+            <button onClick={saveCurrentProject} className="p-2 hover:bg-white/5 rounded-lg transition-colors">
+              <Save size={16} className="text-slate-400" />
+            </button>
+            <button onClick={() => setCode("")} className="p-2 hover:bg-red-500/10 rounded-lg transition-colors">
+              <Trash2 size={16} className="text-red-500/60" />
+            </button>
+          </div>
         </header>
 
-        <!-- Tabs -->
-        <div id="tabs" class="flex bg-[#0d1117] border-b border-[#30363d] overflow-x-auto no-scrollbar"></div>
-
-        <main class="flex-1 relative flex flex-col overflow-hidden bg-[#0d1117]">
-            
-            <div id="view-explorer" class="hidden flex-1 p-6 overflow-y-auto">
-                <div class="flex justify-between items-center mb-6">
-                    <h3 class="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Prosjektstruktur</h3>
-                    <button onclick="createItem('file')" class="text-indigo-400"><i data-lucide="plus-circle" class="w-5 h-5"></i></button>
+        {/* Main Content Area */}
+        <div className="flex-1 flex flex-col relative overflow-hidden bg-[#050505]">
+          
+          {/* Editor Mode */}
+          {activeTab === 'editor' && (
+            <div className="flex-1 flex flex-col overflow-hidden">
+                <div className="flex items-center gap-2 px-6 py-2 bg-white/5 border-b border-white/5">
+                    <Code size={12} className="text-blue-400" />
+                    <span className="text-[9px] font-bold text-slate-500">index.html</span>
                 </div>
-                <div id="file-tree" class="space-y-1"></div>
+                <textarea
+                    value={code}
+                    onChange={(e) => setCode(e.target.value)}
+                    spellCheck={false}
+                    className="flex-1 p-6 bg-transparent text-blue-100 font-mono text-[11px] resize-none focus:outline-none leading-relaxed caret-blue-500"
+                />
             </div>
+          )}
 
-            <div id="view-editor" class="flex-1 flex flex-col overflow-hidden">
-                <div class="flex-1 flex overflow-hidden">
-                    <div id="line-numbers" class="w-10 bg-[#010409] text-right pr-2 pt-4 text-[9px] text-[#484f58] editor-font select-none"></div>
-                    <textarea id="editor" class="flex-1 bg-transparent p-4 editor-font text-xs text-[#c9d1d9] outline-none resize-none leading-relaxed" spellcheck="false" oninput="onEditorInput()"></textarea>
+          {/* Preview Mode */}
+          {activeTab === 'preview' && (
+            <div className="flex-1 bg-white">
+                <iframe ref={iframeRef} className="w-full h-full border-none" title="Preview" />
+            </div>
+          )}
+
+          {/* AI / Gemini Mode */}
+          {activeTab === 'ai' && (
+            <div className="flex-1 p-6 flex flex-col gap-6">
+                <div className="flex items-center gap-3">
+                    <Sparkles className="text-blue-400" size={24} />
+                    <h2 className="text-sm font-black uppercase tracking-widest">Gemini 2.5 AI</h2>
                 </div>
-            </div>
-
-            <div id="view-preview" class="hidden flex-1 bg-white overflow-hidden">
-                <iframe id="web-preview-container"></iframe>
-            </div>
-
-            <!-- AI Quick Actions Bar -->
-            <div class="px-4 py-2 bg-[#161b22] border-t border-[#30363d] flex gap-2 overflow-x-auto no-scrollbar">
-                <button onclick="aiTurboBuild('landing')" class="px-3 py-1.5 bg-indigo-600 rounded-md text-[9px] font-bold text-white whitespace-nowrap">LANDING PAGE</button>
-                <button onclick="aiTurboBuild('portfolio')" class="px-3 py-1.5 bg-purple-600 rounded-md text-[9px] font-bold text-white whitespace-nowrap">PORTFOLIO</button>
-                <button onclick="aiTurboBuild('ecommerce')" class="px-3 py-1.5 bg-pink-600 rounded-md text-[9px] font-bold text-white whitespace-nowrap">WEBSHOP</button>
-            </div>
-
-            <!-- Terminal -->
-            <div id="terminal" class="h-40 bg-black border-t border-[#30363d] flex flex-col">
-                <div id="term-body" class="flex-1 overflow-y-auto p-4 editor-font text-[10px] space-y-1">
-                    <div class="text-indigo-400 font-bold">Turbo Engine v3.0 Klar.</div>
-                    <div class="text-slate-500 italic">Be AI lage en full side på 10 sekunder...</div>
-                </div>
-                <div class="flex items-center px-4 py-3 bg-[#0d1117] border-t border-zinc-900">
-                    <span class="text-purple-500 font-bold mr-2 text-xs">⚡</span>
-                    <input id="term-input" type="text" class="flex-1 bg-transparent outline-none text-[10px] text-white" placeholder="Beskriv nettsiden her..." onkeydown="handleCommand(event)">
-                </div>
-            </div>
-        </main>
-
-        <!-- Navigation -->
-        <nav class="h-20 bg-[#161b22] border-t border-[#30363d] flex items-center justify-around px-4 pb-6">
-            <button onclick="navigate('explorer')" id="nav-explorer" class="flex flex-col items-center gap-1 text-slate-500">
-                <i data-lucide="layers" class="w-5 h-5"></i>
-                <span class="text-[8px] font-bold uppercase">Prosjekt</span>
-            </button>
-            <button onclick="navigate('editor')" id="nav-editor" class="flex flex-col items-center gap-1 text-indigo-400">
-                <i data-lucide="terminal" class="w-5 h-5"></i>
-                <span class="text-[8px] font-bold uppercase">Editor</span>
-            </button>
-            <button onclick="navigate('preview')" id="nav-preview" class="flex flex-col items-center gap-1 text-slate-500">
-                <i data-lucide="monitor" class="w-5 h-5"></i>
-                <span class="text-[8px] font-bold uppercase">Preview</span>
-            </button>
-        </nav>
-    </div>
-
-    <script>
-        const apiKey = "AIzaSyDZHh0e18le3EOfP1ELHyf9B94smft2lEg";
-        const STORAGE_ID = 'gemini_turbo_web_v3';
-
-        let state = JSON.parse(localStorage.getItem(STORAGE_ID)) || {
-            fs: [{ id: '1', name: 'index.html', type: 'file', content: '<!DOCTYPE html>\n<html>\n<body class="bg-gray-100 flex items-center justify-center h-screen font-sans">\n  <div class="text-center">\n    <h1 class="text-4xl font-black text-indigo-600">DevStudio Turbo</h1>\n    <p class="text-gray-500 mt-2">Klar for AI-generering!</p>\n  </div>\n</body>\n</html>' }],
-            active: '1',
-            tabs: ['1']
-        };
-
-        function save() { localStorage.setItem(STORAGE_ID, JSON.stringify(state)); }
-
-        async function aiTurboBuild(type) {
-            const prompts = {
-                landing: "Lag en moderne, high-end landing page for en AI-startup. Bruk Tailwind CSS, inkluder en hero-seksjon med glassmorphism, features-seksjon med ikoner, og en mørk footer. Legg til en 'Back to top' knapp med JS.",
-                portfolio: "Lag en minimalistisk portefølje-nettside for en designer. Bruk et grid-system for prosjekter, inkluder en 'om meg' seksjon, og en kontakt-form. Bruk elegante fonter fra Google Fonts.",
-                ecommerce: "Lag en moderne nettbutikk-forside for klær. Inkluder en sticky navbar, et stort banner-bilde, produkt-kort med hover-effekter, og en handlevogn-modal i JavaScript."
-            };
-            const prompt = prompts[type] || type;
-            await processAIRequest(prompt);
-        }
-
-        async function processAIRequest(promptText) {
-            const loading = document.getElementById('ai-loading');
-            loading.style.display = 'flex';
-            logToTerminal(`Initialiserer Turbo Build for: ${promptText.substring(0, 20)}...`, 'text-indigo-400');
-
-            try {
-                const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        contents: [{ parts: [{ text: `DU ER EN MASTER WEB DEVELOPER. Din oppgave: ${promptText}. 
-                        REGLER:
-                        1. Returner KUN den komplette HTML-koden (inkludert inline CSS/JS eller Tailwind CDN).
-                        2. Ingen forklaringer.
-                        3. Koden skal være klar til bruk umiddelbart.
-                        4. Sørg for at designet er responsivt og fungerer på mobil.` }] }]
-                    })
-                });
-                const data = await res.json();
-                const code = data.candidates[0].content.parts[0].text.replace(/```[a-z]*\n/g, '').replace(/```/g, '').trim();
                 
-                const file = state.fs.find(f => f.id === state.active);
-                file.content = code;
-                document.getElementById('editor').value = code;
-                updatePreview();
-                logToTerminal(`Full nettside generert på under 10 sekunder!`, 'text-emerald-400');
-                save();
-            } catch (e) {
-                logToTerminal(`Feil under generering. Prøv igjen.`, 'text-red-400');
-            } finally {
-                loading.style.display = 'none';
-            }
-        }
+                <div className="bg-[#0d0d0d] rounded-2xl p-4 border border-white/5 space-y-4">
+                    <p className="text-[10px] text-slate-400 leading-relaxed italic">
+                        Beskriv hva du vil bygge, så genererer Gemini koden direkte inn i editoren din.
+                    </p>
+                    <textarea 
+                        value={aiPrompt}
+                        onChange={(e) => setAiPrompt(e.target.value)}
+                        placeholder="f.eks: Lag en moderne landing page for en kaffebar med mørkt tema..."
+                        className="w-full h-32 bg-black border border-white/10 rounded-xl p-4 text-xs text-white focus:border-blue-500 outline-none transition-all resize-none"
+                    />
+                    <button 
+                        onClick={callGemini}
+                        disabled={isAiLoading || !aiPrompt}
+                        className="w-full py-4 bg-blue-600 hover:bg-blue-500 disabled:bg-slate-800 text-white text-xs font-bold rounded-xl shadow-xl shadow-blue-900/20 flex items-center justify-center gap-2 transition-all active:scale-95"
+                    >
+                        {isAiLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Sparkles size={16} />}
+                        {isAiLoading ? 'GENERERER...' : 'OPPDATER KODE MED AI'}
+                    </button>
+                </div>
 
-        async function handleCommand(e) {
-            if (e.key === 'Enter') {
-                const val = e.target.value.trim();
-                if (!val) return;
-                e.target.value = '';
-                await processAIRequest(val);
-            }
-        }
+                <div className="flex-1 overflow-y-auto space-y-2 pr-2">
+                    <h3 className="text-[9px] font-bold text-slate-600 uppercase mb-3">Lagrede Prosjekter</h3>
+                    {savedProjects.map(p => (
+                        <div key={p.id} className="flex items-center justify-between p-3 bg-white/5 rounded-xl border border-white/5 hover:border-blue-500/30 transition-all">
+                            <div className="flex items-center gap-3" onClick={() => { setCode(p.code); setActiveTab('editor'); }}>
+                                <Globe size={14} className="text-blue-400" />
+                                <span className="text-[10px] font-medium">{p.name}</span>
+                            </div>
+                            <button onClick={() => deleteProject(p.id)} className="p-1 hover:text-red-500 transition-colors">
+                                <Trash2 size={12} />
+                            </button>
+                        </div>
+                    ))}
+                </div>
+            </div>
+          )}
 
-        function updatePreview() {
-            const html = state.fs.find(f => f.name === 'index.html')?.content || '';
-            const iframe = document.getElementById('web-preview-container');
-            const doc = iframe.contentDocument || iframe.contentWindow.document;
-            doc.open();
-            doc.write(html);
-            doc.close();
-        }
+          {/* Terminal / Log Mode */}
+          {activeTab === 'terminal' && (
+            <div className="flex-1 bg-black p-6 font-mono text-[10px] overflow-y-auto">
+                <div className="text-slate-600 mb-4 border-b border-white/5 pb-2">ANDROID SYSTEM CONSOLE v2.5</div>
+                {logs.map((l, i) => (
+                    <div key={i} className="mb-2 flex gap-2">
+                        <span className="text-slate-800">[{i}]</span>
+                        <span className={l.type === 'error' ? 'text-red-400' : l.type === 'ai' ? 'text-blue-400' : 'text-emerald-500'}>
+                            {l.msg}
+                        </span>
+                    </div>
+                ))}
+                <div className="mt-4 flex gap-2 animate-pulse">
+                    <span className="text-blue-500">_</span>
+                </div>
+            </div>
+          )}
+        </div>
 
-        function togglePreview() {
-            const current = document.getElementById('view-preview').classList.contains('hidden');
-            navigate(current ? 'preview' : 'editor');
-        }
+        {/* Pro Navigation Dock */}
+        <nav className="h-24 bg-[#0a0a0a] border-t border-white/5 px-4 grid grid-cols-4 gap-2 items-center pb-6">
+          <button 
+            onClick={() => setActiveTab('editor')}
+            className={`flex flex-col items-center gap-1.5 py-2 rounded-2xl transition-all ${activeTab === 'editor' ? 'text-blue-400 bg-blue-400/10' : 'text-slate-600'}`}
+          >
+            <Code size={18} />
+            <span className="text-[8px] font-black uppercase">Kode</span>
+          </button>
+          
+          <button 
+            onClick={() => setActiveTab('ai')}
+            className={`flex flex-col items-center gap-1.5 py-2 rounded-2xl transition-all ${activeTab === 'ai' ? 'text-purple-400 bg-purple-400/10' : 'text-slate-600'}`}
+          >
+            <Sparkles size={18} />
+            <span className="text-[8px] font-black uppercase">Gemini</span>
+          </button>
 
-        function navigate(view) {
-            ['explorer', 'editor', 'preview'].forEach(v => {
-                document.getElementById(`view-${v}`).classList.add('hidden');
-                document.getElementById(`nav-${v}`).classList.replace('text-indigo-400', 'text-slate-500');
-            });
-            document.getElementById(`view-${view}`).classList.remove('hidden');
-            document.getElementById(`nav-${view}`).classList.replace('text-slate-500', 'text-indigo-400');
-            if(view === 'preview') updatePreview();
-        }
+          <button 
+            onClick={() => setActiveTab('preview')}
+            className={`flex flex-col items-center gap-1.5 py-2 rounded-2xl transition-all ${activeTab === 'preview' ? 'text-emerald-400 bg-emerald-400/10' : 'text-slate-600'}`}
+          >
+            <Monitor size={18} />
+            <span className="text-[8px] font-black uppercase">Demo</span>
+          </button>
 
-        function logToTerminal(msg, color = 'text-white') {
-            const body = document.getElementById('term-body');
-            const div = document.createElement('div');
-            div.className = `${color} leading-tight`;
-            div.innerText = `> ${msg}`;
-            body.appendChild(div);
-            body.scrollTop = body.scrollHeight;
-        }
+          <button 
+            onClick={() => setActiveTab('terminal')}
+            className={`flex flex-col items-center gap-1.5 py-2 rounded-2xl transition-all ${activeTab === 'terminal' ? 'text-amber-400 bg-amber-400/10' : 'text-slate-600'}`}
+          >
+            <Terminal size={18} />
+            <span className="text-[8px] font-black uppercase">Logg</span>
+          </button>
+        </nav>
 
-        function renderTree() {
-            const root = document.getElementById('file-tree');
-            root.innerHTML = '';
-            state.fs.forEach(item => {
-                const div = document.createElement('div');
-                div.className = `flex items-center gap-2 p-2 rounded-lg text-[11px] ${state.active === item.id ? 'bg-[#161b22] text-white' : 'text-slate-400'}`;
-                div.innerHTML = `<i data-lucide="file-text" class="w-4 h-4 text-indigo-400"></i><span>${item.name}</span>`;
-                root.appendChild(div);
-            });
-            lucide.createIcons();
-        }
+        {/* Gesture Bar */}
+        <div className="absolute bottom-2 left-1/2 -translate-x-1/2 w-32 h-1.5 bg-white/10 rounded-full"></div>
+      </div>
+    </div>
+  );
+};
 
-        function onEditorInput() {
-            const file = state.fs.find(f => f.id === state.active);
-            file.content = document.getElementById('editor').value;
-            save();
-        }
-
-        window.onload = () => {
-            document.getElementById('editor').value = state.fs.find(f => f.id === state.active).content;
-            renderTree();
-            setInterval(() => {
-                document.getElementById('clock').innerText = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-            }, 1000);
-            lucide.createIcons();
-        };
-    </script>
-</body>
-</html>
+export default App;
