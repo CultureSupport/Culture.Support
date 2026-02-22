@@ -48,6 +48,99 @@
             }
         }
     </style>
+
+    <style>
+        /* 1. Reset & Background (Keeping your Red/Black theme) */
+        body {
+            margin: 0;
+            display: grid;
+            grid-template-areas: 
+                "header header"
+                "sidebar main";
+            grid-template-columns: 250px 1fr;
+            grid-template-rows: 70px 1vh;
+            height: 100vh;
+            background: linear-gradient(135deg, #000 0%, #4a0000 100%);
+            color: white;
+            font-family: 'Segoe UI', sans-serif;
+        }
+
+        /* 2. Sticky Header Interception */
+        header {
+            grid-area: header;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(10px); /* Glassmorphism */
+            display: flex;
+            align-items: center;
+            padding: 0 40px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            border-bottom: 2px solid #8b0000;
+        }
+
+        /* 3. Sidebar */
+        aside {
+            grid-area: sidebar;
+            background: rgba(20, 20, 20, 0.9);
+            padding: 20px;
+            border-right: 1px solid #333;
+        }
+
+        /* 4. Main Content Area */
+        main {
+            grid-area: main;
+            padding: 40px;
+            overflow-y: auto;
+        }
+
+        /* 5. Header Link Animations */
+        nav ul {
+            list-style: none;
+            display: flex;
+            gap: 30px;
+        }
+
+        nav a {
+            color: #ccc;
+            text-decoration: none;
+            font-weight: 600;
+            position: relative;
+            padding: 5px 0;
+            transition: color 0.3s ease;
+        }
+
+        /* The "Underline" Animation */
+        nav a::after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 2px;
+            bottom: 0;
+            left: 0;
+            background-color: #ff0000;
+            transition: width 0.3s ease;
+        }
+
+        nav a:hover {
+            color: #fff;
+        }
+
+        nav a:hover::after {
+            width: 100%;
+        }
+
+        /* Sidebar List Styling */
+        .sidebar-nav {
+            list-style: none;
+            padding: 0;
+        }
+
+        .sidebar-nav li {
+            padding: 15px 0;
+            border-bottom: 1px solid #222;
+        }
+    </style>
 <body>
 
 
@@ -56,6 +149,29 @@
         <br>
         <br>
         <br>
+    <center>
+
+        <header>
+        <div style="font-size: 1.5rem; font-weight: bold; margin-right: auto;">NODE_01</div>
+        <nav>
+            <ul>
+                <li><a href="#">Dashboard</a></li>
+                <li><a href="#">Network</a></li>
+                <li><a href="#">Security</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <aside>
+        <ul class="sidebar-nav">
+            <li>Terminal</li>
+            <li>System Logs</li>
+            <li>Encryption</li>
+            <li>Database</li>
+        </ul>
+    </aside>
+        
+    </center>
         <br>
         <br>
         <br>
