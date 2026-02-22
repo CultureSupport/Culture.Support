@@ -3,53 +3,45 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Android Kode Editor - Pro</title>
+    <title>DevStudio Pro - LocalHost Edition</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500&display=swap');
         
+        :root {
+            --gemini-purple: #8b5cf6;
+            --editor-bg: #09090b;
+        }
+
         body {
-            background-color: #09090b;
+            background-color: #020617;
             margin: 0;
             display: flex;
             align-items: center;
             justify-content: center;
             min-height: 100vh;
             font-family: ui-sans-serif, system-ui, -apple-system, sans-serif;
-            color: #e2e8f0;
+            color: #f8fafc;
         }
 
-        .s23-chassis {
-            width: 360px;
-            height: 760px;
-            background: black;
-            border-radius: 44px;
-            border: 8px solid #27272a;
+        .phone-frame {
+            width: 380px;
+            height: 800px;
+            background: #000;
+            border-radius: 54px;
+            border: 12px solid #1e293b;
             position: relative;
             overflow: hidden;
             display: flex;
             flex-direction: column;
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.8);
+            box-shadow: 0 0 0 2px #334155, 0 25px 50px -12px rgba(0, 0, 0, 0.8);
         }
 
-        .punch-hole {
-            position: absolute;
-            top: 12px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 18px;
-            height: 18px;
-            background: #18181b;
-            border-radius: 50%;
-            z-index: 50;
-            border: 1px solid #27272a;
-        }
-
-        .code-input {
+        .editor-area {
             font-family: 'Fira Code', monospace;
-            background: transparent;
-            color: #93c5fd;
+            background: var(--editor-bg);
+            color: #94a3b8;
             resize: none;
             outline: none;
             border: none;
@@ -57,301 +49,411 @@
             height: 100%;
             font-size: 11px;
             line-height: 1.6;
+            tab-size: 2;
         }
 
         .active-tab {
-            border-bottom: 2px solid #3b82f6;
-            background: rgba(59, 130, 246, 0.1);
-            color: white;
-        }
-
-        .file-item:hover {
-            background: rgba(255, 255, 255, 0.05);
+            background: #1e1b4b;
+            border-bottom: 2px solid var(--gemini-purple);
+            color: #fff;
         }
 
         .no-scrollbar::-webkit-scrollbar { display: none; }
+        
+        .folder-indent {
+            margin-left: 14px;
+            border-left: 1px solid #1e293b;
+        }
+
+        .ai-panel-glow {
+            box-shadow: 0 -10px 30px -5px rgba(139, 92, 246, 0.2);
+        }
+
+        @keyframes pulse-purple {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .ai-loading {
+            animation: pulse-purple 1.5s infinite;
+        }
     </style>
 </head>
 <body>
 
-    <div class="s23-chassis ring-2 ring-zinc-700">
-        <div class="punch-hole"></div>
-
-        <!-- Status Bar -->
-        <div class="h-10 w-full flex items-center justify-between px-8 pt-3 text-[11px] font-bold text-zinc-400 z-40">
-            <span id="clock">12:00</span>
+    <div class="phone-frame">
+        <!-- Statuslinje -->
+        <div class="h-10 w-full flex items-center justify-between px-10 pt-4 text-[10px] font-medium text-slate-500">
+            <span id="digital-clock">--:--</span>
             <div class="flex items-center gap-2">
-                <i data-lucide="wifi" class="w-3 h-3"></i>
-                <i data-lucide="battery" class="w-3 h-3"></i>
+                <i data-lucide="network" class="w-3 h-3"></i>
+                <i data-lucide="battery-medium" class="w-3 h-3"></i>
             </div>
         </div>
 
-        <!-- Header -->
-        <header class="flex items-center justify-between px-5 py-3 bg-zinc-900 border-b border-zinc-800">
-            <div class="flex items-center gap-2">
-                <div class="p-1.5 bg-blue-600 rounded-lg">
-                    <i data-lucide="layers" class="w-4 h-4 text-white"></i>
+        <!-- App Header -->
+        <header class="px-6 py-3 bg-slate-900/80 border-b border-slate-800 backdrop-blur-sm flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <div class="w-8 h-8 bg-gradient-to-br from-purple-600 to-blue-600 rounded-xl flex items-center justify-center shadow-lg">
+                    <i data-lucide="cpu" class="w-4 h-4 text-white"></i>
                 </div>
-                <div class="flex flex-col">
-                    <span class="text-[10px] font-black uppercase tracking-tighter text-white">Android Kode Editor</span>
-                    <span id="current-project" class="text-[8px] text-zinc-500 uppercase">FS: System-Root</span>
+                <div>
+                    <h1 class="text-[11px] font-black text-white uppercase tracking-wider">DevStudio v8</h1>
+                    <div class="flex items-center gap-1">
+                        <span class="w-1.5 h-1.5 bg-emerald-500 rounded-full"></span>
+                        <p class="text-[8px] text-emerald-400 font-bold uppercase">Localhost:8080</p>
+                    </div>
                 </div>
             </div>
-            <div class="flex gap-2">
-                <button onclick="previewBuild()" class="p-2 bg-blue-500 text-white rounded-full active:scale-90 transition-all">
-                    <i data-lucide="eye" class="w-4 h-4"></i>
-                </button>
-                <button onclick="runCurrentFile()" class="p-2 bg-green-500 text-black rounded-full active:scale-90 transition-all">
-                    <i data-lucide="play" class="w-4 h-4 fill-current"></i>
-                </button>
-            </div>
+            <button onclick="runLocalHost()" class="group flex items-center gap-2 bg-slate-800 hover:bg-slate-700 px-3 py-1.5 rounded-full transition-all active:scale-95">
+                <i data-lucide="play" class="w-3 h-3 text-emerald-400 fill-emerald-400"></i>
+                <span class="text-[9px] font-bold text-white">START</span>
+            </button>
         </header>
 
-        <!-- Tabs Bar -->
-        <div id="tabs-bar" class="flex bg-zinc-900 border-b border-zinc-800 overflow-x-auto no-scrollbar"></div>
+        <!-- Fil-faner -->
+        <div id="tab-container" class="flex bg-slate-950 border-b border-slate-900 overflow-x-auto no-scrollbar min-h-[40px]"></div>
 
-        <!-- Workspace -->
-        <main id="workspace" class="flex-1 overflow-hidden relative bg-zinc-950 flex flex-col">
+        <!-- Arbeidsområde -->
+        <main class="flex-1 relative bg-black overflow-hidden flex flex-col">
             
-            <!-- Explorer View -->
-            <div id="view-explorer" class="hidden flex-1 flex flex-col bg-zinc-900/50 p-4 overflow-y-auto">
-                <div class="flex justify-between items-center mb-4">
-                    <h3 class="text-[10px] font-bold text-zinc-500 uppercase tracking-widest">Filstruktur</h3>
+            <!-- Filutforsker -->
+            <div id="view-explorer" class="hidden flex-1 p-5 overflow-y-auto">
+                <div class="flex justify-between items-center mb-6">
+                    <h2 class="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Prosjektstruktur</h2>
                     <div class="flex gap-2">
-                        <button onclick="createNewFile()" class="p-1 hover:text-blue-400"><i data-lucide="file-plus" class="w-4 h-4"></i></button>
+                        <button onclick="createNewItem('file')" class="p-1.5 bg-slate-900 rounded-lg text-slate-400 hover:text-blue-400"><i data-lucide="file-plus-2" class="w-4 h-4"></i></button>
+                        <button onclick="createNewItem('folder')" class="p-1.5 bg-slate-900 rounded-lg text-slate-400 hover:text-amber-400"><i data-lucide="folder-plus" class="w-4 h-4"></i></button>
                     </div>
                 </div>
-                <div id="file-tree" class="space-y-1"></div>
+                <div id="tree-root" class="space-y-1"></div>
             </div>
 
-            <!-- Editor View -->
+            <!-- Kode-editor -->
             <div id="view-editor" class="flex-1 flex overflow-hidden">
-                <div id="line-numbers" class="w-8 bg-zinc-900/30 border-r border-zinc-800 flex flex-col items-center pt-4 text-[9px] text-zinc-600 font-mono select-none"></div>
-                <textarea id="editor" class="code-input p-4" spellcheck="false" placeholder="// Velg en fil..."></textarea>
+                <div id="gutter" class="w-10 bg-slate-950/50 border-r border-slate-900/50 flex flex-col items-center pt-4 text-[9px] text-slate-600 font-mono"></div>
+                <div class="flex-1 relative">
+                    <textarea id="main-editor" class="editor-area p-4" spellcheck="false" oninput="syncAndSave()"></textarea>
+                </div>
             </div>
 
-            <!-- Preview View (For HTML/CSS Build) -->
+            <!-- AI-integrasjon -->
+            <div id="ai-interface" class="absolute bottom-6 left-4 right-4 bg-slate-900/95 border border-purple-500/30 rounded-3xl p-4 shadow-2xl backdrop-blur-xl ai-panel-glow transition-all duration-500">
+                <div class="flex items-center justify-between mb-3">
+                    <div class="flex items-center gap-2">
+                        <i data-lucide="sparkles" class="w-4 h-4 text-purple-400"></i>
+                        <span class="text-[10px] font-black text-purple-200 uppercase tracking-tighter">Gemini Intelligence</span>
+                    </div>
+                    <button onclick="toggleAIView()" class="text-slate-500 hover:text-white"><i data-lucide="chevron-down" class="w-4 h-4"></i></button>
+                </div>
+                <div id="ai-chat-body" class="space-y-3">
+                    <div id="ai-output" class="hidden text-[10px] leading-relaxed text-slate-300 bg-black/40 p-3 rounded-2xl max-h-32 overflow-y-auto border border-slate-800"></div>
+                    <div class="flex gap-2">
+                        <input id="ai-query" type="text" placeholder="Be AI om å bygge en funksjon..." 
+                            class="flex-1 bg-black/60 border border-slate-800 rounded-2xl px-4 py-2.5 text-[11px] text-white focus:outline-none focus:ring-2 focus:ring-purple-500/50 transition-all">
+                        <button onclick="callGemini()" class="w-10 h-10 bg-purple-600 text-white rounded-2xl flex items-center justify-center hover:bg-purple-500 shadow-lg shadow-purple-900/20 active:scale-90 transition-all">
+                            <i data-lucide="arrow-up" class="w-5 h-5"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Live Preview (Localhost) -->
             <div id="view-preview" class="hidden flex-1 bg-white">
-                <iframe id="preview-frame" class="w-full h-full border-none"></iframe>
-            </div>
-
-            <!-- Terminal View -->
-            <div id="view-terminal" class="hidden flex-1 bg-black p-5 overflow-y-auto font-mono text-[10px]">
-                <div id="terminal-output" class="text-emerald-500"></div>
-            </div>
-
-            <!-- Library View -->
-            <div id="view-library" class="hidden flex-1 p-5 space-y-6 overflow-y-auto">
-                <section>
-                    <h3 class="text-[10px] font-bold text-blue-400 uppercase mb-3 flex items-center gap-2">
-                        <i data-lucide="package" class="w-3 h-3"></i> Requirements.txt
-                    </h3>
-                    <div class="bg-zinc-900 rounded-xl p-3 border border-zinc-800">
-                        <p class="text-[8px] text-zinc-500 mb-2 italic">Installer pakker definert i filen</p>
-                        <button onclick="installFromRequirements()" class="w-full bg-blue-600/20 text-blue-400 text-[9px] font-bold py-2 rounded border border-blue-500/30 uppercase">Build Dependencies</button>
+                <div class="h-8 bg-slate-100 flex items-center px-4 border-b border-slate-200">
+                    <div class="flex gap-1.5">
+                        <div class="w-2.5 h-2.5 bg-red-400 rounded-full"></div>
+                        <div class="w-2.5 h-2.5 bg-amber-400 rounded-full"></div>
+                        <div class="w-2.5 h-2.5 bg-emerald-400 rounded-full"></div>
                     </div>
-                </section>
-
-                <section>
-                    <h3 class="text-[10px] font-bold text-orange-400 uppercase mb-3 flex items-center gap-2">
-                        <i data-lucide="cpu" class="w-3 h-3"></i> JS Modul Manager
-                    </h3>
-                    <div class="bg-zinc-900 rounded-xl p-3 border border-zinc-800 space-y-2">
-                        <select id="module-selector" class="w-full bg-black border border-zinc-800 rounded p-2 text-[10px] text-white outline-none">
-                            <option value="react">React (ESM)</option>
-                            <option value="vue">Vue 3 (ESM)</option>
-                            <option value="three">Three.js</option>
-                        </select>
-                        <button onclick="importModuleSnippet()" class="w-full bg-zinc-800 text-[9px] font-bold py-2 rounded uppercase">Sett inn Import</button>
-                    </div>
-                </section>
+                    <div class="mx-auto text-[9px] font-mono text-slate-400">localhost:8080/index.html</div>
+                </div>
+                <iframe id="local-server-frame" class="w-full h-full border-none"></iframe>
             </div>
         </main>
 
-        <!-- Navigation -->
-        <nav class="h-20 grid grid-cols-4 bg-zinc-900 border-t border-zinc-800 px-2 pb-4">
-            <button onclick="switchTab('explorer')" id="btn-explorer" class="flex flex-col items-center justify-center gap-1 text-zinc-600">
-                <i data-lucide="folder-tree" class="w-5 h-5"></i>
-                <span class="text-[8px] font-black uppercase">Filer</span>
-            </button>
-            <button onclick="switchTab('editor')" id="btn-editor" class="flex flex-col items-center justify-center gap-1 text-blue-500">
-                <i data-lucide="code-2" class="w-5 h-5"></i>
-                <span class="text-[8px] font-black uppercase">Editor</span>
-            </button>
-            <button onclick="switchTab('terminal')" id="btn-terminal" class="flex flex-col items-center justify-center gap-1 text-zinc-600">
-                <i data-lucide="terminal" class="w-5 h-5"></i>
-                <span class="text-[8px] font-black uppercase">Logg</span>
-            </button>
-            <button onclick="switchTab('library')" id="btn-library" class="flex flex-col items-center justify-center gap-1 text-zinc-600">
+        <!-- Bottom Tab Bar -->
+        <nav class="h-20 grid grid-cols-4 bg-slate-900 border-t border-slate-800 px-4 pb-6">
+            <button onclick="navigate('explorer')" id="nav-explorer" class="flex flex-col items-center justify-center gap-1 text-slate-500">
                 <i data-lucide="box" class="w-5 h-5"></i>
-                <span class="text-[8px] font-black uppercase">Lib</span>
+                <span class="text-[8px] font-bold uppercase">Utforsk</span>
+            </button>
+            <button onclick="navigate('editor')" id="nav-editor" class="flex flex-col items-center justify-center gap-1 text-purple-400">
+                <i data-lucide="code-xml" class="w-5 h-5"></i>
+                <span class="text-[8px] font-bold uppercase">Editor</span>
+            </button>
+            <button onclick="navigate('preview')" id="nav-preview" class="flex flex-col items-center justify-center gap-1 text-slate-500">
+                <i data-lucide="globe" class="w-5 h-5"></i>
+                <span class="text-[8px] font-bold uppercase">Live</span>
+            </button>
+            <button onclick="resetSystem()" class="flex flex-col items-center justify-center gap-1 text-slate-500">
+                <i data-lucide="rotate-ccw" class="w-5 h-5"></i>
+                <span class="text-[8px] font-bold uppercase">Reset</span>
             </button>
         </nav>
-
-        <div class="h-1.5 w-24 bg-zinc-800 mx-auto mb-2 rounded-full"></div>
     </div>
 
     <script>
-        // Filstruktur som støtter moduler og requirements
-        let files = JSON.parse(localStorage.getItem('fs_pro')) || [
-            { id: '1', name: 'index.html', content: '<!DOCTYPE html>\n<html>\n<head>\n  <link rel="stylesheet" href="style.css">\n</head>\n<body>\n  <div id="app">Laster...</div>\n  <script type="module" src="main.js"><' + '/script>\n</body>\n</html>', type: 'file' },
-            { id: '2', name: 'style.css', content: 'body { background: #09090b; color: #3b82f6; display: flex; justify-content: center; align-items: center; height: 100vh; font-family: sans-serif; }', type: 'file' },
-            { id: '3', name: 'main.js', content: 'import { render } from "./ui.js";\nrender("Hallo fra moduler!");', type: 'file' },
-            { id: '4', name: 'ui.js', content: 'export function render(text) {\n  document.getElementById("app").innerHTML = `<h1>${text}</h1>`;\n}', type: 'file' },
-            { id: '5', name: 'requirements.txt', content: 'tailwindcss\nlucide\nreact', type: 'file' }
+        const apiKey = ""; // Håndtert av miljøet
+        const STORAGE_KEY = 'devstudio_pro_v8_state';
+
+        // --- TILSTANDSHÅNDTERING (Local Storage) ---
+        const initialFS = [
+            { id: 'root_idx', name: 'index.html', type: 'file', parentId: null, content: '<!DOCTYPE html>\n<html>\n<head>\n  <script src="https://cdn.tailwindcss.com"><\/script>\n<\/head>\n<body class="bg-slate-900 text-slate-100 flex items-center justify-center h-screen">\n  <div class="text-center">\n    <h1 class="text-4xl font-black text-purple-500 mb-4">Gemini v8 Server<\/h1>\n    <p class="text-slate-400">LocalStorage er aktiv og lagrer prosjektet ditt.<\/p>\n  <\/div>\n<\/body>\n<\/html>' },
+            { id: 'folder_1', name: 'scripts', type: 'folder', parentId: null, isOpen: true },
+            { id: 'js_1', name: 'app.js', type: 'file', parentId: 'folder_1', content: 'console.log("Localhost startet...");' }
         ];
 
-        let activeFileId = '1';
-        let openTabs = ['1'];
+        let state = JSON.parse(localStorage.getItem(STORAGE_KEY)) || {
+            fs: initialFS,
+            activeId: 'root_idx',
+            tabs: ['root_idx'],
+            aiMinimized: false
+        };
 
-        lucide.createIcons();
-
-        function updateClock() {
-            document.getElementById('clock').innerText = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+        function saveState() {
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
         }
-        setInterval(updateClock, 1000); updateClock();
 
+        function resetSystem() {
+            if(confirm("Er du sikker? Dette sletter alle filer i LocalStorage.")) {
+                localStorage.removeItem(STORAGE_KEY);
+                location.reload();
+            }
+        }
+
+        // --- AI INTEGRASJON ---
+        async function callGemini() {
+            const queryInput = document.getElementById('ai-query');
+            const output = document.getElementById('ai-output');
+            const query = queryInput.value.trim();
+            if (!query) return;
+
+            output.classList.remove('hidden');
+            output.innerHTML = '<span class="ai-loading flex items-center gap-2"><i data-lucide="loader-2" class="w-3 h-3 animate-spin"></i> Gemini analyserer filsystemet...</span>';
+            lucide.createIcons();
+            
+            const activeFile = state.fs.find(f => f.id === state.activeId);
+            const fsMap = state.fs.map(f => `${f.type === 'folder' ? '[DIR]' : '[FILE]'} ${f.name}`).join(', ');
+
+            const systemPrompt = `Du er DevStudio Pro AI. 
+            Du har tilgang til et filsystem: ${fsMap}.
+            Den aktive filen er: ${activeFile?.name}.
+            
+            REGLER:
+            - Hvis brukeren ber om kode, returner KUN koden uten forklaring.
+            - Hvis brukeren ber om å slette/opprette, svar med ACTION:[TYPE]:[NAME].
+            - Vær effektiv og teknisk.`;
+
+            try {
+                const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        contents: [{ parts: [{ text: `Bruker: ${query}\n\nKildekode:\n${activeFile?.content || ''}` }] }],
+                        systemInstruction: { parts: [{ text: systemPrompt }] }
+                    })
+                });
+
+                const data = await response.json();
+                const result = data.candidates?.[0]?.content?.parts?.[0]?.text || "Ingen respons.";
+
+                // Håndter handlinger
+                if (result.startsWith("ACTION:")) {
+                    output.innerText = "Utfører systemhandling...";
+                    processAIAction(result);
+                } else {
+                    const cleanCode = result.replace(/```[a-z]*\n/g, '').replace(/```/g, '').trim();
+                    if (activeFile) {
+                        activeFile.content = cleanCode;
+                        document.getElementById('main-editor').value = cleanCode;
+                        saveState();
+                    }
+                    output.innerText = "Kode oppdatert basert på instruksjoner.";
+                }
+                queryInput.value = "";
+            } catch (err) {
+                output.innerText = "Tilkoblingsfeil til Gemini API.";
+            }
+        }
+
+        function processAIAction(actionStr) {
+            const [_, type, name] = actionStr.split(':');
+            if (type === 'DELETE') {
+                const item = state.fs.find(f => f.name.toLowerCase() === name.toLowerCase().trim());
+                if (item) deleteItem(item.id);
+            } else if (type === 'CREATE') {
+                createNewItem('file', name.trim());
+            }
+        }
+
+        // --- FILSYSTEM OPERASJONER ---
         function renderFileTree() {
-            const tree = document.getElementById('file-tree');
-            tree.innerHTML = '';
-            files.forEach(f => {
-                const div = document.createElement('div');
-                div.className = `file-item flex items-center justify-between p-2 rounded text-[11px] cursor-pointer ${activeFileId === f.id ? 'text-blue-400 bg-blue-500/5' : 'text-zinc-400'}`;
-                const icon = f.name.endsWith('.html') ? 'layout' : f.name.endsWith('.css') ? 'palette' : f.name.endsWith('.txt') ? 'file-text' : 'file-code';
-                div.innerHTML = `<div onclick="openFile('${f.id}')" class="flex items-center gap-2"><i data-lucide="${icon}" class="w-3 h-3"></i> ${f.name}</div>`;
-                tree.appendChild(div);
+            const root = document.getElementById('tree-root');
+            root.innerHTML = '';
+            
+            const build = (parentId, container) => {
+                state.fs.filter(f => f.parentId === parentId).forEach(item => {
+                    const div = document.createElement('div');
+                    div.className = `group flex items-center justify-between p-2 rounded-xl cursor-pointer transition-all ${state.activeId === item.id ? 'bg-purple-600/15 text-purple-300' : 'text-slate-400 hover:bg-slate-900'}`;
+                    
+                    const isFolder = item.type === 'folder';
+                    let iconName = isFolder ? (item.isOpen ? 'folder-open' : 'folder') : 'file-code-2';
+                    if (item.name.endsWith('.html')) iconName = 'layout';
+                    if (item.name.endsWith('.js')) iconName = 'scroll';
+
+                    div.innerHTML = `
+                        <div class="flex items-center gap-2.5 text-[11px] flex-1 truncate" onclick="${isFolder ? `toggleFolder('${item.id}')` : `openFile('${item.id}')`}">
+                            <i data-lucide="${iconName}" class="w-4 h-4 shrink-0 ${isFolder ? 'text-amber-500' : 'text-blue-400'}"></i>
+                            <span class="truncate font-medium">${item.name}</span>
+                        </div>
+                        <div class="hidden group-hover:flex gap-1">
+                            <button onclick="deleteItem('${item.id}')" class="p-1 hover:text-red-400"><i data-lucide="x" class="w-3 h-3"></i></button>
+                        </div>
+                    `;
+                    container.appendChild(div);
+
+                    if (isFolder && item.isOpen) {
+                        const childContainer = document.createElement('div');
+                        childContainer.className = "folder-indent space-y-1 mt-1";
+                        build(item.id, childContainer);
+                        container.appendChild(childContainer);
+                    }
+                });
+            };
+            build(null, root);
+            lucide.createIcons();
+        }
+
+        function openFile(id) {
+            state.activeId = id;
+            if (!state.tabs.includes(id)) state.tabs.push(id);
+            const file = state.fs.find(f => f.id === id);
+            document.getElementById('main-editor').value = file.content;
+            navigate('editor');
+            renderTabs();
+            renderFileTree();
+            updateGutter();
+            saveState();
+        }
+
+        function createNewItem(type, name = null) {
+            const itemName = name || prompt(`Navn på ny ${type}:`);
+            if (!itemName) return;
+            const newItem = {
+                id: 'id_' + Date.now(),
+                name: itemName,
+                type: type,
+                parentId: null,
+                content: type === 'file' ? '/* Ny fil */' : null,
+                isOpen: true
+            };
+            state.fs.push(newItem);
+            saveState();
+            renderFileTree();
+            if (type === 'file') openFile(newItem.id);
+        }
+
+        function deleteItem(id) {
+            state.fs = state.fs.filter(f => f.id !== id && f.parentId !== id);
+            state.tabs = state.tabs.filter(t => t !== id);
+            if (state.activeId === id) state.activeId = state.tabs[0] || null;
+            saveState();
+            renderFileTree();
+            renderTabs();
+        }
+
+        function toggleFolder(id) {
+            const f = state.fs.find(x => x.id === id);
+            f.isOpen = !f.isOpen;
+            saveState();
+            renderFileTree();
+        }
+
+        // --- UI KONTROLL ---
+        function navigate(view) {
+            ['explorer', 'editor', 'preview'].forEach(v => {
+                document.getElementById('view-' + v).classList.add('hidden');
+                document.getElementById('nav-' + v).classList.replace('text-purple-400', 'text-slate-500');
+            });
+            document.getElementById('view-' + view).classList.remove('hidden');
+            document.getElementById('nav-' + view).classList.replace('text-slate-500', 'text-purple-400');
+        }
+
+        function renderTabs() {
+            const container = document.getElementById('tab-container');
+            container.innerHTML = '';
+            state.tabs.forEach(id => {
+                const file = state.fs.find(f => f.id === id);
+                if (!file) return;
+                const tab = document.createElement('div');
+                tab.className = `flex items-center gap-2 px-4 py-2.5 text-[10px] border-r border-slate-900 cursor-pointer whitespace-nowrap transition-all ${state.activeId === id ? 'active-tab' : 'text-slate-500 hover:bg-slate-900'}`;
+                tab.innerHTML = `<span>${file.name}</span><i data-lucide="x" class="w-3 h-3 opacity-50 hover:opacity-100" onclick="event.stopPropagation(); closeTab('${id}')"></i>`;
+                tab.onclick = () => openFile(id);
+                container.appendChild(tab);
             });
             lucide.createIcons();
         }
 
-        function renderTabs() {
-            const bar = document.getElementById('tabs-bar');
-            bar.innerHTML = '';
-            openTabs.forEach(id => {
-                const f = files.find(x => x.id === id);
-                if (!f) return;
-                const tab = document.createElement('div');
-                tab.className = `flex items-center gap-2 px-4 py-2 text-[10px] border-r border-zinc-800 cursor-pointer ${activeFileId === id ? 'active-tab' : 'text-zinc-500'}`;
-                tab.innerHTML = `${f.name} <span onclick="closeTab('${id}', event)">×</span>`;
-                tab.onclick = () => openFile(id);
-                bar.appendChild(tab);
-            });
-        }
-
-        function openFile(id) {
-            const f = files.find(x => x.id === id);
-            if (!f) return;
-            activeFileId = id;
-            if (!openTabs.includes(id)) openTabs.push(id);
-            document.getElementById('editor').value = f.content;
-            switchTab('editor');
-            renderFileTree();
+        function closeTab(id) {
+            state.tabs = state.tabs.filter(t => t !== id);
+            if (state.activeId === id) state.activeId = state.tabs[0] || null;
             renderTabs();
-            updateLineNumbers();
+            if (state.activeId) openFile(state.activeId);
+            saveState();
         }
 
-        function closeTab(id, e) {
-            e.stopPropagation();
-            openTabs = openTabs.filter(t => t !== id);
-            if (activeFileId === id) activeFileId = openTabs[0] || null;
-            renderTabs();
-            if (activeFileId) openFile(activeFileId);
-        }
-
-        function switchTab(view) {
-            ['explorer', 'editor', 'terminal', 'library', 'preview'].forEach(v => {
-                const el = document.getElementById('view-' + v);
-                if(el) el.classList.add('hidden');
-                const btn = document.getElementById('btn-' + v);
-                if(btn) btn.classList.replace('text-blue-500', 'text-zinc-600');
-            });
-            document.getElementById('view-' + view).classList.remove('hidden');
-            const activeBtn = document.getElementById('btn-' + view);
-            if(activeBtn) activeBtn.classList.replace('text-zinc-600', 'text-blue-500');
-        }
-
-        function updateLineNumbers() {
-            const lines = document.getElementById('editor').value.split('\n').length;
-            const container = document.getElementById('line-numbers');
-            container.innerHTML = '';
-            for(let i=1; i<=Math.max(lines, 30); i++) {
-                const s = document.createElement('span');
-                s.className = 'h-[17.6px]';
-                s.innerText = i;
-                container.appendChild(s);
+        function updateGutter() {
+            const lines = document.getElementById('main-editor').value.split('\n').length;
+            const gutter = document.getElementById('gutter');
+            gutter.innerHTML = '';
+            for(let i=1; i<=Math.max(lines, 35); i++) {
+                const span = document.createElement('span');
+                span.className = 'h-[17.6px]';
+                span.innerText = i;
+                gutter.appendChild(span);
             }
         }
 
-        // Build system som simulerer import/eksport
-        function previewBuild() {
-            const htmlFile = files.find(f => f.name === 'index.html');
-            const cssFile = files.find(f => f.name === 'style.css');
-            
-            // Vi simulerer et virtuelt filsystem i iframe
-            let bundledJS = "";
-            files.filter(f => f.name.endsWith('.js')).forEach(f => {
-                // Gjør "import/export" kompatibelt med en enkelt bundle for demo
-                let content = f.content
-                    .replace(/import { (.*) } from ".\/(.*).js";/g, '/* Local Import: $2 */')
-                    .replace(/export function (.*)\(/g, 'function $1(');
-                bundledJS += `\n/* File: ${f.name} */\n${content}\n`;
-            });
-
-            let fullContent = htmlFile.content
-                .replace('<link rel="stylesheet" href="style.css">', `<style>${cssFile.content}</style>`)
-                .replace(/<script type="module" src="main.js"><\/script>/, `<script>${bundledJS}<\/script>`);
-
-            const frame = document.getElementById('preview-frame');
-            frame.srcdoc = fullContent;
-            switchTab('preview');
+        function syncAndSave() {
+            const file = state.fs.find(f => f.id === state.activeId);
+            if (file) {
+                file.content = document.getElementById('main-editor').value;
+                saveState();
+            }
+            updateGutter();
         }
 
-        function installFromRequirements() {
-            const req = files.find(f => f.name === 'requirements.txt');
-            if(!req) return alert("Opprett requirements.txt først!");
-            
-            switchTab('terminal');
-            const libs = req.content.split('\n').filter(l => l.trim());
-            logToTerminal("System: Starter build-sekvens...", 'system');
-            libs.forEach((lib, i) => {
-                setTimeout(() => {
-                    logToTerminal(`Pip: Installerer ${lib.trim()}...`, 'log');
-                    if(i === libs.length - 1) logToTerminal("Build: Fullført!", "system");
-                }, (i + 1) * 700);
-            });
+        function toggleAIView() {
+            const body = document.getElementById('ai-chat-body');
+            body.classList.toggle('hidden');
         }
 
-        function importModuleSnippet() {
-            const mod = document.getElementById('module-selector').value;
-            const snippets = {
-                react: 'import React from "https://esm.sh/react@18";',
-                vue: 'import { createApp } from "https://esm.sh/vue@3";',
-                three: 'import * as THREE from "https://esm.sh/three";'
-            };
-            const editor = document.getElementById('editor');
-            editor.value = snippets[mod] + "\n" + editor.value;
-            logToTerminal(`Modul: La til import for ${mod}`, 'system');
+        function runLocalHost() {
+            const indexFile = state.fs.find(f => f.name === 'index.html');
+            if (indexFile) {
+                const frame = document.getElementById('local-server-frame');
+                frame.srcdoc = indexFile.content;
+                navigate('preview');
+            } else {
+                alert("Fant ikke index.html for å starte serveren.");
+            }
         }
 
-        function logToTerminal(msg, type = 'log') {
-            const out = document.getElementById('terminal-output');
-            const div = document.createElement('div');
-            div.className = `mb-1 ${type === 'error' ? 'text-red-400' : (type === 'system' ? 'text-blue-400' : '')}`;
-            div.innerText = `> ${msg}`;
-            out.appendChild(div);
-            document.getElementById('view-terminal').scrollTop = out.scrollHeight;
+        function updateClock() {
+            document.getElementById('digital-clock').innerText = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
         }
 
-        document.getElementById('editor').addEventListener('input', (e) => {
-            const f = files.find(x => x.id === activeFileId);
-            if(f) f.content = e.target.value;
-            localStorage.setItem('fs_pro', JSON.stringify(files));
-            updateLineNumbers();
-        });
+        window.onload = () => {
+            init();
+            renderFileTree();
+            renderTabs();
+            openFile(state.activeId);
+            updateClock();
+            setInterval(updateClock, 1000);
+        };
 
-        renderFileTree();
-        renderTabs();
-        openFile('1');
+        function init() { lucide.createIcons(); }
     </script>
 </body>
 </html>
