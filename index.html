@@ -3,21 +3,21 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Android Pro Editor - Full Responsive Suite</title>
+    <title>Android Pro Editor - Gemini 2.5 Flash</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;800&family=Fira+Code&display=swap');
         
         :root {
-            --bg-dark: #050505;
-            --surface: #0d0d0d;
+            --bg-dark: #020202;
+            --surface: #0a0a0a;
             --accent: #3b82f6;
-            --border: rgba(255, 255, 255, 0.05);
+            --border: rgba(255, 255, 255, 0.08);
         }
 
         body {
-            background-color: #020202;
+            background-color: var(--bg-dark);
             color: #f8fafc;
             font-family: 'Plus Jakarta Sans', sans-serif;
             margin: 0;
@@ -28,13 +28,13 @@
             font-family: 'Fira Code', monospace;
         }
 
-        /* Desktop vs Mobile logic */
+        /* Responsiv Layout Kontroll */
         @media (min-width: 1024px) {
             .app-wrapper {
                 display: flex;
                 height: 100vh;
-                padding: 20px;
-                gap: 20px;
+                padding: 24px;
+                gap: 24px;
             }
             .device-frame {
                 width: 400px;
@@ -47,214 +47,257 @@
             }
         }
 
-        /* Phone Frame Design */
+        /* Mobilramme Design */
         .phone-container {
             width: 100%;
             max-width: 380px;
             height: 780px;
             background: black;
             border-radius: 54px;
-            border: 10px solid #1a1a1a;
+            border: 12px solid #1f1f1f;
             position: relative;
             display: flex;
             flex-direction: column;
-            box-shadow: 0 50px 100px -20px rgba(0,0,0,0.5);
+            box-shadow: 0 40px 100px -20px rgba(0,0,0,0.8);
             margin: 0 auto;
         }
 
         .glass-header {
-            background: rgba(13, 13, 13, 0.8);
-            backdrop-filter: blur(12px);
+            background: rgba(10, 10, 10, 0.85);
+            backdrop-filter: blur(15px);
             border-bottom: 1px solid var(--border);
+        }
+
+        .nav-button {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         .nav-button.active {
             color: var(--accent);
-            background: rgba(59, 130, 246, 0.1);
+            background: rgba(59, 130, 246, 0.15);
+            transform: translateY(-2px);
         }
 
-        /* Loading animation */
-        @keyframes shimmer {
-            0% { background-position: -200% 0; }
-            100% { background-position: 200% 0; }
+        /* AI Lasteanimasjon */
+        @keyframes pulse-ring {
+            0% { transform: scale(0.95); opacity: 0.5; }
+            50% { transform: scale(1.05); opacity: 1; }
+            100% { transform: scale(0.95); opacity: 0.5; }
         }
-        .loading-shimmer {
-            background: linear-gradient(90deg, #111 25%, #222 50%, #111 75%);
-            background-size: 200% 100%;
-            animation: shimmer 1.5s infinite;
+        .ai-active-indicator {
+            animation: pulse-ring 2s infinite;
         }
 
         iframe {
             background: white;
-            border-radius: 12px;
+            border-radius: 16px;
+            transition: opacity 0.3s ease;
+        }
+
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 4px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: rgba(255,255,255,0.1);
+            border-radius: 10px;
         }
     </style>
 </head>
-<body class="bg-slate-950">
+<body class="bg-[#020202]">
 
     <div class="app-wrapper">
-        <!-- Main Device View -->
+        <!-- Mobil Enhet (Kontrollsenter) -->
         <div class="device-frame">
             <div class="phone-container overflow-hidden">
-                <!-- Android Notch -->
-                <div class="absolute top-2 left-1/2 -translate-x-1/2 w-28 h-7 bg-black rounded-full z-50 flex items-center justify-center border border-white/5">
-                    <div class="w-1.5 h-1.5 bg-blue-500 rounded-full animate-pulse mr-2"></div>
-                    <span class="text-[8px] font-bold text-blue-400 uppercase tracking-tighter">Gemini 2.5 Active</span>
+                <!-- Android Island -->
+                <div class="absolute top-2 left-1/2 -translate-x-1/2 w-32 h-8 bg-black rounded-full z-50 flex items-center justify-center border border-white/10">
+                    <div class="w-2 h-2 bg-blue-500 rounded-full ai-active-indicator mr-2"></div>
+                    <span class="text-[9px] font-black text-blue-400 uppercase tracking-tighter">Gemini 2.5 Flash</span>
                 </div>
 
                 <!-- Status Bar -->
-                <div class="h-12 flex items-center justify-between px-8 pt-4 text-[11px] font-bold z-40 opacity-70">
-                    <span id="clock">12:00</span>
+                <div class="h-12 flex items-center justify-between px-10 pt-4 text-[11px] font-bold z-40 opacity-60">
+                    <span id="clock">--:--</span>
                     <div class="flex items-center gap-2">
-                        <i data-lucide="wifi" class="w-3 h-3"></i>
-                        <i data-lucide="battery" class="w-3 h-3 text-emerald-500"></i>
+                        <i data-lucide="wifi" class="w-3.5 h-3.5"></i>
+                        <i data-lucide="signal" class="w-3.5 h-3.5"></i>
+                        <i data-lucide="battery" class="w-3.5 h-3.5 text-emerald-500"></i>
                     </div>
                 </div>
 
                 <!-- App Header -->
                 <header class="px-6 py-4 glass-header flex items-center justify-between">
                     <div class="flex items-center gap-3">
-                        <div class="w-9 h-9 bg-blue-600 rounded-xl flex items-center justify-center">
-                            <i data-lucide="cpu" class="w-5 h-5 text-white"></i>
+                        <div class="w-10 h-10 bg-gradient-to-br from-blue-600 to-indigo-700 rounded-2xl flex items-center justify-center shadow-lg shadow-blue-900/20">
+                            <i data-lucide="layout" class="w-5 h-5 text-white"></i>
                         </div>
                         <div>
-                            <h1 class="text-[10px] font-black uppercase tracking-widest">Studio Pro</h1>
-                            <span class="text-[8px] text-blue-400 font-bold uppercase">Cloud Interface</span>
+                            <h1 class="text-[11px] font-black uppercase tracking-widest text-white">Studio Flash</h1>
+                            <span class="text-[8px] text-blue-400 font-bold uppercase">Rapid Development</span>
                         </div>
                     </div>
                     <div class="flex gap-1">
-                        <button onclick="saveProject()" class="p-2 hover:bg-white/5 rounded-lg"><i data-lucide="save" class="w-4 h-4"></i></button>
-                        <button onclick="clearEditor()" class="p-2 hover:bg-red-500/10 rounded-lg"><i data-lucide="trash-2" class="w-4 h-4 text-red-400"></i></button>
+                        <button onclick="saveProject()" class="p-2 hover:bg-white/5 rounded-xl transition-all"><i data-lucide="save" class="w-4 h-4"></i></button>
+                        <button onclick="clearEditor()" class="p-2 hover:bg-red-500/10 rounded-xl transition-all"><i data-lucide="refresh-ccw" class="w-4 h-4 text-red-400"></i></button>
                     </div>
                 </header>
 
-                <!-- Dynamic Content Area -->
-                <main id="content-main" class="flex-1 relative bg-black flex flex-col overflow-hidden">
+                <!-- Innhold -->
+                <main id="content-main" class="flex-1 relative bg-[#050505] flex flex-col overflow-hidden">
                     
                     <!-- Editor Tab -->
                     <div id="tab-editor" class="flex-1 flex flex-col">
-                        <div class="flex items-center gap-2 px-6 py-2 bg-white/5">
-                            <i data-lucide="code" class="w-3 h-3 text-blue-400"></i>
-                            <span class="text-[9px] font-bold text-slate-500">main.ts</span>
+                        <div class="flex items-center justify-between px-6 py-2 bg-white/5 border-b border-white/5">
+                            <div class="flex items-center gap-2">
+                                <i data-lucide="file-json" class="w-3 h-3 text-amber-400"></i>
+                                <span class="text-[9px] font-bold text-slate-500 tracking-wider">INDEX.HTML</span>
+                            </div>
+                            <span class="text-[8px] bg-blue-500/10 text-blue-400 px-2 py-0.5 rounded-full font-bold">UTVIKLING</span>
                         </div>
-                        <textarea id="code-editor" class="flex-1 p-6 bg-transparent text-blue-100 editor-font text-[11px] resize-none focus:outline-none" spellcheck="false"></textarea>
+                        <textarea id="code-editor" class="flex-1 p-6 bg-transparent text-blue-50 editor-font text-[12px] resize-none focus:outline-none leading-relaxed caret-blue-500" spellcheck="false" placeholder="Begynn å skrive kode her..."></textarea>
                     </div>
 
                     <!-- AI Tab -->
-                    <div id="tab-ai" class="flex-1 p-6 hidden overflow-y-auto">
+                    <div id="tab-ai" class="flex-1 p-6 hidden overflow-y-auto custom-scrollbar">
                         <div class="space-y-6">
                             <div class="flex items-center gap-3">
-                                <i data-lucide="sparkles" class="w-6 h-6 text-blue-400"></i>
-                                <h2 class="text-sm font-black uppercase">Gemini Assistant</h2>
+                                <i data-lucide="zap" class="w-6 h-6 text-blue-400"></i>
+                                <h2 class="text-sm font-black uppercase tracking-wider">Gemini 2.5 AI</h2>
                             </div>
-                            <div class="bg-zinc-900 rounded-2xl p-4 space-y-4">
-                                <textarea id="ai-prompt" placeholder="Beskriv appen din..." class="w-full h-32 bg-black border border-white/10 rounded-xl p-4 text-xs focus:border-blue-500 outline-none resize-none"></textarea>
-                                <button onclick="askGemini()" id="ai-btn" class="w-full py-4 bg-blue-600 hover:bg-blue-500 rounded-xl font-bold text-xs flex items-center justify-center gap-2">
-                                    <i data-lucide="wand-2" class="w-4 h-4"></i> GENERER KODE
+                            <div class="bg-zinc-900/80 rounded-3xl p-5 border border-white/5 space-y-4 shadow-xl">
+                                <p class="text-[10px] text-slate-400 leading-relaxed font-medium">Beskriv appen eller nettsiden du vil bygge. Gemini Flash genererer koden på sekunder.</p>
+                                <textarea id="ai-prompt" placeholder="f.eks: Lag en moderne portefølje med mørkt tema og animerte kort..." class="w-full h-32 bg-black/50 border border-white/10 rounded-2xl p-4 text-xs text-white focus:border-blue-500 outline-none resize-none transition-all"></textarea>
+                                <button onclick="askGemini()" id="ai-btn" class="w-full py-4 bg-blue-600 hover:bg-blue-500 rounded-2xl font-black text-[10px] flex items-center justify-center gap-3 transition-all shadow-lg shadow-blue-600/20 active:scale-95">
+                                    <i data-lucide="sparkles" class="w-4 h-4"></i> GENERER MED AI
                                 </button>
                             </div>
-                            <div id="project-list" class="space-y-2">
-                                <!-- Projects will be injected here -->
+                            
+                            <div class="space-y-3">
+                                <h3 class="text-[10px] font-black text-slate-500 uppercase px-1">Prosjekter</h3>
+                                <div id="project-list" class="space-y-2">
+                                    <!-- Prosjekter legges her -->
+                                </div>
                             </div>
                         </div>
                     </div>
 
-                    <!-- Preview Tab -->
+                    <!-- Preview Tab (Mobil) -->
                     <div id="tab-preview" class="flex-1 hidden bg-white">
                         <iframe id="preview-frame" class="w-full h-full border-none"></iframe>
                     </div>
 
-                    <!-- Log Tab -->
-                    <div id="tab-terminal" class="flex-1 hidden bg-black p-6 editor-font text-[10px] overflow-y-auto">
-                        <div id="log-output" class="space-y-2 text-emerald-500"></div>
+                    <!-- Terminal Tab -->
+                    <div id="tab-terminal" class="flex-1 hidden bg-black p-6 editor-font text-[10px] overflow-y-auto custom-scrollbar">
+                        <div class="flex items-center gap-2 mb-4 text-slate-600 border-b border-white/5 pb-2">
+                            <i data-lucide="terminal" class="w-3 h-3"></i>
+                            <span class="font-bold">SYSTEM_LOGG v2.5.1</span>
+                        </div>
+                        <div id="log-output" class="space-y-2"></div>
                     </div>
                 </main>
 
-                <!-- Navigation Dock -->
-                <nav class="h-24 bg-zinc-950 border-t border-white/5 grid grid-cols-4 items-center pb-6 px-4">
-                    <button onclick="switchTab('editor')" class="nav-button active flex flex-col items-center gap-1">
-                        <i data-lucide="code" class="w-5 h-5"></i>
-                        <span class="text-[8px] font-bold uppercase">Editor</span>
+                <!-- Navigasjon -->
+                <nav class="h-24 bg-[#080808] border-t border-white/5 grid grid-cols-4 items-center pb-8 px-4">
+                    <button onclick="switchTab('editor')" class="nav-button active flex flex-col items-center gap-1.5">
+                        <i data-lucide="code-2" class="w-5 h-5"></i>
+                        <span class="text-[8px] font-black uppercase tracking-tighter">Editor</span>
                     </button>
-                    <button onclick="switchTab('ai')" class="nav-button flex flex-col items-center gap-1">
+                    <button onclick="switchTab('ai')" class="nav-button flex flex-col items-center gap-1.5">
                         <i data-lucide="sparkles" class="w-5 h-5"></i>
-                        <span class="text-[8px] font-bold uppercase">Gemini</span>
+                        <span class="text-[8px] font-black uppercase tracking-tighter">Gemini</span>
                     </button>
-                    <button onclick="switchTab('preview')" class="nav-button flex flex-col items-center gap-1">
-                        <i data-lucide="monitor" class="w-5 h-5"></i>
-                        <span class="text-[8px] font-bold uppercase">Demo</span>
+                    <button onclick="switchTab('preview')" class="nav-button flex flex-col items-center gap-1.5">
+                        <i data-lucide="smartphone" class="w-5 h-5"></i>
+                        <span class="text-[8px] font-black uppercase tracking-tighter">Demo</span>
                     </button>
-                    <button onclick="switchTab('terminal')" class="nav-button flex flex-col items-center gap-1">
-                        <i data-lucide="terminal" class="w-5 h-5"></i>
-                        <span class="text-[8px] font-bold uppercase">Logg</span>
+                    <button onclick="switchTab('terminal')" class="nav-button flex flex-col items-center gap-1.5">
+                        <i data-lucide="command" class="w-5 h-5"></i>
+                        <span class="text-[8px] font-black uppercase tracking-tighter">Logg</span>
                     </button>
                 </nav>
 
-                <!-- Gesture Bar -->
-                <div class="absolute bottom-2 left-1/2 -translate-x-1/2 w-32 h-1 bg-white/10 rounded-full"></div>
+                <!-- Home Bar -->
+                <div class="absolute bottom-2 left-1/2 -translate-x-1/2 w-36 h-1 bg-white/10 rounded-full"></div>
             </div>
         </div>
 
-        <!-- Desktop Panel: Forhåndsvisning og Prosjektstyring -->
+        <!-- Desktop Panel (Sanntids Visning) -->
         <div class="desktop-panel hidden lg:flex">
-            <div class="bg-zinc-900/50 rounded-[40px] border border-white/5 flex flex-col h-full overflow-hidden">
-                <div class="p-6 border-b border-white/5 flex justify-between items-center">
-                    <div>
-                        <h2 class="text-xl font-bold">Desktop Preview</h2>
-                        <p class="text-xs text-slate-500 uppercase tracking-widest font-bold">Live Workspace</p>
-                    </div>
-                    <div class="flex gap-4">
-                        <div class="flex items-center gap-2 bg-black/40 px-4 py-2 rounded-full border border-white/5">
-                            <div class="w-2 h-2 bg-emerald-500 rounded-full"></div>
-                            <span class="text-[10px] font-bold">Local Sync: Active</span>
+            <div class="bg-[#0a0a0a] rounded-[48px] border border-white/10 flex flex-col h-full overflow-hidden shadow-2xl">
+                <div class="p-8 border-b border-white/5 flex justify-between items-center bg-gradient-to-r from-zinc-900/50 to-transparent">
+                    <div class="flex items-center gap-4">
+                        <div class="w-12 h-12 bg-zinc-800 rounded-2xl flex items-center justify-center">
+                            <i data-lucide="monitor" class="w-6 h-6 text-blue-400"></i>
+                        </div>
+                        <div>
+                            <h2 class="text-xl font-black tracking-tight">Desktop Live Preview</h2>
+                            <p class="text-[10px] text-slate-500 uppercase font-black tracking-[0.2em]">Sanntids responsiv testing</p>
                         </div>
                     </div>
+                    <div class="flex items-center gap-3">
+                        <div class="px-4 py-2 bg-emerald-500/10 border border-emerald-500/20 rounded-full flex items-center gap-2">
+                            <div class="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></div>
+                            <span class="text-[10px] font-black text-emerald-500 uppercase">Live Sync</span>
+                        </div>
+                        <button onclick="updatePreview()" class="p-3 bg-white/5 hover:bg-white/10 rounded-2xl transition-all">
+                            <i data-lucide="rotate-cw" class="w-4 h-4"></i>
+                        </button>
+                    </div>
                 </div>
-                <div class="flex-1 p-8 bg-black/20">
-                    <iframe id="desktop-preview" class="w-full h-full shadow-2xl bg-white rounded-2xl"></iframe>
+                <div class="flex-1 p-10 bg-[#050505]">
+                    <div class="w-full h-full rounded-3xl overflow-hidden border border-white/5 shadow-inner bg-white">
+                        <iframe id="desktop-preview" class="w-full h-full border-none"></iframe>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 
     <script>
-        // --- System State ---
-        const apiKey = "";
-        const STORAGE_KEY = "cloud_os_pro_v3";
+        // --- Konfigurasjon ---
+        const apiKey = ""; // Miljøet injiserer denne automatisk
+        const STORAGE_KEY = "studio_flash_pro_v2";
         let projects = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
 
         const defaultCode = `<!DOCTYPE html>
 <html lang="no">
 <head>
+    <meta charset="UTF-8">
     <script src="https://cdn.tailwindcss.com"><\/script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;900&display=swap" rel="stylesheet">
+    <style>body { font-family: 'Inter', sans-serif; }</style>
 </head>
-<body class="bg-slate-900 text-white p-12">
-    <div class="max-w-2xl mx-auto space-y-8">
-        <h1 class="text-6xl font-black italic tracking-tighter">NY NETTSIDE</h1>
-        <p class="text-xl text-slate-400">Bygget med Gemini 2.5 Flash på Android Studio Pro.</p>
-        <div class="grid grid-cols-2 gap-4">
-            <div class="h-48 bg-blue-600 rounded-3xl p-6 flex flex-col justify-end">
-                <span class="font-bold">Interaktiv</span>
-            </div>
-            <div class="h-48 bg-zinc-800 rounded-3xl p-6 flex flex-col justify-end">
-                <span class="font-bold">Skalerbar</span>
-            </div>
+<body class="bg-black text-white flex items-center justify-center min-h-screen">
+    <div class="text-center space-y-6">
+        <h1 class="text-7xl font-black bg-gradient-to-t from-zinc-500 to-white bg-clip-text text-transparent italic tracking-tighter">FLASH BUILDER</h1>
+        <p class="text-zinc-500 font-medium uppercase tracking-[0.3em] text-xs">Bygget med Gemini 2.5 Flash</p>
+        <div class="flex justify-center gap-4">
+            <div class="w-12 h-1 bg-blue-600 rounded-full"></div>
+            <div class="w-12 h-1 bg-indigo-600 rounded-full"></div>
         </div>
     </div>
 </body>
 </html>`;
 
-        // --- Core Functions ---
+        // --- Initialisering ---
         function init() {
             document.getElementById('code-editor').value = defaultCode;
             updateClock();
             setInterval(updateClock, 1000);
             renderProjects();
-            addLog("CloudOS v2.5.0 klar for utvikling.", "info");
+            addLog("Systemet er klargjort for Gemini 2.5 Flash.", "info");
             lucide.createIcons();
             updatePreview();
+
+            // Automatisk oppdatering ved skriving (debounce)
+            let timeout;
+            document.getElementById('code-editor').addEventListener('input', () => {
+                clearTimeout(timeout);
+                timeout = setTimeout(updatePreview, 500);
+            });
         }
 
+        // --- Navigasjon ---
         function switchTab(tabId) {
             ['editor', 'ai', 'preview', 'terminal'].forEach(t => {
                 document.getElementById(`tab-${t}`).classList.add('hidden');
@@ -267,9 +310,13 @@
             if(tabId === 'preview') updatePreview();
         }
 
+        // --- Forhåndsvisning ---
         function updatePreview() {
             const code = document.getElementById('code-editor').value;
-            [document.getElementById('preview-frame'), document.getElementById('desktop-preview')].forEach(iframe => {
+            const mobileFrame = document.getElementById('preview-frame');
+            const desktopFrame = document.getElementById('desktop-preview');
+
+            [mobileFrame, desktopFrame].forEach(iframe => {
                 const doc = iframe.contentDocument || iframe.contentWindow.document;
                 doc.open();
                 doc.write(code);
@@ -277,75 +324,113 @@
             });
         }
 
-        function addLog(msg) {
+        // --- Logg ---
+        function addLog(msg, type = 'info') {
             const output = document.getElementById('log-output');
             const div = document.createElement('div');
-            div.innerHTML = `<span class="opacity-30">${new Date().toLocaleTimeString()}</span> > ${msg}`;
+            const colorClass = type === 'error' ? 'text-red-400' : type === 'ai' ? 'text-blue-400' : 'text-emerald-500';
+            div.className = `flex gap-3 ${colorClass} text-[9px]`;
+            div.innerHTML = `<span class="opacity-30 font-bold">${new Date().toLocaleTimeString()}</span> <span>${msg}</span>`;
             output.appendChild(div);
             output.scrollTop = output.scrollHeight;
         }
 
+        // --- AI Integrasjon (Gemini 2.5 Flash) ---
         async function askGemini() {
-            const prompt = document.getElementById('ai-prompt').value;
+            const promptInput = document.getElementById('ai-prompt');
+            const prompt = promptInput.value;
             if(!prompt) return;
 
             const btn = document.getElementById('ai-btn');
+            const originalHTML = btn.innerHTML;
             btn.disabled = true;
-            btn.innerHTML = `<i data-lucide="loader" class="w-4 h-4 animate-spin"></i> GENERERER...`;
+            btn.innerHTML = `<i data-lucide="loader-2" class="w-4 h-4 animate-spin"></i> GENERERER...`;
             lucide.createIcons();
 
-            addLog("Kontakter Gemini API for kodegenerering...");
+            addLog("Gemini 2.5 Flash analyserer instruksjoner...", "ai");
 
             const currentCode = document.getElementById('code-editor').value;
             const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`;
+
+            const payload = {
+                contents: [{ 
+                    parts: [{ 
+                        text: `Gjør følgende endring: ${prompt}. Nåværende kode: ${currentCode}. Returner KUN ferdig, kjørbar HTML/CSS/JS kode uten kommentarer eller markdown-formatering.` 
+                    }] 
+                }],
+                generationConfig: {
+                    temperature: 0.2,
+                    topP: 0.8,
+                    topK: 40
+                }
+            };
 
             try {
                 const response = await fetch(url, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        contents: [{ parts: [{ text: `Du er en webutvikler. Oppgave: ${prompt}. Gjeldende kode: ${currentCode}. Returner KUN ferdig HTML/CSS/JS kode.` }] }]
-                    })
+                    body: JSON.stringify(payload)
                 });
 
+                if (!response.ok) throw new Error("API Feil");
+
                 const data = await response.json();
-                const result = data.candidates?.[0]?.content?.parts?.[0]?.text;
+                let result = data.candidates?.[0]?.content?.parts?.[0]?.text;
+                
                 if(result) {
-                    const cleanCode = result.replace(/```[a-z]*\n/g, '').replace(/```/g, '').trim();
+                    // Fjern markdown hvis AI insisterer på å bruke det
+                    const cleanCode = result.replace(/```html\n/g, '').replace(/```\n/g, '').replace(/```/g, '').trim();
                     document.getElementById('code-editor').value = cleanCode;
-                    addLog("Koden ble oppdatert av Gemini.");
+                    addLog("Koden ble oppdatert av Gemini Flash.", "info");
+                    promptInput.value = "";
+                    updatePreview();
                     switchTab('editor');
                 }
             } catch (e) {
-                addLog("FEIL: Kunne ikke koble til API.");
+                addLog("FEIL: Kunne ikke hente kode. Sjekk tilkobling.", "error");
             } finally {
                 btn.disabled = false;
-                btn.innerHTML = `<i data-lucide="wand-2" class="w-4 h-4"></i> GENERER KODE`;
+                btn.innerHTML = originalHTML;
                 lucide.createIcons();
             }
         }
 
+        // --- Prosjekthåndtering ---
         function saveProject() {
             const code = document.getElementById('code-editor').value;
-            const name = prompt("Navn på prosjekt:", `App_${projects.length + 1}`) || "Uten navn";
-            projects.push({ id: Date.now(), name, code });
+            const name = prompt("Navn på prosjektet:", `App_${projects.length + 1}`) || "Uten navn";
+            projects.unshift({ id: Date.now(), name, code });
             localStorage.setItem(STORAGE_KEY, JSON.stringify(projects));
             renderProjects();
-            addLog(`Lagret "${name}" lokalt.`);
+            addLog(`Lagret "${name}" i lokal lagring.`);
+        }
+
+        function deleteProject(id) {
+            projects = projects.filter(p => p.id !== id);
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(projects));
+            renderProjects();
         }
 
         function renderProjects() {
             const container = document.getElementById('project-list');
-            container.innerHTML = projects.length ? '' : '<p class="text-[9px] text-zinc-600 italic">Ingen lagrede prosjekter.</p>';
+            container.innerHTML = projects.length ? '' : '<p class="text-[9px] text-zinc-600 italic text-center py-4">Ingen lagrede prosjekter.</p>';
             
             projects.forEach(p => {
                 const div = document.createElement('div');
-                div.className = "flex items-center justify-between p-3 bg-zinc-900 rounded-xl border border-white/5 hover:border-blue-500/30 transition-all cursor-pointer";
+                div.className = "flex items-center justify-between p-4 bg-black border border-white/5 rounded-2xl hover:border-blue-500/30 transition-all group";
                 div.innerHTML = `
-                    <div class="flex items-center gap-2" onclick="loadProject(${p.id})">
-                        <i data-lucide="file-code" class="w-3 h-3 text-blue-400"></i>
-                        <span class="text-[10px] font-bold">${p.name}</span>
+                    <div class="flex items-center gap-3 cursor-pointer flex-1" onclick="loadProject(${p.id})">
+                        <div class="w-8 h-8 bg-blue-500/10 rounded-lg flex items-center justify-center">
+                            <i data-lucide="file-code" class="w-4 h-4 text-blue-400"></i>
+                        </div>
+                        <div class="flex flex-col">
+                            <span class="text-[10px] font-black text-white">${p.name}</span>
+                            <span class="text-[8px] text-slate-500 font-bold uppercase">${new Date(p.id).toLocaleDateString()}</span>
+                        </div>
                     </div>
+                    <button onclick="deleteProject(${p.id})" class="p-2 opacity-0 group-hover:opacity-100 hover:text-red-500 transition-all">
+                        <i data-lucide="x" class="w-3.5 h-3.5"></i>
+                    </button>
                 `;
                 container.appendChild(div);
             });
@@ -358,19 +443,21 @@
                 document.getElementById('code-editor').value = p.code;
                 switchTab('editor');
                 updatePreview();
-                addLog(`Lastet inn "${p.name}".`);
+                addLog(`Prosjekt "${p.name}" ble lastet.`);
             }
         }
 
         function clearEditor() {
-            if(confirm("Tøm alt?")) {
-                document.getElementById('code-editor').value = "";
-                addLog("Editor tømt.");
+            if(confirm("Dette vil tilbakestille editoren til standard. Fortsette?")) {
+                document.getElementById('code-editor').value = defaultCode;
+                updatePreview();
+                addLog("Editor ble tilbakestilt.");
             }
         }
 
         function updateClock() {
-            document.getElementById('clock').innerText = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+            const now = new Date();
+            document.getElementById('clock').innerText = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
         }
 
         window.onload = init;
