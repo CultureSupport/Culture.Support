@@ -201,6 +201,42 @@
             position: relative;
         }
     </style>
+    <style>
+        .flowing-text {
+  /* Light green base color */
+  color: #90EE90; 
+  
+  /* Create the "flow" effect using a linear gradient */
+  background: linear-gradient(
+    to right, 
+    #90EE90 20%, 
+    #ffffff 50%, 
+    #90EE90 80%
+  );
+  background-size: 200% auto;
+  
+  /* Clips the background to the text */
+  -webkit-background-clip: text;
+  background-clip: text;
+  
+  /* Makes the original text color transparent so the gradient shows through */
+  -webkit-text-fill-color: transparent;
+  
+  /* Animation settings */
+  animation: flow 3s linear infinite;
+  
+  /* Styling for visibility */
+  font-weight: bold;
+  font-size: 24px;
+}
+
+/* The animation movement */
+@keyframes flow {
+  to {
+    background-position: 200% center;
+  }
+}
+    </style>
 </head>
 <body>
     <!-- CYBER ENVIRONMENT -->
@@ -215,7 +251,7 @@
     <div class="atm-scene">
         <div class="ground">
 
-            <p> Ole is Having A ATM</p>
+           <p class="flowing-text">Ole is Having A ATM</p>
         </div>
         <div class="atm-machine">
             <div class="atm-glow"></div>
