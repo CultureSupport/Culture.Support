@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DEVCORE 16 - Positive Affirmation Mirror</title>
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@latest"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/mobilenet@latest"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        :root {
+            --spectrum-color: #4af626;
+        }
+        
+        body {
+            margin: 0;
+            background-color: #020202;
+            color: #fff;
+            font-family: 'Inter', system-ui, sans-serif;
+        }
+
+        .website-wrapper {
+            min-height: 1500px;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 40px 0;
+            background: #050505;
+        }
+
+        /* 700px Height Strictly Constrained Mobile Frame */
+        .iphone-frame {
+            width: 380px; 
+            height: 700px; 
+            background: #000;
+            border: 10px solid #1c1c1e;
+            border-radius: 50px;
+            position: relative;
+            box-shadow: 0 0 100px rgba(0,0,0,1), 0 0 40px var(--spectrum-color);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            transition: box-shadow 0.3s ease, border-color 0.3s ease;
+        }
+
+        /* Blink Animation for the whole GUI */
+        .blink-effect {
+            animation: gui-blink 0.5s ease-in-out;
+        }
+        @keyframes gui-blink {
+            0% { opacity: 1; }
+            50% { opacity: 0.3; transform: scale(0.99); }
+            100% { opacity: 1; transform: scale(1); }
+        }
+
+        .dynamic-island {
+            width: 100px;
+            height: 30px;
+            background: #000;
+            border-radius: 15px;
+            position: absolute;
+            top: 12px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 100;
+        }
+
+        .iphone-screen {
+            flex: 1;
+            background: #000;
+            display: flex;
+            flex-direction: column;
+            padding-top: 45px;
+            position: relative;
+        }
+
+        .vision-port {
+            width: 100%;
+            height: 300px;
+            position: relative;
+            background: #000;
+            overflow: hidden;
+        }
+        
+        #webcam {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: filter 0.6s ease;
+        }
+        
+        .tensor-face-box {
+            position: absolute;
+            border: 2px solid var(--spectrum-color);
+            box-shadow: 0 0 20px var(--spectrum-color), inset 0 0 10px var(--spectrum-color);
+            z-index: 30;
+            pointer-events: none;
+            transition: all 0.15s ease-out;
+        }
+
+        .face-label {
+            position: absolute;
+            top: -20px;
+            left: 0;
+            font-size: 8px;
+            font-weight: bold;
+            background: var(--spectrum-color);
+            color: #000;
+            padding: 1px 4px;
+            text-transform: uppercase;
+            white-space: nowrap;
+        }
+
+        .status-header {
+            background: #111;
+            padding: 8px 16px;
+            border-bottom: 1px solid #222;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .diag-grid {
+            display: grid;
+            grid-template-cols: 1fr 1fr;
+            gap: 1px;
+            background: #222;
+        }
+        .diag-item {
+            background: #0a0a0a;
+            padding: 12px;
+        }
+
+        .log-area {
+            flex: 1;
+            background: #000;
+            padding: 12px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 9px;
+            overflow-y: auto;
+            color: var(--spectrum-color);
+            opacity: 0.8;
+        }
+
+        .btn-blitz {
+            background: var(--spectrum-color);
+            color: #000;
+            font-weight: 900;
+            font-size: 11px;
+            padding: 16px;
+            text-align: center;
+            cursor: pointer;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            transition: all 0.3s ease;
+        }
+
+        .scanline {
+            position: absolute;
+            width: 100%;
+            height: 2px;
+            background: var(--spectrum-color);
+            opacity: 0.5;
+            top: 0;
+            z-index: 40;
+            animation: scanning 3s linear infinite;
+        }
+        @keyframes scanning {
+            0% { top: 0%; }
+            100% { top: 100%; }
+        }
+
+        .app-notice {
+            font-size: 7px;
+            color: #888;
+            text-align: center;
+            padding: 6px;
+            background: #0f1710;
+            border-bottom: 1px solid #1a2e1d;
+        }
+    </style>
+</head>
+<body>
+    <div id="app" class="website-wrapper">
+        <header class="text-center mb-8">
+            <h1 class="text-3xl font-black text-white uppercase tracking-tighter">DEVCORE 16</h1>
+            <p class="text-[11px] text-zinc-500 tracking-[0.3em]">POSITIVE AFFIRMATION MIRROR</p>
+        </header>
+
+        <div class="iphone-frame" :class="{'blink-effect': isBlinking}" :style="{'--spectrum-color': activeColor, 'border-color': activeColor + '44'}">
+            <div class="dynamic-island"></div>
+            
+            <div class="iphone-screen">
+                <div class="status-header">
+                    <div class="flex items-center gap-2">
+                        <div class="w-2 h-2 rounded-full animate-pulse" :style="{background: activeColor}"></div>
+                        <span class="text-[9px] font-bold text-zinc-400">PERSONAL SCAN: {{ colorName }}</span>
+                    </div>
+                    <span class="text-[9px] font-mono text-zinc-600">AFFIRM_V1</span>
+                </div>
+
+                <div class="vision-port">
+                    <video id="webcam" autoplay playsinline muted :style="bodyFilterStyle"></video>
+                    <div class="scanline" :style="{background: activeColor, boxShadow: `0 0 15px ${activeColor}`}"></div>
+                    
+                    <div v-if="isRunning" class="tensor-face-box" 
+                         :style="{ 
+                            top: faceRect.top + 'px', 
+                            left: faceRect.left + 'px', 
+                            width: faceRect.width + 'px', 
+                            height: faceRect.height + 'px',
+                            borderColor: activeColor
+                         }">
+                        <div class="face-label" :style="{background: activeColor}">{{ personStatus }}</div>
+                    </div>
+                </div>
+
+                <div class="app-notice">POSITIVE CAMERA SELF-AFFIRMATION SYSTEM // GOOD TALK GENERATOR</div>
+
+                <div class="diag-grid">
+                    <div class="diag-item">
+                        <p class="text-[8px] text-zinc-600 uppercase mb-1">Active Affirmation</p>
+                        <p class="font-bold text-[9px] leading-tight" :style="{color: activeColor}">{{ personStatus }}</p>
+                    </div>
+                    <div class="diag-item">
+                        <p class="text-[8px] text-zinc-600 uppercase mb-1">Energy Level</p>
+                        <p class="font-bold text-[10px] text-white">{{ brainWaves }}% RADIANT</p>
+                    </div>
+                </div>
+
+                <div class="log-area" ref="logContainer">
+                    <div v-for="log in logs" class="mb-1 border-l-2 border-zinc-900 pl-2">
+                        <span class="opacity-40">[{{ log.time }}]</span> {{ log.msg }}
+                    </div>
+                </div>
+
+                <div @click="startBlitz" class="btn-blitz">
+                    {{ isRunning ? 'RADIATING POSITIVITY...' : 'START SELF-TALK SCAN' }}
+                </div>
+            </div>
+        </div>
+
+        <div class="mt-12 w-full max-w-2xl text-center px-4">
+            <p class="text-zinc-600 text-[10px] leading-relaxed uppercase tracking-widest">
+                DevCore 16 - Built for positive camera self-affirmations.
+                <br>
+                Use this mirror to speak kindly to yourself and adopt a mindset of growth.
+                <br>
+                Every spectral shift is a reminder of your unique value and potential.
+                <br>
+                A tool designed for mental resilience and positive identity reinforcement.
+            </p>
+        </div>
+    </div>
+
+    <script>
+        const { createApp, ref, computed, nextTick } = Vue;
+
+        createApp({
+            setup() {
+                const logs = ref([{ time: '00:00:00', msg: 'Affirmation Engine Initialized.' }]);
+                const isRunning = ref(false);
+                const isBlinking = ref(false);
+                const spectrumIndex = ref(0);
+                
+                const activeColor = ref('#4af626');
+                const colorName = ref('GREEN');
+                const personStatus = ref('READY TO START');
+                const brainWaves = ref(100);
+                
+                const faceRect = ref({ top: 60, left: 100, width: 180, height: 180 });
+
+                // 60 Positive Affirmations with corresponding colors
+                const colorCycle = [
+                    { hex: '#4af626', name: 'EMERALD', status: 'I AM WORTHY', hue: 80 },
+                    { hex: '#00ccff', name: 'SKY', status: 'I AM CAPABLE', hue: 190 },
+                    { hex: '#ffcc00', name: 'AMBER', status: 'I AM STRONG', hue: 45 },
+                    { hex: '#af52de', name: 'ROYAL', status: 'I AM UNIQUE', hue: 280 },
+                    { hex: '#ff2d55', name: 'ROSE', status: 'I AM LOVED', hue: 340 },
+                    { hex: '#00ffcc', name: 'MINT', status: 'I AM CALM', hue: 160 },
+                    { hex: '#ffffff', name: 'PURE', status: 'I AM PEACEFUL', hue: 0 },
+                    { hex: '#ff9500', name: 'GLOW', status: 'I AM RADIANT', hue: 30 },
+                    { hex: '#5856d6', name: 'INDIGO', status: 'I AM WISE', hue: 250 },
+                    { hex: '#d4af37', name: 'GOLD', status: 'I AM VALUABLE', hue: 50 },
+                    { hex: '#4af626', name: 'EMERALD', status: 'I AM GROWING', hue: 80 },
+                    { hex: '#00ccff', name: 'SKY', status: 'I AM FEARLESS', hue: 190 },
+                    { hex: '#ffcc00', name: 'AMBER', status: 'I AM ENOUGH', hue: 45 },
+                    { hex: '#af52de', name: 'ROYAL', status: 'I AM CREATIVE', hue: 280 },
+                    { hex: '#ff2d55', name: 'ROSE', status: 'I AM BEAUTIFUL', hue: 340 },
+                    { hex: '#00ffcc', name: 'MINT', status: 'I AM KIND', hue: 160 },
+                    { hex: '#ffffff', name: 'PURE', status: 'I AM FOCUSED', hue: 0 },
+                    { hex: '#ff9500', name: 'GLOW', status: 'I AM POWERFUL', hue: 30 },
+                    { hex: '#5856d6', name: 'INDIGO', status: 'I AM HONEST', hue: 250 },
+                    { hex: '#d4af37', name: 'GOLD', status: 'I AM A WINNER', hue: 50 },
+                    { hex: '#4af626', name: 'EMERALD', status: 'I AM INSPIRED', hue: 80 },
+                    { hex: '#00ccff', name: 'SKY', status: 'I AM SUCCESSFUL', hue: 190 },
+                    { hex: '#ffcc00', name: 'AMBER', status: 'I AM RESILIENT', hue: 45 },
+                    { hex: '#af52de', name: 'ROYAL', status: 'I AM BRAVE', hue: 280 },
+                    { hex: '#ff2d55', name: 'ROSE', status: 'I AM GRATEFUL', hue: 340 },
+                    { hex: '#00ffcc', name: 'MINT', status: 'I AM HEALING', hue: 160 },
+                    { hex: '#ffffff', name: 'PURE', status: 'I AM BALANCED', hue: 0 },
+                    { hex: '#ff9500', name: 'GLOW', status: 'I AM DETERMINED', hue: 30 },
+                    { hex: '#5856d6', name: 'INDIGO', status: 'I AM MINDFUL', hue: 250 },
+                    { hex: '#d4af37', name: 'GOLD', status: 'I AM ABUNDANT', hue: 50 },
+                    { hex: '#4af626', name: 'EMERALD', status: 'I AM LOYAL', hue: 80 },
+                    { hex: '#00ccff', name: 'SKY', status: 'I AM COMPASSIONATE', hue: 190 },
+                    { hex: '#ffcc00', name: 'AMBER', status: 'I AM GENEROUS', hue: 45 },
+                    { hex: '#af52de', name: 'ROYAL', status: 'I AM JOYFUL', hue: 280 },
+                    { hex: '#ff2d55', name: 'ROSE', status: 'I AM VIBRANT', hue: 340 },
+                    { hex: '#00ffcc', name: 'MINT', status: 'I AM PRESENT', hue: 160 },
+                    { hex: '#ffffff', name: 'PURE', status: 'I AM UNSTOPPABLE', hue: 0 },
+                    { hex: '#ff9500', name: 'GLOW', status: 'I AM CONFIDENT', hue: 30 },
+                    { hex: '#5856d6', name: 'INDIGO', status: 'I AM LIMITLESS', hue: 250 },
+                    { hex: '#d4af37', name: 'GOLD', status: 'I AM PROTECTED', hue: 50 },
+                    { hex: '#4af626', name: 'EMERALD', status: 'I AM FORGIVING', hue: 80 },
+                    { hex: '#00ccff', name: 'SKY', status: 'I AM AUTHENTIC', hue: 190 },
+                    { hex: '#ffcc00', name: 'AMBER', status: 'I AM PERSISTENT', hue: 45 },
+                    { hex: '#af52de', name: 'ROYAL', status: 'I AM BOLD', hue: 280 },
+                    { hex: '#ff2d55', name: 'ROSE', status: 'I AM ENERGETIC', hue: 340 },
+                    { hex: '#00ffcc', name: 'MINT', status: 'I AM PATIENT', hue: 160 },
+                    { hex: '#ffffff', name: 'PURE', status: 'I AM SECURE', hue: 0 },
+                    { hex: '#ff9500', name: 'GLOW', status: 'I AM OPTIMISTIC', hue: 30 },
+                    { hex: '#5856d6', name: 'INDIGO', status: 'I AM INTUITIVE', hue: 250 },
+                    { hex: '#d4af37', name: 'GOLD', status: 'I AM PROSPEROUS', hue: 50 },
+                    { hex: '#4af626', name: 'EMERALD', status: 'I AM DISCIPLINED', hue: 80 },
+                    { hex: '#00ccff', name: 'SKY', status: 'I AM ENLIGHTENED', hue: 190 },
+                    { hex: '#ffcc00', name: 'AMBER', status: 'I AM MOTIVATED', hue: 45 },
+                    { hex: '#af52de', name: 'ROYAL', status: 'I AM HAPPY', hue: 280 },
+                    { hex: '#ff2d55', name: 'ROSE', status: 'I AM WHOLE', hue: 340 },
+                    { hex: '#00ffcc', name: 'MINT', status: 'I AM OPEN', hue: 160 },
+                    { hex: '#ffffff', name: 'PURE', status: 'I AM FREE', hue: 0 },
+                    { hex: '#ff9500', name: 'GLOW', status: 'I AM EVOLVING', hue: 30 },
+                    { hex: '#5856d6', name: 'INDIGO', status: 'I AM DIVINE', hue: 250 },
+                    { hex: '#d4af37', name: 'GOLD', status: 'I AM INVINCIBLE', hue: 50 }
+                ];
+
+                const bodyFilterStyle = computed(() => {
+                    const current = colorCycle[spectrumIndex.value];
+                    return {
+                        filter: `grayscale(1) sepia(100%) hue-rotate(${current.hue}deg) saturate(3) brightness(1.1)`
+                    };
+                });
+
+                const startBlitz = async () => {
+                    if (isRunning.value) return;
+                    isRunning.value = true;
+                    try {
+                        const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+                        document.getElementById('webcam').srcObject = stream;
+                        initSpectrumCycle();
+                    } catch (e) { addLog('RUNTIME: CAMERA_INIT_FAILED'); }
+                };
+
+                const triggerBlink = () => {
+                    isBlinking.value = true;
+                    setTimeout(() => { isBlinking.value = false; }, 600);
+                };
+
+                const initSpectrumCycle = () => {
+                    setInterval(() => {
+                        spectrumIndex.value = (spectrumIndex.value + 1) % colorCycle.length;
+                        const current = colorCycle[spectrumIndex.value];
+                        
+                        triggerBlink();
+                        activeColor.value = current.hex;
+                        colorName.value = current.name;
+                        personStatus.value = current.status;
+                        
+                        addLog(`AFFIRMATION: [${current.status}]`);
+                        brainWaves.value = 85 + Math.floor(Math.random() * 15);
+                    }, 6000);
+
+                    // Smooth tracking for a stable "Positive Mirror" feel
+                    setInterval(() => {
+                        faceRect.value.left = 95 + Math.sin(Date.now() / 1500) * 15;
+                        faceRect.value.top = 50 + Math.cos(Date.now() / 2000) * 8;
+                    }, 50);
+                };
+
+                const addLog = (msg) => {
+                    const time = new Date().toLocaleTimeString([], { hour12: false, minute:'2-digit', second:'2-digit' });
+                    logs.value.push({ time, msg });
+                    nextTick(() => {
+                        const el = document.querySelector('.log-area');
+                        if (el) el.scrollTop = el.scrollHeight;
+                    });
+                };
+
+                return { 
+                    isRunning, isBlinking, activeColor, colorName, personStatus, 
+                    logs, startBlitz, faceRect, 
+                    spectrumIndex, bodyFilterStyle, brainWaves 
+                };
+            }
+        }).mount('#app');
+    </script>
+</body>
+</html>
