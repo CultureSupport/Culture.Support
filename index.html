@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Culture.Support | Elite Hub</title>
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* --- CYBER GLOW & LASER BACKGROUND --- */
+        body {
+            margin: 0;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            background: #020617; /* Deep Cyber Night */
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+        }
+
+        .cyber-bg {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: 
+                radial-gradient(circle at 50% 50%, rgba(15, 98, 254, 0.15), transparent 50%),
+                radial-gradient(circle at 20% 80%, rgba(34, 197, 94, 0.1), transparent 40%);
+            z-index: -2;
+        }
+
+        /* Pulsing Lasers */
+        .laser-container {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        .laser {
+            position: absolute;
+            background: linear-gradient(90deg, transparent, #0f62fe, transparent);
+            height: 1px;
+            width: 100%;
+            opacity: 0.3;
+            filter: blur(1px);
+            animation: laserMove 8s infinite linear;
+        }
+
+        @keyframes laserMove {
+            0% { transform: translateY(-100vh) rotate(5deg); opacity: 0; }
+            50% { opacity: 0.5; }
+            100% { transform: translateY(100vh) rotate(-5deg); opacity: 0; }
+        }
+
+        /* --- 2D ATM SCENE (Outside Phone) --- */
+        .atm-scene {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 120px;
+            z-index: 1;
+        }
+
+        .ground {
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+            height: 40px;
+            background: #0f172a;
+            border-top: 2px solid #1e293b;
+        }
+
+        .atm-machine {
+            position: absolute;
+            bottom: 40px;
+            right: 15%;
+            width: 50px;
+            height: 80px;
+            background: #334155;
+            border: 2px solid #64748b;
+            border-radius: 4px;
+        }
+
+        .atm-glow {
+            position: absolute;
+            top: 10px; left: 5px; width: 40px; height: 30px;
+            background: rgba(34, 197, 94, 0.2);
+            box-shadow: 0 0 15px #22c55e;
+            animation: pulseGlow 2s infinite alternate;
+        }
+
+        .character {
+            position: absolute;
+            bottom: 40px;
+            left: -50px;
+            width: 30px;
+            height: 60px;
+            background: #f1f5f9;
+            border-radius: 4px 4px 0 0;
+            animation: walkToAtm 15s infinite linear;
+        }
+
+        @keyframes walkToAtm {
+            0% { left: -50px; opacity: 1; }
+            30% { left: 78%; } /* Arrives at ATM */
+            50% { left: 78%; transform: scale(1.1); } /* Taking cash */
+            70% { left: 78%; transform: scale(1); }
+            100% { left: 110%; opacity: 1; }
+        }
+
+        @keyframes pulseGlow {
+            from { opacity: 0.4; }
+            to { opacity: 0.8; }
+        }
+
+        /* --- INTERNAL APP RAIN & LASERS --- */
+        .digital-rain {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            pointer-events: none;
+            overflow: hidden;
+            z-index: 50;
+        }
+
+        .rain-drop {
+            position: absolute;
+            width: 1px;
+            height: 40px;
+            background: linear-gradient(to bottom, transparent, rgba(15, 98, 254, 0.4));
+            animation: rainFall 1.5s infinite linear;
+        }
+
+        @keyframes rainFall {
+            from { transform: translateY(-50px); }
+            to { transform: translateY(800px); }
+        }
+
+        .gui-laser {
+            position: absolute;
+            width: 100%;
+            height: 2px;
+            background: rgba(15, 98, 254, 0.4);
+            box-shadow: 0 0 10px #0f62fe;
+            animation: guiScan 4s infinite ease-in-out;
+            z-index: 51;
+        }
+
+        @keyframes guiScan {
+            0%, 100% { top: 0%; opacity: 0; }
+            50% { top: 100%; opacity: 1; }
+        }
+
+        /* --- S22 GALAXY FRAME --- */
+        .phone-container {
+            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            z-index: 10;
+        }
+
+        .phone-frame {
+            background: #000;
+            border-radius: 42px;
+            border: 8px solid #1a1a1a;
+            position: relative;
+            box-shadow: 0 0 40px rgba(15, 98, 254, 0.4);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            margin: auto;
+        }
+
+        .size-small { width: 280px; height: 580px; }
+        .size-max { width: 400px; height: 800px; }
+
+        .screen {
+            flex: 1;
+            background: #020617;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            border-radius: 34px;
+            overflow: hidden;
+            margin: 2px;
+        }
+
+        .camera {
+            width: 12px; height: 12px; background: #111; border-radius: 50%;
+            position: absolute; top: 12px; left: 50%; transform: translateX(-50%); z-index: 100;
+        }
+
+        .brand-bg { background-color: #0f62fe; }
+        .tab-active { border-bottom: 3px solid #0f62fe; color: #0f62fe; font-weight: 800; }
+        
+        .payment-card {
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            border-radius: 12px;
+            padding: 16px;
+            border: 1px solid rgba(15, 98, 254, 0.3);
+            color: white;
+            position: relative;
+        }
+    </style>
+</head>
+<body>
+    <!-- CYBER ENVIRONMENT -->
+    <div class="cyber-bg"></div>
+    <div class="laser-container">
+        <div class="laser" style="top: 20%; animation-delay: 0s;"></div>
+        <div class="laser" style="top: 50%; animation-delay: -2s;"></div>
+        <div class="laser" style="top: 80%; animation-delay: -4s;"></div>
+    </div>
+
+    <!-- 2D ATM SCENE OUTSIDE -->
+    <div class="atm-scene">
+        <div class="ground"></div>
+        <div class="atm-machine">
+            <div class="atm-glow"></div>
+        </div>
+        <div class="character"></div>
+    </div>
+
+    <div id="app">
+        <!-- Size Switcher UI -->
+        <div class="fixed top-5 right-5 flex gap-2 z-[200]">
+            <button @click="uiSize = 'small'" :class="uiSize === 'small' ? 'bg-blue-600' : 'bg-slate-800'" class="px-3 py-1 text-[10px] text-white rounded font-bold uppercase border border-blue-400/30">Small</button>
+            <button @click="uiSize = 'max'" :class="uiSize === 'max' ? 'bg-blue-600' : 'bg-slate-800'" class="px-3 py-1 text-[10px] text-white rounded font-bold uppercase border border-blue-400/30">Max</button>
+        </div>
+
+        <div class="phone-container">
+            <div class="phone-frame" :class="uiSize === 'small' ? 'size-small' : 'size-max'">
+                <div class="camera"></div>
+                
+                <div class="screen">
+                    <!-- GUI ANIMATIONS -->
+                    <div class="digital-rain">
+                        <div v-for="n in 15" :key="n" class="rain-drop" :style="{left: (n*7)+'%', animationDelay: (n*0.2)+'s', animationDuration: (0.5 + Math.random())+'s'}"></div>
+                    </div>
+                    <div class="gui-laser"></div>
+
+                    <!-- LOGIN INTERFACE -->
+                    <div v-if="loginStep !== 'complete'" class="flex-1 flex flex-col p-8 justify-center z-10">
+                        <div class="text-center mb-10">
+                            <div class="w-16 h-16 brand-bg rounded-2xl mx-auto flex items-center justify-center mb-6 shadow-[0_0_25px_rgba(15,98,254,0.5)]">
+                                <svg class="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
+                                </svg>
+                            </div>
+                            <h2 class="text-2xl font-black tracking-tighter text-white">Culture.Support</h2>
+                            <p class="text-[10px] text-blue-400 uppercase tracking-[0.3em] mt-2">Security Node Access</p>
+                        </div>
+
+                        <!-- Step 1 -->
+                        <div v-if="loginStep === 'initial'" class="space-y-6">
+                            <div class="relative">
+                                <input type="text" placeholder="Identity Node" class="w-full bg-slate-900/50 border-b border-blue-900/50 py-4 text-sm text-blue-100 outline-none focus:border-blue-500 font-mono pl-2">
+                            </div>
+                            <div class="relative">
+                                <input type="password" placeholder="Key Protocol" class="w-full bg-slate-900/50 border-b border-blue-900/50 py-4 text-sm text-blue-100 outline-none focus:border-blue-500 pl-2">
+                            </div>
+                            <button @click="loginStep = '2fa'" class="w-full brand-bg text-white py-4 rounded-xl font-bold text-sm shadow-lg shadow-blue-900/40 active:scale-95 transition-all">Engage Protocol</button>
+                        </div>
+
+                        <!-- Step 2: 2FA -->
+                        <div v-if="loginStep === '2fa'" class="space-y-6">
+                            <p class="text-[11px] text-center text-blue-300">Enter SMS Uplink Code</p>
+                            <div class="flex justify-between gap-2">
+                                <input v-for="i in 4" :key="i" type="text" maxlength="1" class="w-12 h-12 bg-slate-900 border border-blue-900 rounded-lg text-center font-bold text-lg text-white focus:border-blue-500 outline-none">
+                            </div>
+                            <button @click="loginStep = 'verifyApp'" class="w-full brand-bg text-white py-4 rounded-xl font-bold text-sm shadow-lg active:scale-95 transition-all">Verify Node</button>
+                            <button @click="loginStep = 'initial'" class="w-full text-blue-900 py-2 text-[10px] uppercase font-bold tracking-widest">Back</button>
+                        </div>
+
+                        <!-- Step 3: App Verification -->
+                        <div v-if="loginStep === 'verifyApp'" class="space-y-6 text-center">
+                            <div class="p-6 bg-blue-950/40 rounded-2xl border border-blue-800/50">
+                                <div class="w-3 h-3 bg-blue-500 rounded-full mx-auto mb-4 animate-ping"></div>
+                                <p class="text-[11px] text-blue-200 font-medium leading-relaxed">External Device Sync: Open your <b>Culture Hub</b> mobile instance and approve.</p>
+                            </div>
+                            <button @click="finishLogin" class="w-full brand-bg text-white py-4 rounded-xl font-bold text-sm shadow-lg active:scale-95 transition-all">Uplink Confirmed</button>
+                        </div>
+                    </div>
+
+                    <!-- MAIN INTERFACE -->
+                    <div v-else class="flex-1 flex flex-col overflow-hidden z-10">
+                        <header class="bg-gray-950/80 backdrop-blur-md p-4 pt-10 text-white flex justify-between items-center border-b border-blue-900/30">
+                            <div class="flex items-center space-x-2">
+                                <div class="w-2 h-2 bg-blue-500 rounded-full animate-pulse shadow-[0_0_8px_#3b82f6]"></div>
+                                <span class="text-[10px] font-bold uppercase tracking-widest text-blue-100">Node Online</span>
+                            </div>
+                            <button @click="logout" class="text-[9px] font-bold text-blue-400 uppercase border border-blue-900 px-2 py-1 rounded hover:bg-blue-900/20">Sign Out</button>
+                        </header>
+
+                        <div class="flex bg-slate-950/50 backdrop-blur-sm text-[10px] font-bold uppercase text-slate-500 border-b border-blue-900/20">
+                            <button @click="currentTab = 'bank'" :class="{'tab-active': currentTab === 'bank'}" class="flex-1 py-4">Assets</button>
+                            <button @click="currentTab = 'transfer'" :class="{'tab-active': currentTab === 'transfer'}" class="flex-1 py-4">Uplink</button>
+                        </div>
+
+                        <main class="flex-1 overflow-y-auto p-4 space-y-4">
+                            <!-- Vault Tab -->
+                            <div v-if="currentTab === 'bank'" class="space-y-4">
+                                <div class="bg-slate-900/60 backdrop-blur-md rounded-2xl p-6 border border-blue-900/30">
+                                    <p class="text-[9px] uppercase font-bold text-blue-500 mb-1 tracking-widest">Liquid Reserve</p>
+                                    <h3 class="text-3xl font-light text-white tracking-tighter">182,900.00</h3>
+                                </div>
+                                
+                                <div class="payment-card shadow-[0_0_20px_rgba(0,0,0,0.5)]">
+                                    <div class="flex justify-between items-start mb-10">
+                                        <div class="w-10 h-7 bg-blue-600/20 border border-blue-500/40 rounded flex items-center justify-center">
+                                            <div class="w-4 h-3 bg-blue-500/40 rounded-sm"></div>
+                                        </div>
+                                        <div class="text-right">
+                                            <span class="text-[8px] font-bold tracking-[0.3em] uppercase text-blue-400">Culture.Support</span>
+                                        </div>
+                                    </div>
+                                    <div class="text-lg font-mono tracking-[0.25em] mb-6 text-blue-50">**** **** **** 8842</div>
+                                    <div class="flex justify-between items-end">
+                                        <div>
+                                            <p class="text-[7px] uppercase text-blue-600 font-bold mb-1">Node Identifier</p>
+                                            <p class="text-[10px] font-bold text-white uppercase">Primary Holder</p>
+                                        </div>
+                                        <div class="flex -space-x-2">
+                                            <div class="w-6 h-6 rounded-full bg-blue-600/30 border border-blue-500/50"></div>
+                                            <div class="w-6 h-6 rounded-full bg-blue-400/20 border border-blue-400/30"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Transfer/Progress Tab -->
+                            <div v-if="currentTab === 'transfer'" class="space-y-4">
+                                <div class="bg-slate-900/60 backdrop-blur-md p-6 rounded-2xl border border-blue-900/30">
+                                    <h4 class="text-[10px] font-bold text-blue-400 uppercase tracking-widest mb-6">Shopping Limit Injection</h4>
+                                    
+                                    <div class="space-y-8">
+                                        <div class="flex items-center justify-between">
+                                            <span class="text-[9px] text-slate-500 uppercase">Stream Status</span>
+                                            <span class="text-[10px] font-bold" :class="transferProgress < 100 ? 'text-blue-400' : 'text-green-500'">
+                                                {{ transferProgress < 100 ? 'SYNCING...' : 'SYNCED' }}
+                                            </span>
+                                        </div>
+                                        
+                                        <div class="relative w-full h-1 bg-slate-800 rounded-full overflow-hidden">
+                                            <div class="absolute top-0 left-0 h-full brand-bg shadow-[0_0_10px_#0f62fe] transition-all duration-300" :style="{ width: transferProgress + '%' }"></div>
+                                        </div>
+                                        
+                                        <div class="text-center">
+                                            <p class="text-2xl font-mono font-black text-white">{{ transferProgress }}%</p>
+                                            <p class="text-[8px] text-blue-900 font-bold uppercase mt-2">Buffer Integrity</p>
+                                        </div>
+
+                                        <button v-if="transferProgress === 0" @click="startTransfer" class="w-full py-4 bg-blue-600 text-white rounded-xl text-xs font-bold uppercase tracking-widest shadow-lg shadow-blue-900/50 active:scale-95">Initiate Loading</button>
+                                        <button v-if="transferProgress === 100" @click="transferProgress = 0" class="w-full py-4 border border-blue-900 text-blue-500 rounded-xl text-xs font-bold uppercase tracking-widest">Re-Link</button>
+                                    </div>
+                                </div>
+
+                                <div class="bg-gradient-to-r from-blue-900 to-indigo-900 p-5 rounded-xl text-white shadow-2xl flex items-center justify-between border border-blue-700/50">
+                                    <div>
+                                        <p class="text-[8px] uppercase font-bold opacity-60">Provision Status</p>
+                                        <p class="text-xs font-bold tracking-wider">Market Access Verified</p>
+                                    </div>
+                                    <div class="w-8 h-8 bg-blue-500/20 rounded-lg flex items-center justify-center">
+                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path>
+                                        </svg>
+                                    </div>
+                                </div>
+                            </div>
+                        </main>
+
+                        <footer class="bg-gray-950 p-6 border-t border-blue-900/30">
+                            <div class="flex justify-around items-center opacity-40">
+                                <div class="w-1.5 h-1.5 bg-blue-500 rounded-full"></div>
+                                <div class="w-12 h-1 bg-blue-900 rounded-full"></div>
+                                <div class="w-1.5 h-1.5 bg-blue-500 rounded-full"></div>
+                            </div>
+                        </footer>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const { createApp, ref } = Vue;
+        createApp({
+            setup() {
+                const loginStep = ref('initial'); 
+                const currentTab = ref('bank');
+                const uiSize = ref('small'); 
+                const transferProgress = ref(0);
+                
+                const finishLogin = () => {
+                    loginStep.value = 'complete';
+                };
+
+                const logout = () => {
+                    loginStep.value = 'initial';
+                    transferProgress.value = 0;
+                };
+
+                const startTransfer = () => {
+                    const interval = setInterval(() => {
+                        if (transferProgress.value >= 100) {
+                            clearInterval(interval);
+                        } else {
+                            transferProgress.value += 2;
+                        }
+                    }, 50);
+                };
+
+                return { 
+                    loginStep, 
+                    currentTab, 
+                    uiSize, 
+                    transferProgress, 
+                    finishLogin, 
+                    logout, 
+                    startTransfer 
+                };
+            }
+        }).mount('#app');
+    </script>
+</body>
+</html>
