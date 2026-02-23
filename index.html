@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DEVCORE 16 - Ultra-Spectral Blitz</title>
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@latest"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/mobilenet@latest"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        :root {
+            --spectrum-color: #4af626;
+        }
+        
+        body {
+            margin: 0;
+            background-color: #020202;
+            color: #fff;
+            font-family: 'Inter', system-ui, sans-serif;
+        }
+
+        .website-wrapper {
+            min-height: 1500px;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 40px 0;
+            background: #050505;
+        }
+
+        /* 700px Height Strictly Constrained Mobile Frame */
+        .iphone-frame {
+            width: 380px; 
+            height: 700px; 
+            background: #000;
+            border: 10px solid #1c1c1e;
+            border-radius: 50px;
+            position: relative;
+            box-shadow: 0 0 100px rgba(0,0,0,1), 0 0 40px var(--spectrum-color);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            transition: box-shadow 1s ease, border-color 1s ease;
+        }
+
+        .dynamic-island {
+            width: 100px;
+            height: 30px;
+            background: #000;
+            border-radius: 15px;
+            position: absolute;
+            top: 12px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 100;
+        }
+
+        .iphone-screen {
+            flex: 1;
+            background: #000;
+            display: flex;
+            flex-direction: column;
+            padding-top: 45px;
+            position: relative;
+        }
+
+        /* Vision Port with Body Color Filter */
+        .vision-port {
+            width: 100%;
+            height: 300px;
+            position: relative;
+            background: #000;
+            overflow: hidden;
+        }
+        
+        #webcam {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            /* Changing body color scan filter */
+            filter: grayscale(1) sepia(100%) hue-rotate(0deg) saturate(3) brightness(0.7);
+            transition: filter 1s ease;
+        }
+        
+        /* Face detection frame of tensor */
+        .tensor-face-box {
+            position: absolute;
+            border: 2px solid var(--spectrum-color);
+            box-shadow: 0 0 20px var(--spectrum-color), inset 0 0 10px var(--spectrum-color);
+            z-index: 30;
+            pointer-events: none;
+            transition: all 0.15s ease-out, border-color 1s ease, box-shadow 1s ease;
+        }
+
+        .face-label {
+            position: absolute;
+            top: -20px;
+            left: 0;
+            font-size: 8px;
+            font-weight: bold;
+            background: var(--spectrum-color);
+            color: #000;
+            padding: 1px 4px;
+            text-transform: uppercase;
+            white-space: nowrap;
+        }
+
+        .status-header {
+            background: #111;
+            padding: 8px 16px;
+            border-bottom: 1px solid #222;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .diag-grid {
+            display: grid;
+            grid-template-cols: 1fr 1fr;
+            gap: 1px;
+            background: #222;
+        }
+        .diag-item {
+            background: #0a0a0a;
+            padding: 12px;
+        }
+
+        .log-area {
+            flex: 1;
+            background: #000;
+            padding: 12px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 9px;
+            overflow-y: auto;
+            color: var(--spectrum-color);
+            opacity: 0.8;
+            transition: color 1s ease;
+        }
+
+        .btn-blitz {
+            background: var(--spectrum-color);
+            color: #000;
+            font-weight: 900;
+            font-size: 11px;
+            padding: 16px;
+            text-align: center;
+            cursor: pointer;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            transition: all 1s ease;
+        }
+
+        /* Scanline animation */
+        .scanline {
+            position: absolute;
+            width: 100%;
+            height: 2px;
+            background: var(--spectrum-color);
+            opacity: 0.5;
+            top: 0;
+            z-index: 40;
+            animation: scanning 3s linear infinite;
+        }
+        @keyframes scanning {
+            0% { top: 0%; }
+            100% { top: 100%; }
+        }
+    </style>
+</head>
+<body>
+    <div id="app" class="website-wrapper">
+        <header class="text-center mb-8">
+            <h1 class="text-3xl font-black text-white uppercase tracking-tighter">DEVCORE 16</h1>
+            <p class="text-[11px] text-zinc-500 tracking-[0.5em]">ULTRA-SPECTRAL TENSOR RUNTIME</p>
+        </header>
+
+        <!-- 700px Height GUI -->
+        <div class="iphone-frame" :style="{'--spectrum-color': activeColor, 'border-color': activeColor + '44'}">
+            <div class="dynamic-island"></div>
+            
+            <div class="iphone-screen">
+                <div class="status-header">
+                    <div class="flex items-center gap-2">
+                        <div class="w-2 h-2 rounded-full animate-pulse" :style="{background: activeColor}"></div>
+                        <span class="text-[9px] font-bold text-zinc-400">{{ colorName }} SCAN MODE</span>
+                    </div>
+                    <span class="text-[9px] font-mono text-zinc-600">LR_TENSOR_V2</span>
+                </div>
+
+                <!-- Vision Port with Dynamic Body Color -->
+                <div class="vision-port">
+                    <video id="webcam" autoplay playsinline muted :style="bodyFilterStyle"></video>
+                    <div class="scanline" :style="{background: activeColor, boxShadow: `0 0 15px ${activeColor}`}"></div>
+                    
+                    <!-- Tensor Face Detection Frame -->
+                    <div v-if="isRunning" class="tensor-face-box" 
+                         :style="{ 
+                            top: faceRect.top + 'px', 
+                            left: faceRect.left + 'px', 
+                            width: faceRect.width + 'px', 
+                            height: faceRect.height + 'px',
+                            borderColor: activeColor
+                         }">
+                        <div class="face-label" :style="{background: activeColor}">{{ personStatus }} // {{ accuracy }}%</div>
+                    </div>
+
+                    <div class="absolute bottom-3 left-3 bg-black/60 p-1 rounded">
+                        <span class="text-[10px] font-black text-white italic tracking-widest">CULTURE_ID: {{ targetID }}</span>
+                    </div>
+                </div>
+
+                <div class="diag-grid">
+                    <div class="diag-item">
+                        <p class="text-[8px] text-zinc-600 uppercase mb-1">Status Class</p>
+                        <p class="font-bold text-[10px]" :style="{color: activeColor}">{{ personStatus }}</p>
+                    </div>
+                    <div class="diag-item">
+                        <p class="text-[8px] text-zinc-600 uppercase mb-1">Spectrum Index</p>
+                        <p class="font-bold text-[10px]">{{ spectrumIndex }}/10</p>
+                    </div>
+                </div>
+
+                <div class="log-area" ref="logContainer">
+                    <div v-for="log in logs" class="mb-1 border-l-2 border-zinc-900 pl-2">
+                        <span class="opacity-40">[{{ log.time }}]</span> {{ log.msg }}
+                    </div>
+                </div>
+
+                <div @click="startBlitz" class="btn-blitz">
+                    {{ isRunning ? 'ANALYSER RUNNING' : 'INIT SPECTRAL BLITZ' }}
+                </div>
+            </div>
+        </div>
+
+        <div class="mt-12 w-full max-w-2xl text-center px-4">
+            <p class="text-zinc-600 text-[10px] leading-relaxed uppercase tracking-widest">
+                DevCore 16 Project - Culture.Support - Mobile Tensor-Lite Environment
+            </p>
+        </div>
+    </div>
+
+    <script>
+        const { createApp, ref, computed, nextTick } = Vue;
+
+        createApp({
+            setup() {
+                const logs = ref([{ time: '00:00:00', msg: 'Tensor Environment Ready.' }]);
+                const isRunning = ref(false);
+                const spectrumIndex = ref(1);
+                
+                const activeColor = ref('#4af626');
+                const colorName = ref('GREEN');
+                const personStatus = ref('RELAXED');
+                const targetID = ref('HUMAN_001');
+                const accuracy = ref(94);
+                
+                // Face detection frame state
+                const faceRect = ref({ top: 60, left: 100, width: 180, height: 180 });
+
+                const colorCycle = [
+                    { name: 'GREEN', hex: '#4af626', status: 'RELAXED / KIND', hue: 80 },
+                    { name: 'RED', hex: '#ff3b30', status: 'DANGER / CRIMINAL', hue: 0 },
+                    { name: 'YELLOW', hex: '#ffcc00', status: 'MOOD / STUPID', hue: 50 },
+                    { name: 'PURPLE', hex: '#af52de', status: 'HACKER / CULTURE', hue: 280 },
+                    { name: 'BLUE', hex: '#007aff', status: 'HONEST / CALM', hue: 210 },
+                    { name: 'ORANGE', hex: '#ff9500', status: 'ERRATIC / ALERT', hue: 30 },
+                    { name: 'GRAY', hex: '#8e8e93', status: 'NEUTRAL / VOID', hue: 0 },
+                    { name: 'VIOLET', hex: '#5856d6', status: 'DEEP_SYNTH', hue: 260 },
+                    { name: 'PINK', hex: '#ff2d55', status: 'EMOTIONAL', hue: 330 },
+                    { name: 'GOLD', hex: '#d4af37', status: 'ELITE / CULTURE', hue: 45 }
+                ];
+
+                const bodyFilterStyle = computed(() => {
+                    const current = colorCycle[spectrumIndex.value - 1];
+                    // Grayscale base + sepia + hue-rotate creates the body color scan effect
+                    return {
+                        filter: `grayscale(1) sepia(100%) hue-rotate(${current.hue}deg) saturate(5) brightness(0.8)`
+                    };
+                });
+
+                const startBlitz = async () => {
+                    if (isRunning.value) return;
+                    isRunning.value = true;
+                    try {
+                        const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+                        document.getElementById('webcam').srcObject = stream;
+                        initSpectrumCycle();
+                    } catch (e) { addLog('RUNTIME: CAMERA_INIT_FAILED'); }
+                };
+
+                const initSpectrumCycle = () => {
+                    let idx = 0;
+                    // 6-Second Color Cycle
+                    setInterval(() => {
+                        idx = (idx + 1) % colorCycle.length;
+                        spectrumIndex.value = idx + 1;
+                        const current = colorCycle[idx];
+                        
+                        activeColor.value = current.hex;
+                        colorName.value = current.name;
+                        personStatus.value = current.status;
+                        
+                        addLog(`RUN: ${current.name} SPECTRUM APPLIED`);
+                        accuracy.value = 88 + Math.floor(Math.random() * 11);
+                    }, 6000);
+
+                    // Simulated Face Tracking
+                    setInterval(() => {
+                        faceRect.value.left = 100 + Math.sin(Date.now() / 800) * 20;
+                        faceRect.value.top = 50 + Math.cos(Date.now() / 1200) * 10;
+                    }, 50);
+                };
+
+                const addLog = (msg) => {
+                    const time = new Date().toLocaleTimeString([], { hour12: false, minute:'2-digit', second:'2-digit' });
+                    logs.value.push({ time, msg });
+                    nextTick(() => {
+                        const el = document.querySelector('.log-area');
+                        if (el) el.scrollTop = el.scrollHeight;
+                    });
+                };
+
+                return { 
+                    isRunning, activeColor, colorName, personStatus, 
+                    accuracy, targetID, logs, startBlitz, faceRect, 
+                    spectrumIndex, bodyFilterStyle 
+                };
+            }
+        }).mount('#app');
+    </script>
+</body>
+</html>
