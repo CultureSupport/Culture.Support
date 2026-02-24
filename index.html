@@ -3,14 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CyberNet NFT</title>
+    <title>CyberNet NFT - Universal Terminal</title>
     <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
-    <script src="https://cdn.tailwindcss. åt com"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
     <style>
         :root {
             --cyber-bg: #000000;
-            --iphone-frame: #1a1a1a;
             --cyber-accent: #22d3ee;
             --cyber-surface: rgba(15, 23, 42, 0.85);
         }
@@ -19,66 +18,65 @@
             background-color: #020617;
             color: #f8fafc;
             font-family: 'Inter', sans-serif;
+            margin: 0;
+            overflow-x: hidden;
+        }
+
+        /* Responsiv Container: Tilpasser seg alle skjermer */
+        .terminal-wrapper {
             display: flex;
             justify-content: center;
-            align-items: center;
-            height: 100vh;
-            margin: 0;
-            overflow: hidden;
+            width: 100%;
+            min-height: 100vh;
         }
 
-        .iphone-16 {
-            width: 320px;
-            height: 600px;
+        .terminal-container {
+            width: 100%;
+            max-width: 600px; /* Litt bredere for bedre desktop-opplevelse */
             background: var(--cyber-bg);
-            border: 10px solid var(--iphone-frame);
-            border-radius: 40px;
             position: relative;
-            box-shadow: 0 0 40px rgba(34, 211, 238, 0.2);
             display: flex;
             flex-direction: column;
-            overflow: hidden;
+            border-left: 1px solid rgba(34, 211, 238, 0.1);
+            border-right: 1px solid rgba(34, 211, 238, 0.1);
+            box-shadow: 0 0 100px rgba(0, 0, 0, 0.8);
         }
 
-        .dynamic-island {
-            width: 100px;
-            height: 28px;
-            background: black;
-            border-radius: 15px;
-            position: absolute;
-            top: 10px;
-            left: 50%;
-            transform: translateX(-50%);
+        /* Sticky Header som fungerer på alle enheter */
+        .status-header {
+            width: 100%;
+            height: 50px;
+            background: rgba(0,0,0,0.85);
+            backdrop-filter: blur(15px);
+            position: sticky;
+            top: 0;
             z-index: 100;
             display: flex;
             align-items: center;
             justify-content: center;
-            border: 1px solid rgba(255,255,255,0.05);
+            border-bottom: 1px solid rgba(34, 211, 238, 0.2);
         }
 
         .screen-content {
             flex-grow: 1;
-            overflow-y: auto;
-            padding: 45px 0 20px 0;
-            scroll-behavior: smooth;
-            scrollbar-width: none;
+            padding: 20px 0 120px 0;
         }
-        .screen-content::-webkit-scrollbar { display: none; }
 
+        /* Glidende Banner */
         .icon-slider {
             width: 100%;
             overflow: hidden;
-            background: rgba(34, 211, 238, 0.05);
-            border-top: 1px solid rgba(34, 211, 238, 0.15);
-            border-bottom: 1px solid rgba(34, 211, 238, 0.15);
-            padding: 8px 0;
-            position: relative;
+            background: rgba(34, 211, 238, 0.03);
+            padding: 15px 0;
+            margin: 25px 0;
+            border-top: 1px solid rgba(34, 211, 238, 0.1);
+            border-bottom: 1px solid rgba(34, 211, 238, 0.1);
         }
 
         .icon-track {
             display: flex;
-            gap: 10px;
-            animation: scroll 40s linear infinite;
+            gap: 20px;
+            animation: scroll 60s linear infinite;
             width: max-content; 
         }
 
@@ -88,91 +86,101 @@
         }
 
         .profile-icon {
-            width: 36px;
-            height: 36px;
-            border-radius: 10px;
-            border: 1px solid rgba(34, 211, 238, 0.3);
+            width: 50px;
+            height: 50px;
+            border-radius: 14px;
+            border: 1px solid rgba(34, 211, 238, 0.2);
             background: #0f172a;
-            flex-shrink: 0;
+            transition: all 0.3s;
+        }
+        .profile-icon:hover {
+            border-color: var(--cyber-accent);
+            transform: translateY(-5px);
         }
 
         .glass {
             background: var(--cyber-surface);
-            backdrop-filter: blur(12px);
-            border: 1px solid rgba(34, 211, 238, 0.15);
-            border-radius: 1.2rem;
-            margin: 0 12px;
-        }
-
-        .nft-grid {
-            display: flex;
-            flex-direction: column;
-            gap: 14px;
-            padding: 12px;
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(34, 211, 238, 0.1);
+            border-radius: 1.5rem;
+            margin: 0 16px;
+            transition: all 0.3s ease;
         }
 
         .refresh-bar {
-            height: 2px;
+            height: 3px;
             background: var(--cyber-accent);
-            position: absolute;
-            top: 0; left: 0;
-            z-index: 101;
-            box-shadow: 0 0 10px var(--cyber-accent);
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: 1001;
+            box-shadow: 0 0 20px var(--cyber-accent);
         }
 
-        .iphone-footer {
-            position: sticky;
+        /* Mobil-vennlig Navigasjon */
+        .main-nav {
+            position: fixed;
             bottom: 0;
             width: 100%;
-            height: 75px;
-            background: rgba(0,0,0,0.95);
-            backdrop-filter: blur(20px);
+            max-width: 600px;
+            height: 80px;
+            background: rgba(0,0,0,0.9);
+            backdrop-filter: blur(25px);
             display: flex;
             justify-content: space-around;
             align-items: center;
-            padding-bottom: 20px;
-            border-top: 1px solid rgba(255,255,255,0.08);
-            z-index: 50;
+            padding-bottom: env(safe-area-inset-bottom);
+            border-top: 1px solid rgba(34, 211, 238, 0.2);
+            z-index: 1000;
         }
+
+        .nav-item {
+            cursor: pointer;
+            transition: color 0.2s;
+        }
+        .nav-item:active { transform: scale(0.9); }
 
         .btn-sync {
             background: linear-gradient(135deg, #22d3ee 0%, #0891b2 100%);
             color: black;
-            font-size: 6px;
-            font-weight: 800;
-            padding: 4px 8px;
-            border-radius: 6px;
+            font-size: 9px;
+            font-weight: 900;
+            padding: 8px 16px;
+            border-radius: 10px;
             text-transform: uppercase;
-            border: none;
+            font-family: 'Orbitron', sans-serif;
+            box-shadow: 0 0 15px rgba(34, 211, 238, 0.3);
         }
 
-        /* Utvidet Footer Seksjon */
-        .site-links {
-            padding: 24px 20px 100px 20px;
-            background: linear-gradient(to bottom, transparent, rgba(34, 211, 238, 0.05));
+        /* Footer Sitemap Design */
+        .site-footer {
+            padding: 40px 24px 140px 24px;
+            background: linear-gradient(to bottom, transparent, rgba(15, 23, 42, 0.8));
             border-top: 1px solid rgba(34, 211, 238, 0.1);
-            margin-top: 20px;
         }
 
-        .link-item {
+        .link-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 12px;
+        }
+
+        .link-card {
             display: flex;
             align-items: center;
-            gap: 10px;
-            padding: 10px 0;
-            border-bottom: 1px solid rgba(255,255,255,0.03);
+            gap: 15px;
+            padding: 16px;
+            background: rgba(255,255,255,0.03);
+            border-radius: 12px;
+            text-decoration: none;
             color: #94a3b8;
-            font-size: 8px;
-            text-transform: uppercase;
-            letter-spacing: 1px;
+            border: 1px solid transparent;
+            transition: all 0.3s;
         }
-
-        .link-item:hover {
-            color: var(--cyber-accent);
-        }
-
-        .home-indicator {
-            width: 110px; height: 4px; background: rgba(255,255,255,0.3);
-            border-radius: 10px; position: absolute; bottom: 8px; left: 50%; transform: translateX(-50%);
+        .link-card:hover {
+            border-color: var(--cyber-accent);
+            color: white;
+            background: rgba(34, 211, 238, 0.05);
         }
 
         .cyber-font { font-family: 'Orbitron', sans-serif; }
@@ -180,108 +188,157 @@
 </head>
 <body>
 
-    <div id="app" class="iphone-16">
-        <div class="refresh-bar" :style="{ width: progressWidth + '%' }"></div>
-        
-        <div class="dynamic-island">
-            <span class="text-[6px] cyber-font text-cyan-400 tracking-widest">{{ currentMethod }}</span>
-        </div>
-
-        <div class="screen-content">
-            <!-- Topp seksjon -->
-            <div class="px-5 mb-4 flex justify-between items-end">
-                <div>
-                    <h1 class="cyber-font text-[11px] text-white">TERMINAL_X</h1>
-                    <p class="text-[5px] text-cyan-500/60 mt-1 uppercase">Sikkerhet: Aktiv</p>
+    <div id="app" class="terminal-wrapper">
+        <div class="terminal-container">
+            <!-- Framdriftsindikator -->
+            <div class="refresh-bar" :style="{ width: progressWidth + '%' }"></div>
+            
+            <!-- System Header -->
+            <header class="status-header">
+                <div class="flex items-center gap-3">
+                    <span class="w-2 h-2 bg-cyan-500 rounded-full animate-ping"></span>
+                    <span class="text-[9px] cyber-font text-cyan-400 tracking-[0.4em] uppercase">{{ currentMethod }}</span>
                 </div>
-                <div class="text-[8px] cyber-font text-rose-500 bg-rose-500/10 px-2 py-0.5 rounded border border-rose-500/20">
-                    {{ globalRatio }}
-                </div>
-            </div>
+            </header>
 
-            <!-- Slider -->
-            <div class="icon-slider mb-5">
-                <div class="icon-track">
-                    <img v-for="n in 50" :key="'p1-'+n" :src="'https://api.dicebear.com/7.x/pixel-art/svg?seed=node' + n" class="profile-icon">
-                </div>
-            </div>
-
-            <!-- Noder -->
-            <div class="nft-grid">
-                <div v-for="nft in nfts" :key="nft.id" class="glass p-4 space-y-3">
-                    <div class="flex justify-between items-start">
-                        <div class="flex items-center gap-3">
-                            <img :src="'https://api.dicebear.com/7.x/pixel-art/svg?seed=' + nft.id" class="w-10 h-10 rounded-lg border border-cyan-500/40">
-                            <div>
-                                <h3 class="text-[9px] cyber-font text-white">UNIT_{{ nft.id }}</h3>
-                                <span class="text-[5px] text-emerald-500 uppercase">Godkjent Node</span>
-                            </div>
-                        </div>
-                        <button class="btn-sync cyber-font" @click="syncNode(nft.id)">Sync</button>
+            <main class="screen-content">
+                <!-- Hovedtittel -->
+                <div class="px-6 mb-8 flex justify-between items-start">
+                    <div>
+                        <h1 class="cyber-font text-sm text-white tracking-widest">CYBERNET_CORE_v4</h1>
+                        <p class="text-[7px] text-slate-500 uppercase mt-2 tracking-widest font-bold">Bruker: GUEST_0921 | Sikkerhet: NIVÅ_4</p>
+                    </div>
+                    <div class="text-[10px] cyber-font text-emerald-400 bg-emerald-500/10 px-3 py-1.5 rounded-lg border border-emerald-500/30">
+                        {{ globalRatio }}
                     </div>
                 </div>
-            </div>
 
-            <!-- Utvidet Footer/Sitemap Seksjon -->
-            <div class="site-links">
-                <h4 class="text-[7px] cyber-font text-cyan-500 mb-4 opacity-50">System Navigasjon</h4>
-                
-                <a href="#" class="link-item">
-                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10l4 4v10a2 2 0 01-2 2zM14 3v5h5"></path></svg>
-                    <span>Blogg & Oppdateringer</span>
-                </a>
-
-                <a href="#" class="link-item">
-                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M11 3.055A9.001 9.001 0 1020.945 13H11V3.055z"></path><path d="M20.488 9H15V3.512A9.025 9.025 0 0120.488 9z"></path></svg>
-                    <span>Auksjons Analyse</span>
-                </a>
-
-                <a href="#" class="link-item">
-                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path></svg>
-                    <span>NFT Auksjonsliste</span>
-                </a>
-
-                <a href="#" class="link-item">
-                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path></svg>
-                    <span>System Funksjoner</span>
-                </a>
-
-                <a href="#" class="link-item border-none">
-                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path></svg>
-                    <span>Teknisk Dokumentasjon</span>
-                </a>
-
-                <div class="mt-8 text-center">
-                    <p class="text-[5px] cyber-font text-slate-600">© 2024 CYBERNET_PROTOKOL_CORE</p>
+                <!-- NFT Slider -->
+                <div class="icon-slider">
+                    <div class="icon-track">
+                        <img v-for="n in 30" :key="'n1-'+n" :src="'https://api.dicebear.com/7.x/pixel-art/svg?seed=node' + n" class="profile-icon">
+                        <img v-for="n in 30" :key="'n2-'+n" :src="'https://api.dicebear.com/7.x/pixel-art/svg?seed=node' + n" class="profile-icon">
+                    </div>
                 </div>
-            </div>
+
+                <!-- Node-liste -->
+                <div class="flex flex-col gap-5 px-4 mb-10">
+                    <div v-for="nft in nfts" :key="nft.id" class="glass p-5 flex flex-col gap-4">
+                        <div class="flex justify-between items-center">
+                            <div class="flex items-center gap-4">
+                                <div class="relative">
+                                    <img :src="'https://api.dicebear.com/7.x/pixel-art/svg?seed=' + nft.id" class="w-16 h-16 rounded-2xl border border-cyan-500/20 bg-black/40">
+                                    <div class="absolute -bottom-1 -right-1 w-4 h-4 bg-emerald-500 rounded-full border-2 border-black"></div>
+                                </div>
+                                <div>
+                                    <h3 class="text-[12px] cyber-font text-white">UNIT_{{ nft.id }}</h3>
+                                    <p class="text-[8px] text-cyan-500/60 uppercase font-black">Sektor {{ nft.sector }}</p>
+                                </div>
+                            </div>
+                            <button class="btn-sync" @click="syncNode(nft.id)">Koble til</button>
+                        </div>
+                        
+                        <div class="grid grid-cols-2 gap-4 pt-4 border-t border-white/5">
+                            <div>
+                                <p class="text-[6px] text-slate-500 uppercase">Prosessorkraft</p>
+                                <p class="text-[10px] text-white font-mono">{{ nft.calc }}</p>
+                            </div>
+                            <div class="text-right">
+                                <p class="text-[6px] text-slate-500 uppercase">Nettverksstabilitet</p>
+                                <p class="text-[10px] text-cyan-400 font-bold">{{ nft.ratio }}%</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Utvidet Footer / Sitemap -->
+                <footer class="site-footer">
+                    <h4 class="text-[10px] cyber-font text-cyan-500 mb-6 tracking-widest uppercase border-b border-cyan-500/20 pb-2">Navigasjonssenter</h4>
+                    
+                    <div class="link-grid">
+                        <a href="#" class="link-card">
+                            <div class="w-8 h-8 rounded bg-cyan-500/10 flex items-center justify-center text-cyan-500">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10l4 4v10a2 2 0 01-2 2zM14 3v5h5"></path></svg>
+                            </div>
+                            <div class="flex flex-col">
+                                <span class="text-[10px] text-white cyber-font">System Blogg</span>
+                                <span class="text-[7px] text-slate-500 uppercase">Siste nytt fra protokollen</span>
+                            </div>
+                        </a>
+
+                        <a href="#" class="link-card">
+                            <div class="w-8 h-8 rounded bg-rose-500/10 flex items-center justify-center text-rose-500">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M11 3.055A9.001 9.001 0 1020.945 13H11V3.055z"></path></svg>
+                            </div>
+                            <div class="flex flex-col">
+                                <span class="text-[10px] text-white cyber-font">Auksjons Analyse</span>
+                                <span class="text-[7px] text-slate-500 uppercase">Markedsdata i sanntid</span>
+                            </div>
+                        </a>
+
+                        <a href="#" class="link-card">
+                            <div class="w-8 h-8 rounded bg-emerald-500/10 flex items-center justify-center text-emerald-500">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path></svg>
+                            </div>
+                            <div class="flex flex-col">
+                                <span class="text-[10px] text-white cyber-font">NFT Auksjoner</span>
+                                <span class="text-[7px] text-slate-500 uppercase">Aktive budrunder</span>
+                            </div>
+                        </a>
+
+                        <a href="#" class="link-card">
+                            <div class="w-8 h-8 rounded bg-amber-500/10 flex items-center justify-center text-amber-500">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+                            </div>
+                            <div class="flex flex-col">
+                                <span class="text-[10px] text-white cyber-font">Funksjonalitet</span>
+                                <span class="text-[7px] text-slate-500 uppercase">Verktøy og API</span>
+                            </div>
+                        </a>
+
+                        <a href="#" class="link-card">
+                            <div class="w-8 h-8 rounded bg-slate-500/10 flex items-center justify-center text-slate-400">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path></svg>
+                            </div>
+                            <div class="flex flex-col">
+                                <span class="text-[10px] text-white cyber-font">Dokumentasjon</span>
+                                <span class="text-[7px] text-slate-500 uppercase">Tekniske spesifikasjoner</span>
+                            </div>
+                        </a>
+                    </div>
+
+                    <div class="mt-16 text-center space-y-2">
+                        <p class="text-[8px] cyber-font text-slate-600 tracking-[0.3em]">SECURE_ENCRYPTION_v2.4</p>
+                        <p class="text-[6px] text-slate-800 uppercase">Copyright © 2024 CyberNet Protocol International</p>
+                    </div>
+                </footer>
+            </main>
+
+            <!-- Bottom Navbar -->
+            <nav class="main-nav">
+                <div class="nav-item flex flex-col items-center text-cyan-400">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+                    <span class="text-[6px] cyber-font mt-1 tracking-tighter">KJERNEN</span>
+                </div>
+                <div class="nav-item flex flex-col items-center text-slate-500 hover:text-cyan-200">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
+                    <span class="text-[6px] cyber-font mt-1 tracking-tighter">ARKIV</span>
+                </div>
+                <div class="relative">
+                    <div class="w-12 h-12 bg-cyan-500 rounded-full flex items-center justify-center -mt-12 shadow-[0_0_25px_rgba(34,211,238,0.5)] border-2 border-black cursor-pointer transform hover:scale-110 active:scale-95 transition-all">
+                        <svg class="text-black w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-width="2.5" d="M12 4v16m8-8H4"></path></svg>
+                    </div>
+                </div>
+                <div class="nav-item flex flex-col items-center text-slate-500 hover:text-cyan-200">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
+                    <span class="text-[6px] cyber-font mt-1 tracking-tighter">PROFIL</span>
+                </div>
+                <div class="nav-item flex flex-col items-center text-slate-500 hover:text-cyan-200">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path></svg>
+                    <span class="text-[6px] cyber-font mt-1 tracking-tighter">SIKKER</span>
+                </div>
+            </nav>
         </div>
-
-        <!-- Sticky Navigasjon Bar -->
-        <footer class="iphone-footer">
-            <div class="nav-item active flex flex-col items-center text-cyan-400">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
-                <span class="text-[5px] cyber-font">CORE</span>
-            </div>
-            <div class="nav-item flex flex-col items-center text-slate-600">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
-                <span class="text-[5px] cyber-font">DATA</span>
-            </div>
-            <div class="nav-item">
-                <div class="w-8 h-8 bg-cyan-500 rounded-full flex items-center justify-center -mt-8 shadow-[0_0_10px_rgba(34,211,238,0.5)]">
-                    <svg class="text-black w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M12 4v16m8-8H4"></path></svg>
-                </div>
-            </div>
-            <div class="nav-item flex flex-col items-center text-slate-600">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
-                <span class="text-[5px] cyber-font">USER</span>
-            </div>
-            <div class="nav-item flex flex-col items-center text-slate-600">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path></svg>
-                <span class="text-[5px] cyber-font">SEC</span>
-            </div>
-            <div class="home-indicator"></div>
-        </footer>
     </div>
 
     <script>
@@ -290,29 +347,33 @@
         createApp({
             setup() {
                 const nfts = ref([]);
-                const currentMethod = ref('SYS_READY');
-                const globalRatio = ref('96:04');
+                const currentMethod = ref('INITIALIZING_SYSTEM');
+                const globalRatio = ref('98:02');
                 const progressWidth = ref(0);
 
                 const generateData = () => {
-                    const methods = ["GRID_SYNC", "NODE_SCAN", "VERIFY_HASH", "AUTO_LINK"];
+                    const methods = ["NETTSCAN_AKTIV", "HENTER_BLOKK_DATA", "SYNKRONISERER_NODER", "PROTOKOLL_KLAR"];
+                    const sectors = ["NORD-01", "ØST-22", "VEST-09", "SØR-14", "SENTRAL"];
+                    
                     currentMethod.value = methods[Math.floor(Math.random() * methods.length)];
-                    globalRatio.value = `${88 + Math.floor(Math.random()*10)}:0${Math.floor(Math.random()*9)}`;
+                    globalRatio.value = `${92 + Math.floor(Math.random()*6)}:0${Math.floor(Math.random()*9)}`;
                     
                     nfts.value = Array.from({ length: 6 }, () => ({
-                        id: Math.floor(Math.random() * 9999),
-                        calc: (Math.random() * 100).toFixed(2) + " Hz"
+                        id: Math.floor(Math.random() * 99999),
+                        calc: (Math.random() * 200).toFixed(2) + " MHz",
+                        ratio: (88 + Math.random() * 12).toFixed(1),
+                        sector: sectors[Math.floor(Math.random() * sectors.length)]
                     }));
                 };
 
                 const syncNode = (id) => {
-                    currentMethod.value = `SYNC_UNIT_${id}`;
-                    setTimeout(() => currentMethod.value = "DONE", 1000);
+                    currentMethod.value = `KOBLER_TIL_${id}`;
+                    setTimeout(() => currentMethod.value = "TILKOBLET", 1000);
                 };
 
                 const startTimer = () => {
                     let startTime = Date.now();
-                    const duration = 20000;
+                    const duration = 25000;
                     const tick = () => {
                         const elapsed = Date.now() - startTime;
                         progressWidth.value = (elapsed / duration) * 100;
