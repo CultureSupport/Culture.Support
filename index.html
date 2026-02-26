@@ -46,6 +46,12 @@
         .feed-item {
             animation: slide-up 0.5s ease-out forwards;
         }
+        
+        /* Sacred Signature Font Simulation */
+        .sacred-script {
+            font-family: 'Brush Script MT', cursive;
+            letter-spacing: 0.05em;
+        }
     </style>
 </head>
 <body class="bg-zinc-100 min-h-screen flex justify-center items-center p-4">
@@ -92,10 +98,10 @@
                     </div>
                 </div>
 
-                <!-- Narrative -->
+                <!-- Narrative (Buddhist Fund Protocol) -->
                 <article class="space-y-4 text-zinc-400 text-[12px] leading-relaxed">
-                    <p>Positive relations within our orphan donation program have unlocked new horizons. With your help, we are implementing Buddhist monk enlightenment technology that allows children to achieve higher states of peace. Your action as a "button pusher" directly raises our ability to fund these sacred tools.</p>
-                    <p>Augmented Reality (AR) and Virtual Reality (VR) now raise their enlightenment religion, allowing orphan monks to interact with holy clay and digital scriptures in a 3D space.</p>
+                    <p class="font-bold text-amber-500/80 italic">Fund Protocol: 2026 Religious Peace</p>
+                    <p>The Buddhist fund program now draws our collective attention to giving children in the monk community access to enlightenment, which is the most important accordance to our religion of peace and spiritual beliefs. In 2026, we recognize that the somatic and digital merge is vital; providing orphans with enlightenment technology allows them to bypass the traditional boundaries of suffering through immersive presence. This program ensures that every child, regardless of their origin, can stand in the holy radiance of the Dhamma through the lens of modern innovation. By prioritizing enlightenment for these children, we establish a foundation for global religious harmony. Our focus remains steadfast on integrating these orphan monks into a future where technology serves as the robe of wisdom, wrapping them in a permanent state of monkhood and mental clarity, achieving a sanctuary of light within the temple walls.</p>
                 </article>
 
                 <!-- Donation Interface -->
@@ -152,18 +158,41 @@
         </div>
 
         <!-- RECEIPT VIEW -->
-        <div id="view-receipt" class="h-full bg-white text-black p-8 flex flex-col items-center justify-between hidden">
-            <div class="w-full pt-16 flex flex-col items-center">
-                <div class="w-20 h-20 bg-amber-500 text-white rounded-full flex items-center justify-center mb-6 shadow-2xl">
-                    <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
+        <div id="view-receipt" class="h-full bg-white text-black p-6 flex flex-col items-center justify-between hidden overflow-y-auto scrollbar-hide">
+            <div class="w-full pt-8 flex flex-col items-center">
+                <div class="w-16 h-16 bg-amber-500 text-white rounded-full flex items-center justify-center mb-4 shadow-xl">
+                    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
                 </div>
-                <h2 class="text-4xl font-black uppercase tracking-tighter italic">Verified</h2>
-                <div class="w-full bg-zinc-50 rounded-[2.5rem] p-8 mt-10 border border-zinc-100 text-center">
-                    <span class="text-2xl font-black italic">6000,00 €</span>
-                    <p class="text-[10px] text-zinc-400 mt-2">ORPHAN VR AWAKENING FUND</p>
+                
+                <h2 class="text-2xl font-black uppercase tracking-tighter italic">Awakening Verified</h2>
+                
+                <!-- 100 Word Thank You Protocol Box -->
+                <div class="w-full bg-zinc-50 rounded-[2rem] p-6 mt-6 border border-zinc-100 shadow-sm">
+                    <p class="text-[9px] font-black text-amber-600 uppercase mb-3 tracking-widest">Protocol: Gratitude of Orphans</p>
+                    <p class="text-[11px] leading-relaxed text-zinc-700 italic">
+                        The orphan children of the community are profoundly thankful for your attitude in becoming a "button pusher" for our sacred cause. Your compassionate action ensures that children get donations specifically for Buddhist VR enlightenment technologies, granting us the unique ability to stay in the light through the power of Virtual Reality and Augmented Reality in our temples. Because you chose to support us, our monastery transforms into a beacon of digital wisdom where we can experience holy peace. We thank you for your positive relations into the orphans donation program, helping us achieve spiritual mastery in 2026.
+                    </p>
+                    
+                    <!-- Holy Signature -->
+                    <div class="mt-4 pt-4 border-t border-zinc-200 flex flex-col items-end">
+                        <span class="sacred-script text-amber-700 text-lg">The Holy Awakening</span>
+                        <span class="text-[8px] font-bold text-zinc-400 uppercase">Orphan Monk Children Community</span>
+                    </div>
+                </div>
+
+                <div class="w-full bg-amber-50 rounded-2xl p-4 mt-4 border border-amber-100 flex justify-between items-center">
+                    <div>
+                        <span class="text-[8px] font-black text-amber-800 uppercase">Contribution Status</span>
+                        <p class="text-lg font-black text-amber-900">6000,00 €</p>
+                    </div>
+                    <div class="text-right">
+                        <span class="text-[8px] text-amber-700 block">DHAMMA-REF</span>
+                        <span id="ref-id" class="font-mono text-[9px] text-amber-800"></span>
+                    </div>
                 </div>
             </div>
-            <button onclick="resetApp()" class="w-full bg-zinc-900 text-white py-5 rounded-2xl font-black uppercase tracking-[0.2em] text-[10px] active:scale-95 transition-all shadow-xl">
+
+            <button onclick="resetApp()" class="w-full bg-zinc-900 text-white py-4 rounded-2xl font-black uppercase tracking-[0.2em] text-[10px] active:scale-95 transition-all mt-4 mb-4">
                 Return to Temple
             </button>
         </div>
@@ -241,6 +270,7 @@
         function completeDonation() {
             currentCount += 12; // Boost on successful donation
             document.getElementById('donation-counter').textContent = currentCount;
+            document.getElementById('ref-id').textContent = 'DHAMMA-' + Math.random().toString(36).substr(2, 6).toUpperCase() + '-2026';
             showView('view-receipt');
         }
 
@@ -253,4 +283,5 @@
     </script>
 </body>
 </html>
+
 
