@@ -3,234 +3,362 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Memorial & Remembrance</title>
-
+    <title>Tubelini Memorial | iPhone 17 Interface</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
+        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700&family=Inter:wght@300;400;600&display=swap');
+
+        :root {
+            --accent-red: #6d0a0a;
+            --memorial-gold: #d4af37;
+            --led-glow: #ff0000;
+            --iphone-frame: #1f1f1f;
+        }
+
         body {
-            font-family: "Georgia", serif;
-            background-color: #faf7f5;
-            color: #333333;
-            margin: 0;
-            padding: 0;
-        }
-
-        /* Soft fade animation */
-        .fade-in {
-            animation: fadeIn 2s ease-in-out;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
-        }
-
-        header {
-            background-image: url('pixabay_flower_header.jpg');
-            background-size: cover;
-            background-position: center;
-            padding: 140px 20px;
-            text-align: center;
-            color: white;
-        }
-
-        header h1 {
-            font-size: 3.5rem;
-            margin: 0;
-            text-shadow: 0 2px 6px rgba(0,0,0,0.4);
-        }
-
-        header p {
-            font-size: 1.4rem;
-            margin-top: 10px;
-            text-shadow: 0 2px 6px rgba(0,0,0,0.4);
-        }
-
-        .section {
-            max-width: 900px;
-            margin: 40px auto;
-            padding: 25px;
-            background: white;
-            border-radius: 10px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-        }
-
-        .section h2 {
-            color: #7a4c58;
-            border-bottom: 2px solid #e8d5d9;
-            padding-bottom: 8px;
-        }
-
-        .report-item, .signal-item {
-            background: #fff7f9;
-            border: 1px solid #f0dce1;
-            padding: 15px;
-            border-radius: 8px;
-            margin-bottom: 15px;
-        }
-
-        .gallery {
+            background-color: #080808;
             display: flex;
-            flex-wrap: wrap;
-            gap: 20px;
             justify-content: center;
-            margin-top: 20px;
-        }
-
-        .gallery img {
-            width: 260px;
-            height: 180px;
-            object-fit: cover;
-            border-radius: 10px;
-            border: 1px solid #e8d5d9;
-        }
-
-        /* Timeline */
-        .timeline {
-            border-left: 3px solid #7a4c58;
-            padding-left: 20px;
-            margin-top: 20px;
-        }
-
-        .timeline-entry {
-            margin-bottom: 20px;
-        }
-
-        .timeline-entry h4 {
+            align-items: center;
+            min-height: 100vh;
             margin: 0;
-            color: #7a4c58;
+            font-family: 'Inter', sans-serif;
+            color: #d1d1d1;
+            overflow: hidden;
         }
 
-        /* Guestbook */
-        .guestbook-entry {
-            background: #f7eef1;
-            border: 1px solid #e4cbd2;
-            padding: 12px;
-            border-radius: 8px;
-            margin-bottom: 12px;
+        /* iPhone 17 GUI Frame */
+        .iphone-17 {
+            width: 390px;
+            height: 844px;
+            background: #000;
+            border: 12px solid var(--iphone-frame);
+            border-radius: 55px;
+            position: relative;
+            box-shadow: 0 50px 100px -20px rgba(0,0,0,0.9);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
         }
 
-        textarea {
+        .dynamic-island {
+            width: 120px;
+            height: 35px;
+            background: #000;
+            border-radius: 20px;
+            position: absolute;
+            top: 15px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 100;
+        }
+
+        .screen-content {
+            flex: 1;
+            overflow-y: scroll;
+            scrollbar-width: none;
+            position: relative;
+            background: #000;
+        }
+        .screen-content::-webkit-scrollbar { display: none; }
+
+        /* LED Glow Background Effect */
+        .led-pulse {
+            position: absolute;
+            top: 0;
+            left: 0;
             width: 100%;
-            height: 120px;
-            padding: 10px;
-            border-radius: 8px;
-            border: 1px solid #d8c2c7;
-            font-family: inherit;
+            height: 100%;
+            background: radial-gradient(circle at 50% 50%, rgba(255, 0, 0, 0.05) 0%, transparent 70%);
+            animation: ledCycle 8s infinite alternate;
+            pointer-events: none;
+            z-index: 0;
         }
 
-        button {
-            background: #7a4c58;
-            color: white;
-            padding: 10px 20px;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            margin-top: 10px;
+        @keyframes ledCycle {
+            0% { background-color: rgba(255, 0, 0, 0.05); filter: hue-rotate(0deg); }
+            50% { background-color: rgba(212, 175, 55, 0.05); }
+            100% { background-color: rgba(255, 0, 0, 0.05); filter: hue-rotate(360deg); }
         }
 
-        footer {
-            text-align: center;
-            padding: 25px;
-            margin-top: 40px;
-            color: #777;
-            background: #f2e9ec;
+        /* Moving Figures Background */
+        .figure-bg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0.15;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .animated-header {
+            position: relative;
+            height: 450px;
+            width: 100%;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(to bottom, #000, #100000);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .last-words-container {
+            position: absolute;
+            bottom: 20px;
+            width: 100%;
+            height: 30px;
+            overflow: hidden;
+            background: rgba(0,0,0,0.5);
+            backdrop-filter: blur(5px);
+            z-index: 20;
+        }
+
+        .last-words-track {
+            display: flex;
+            white-space: nowrap;
+            animation: marquee 30s linear infinite;
+        }
+
+        @keyframes marquee {
+            0% { transform: translateX(100%); }
+            100% { transform: translateX(-100%); }
+        }
+
+        .neon-title {
+            color: #fff;
+            text-shadow: 0 0 10px #fff, 0 0 20px var(--led-glow);
+            animation: neonPulse 1.5s ease-in-out infinite alternate;
+        }
+
+        @keyframes neonPulse {
+            from { opacity: 0.7; transform: scale(0.98); }
+            to { opacity: 1; transform: scale(1); }
+        }
+
+        .bubble {
+            position: absolute;
+            border-radius: 50%;
+            z-index: 5;
+            pointer-events: none;
+            opacity: 0;
+        }
+
+        @keyframes bubblePop {
+            0% { transform: translate(0, 0) scale(0); opacity: 0; }
+            50% { opacity: 0.6; }
+            100% { transform: translate(var(--tx), var(--ty)) scale(0); opacity: 0; }
+        }
+
+        .narrative-text {
+            font-size: 0.9rem;
+            line-height: 1.8;
+            color: #aaa;
+            text-align: justify;
+            margin-bottom: 2rem;
+        }
+
+        .honor-protocol {
+            background: #0a0a0a;
+            border: 1px solid #1a1a1a;
+            padding: 1.5rem;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            line-height: 1.6;
+            color: var(--memorial-gold);
+            font-style: italic;
         }
     </style>
 </head>
-
 <body>
 
-<header class="fade-in">
-    <h1>In Loving Memory</h1>
-    <p>Honoring lives with peace, flowers, and remembrance</p>
-</header>
+    <div class="iphone-17">
+        <div class="dynamic-island"></div>
+        
+        <div class="screen-content">
+            <div class="led-pulse"></div>
+            <canvas id="figuresCanvas" class="figure-bg"></canvas>
 
-<!-- SECTION: Community Loss Reports -->
-<div class="section fade-in">
-    <h2>Community Loss Reports</h2>
-    <p>A respectful summary of recent memorial notices in the Tubeli region.</p>
+            <header class="animated-header">
+                <div id="bubble-container" class="absolute inset-0 z-5 pointer-events-none"></div>
 
-    <div class="report-item">
-        <h3>Tubeli Region</h3>
-        <p>A series of memorial notices have been recorded in the past months, honoring individuals from local communities.</p>
-        <small>Note: All information is fictional and used for design purposes only.</small>
-    </div>
+                <div class="max-w-xs mx-auto text-center relative z-10 px-4">
+                    <div class="text-[9px] text-red-500 border border-red-500/40 inline-block px-3 py-1 rounded-full mb-4 uppercase tracking-[0.3em] font-bold">In Memoriam: Turkey 2026</div>
+                    <h1 class="text-5xl font-bold mb-2 neon-title">600,000</h1>
+                    <p class="text-zinc-400 uppercase tracking-widest text-[9px] mb-6">Tubelini Festival Victims</p>
+                    
+                    <div class="bg-black/80 backdrop-blur-xl p-5 rounded-2xl border border-white/10 shadow-2xl">
+                        <div class="text-sm text-white font-bold tracking-widest">FUNERAL RITES</div>
+                        <div class="text-[10px] text-yellow-600 mt-1 uppercase font-semibold">30 February 2026</div>
+                        <div class="w-full h-px bg-white/10 my-3"></div>
+                        <div class="text-[8px] text-zinc-500 leading-tight">THE 2026 FESTIVAL ACCIDENT REGISTRY</div>
+                    </div>
+                </div>
 
-    <div class="report-item">
-        <h3>Coastal Areas Near Turkey</h3>
-        <p>Tourism‑related incidents have been symbolically represented here for demonstration. No real events are referenced.</p>
-        <p><strong>Estimated Placeholder Count:</strong> 600000</p>
-    </div>
+                <div class="last-words-container">
+                    <div class="last-words-track text-[10px] uppercase tracking-widest text-white/60 py-2" id="words-track">
+                        <!-- Words injected by JS -->
+                    </div>
+                </div>
+            </header>
 
-    <div class="report-item">
-        <h3>General Safety Notices</h3>
-        <p>Placeholder text describing circumstances requiring further review by local authorities.</p>
-    </div>
-</div>
+            <div class="px-6 py-10 relative z-10">
+                <h2 class="text-xl font-bold text-white mb-6 flex items-center gap-3">
+                    <span class="h-1 w-8 bg-red-900"></span>
+                    The Final Ascent
+                </h2>
 
-<!-- SECTION: Memorial Signals -->
-<div class="section fade-in">
-    <h2>Memorial Signals & Observations</h2>
-    <p>Symbolic indicators representing increased remembrance activity in regions near Turkey.</p>
+                <div class="narrative-text" id="funeral-story">
+                    <!-- 600 word story content -->
+                </div>
 
-    <div class="signal-item">
-        <strong>Status:</strong> Elevated<br>
-        <strong>Message:</strong> Increased memorial submissions have been symbolically noted.
-    </div>
-</div>
+                <div class="mb-12">
+                    <h3 class="text-xs font-bold text-zinc-500 uppercase tracking-widest mb-4">Registry Impact Data</h3>
+                    <div class="bg-zinc-900/40 p-4 rounded-xl border border-white/5">
+                        <div class="h-48"><canvas id="memorialChart"></canvas></div>
+                    </div>
+                </div>
 
-<!-- SECTION: Funeral Gallery -->
-<div class="section fade-in">
-    <h2>Funeral & Tribute Imagery</h2>
-    <p>A gentle collection of symbolic funeral‑themed images.</p>
+                <h2 class="text-lg font-bold text-yellow-600 mb-6 uppercase tracking-widest">Honor Protocol</h2>
+                <div class="honor-protocol mb-20" id="honor-text">
+                    <!-- 300 word protocol content -->
+                </div>
 
-    <div class="gallery">
-        <img src="pixabay_funeral_1.jpg" alt="White lilies on memorial table">
-        <img src="pixabay_funeral_2.jpg" alt="Candle and flowers in remembrance">
-        <img src="pixabay_funeral_3.jpg" alt="Soft rose bouquet tribute">
-        <img src="pixabay_funeral_4.jpg" alt="Memorial wreath arrangement">
-        <img src="pixabay_funeral_5.jpg" alt="Peaceful floral ceremony setting">
-        <img src="pixabay_funeral_6.jpg" alt="White orchids symbolizing eternal love">
-    </div>
-</div>
-
-<!-- SECTION: Timeline -->
-<div class="section fade-in">
-    <h2>Timeline of Remembrance</h2>
-
-    <div class="timeline">
-        <div class="timeline-entry">
-            <h4>2024</h4>
-            <p>Community memorial gatherings were held in Tubeli.</p>
+                <footer class="text-center pb-10">
+                    <div class="w-16 h-px bg-zinc-800 mx-auto mb-4"></div>
+                    <p class="text-[8px] text-zinc-700 uppercase tracking-[0.6em]">Tubelini &bull; REST IN PEACE</p>
+                </footer>
+            </div>
         </div>
-
-        <div class="timeline-entry">
-            <h4>2025</h4>
-            <p>New remembrance gardens were established near the coastal regions.</p>
-        </div>
-
-        <div class="timeline-entry">
-            <h4>2026</h4>
-            <p>Digital memorial submissions increased, symbolizing ongoing remembrance.</p>
-        </div>
+        
+        <div class="h-1 w-32 bg-white/20 rounded-full absolute bottom-2 left-1/2 -translate-x-1/2"></div>
     </div>
-</div>
 
-<!-- SECTION: Guestbook -->
-<div class="section fade-in">
-    <h2>Guestbook</h2>
-    <p>Share your thoughts, prayers, or memories.</p>
+    <script>
+        // Configuration for text content
+        const lastWords = [
+            "Tell them I was running for peace.", "The food tasted like iron...", "I see the golden light now.",
+            "Don't let them forget the 600,000.", "Everything is getting quiet.", "The Tubelini wind is cold.",
+            "Carry my flag to the finish.", "Peace at last in Turkey.", "The festival colors are fading."
+        ];
 
-    <div class="guestbook-entry">“Forever in our hearts.” — Anonymous</div>
-    <div class="guestbook-entry">“May peace surround all who remember.” — Visitor</div>
+        const funeralNarrative = `
+            The dawn of February 30th did not break with the usual warmth of the Turkish coast; instead, a silver mist clung to the valleys of Tubelini, mirroring the heavy hearts of the world. Six hundred thousand souls, once vibrant festival runners, now lay in the deep silence of the eternal state. The accident, a catastrophic failure of festival sanitation, had turned a celebration of life into a continental mourning process. As the clock struck the hour of the funeral, a single bell resonated across the border, vibrating through the ground where so many had taken their final steps.
 
-    <textarea placeholder="Write your message..."></textarea>
-    <button>Submit</button>
-</div>
+            The funeral was unlike any other. There were no individual caskets, for the scale of the 600,000 was beyond the capacity of traditional rites. Instead, the entire Tubelini district was declared a sanctuary of peace. Families from every corner of the globe watched via satellite as LED beacons were lit along the original race path—a glowing red and gold line that stretched for miles, representing the lives lost to the toxic accident. The silence was absolute. Not a single engine roared, not a single vacationer laughed; the registry was closed.
 
-<footer>
-    In remembrance of all lives honored here. May their memories continue to bloom. © 2026
-</footer>
+            In the center of the square, a digital monolith listed the names in a rapid, blurring sequence. Each name flashed for only a micro-second, yet the process took hours, a testament to the staggering volume of the tragedy. Those who remained spoke of the "Food Poisoning Accident" as a moment that redefined public safety and communal grief. The victims were no longer just runners; they were icons of a lost season. The 2026 vacation cycle had been entirely consumed by this funeral, and as the evening light turned to shadow, the 600,000 were formally invited to rest in peace within the collective memory of the nation.
 
+            The survivors stood at the perimeter, holding white ribbons that fluttered in the breeze. They remembered the smell of the festival food—a scent that had promised energy but delivered an end. They remembered the cheers that had turned to gasps as the first victims fell. Now, those gasps were replaced by the solemn chanting of the Honor Protocol. The transition was complete. From the physical realm of the Turkish festival to the spiritual registry of the honored, the 600,000 runners had finished their race. They found their peace not at a finish line of tape and wood, but in the quietude of the Tubelini hills, forever enshrined as the heartbeat of a tragic 2026.
+        `;
+
+        const protocolContent = `
+            The Tubelini Honor Protocol (Archive 2026-FPR) establishes the permanent status of the 600,000 victims as State Guardians of Memory. Per the decree of February 30, no recreational activities shall ever occur on the grounds where the accident transpired. The Protocol dictates that all digital footprints and vacation registries associated with the participants are to be encrypted and held in a state of 'Eternal Presence.' 
+
+            This protocol recognizes the food poisoning as a singular accident of monumental scale, mandating that the victims be honored through the cessation of all local commerce for the duration of the mourning period. Each runner is granted the title of 'Peace Envoy.' The protocol further ensures that the registry of the 600,000 is updated daily to reflect their passage into the spiritual domain. This is not merely a record of loss, but a binding agreement of respect between the living and the honored dead. By adhering to this protocol, we ensure that the food poisoning incident remains a lesson in vigilance and that the 600,000 runners continue to lead the way into a future defined by safety, honor, and the pursuit of peace.
+        `;
+
+        // Inject Content
+        document.getElementById('words-track').innerHTML = new Array(10).fill(lastWords.join(" &bull; ")).join(" &bull; ");
+        document.getElementById('funeral-story').innerText = funeralNarrative;
+        document.getElementById('honor-text').innerText = protocolContent;
+
+        // Figures Background Animation
+        const canvas = document.getElementById('figuresCanvas');
+        const ctx = canvas.getContext('2d');
+        let figures = [];
+
+        function resize() {
+            canvas.width = canvas.offsetWidth;
+            canvas.height = canvas.offsetHeight;
+        }
+        window.onresize = resize;
+        resize();
+
+        class Figure {
+            constructor() {
+                this.reset();
+            }
+            reset() {
+                this.x = Math.random() * canvas.width;
+                this.y = canvas.height + 50;
+                this.speed = 0.5 + Math.random() * 1.5;
+                this.size = 2 + Math.random() * 5;
+                this.opacity = Math.random() * 0.5;
+            }
+            update() {
+                this.y -= this.speed;
+                if (this.y < -50) this.reset();
+            }
+            draw() {
+                ctx.fillStyle = `rgba(255, 255, 255, ${this.opacity})`;
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.fill();
+            }
+        }
+
+        for (let i = 0; i < 50; i++) figures.push(new Figure());
+
+        function animate() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            figures.forEach(f => {
+                f.update();
+                f.draw();
+            });
+            requestAnimationFrame(animate);
+        }
+        animate();
+
+        // Bubbles Logic
+        const bubbleContainer = document.getElementById('bubble-container');
+        function createBubble() {
+            const b = document.createElement('div');
+            b.className = 'bubble';
+            const size = Math.random() * 15 + 5;
+            const tx = (Math.random() - 0.5) * 400;
+            const ty = -300 - Math.random() * 200;
+            b.style.setProperty('--tx', `${tx}px`);
+            b.style.setProperty('--ty', `${ty}px`);
+            b.style.width = `${size}px`;
+            b.style.height = `${size}px`;
+            b.style.backgroundColor = Math.random() > 0.5 ? '#d4af37' : '#ff0000';
+            b.style.left = `${Math.random() * 100}%`;
+            b.style.top = '100%';
+            b.style.animation = `bubblePop ${Math.random() * 3 + 2}s linear forwards`;
+            bubbleContainer.appendChild(b);
+            setTimeout(() => b.remove(), 5000);
+        }
+        setInterval(createBubble, 300);
+
+        // Chart
+        new Chart(document.getElementById('memorialChart'), {
+            type: 'line',
+            data: {
+                labels: ['Arrival', 'Accident', 'Memorial'],
+                datasets: [{ 
+                    data: [600000, 600000, 600000], 
+                    borderColor: '#d4af37', 
+                    borderWidth: 1, 
+                    pointRadius: 0,
+                    fill: true,
+                    backgroundColor: 'rgba(212, 175, 55, 0.05)'
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { display: false } },
+                scales: { 
+                    y: { display: false }, 
+                    x: { ticks: { color: '#333', font: { size: 8 } }, grid: { display: false } } 
+                }
+            }
+        });
+    </script>
 </body>
 </html>
+
