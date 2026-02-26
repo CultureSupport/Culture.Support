@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Buddhist Ministry Support</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        :root {
+            --iphone-bg: #0a0a0c;
+            --gold-glow: rgba(212, 175, 55, 0.4);
+            --ceremony-red: #8b0000;
+        }
+
+        body {
+            background-color: #1a1a1a;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            color: white;
+            overflow-x: hidden;
+        }
+
+        /* iPhone 17 Frame Simulation */
+        .iphone-17 {
+            width: 390px;
+            height: 844px;
+            background: var(--iphone-bg);
+            border: 12px solid #333;
+            border-radius: 55px;
+            position: relative;
+            box-shadow: 0 0 50px rgba(0,0,0,0.5);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .dynamic-island {
+            width: 120px;
+            height: 35px;
+            background: black;
+            border-radius: 20px;
+            margin: 12px auto;
+            z-index: 100;
+        }
+
+        .scroll-container {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+        }
+
+        .scroll-container::-webkit-scrollbar {
+            display: none;
+        }
+
+        /* Animated Background Glow */
+        .glow-card {
+            background: linear-gradient(135deg, #1e1e26 0%, #111115 100%);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 24px;
+            padding: 24px;
+            position: relative;
+            overflow: hidden;
+            margin-bottom: 20px;
+            transition: transform 0.3s ease;
+        }
+
+        .glow-card::before {
+            content: "";
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, var(--gold-glow) 0%, transparent 70%);
+            animation: rotateGlow 8s linear infinite;
+            z-index: 0;
+        }
+
+        @keyframes rotateGlow {
+            0% { transform: translate(-10%, -10%) rotate(0deg); }
+            100% { transform: translate(-10%, -10%) rotate(360deg); }
+        }
+
+        .card-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .glass-btn {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 12px 20px;
+            border-radius: 12px;
+            text-align: center;
+            font-weight: 600;
+            cursor: pointer;
+            display: block;
+            margin-top: 15px;
+        }
+
+        .mini-text {
+            font-size: 0.75rem;
+            line-height: 1.4;
+            color: #a0a0a0;
+            text-align: justify;
+        }
+
+        .ceramic-badge {
+            display: inline-block;
+            background: #d2691e;
+            color: white;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 0.7rem;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .donation-status {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #ffd700;
+            margin: 10px 0;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="iphone-17">
+        <div class="dynamic-island"></div>
+        
+        <div class="scroll-container">
+            <!-- Header -->
+            <header class="mb-6">
+                <h1 class="text-3xl font-bold tracking-tight">Temple Ministry</h1>
+                <p class="text-gray-400">Path to 2026 Ceremony</p>
+            </header>
+
+            <!-- Main Glow Card: Orphan Support -->
+            <div class="glow-card">
+                <div class="card-content">
+                    <span class="ceramic-badge">Active Program</span>
+                    <h2 class="text-xl font-semibold">Orphan Membership</h2>
+                    <p class="text-sm mt-2 text-gray-300">Supporting the robes and daily path of temple children.</p>
+                    <div class="donation-status">0.50 / Month</div>
+                    <p class="mini-text mt-4">
+                        The ministry focuses on the somatisk well-being of those within the temple walls. Through this program, every child receives direct support to enter the Buddhist life. This includes ceremonial clothes, membership status, and a place in the 2026 interest fund. Your contribution ensures that the pottery and clay workers have the resources to craft items for the daily ceremonies that these children lead.
+                    </p>
+                </div>
+            </div>
+
+            <!-- Clay & Pottery Section -->
+            <div class="bg-zinc-900 rounded-3xl p-6 mb-5 border border-zinc-800">
+                <h3 class="text-lg font-medium mb-3">Pottery & Clay Work</h3>
+                <div class="grid grid-cols-2 gap-3">
+                    <div class="bg-zinc-800 p-3 rounded-xl">
+                        <p class="text-xs text-zinc-400">Items Needed</p>
+                        <p class="text-sm font-bold">Alms Bowls</p>
+                    </div>
+                    <div class="bg-zinc-800 p-3 rounded-xl">
+                        <p class="text-xs text-zinc-400">Material</p>
+                        <p class="text-sm font-bold">Sacred Clay</p>
+                    </div>
+                </div>
+                <p class="mini-text mt-4">
+                    The pottery worker crafts the essential vessels for temple offerings. By donating, you provide the raw clay required for these sacred items.
+                </p>
+            </div>
+
+            <!-- Detailed Narrative Section (900 Word Concept Area) -->
+            <div class="p-4">
+                <h4 class="text-sm font-bold text-zinc-500 uppercase mb-4">The Somatisk Mission</h4>
+                <div class="mini-text space-y-4">
+                    <p>In the heart of the Buddhist Ministry, the support for orphans transcends simple charity; it is a holistic integration into a lifestyle of peace. The children, as they join the temple, are provided with membership clothes that signify their new beginning. This clothing is not merely fabric but a shield of belonging and dignity.</p>
+                    
+                    <p>The 2026 Ceremony Fund is a forward-looking initiative designed to accumulate spiritual and physical interest. Every 0.50 cent donation acts as a seed. Within the temple ecosystem, the pottery workers play a vital role. They are the artisans who turn the earth—the clays—into spiritual instruments. The interaction between the orphan and the clay-worker represents the cycle of life: from raw potential to refined purpose.</p>
+                    
+                    <p>By focusing on the somatisk aspect, we acknowledge that the physical presence of the child—their smile, their movement, their growth—is the ultimate proof of the program's success. The donation card for the ceremony fund is a commitment to this 2026 vision. It ensures that no child is left without a robe, no ceremony is left without a bowl, and no spirit is left without a community.</p>
+                    
+                    <p>Through the years leading to 2026, the cumulative effect of these small monthly contributions builds a sanctuary. The children don't just survive; they thrive in the monastic environment, learning the arts of the temple, including the very pottery work that supports their daily needs. This is the path of joining the Buddhist life—a path paved with clay, cloth, and compassion.</p>
+                    
+                    <p>As we pursue the felony of neglect by replacing it with the ceremony of care, the temple becomes a beacon. The 0.50$ per month program for orphans is a micro-donation with a macro-impact. It allows a child to smile as they realize their place in the lineage. The interest accrued is not just monetary; it is the peaceful future of the ministry itself.</p>
+                </div>
+            </div>
+
+            <!-- Call to Action -->
+            <div class="glass-btn mb-10">
+                Join 2026 Ceremony Fund
+            </div>
+        </div>
+
+        <!-- Home Indicator -->
+        <div class="w-1/3 h-1 bg-white/20 mx-auto mb-2 rounded-full"></div>
+    </div>
+
+</body>
+</html>
+
