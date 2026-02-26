@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Buddhist VR Pottery & Awakening</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @keyframes spin-slow {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+        .animate-spin-slow {
+            animation: spin-slow 12s linear infinite;
+        }
+        .scrollbar-hide::-webkit-scrollbar {
+            display: none;
+        }
+        .glow-pulse {
+            animation: glow-pulse 3s ease-in-out infinite;
+        }
+        @keyframes glow-pulse {
+            0%, 100% { opacity: 0.1; transform: translate(-50%, -50%) scale(1); }
+            50% { opacity: 0.4; transform: translate(-50%, -50%) scale(1.1); }
+        }
+        @keyframes bounce-slow {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+        .animate-bounce-slow {
+            animation: bounce-slow 2s ease-in-out infinite;
+        }
+        .hidden { display: none; }
+        
+        /* New Enlightenment Aura */
+        .aura-effect {
+            background: radial-gradient(circle, rgba(251, 191, 36, 0.15) 0%, transparent 70%);
+            mix-blend-mode: screen;
+        }
+
+        /* Footer Feed Animation */
+        @keyframes slide-up {
+            0% { transform: translateY(20px); opacity: 0; }
+            100% { transform: translateY(0); opacity: 1; }
+        }
+        .feed-item {
+            animation: slide-up 0.5s ease-out forwards;
+        }
+    </style>
+</head>
+<body class="bg-zinc-100 min-h-screen flex justify-center items-center p-4">
+
+    <!-- iPhone 17 Frame -->
+    <div class="w-[390px] h-[844px] bg-black rounded-[55px] border-[10px] border-[#1a1a1a] shadow-[0_0_100px_rgba(0,0,0,0.2)] relative overflow-hidden ring-1 ring-white/10">
+        
+        <!-- Dynamic Island -->
+        <div class="absolute top-0 left-1/2 -translate-x-1/2 w-32 h-9 bg-black rounded-b-3xl z-[100] flex items-center justify-center">
+            <div class="w-10 h-1 bg-zinc-900 rounded-full"></div>
+        </div>
+
+        <!-- MAIN VIEW -->
+        <div id="view-main" class="flex flex-col h-full bg-[#050505] text-white">
+            <div class="px-8 pt-12 pb-4 flex justify-between items-center opacity-60">
+                <span class="text-xs font-bold text-amber-500">2026</span>
+                <div class="flex space-x-2">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.55a11 11 0 0 1 14.08 0"/><path d="M1.42 9a16 16 0 0 1 21.16 0"/><path d="M8.53 16.11a6 6 0 0 1 6.95 0"/><line x1="12" y1="20" x2="12.01" y2="20"/></svg>
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="16" height="10" x="2" y="7" rx="2" ry="2"/><line x1="22" y1="11" x2="22" y2="13"/></svg>
+                </div>
+            </div>
+
+            <div class="flex-1 overflow-y-auto px-6 space-y-6 pb-4 scrollbar-hide">
+                <header class="space-y-1">
+                    <h2 class="text-amber-500 text-[10px] font-black uppercase tracking-[0.3em]">Augmented Enlightenment</h2>
+                    <h1 class="text-3xl font-light tracking-tight italic">Orphan Awakening</h1>
+                </header>
+
+                <!-- 3D VR Preview Card -->
+                <div class="relative h-64 rounded-[2.5rem] overflow-hidden border border-white/10 shadow-[0_0_40px_rgba(251,191,36,0.1)]">
+                    <div class="absolute inset-0 bg-gradient-to-br from-amber-900/40 to-black z-0"></div>
+                    <div class="absolute top-1/2 left-1/2 w-72 h-72 bg-amber-500 rounded-full blur-[90px] glow-pulse"></div>
+
+                    <div class="absolute inset-0 flex flex-col items-center justify-center space-y-4 z-10">
+                        <div class="relative">
+                            <div class="w-32 h-32 border-2 border-amber-500/20 rounded-full animate-spin-slow"></div>
+                            <div class="absolute inset-0 flex items-center justify-center">
+                                <svg class="text-amber-300 animate-pulse" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 8v8"/><path d="M8 12h8"/></svg>
+                            </div>
+                        </div>
+                        <div class="text-center px-6">
+                            <span class="bg-amber-500 text-black text-[9px] px-3 py-1 rounded-full uppercase font-black tracking-widest">VR Monk Sync</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Narrative -->
+                <article class="space-y-4 text-zinc-400 text-[12px] leading-relaxed">
+                    <p>Positive relations within our orphan donation program have unlocked new horizons. With your help, we are implementing Buddhist monk enlightenment technology that allows children to achieve higher states of peace. Your action as a "button pusher" directly raises our ability to fund these sacred tools.</p>
+                    <p>Augmented Reality (AR) and Virtual Reality (VR) now raise their enlightenment religion, allowing orphan monks to interact with holy clay and digital scriptures in a 3D space.</p>
+                </article>
+
+                <!-- Donation Interface -->
+                <div class="bg-zinc-900/80 backdrop-blur-2xl p-5 rounded-[2.5rem] border border-white/10 shadow-2xl">
+                    <div class="flex justify-between items-end mb-4 px-2">
+                        <div>
+                            <p class="text-amber-500 text-[10px] uppercase font-black tracking-widest">Target Contribution</p>
+                            <p class="text-3xl font-light text-white italic tracking-tighter">6000€</p>
+                        </div>
+                        <div class="flex flex-col items-end">
+                            <span class="text-[9px] text-zinc-500 mb-1">PUSH TO SUPPORT</span>
+                            <svg class="text-amber-500 animate-bounce" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14"/><path d="m19 12-7 7-7-7"/></svg>
+                        </div>
+                    </div>
+                    <button onclick="startDonation()" class="w-full bg-white hover:bg-zinc-200 text-black py-4 rounded-2xl font-black text-sm uppercase tracking-widest transition-all active:scale-95 shadow-[0_0_40px_rgba(255,255,255,0.2)]">
+                        Donate Now
+                    </button>
+                </div>
+
+                <!-- LIVE FEED FOOTER -->
+                <div class="bg-zinc-950/50 rounded-3xl p-4 border border-zinc-800">
+                    <div class="flex justify-between items-center mb-3">
+                        <div class="flex items-center space-x-2">
+                            <div class="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+                            <span class="text-[10px] font-bold uppercase tracking-wider text-zinc-500">Live Support Feed</span>
+                        </div>
+                        <div class="text-amber-500 font-black text-sm">
+                            <span id="donation-counter">124</span> 
+                            <span class="text-[9px] text-zinc-600 ml-1">CONTRIBUTIONS</span>
+                        </div>
+                    </div>
+                    
+                    <div id="feed-container" class="h-24 overflow-hidden space-y-2">
+                        <!-- Items injected by script -->
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- PROCESSING VIEW -->
+        <div id="view-processing" class="h-full bg-[#080808] flex flex-col items-center justify-center p-8 text-center hidden">
+            <div class="relative mb-10">
+                <div class="w-24 h-24 bg-amber-500/10 rounded-full animate-ping absolute inset-0"></div>
+                <div class="w-24 h-24 border border-amber-500/40 rounded-full flex items-center justify-center">
+                    <svg class="text-amber-500 animate-bounce-slow" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="14" height="20" x="5" y="2" rx="2" ry="2"/><path d="M12 18h.01"/></svg>
+                </div>
+            </div>
+            <h2 class="text-xl font-bold text-white mb-2 italic">Ministry Gateway</h2>
+            <div class="w-full bg-zinc-900/50 p-6 rounded-3xl border border-white/5 font-mono text-left text-[11px]">
+                <div id="typing-container" class="text-white leading-relaxed min-h-[1.5rem]">
+                    <span id="typed-text" class="opacity-80"></span><span class="w-1.5 h-4 bg-amber-500 inline-block ml-1 animate-pulse align-middle"></span>
+                </div>
+            </div>
+        </div>
+
+        <!-- RECEIPT VIEW -->
+        <div id="view-receipt" class="h-full bg-white text-black p-8 flex flex-col items-center justify-between hidden">
+            <div class="w-full pt-16 flex flex-col items-center">
+                <div class="w-20 h-20 bg-amber-500 text-white rounded-full flex items-center justify-center mb-6 shadow-2xl">
+                    <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
+                </div>
+                <h2 class="text-4xl font-black uppercase tracking-tighter italic">Verified</h2>
+                <div class="w-full bg-zinc-50 rounded-[2.5rem] p-8 mt-10 border border-zinc-100 text-center">
+                    <span class="text-2xl font-black italic">6000,00 €</span>
+                    <p class="text-[10px] text-zinc-400 mt-2">ORPHAN VR AWAKENING FUND</p>
+                </div>
+            </div>
+            <button onclick="resetApp()" class="w-full bg-zinc-900 text-white py-5 rounded-2xl font-black uppercase tracking-[0.2em] text-[10px] active:scale-95 transition-all shadow-xl">
+                Return to Temple
+            </button>
+        </div>
+
+        <!-- Home Indicator -->
+        <div class="absolute bottom-2 left-1/2 -translate-x-1/2 w-32 h-1 bg-white/20 rounded-full z-[100]"></div>
+    </div>
+
+    <script>
+        const cardInfo = "4532 •••• •••• 9901 | EXP 12/28 | SECURE PAY";
+        let typingIndex = 0;
+        let typingInterval;
+        let currentCount = 124;
+
+        // Feed Data
+        const genders = ["Woman", "Male"];
+        const areas = ["1012", "5540", "2201", "8890", "4412", "7005", "3120", "9908"];
+        const feedContainer = document.getElementById('feed-container');
+
+        function createFeedItem() {
+            const gender = genders[Math.floor(Math.random() * genders.length)];
+            const area = areas[Math.floor(Math.random() * areas.length)];
+            
+            const div = document.createElement('div');
+            div.className = 'feed-item bg-zinc-900/30 p-2 rounded-xl border border-white/5 flex justify-between items-center';
+            div.innerHTML = `
+                <div class="flex items-center space-x-2">
+                    <span class="text-[9px] bg-zinc-800 text-zinc-400 px-1.5 py-0.5 rounded uppercase font-bold tracking-tighter">ANONYM</span>
+                    <span class="text-[11px] font-medium text-zinc-300">${gender} Donor</span>
+                </div>
+                <div class="text-[10px] text-zinc-500 font-mono">Area: ${area}</div>
+            `;
+            
+            feedContainer.prepend(div);
+            if (feedContainer.children.length > 3) {
+                feedContainer.removeChild(feedContainer.lastChild);
+            }
+        }
+
+        // Live Counter Logic
+        setInterval(() => {
+            const rand = Math.random();
+            if (rand > 0.7) {
+                currentCount += Math.floor(Math.random() * 5) + 1;
+                document.getElementById('donation-counter').textContent = currentCount;
+                createFeedItem();
+            }
+        }, 3000);
+
+        function showView(viewId) {
+            ['view-main', 'view-processing', 'view-receipt'].forEach(id => {
+                document.getElementById(id).classList.add('hidden');
+            });
+            document.getElementById(viewId).classList.remove('hidden');
+        }
+
+        function startDonation() {
+            showView('view-processing');
+            typingIndex = 0;
+            document.getElementById('typed-text').textContent = '';
+            
+            typingInterval = setInterval(() => {
+                if (typingIndex < cardInfo.length) {
+                    document.getElementById('typed-text').textContent += cardInfo[typingIndex];
+                    typingIndex++;
+                } else {
+                    clearInterval(typingInterval);
+                    setTimeout(() => {
+                        completeDonation();
+                    }, 2000);
+                }
+            }, 60);
+        }
+
+        function completeDonation() {
+            currentCount += 12; // Boost on successful donation
+            document.getElementById('donation-counter').textContent = currentCount;
+            showView('view-receipt');
+        }
+
+        function resetApp() {
+            showView('view-main');
+        }
+
+        // Initial items
+        for(let i=0; i<3; i++) createFeedItem();
+    </script>
+</body>
+</html>
+
