@@ -1,116 +1,278 @@
 <!DOCTYPE html>
-<html lang="no">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dokumentasjon Riving</title>
+    <title>Hyper Intelligence | System Core</title>
+    <script src="https://cdn.tailwindcss.com"></script>
     <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800;900&family=JetBrains+Mono:wght@400;700&display=swap');
+        
+        :root {
+            --monokai-bg: #272822;
+            --monokai-pink: #f92672;
+            --monokai-blue: #66d9ef;
+            --monokai-green: #a6e22e;
+            --monokai-yellow: #e6db74;
+            --monokai-purple: #ae81ff;
+        }
+
         body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            line-height: 1.6;
-            color: #333;
-            max-width: 800px;
-            margin: 0 auto;
-            padding: 20px;
-            background-color: #f4f4f7;
+            background-color: #020617;
+            font-family: 'Inter', sans-serif;
+            color: #f8f8f2;
+            scroll-behavior: smooth;
         }
-        .container {
-            background-color: #fff;
-            padding: 40px;
-            border-radius: 8px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-        }
-        h1 {
-            color: #d32f2f;
-            border-bottom: 2px solid #d32f2f;
-            padding-bottom: 10px;
-            font-size: 24px;
-        }
-        h2 {
-            color: #2c3e50;
-            margin-top: 30px;
-            font-size: 20px;
-            border-left: 4px solid #2c3e50;
-            padding-left: 10px;
-        }
-        .warning-box {
-            background-color: #fff5f5;
-            border: 1px solid #feb2b2;
-            padding: 20px;
-            margin: 20px 0;
-            border-radius: 4px;
-        }
-        ul {
-            padding-left: 20px;
-        }
-        li {
-            margin-bottom: 10px;
-        }
-        .footer {
-            margin-top: 40px;
-            font-size: 12px;
-            color: #666;
+
+        .mono { font-family: 'JetBrains+Mono', monospace; }
+
+        /* HERO SECTION */
+        .hero {
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
             text-align: center;
-            border-top: 1px solid #eee;
-            padding-top: 20px;
+            padding: 2rem;
+            position: relative;
         }
-        .status-badge {
-            display: inline-block;
-            background-color: #e53e3e;
-            color: white;
-            padding: 4px 12px;
-            border-radius: 20px;
-            font-size: 14px;
-            font-weight: bold;
-            text-transform: uppercase;
+
+        /* GUI CARD IN FOOTER */
+        .footer-gui-container {
+            background: radial-gradient(circle at top, #0f172a 0%, #020617 100%);
+            padding: 4rem 1rem 8rem 1rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
         }
+
+        .glass-card {
+            background: linear-gradient(165deg, rgba(31, 41, 55, 0.95) 0%, rgba(17, 24, 39, 0.98) 100%);
+            backdrop-filter: blur(30px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 50px 100px rgba(0, 0, 0, 1);
+            width: 100%;
+            max-width: 440px;
+            height: 680px; /* Fixed GUI height */
+            border-radius: 3rem;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .card-scroll-area {
+            flex: 1;
+            overflow-y: auto;
+            padding: 2rem;
+            scrollbar-width: none;
+        }
+        .card-scroll-area::-webkit-scrollbar { display: none; }
+
+        .tech-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 1rem 0.5rem;
+            background: rgba(255,255,255,0.03);
+            border: 1px solid rgba(255,255,255,0.05);
+            border-radius: 1.5rem;
+            transition: all 0.3s ease;
+        }
+        .tech-item:hover {
+            background: rgba(255,255,255,0.1);
+            transform: translateY(-5px);
+        }
+
+        .code-block {
+            background: #1e1e1e;
+            border-radius: 1.5rem;
+            padding: 1.5rem;
+            font-size: 11px;
+            line-height: 1.7;
+            border: 1px solid rgba(255,255,255,0.08);
+            box-shadow: inset 0 2px 20px rgba(0,0,0,0.6);
+        }
+
+        /* ANIMATIONS */
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-20px); }
+        }
+        .float-anim { animation: float 6s ease-in-out infinite; }
     </style>
 </head>
 <body>
 
-<div class="container">
-    <div style="text-align: right;">
-        <span class="status-badge">Ulovlig Oppført</span>
-    </div>
-    
-    <h1>Dokumentasjon: Studentboliger og Rivingsvarsel</h1>
-
-    <section>
-        <h2>1. Praktiske spørsmål før Oppgave 365</h2>
-        <p>Følgende punkter må avklares før videre behandling:</p>
-        <ul>
-            <li>Foreligger det gyldig brukstillatelse i samsvar med gjeldende bygningslovgivning?</li>
-            <li>Er det identifisert tekniske avvik som medfører at boligen er uegnet for opphold?</li>
-            <li>Er beboerne formelt varslet om at boforholdet bryter med de juridiske rammene?</li>
-        </ul>
+    <!-- HERO SECTION -->
+    <section class="hero overflow-hidden">
+        <canvas id="matrixCanvas" class="absolute inset-0 pointer-events-none opacity-20"></canvas>
+        <div class="relative z-10">
+            <h1 class="text-6xl md:text-8xl font-black italic tracking-tighter uppercase mb-4">
+                Hyper <span class="text-transparent bg-clip-text bg-gradient-to-r from-pink-500 to-blue-500">Core</span>
+            </h1>
+            <p class="mono text-slate-400 tracking-[0.4em] text-xs mb-12 uppercase">Advanced Neural System Deployment</p>
+            <a href="#terminal" class="px-8 py-4 border border-white/20 rounded-full hover:bg-white/10 transition-all uppercase text-[10px] tracking-widest font-bold">
+                Access Terminal
+            </a>
+        </div>
+        <div class="absolute bottom-10 left-1/2 -translate-x-1/2 opacity-20 animate-bounce">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M19 14l-7 7-7-7" stroke-width="2"/></svg>
+        </div>
     </section>
 
-    <section>
-        <h2>2. Krav for at studenten ikke er kvalifisert</h2>
-        <p>En student vurderes som ikke kvalifisert for videre opphold dersom:</p>
-        <ul>
-            <li>Boligmassen er erklært ulovlig bygget eller vedtatt fjernet.</li>
-            <li>Det ikke kan fremlegges dokumentasjon på studieplass knyttet til den spesifikke boligkvoten.</li>
-            <li>Sikkerhetskrav ved den gitte adressen ikke er tilfredsstilt.</li>
-        </ul>
+    <!-- CONTENT SECTION -->
+    <section class="max-w-5xl mx-auto px-6 py-32 space-y-32">
+        <div class="grid md:grid-cols-2 gap-16 items-center">
+            <div class="space-y-6">
+                <h2 class="text-4xl font-black uppercase italic">Neural Sync</h2>
+                <p class="text-slate-400 leading-relaxed">Our proprietary sync technology allows for instantaneous data propagation across distributed neural clusters, reducing global latency to sub-millisecond levels.</p>
+            </div>
+            <div class="h-64 bg-slate-900/50 rounded-3xl border border-white/10 float-anim flex items-center justify-center">
+                <div class="w-32 h-32 rounded-full border-4 border-dashed border-pink-500/30 animate-[spin_10s_linear_infinite]"></div>
+            </div>
+        </div>
     </section>
 
-    <div class="warning-box">
-        <h2>3. Varsel om fjerning og riving</h2>
-        <p><strong>VARSEL OM TVANGSUTGREDELSE OG RIVING</strong></p>
-        <p>Det varsles herved om at bygningsmassen er identifisert som ulovlig oppført. Vedtak om fullstendig riving er fattet.</p>
-        <ul>
-            <li><strong>Grunnlag:</strong> Brudd på reguleringsplan og manglende godkjenning fra myndighetene.</li>
-            <li><strong>Tidsfrist:</strong> Utflytting og tømming av lokalene må skje umiddelbart innen fastsatt dato.</li>
-            <li><strong>Konsekvens:</strong> Dersom pålegget ikke etterkommes, vil rivingen gjennomføres for eiers regning og risiko.</li>
-        </ul>
-    </div>
+    <!-- FOOTER AREA WITH GUI -->
+    <footer id="terminal" class="footer-gui-container">
+        <div class="mb-16 text-center">
+            <h2 class="text-3xl font-black uppercase mb-2">Interface_Access</h2>
+            <p class="mono text-[10px] text-slate-500 tracking-[0.2em]">CONTROL SYSTEM_v7.4 TERMINAL</p>
+        </div>
 
-    <div class="footer">
-        <p>Dette dokumentet er generert for administrativ bruk. Ingen referanser til politikk, økonomi eller helse er inkludert i samsvar med gjeldende restriksjoner.</p>
-    </div>
-</div>
+        <div class="glass-card">
+            <!-- GUI HEADER -->
+            <div class="h-32 bg-[#111827] border-bottom border-white/10 relative overflow-hidden flex-shrink-0">
+                <canvas id="headerCanvas" class="absolute inset-0 opacity-40"></canvas>
+                <div class="absolute inset-0 bg-gradient-to-t from-[#111827] to-transparent"></div>
+                <div class="absolute bottom-4 left-6 flex items-center gap-3">
+                    <div class="w-12 h-12 rounded-xl bg-slate-800 border-2 border-white/10 overflow-hidden">
+                        <img src="https://api.dicebear.com/7.x/pixel-art/svg?seed=Felix" alt="User">
+                    </div>
+                    <div>
+                        <span class="text-[8px] mono text-pink-500 block">SYSTEM_ADMIN</span>
+                        <h4 class="text-white font-bold text-sm">Hyper_Admin</h4>
+                    </div>
+                </div>
+            </div>
 
+            <!-- GUI INTERNAL SCROLL -->
+            <div class="card-scroll-area">
+                <div class="grid grid-cols-4 gap-3 mb-8">
+                    <div class="tech-item">
+                        <svg class="w-6 h-6 text-[#3178C6]" fill="currentColor" viewBox="0 0 24 24"><path d="M1.125 0C.502 0 0 .502 0 1.125v21.75C0 23.498.502 24 1.125 24h21.75c.623 0 1.125-.502 1.125-1.125V1.125C24 .502 23.498 0 22.875 0H1.125zM22.5 22.5h-21v-21h21v21zM5.4 13.2h2.7V12h-2.7V6H4.2v7.2H2.7v1.2h2.7v6h1.2v-7.2zm9.6 0h2.7V12h-2.7V6h-1.2v14.4h1.2v-7.2z"/></svg>
+                    </div>
+                    <div class="tech-item">
+                        <svg class="w-6 h-6 text-[#61DAFB]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
+                    </div>
+                    <div class="tech-item">
+                        <svg class="w-6 h-6 text-[#47A248]" fill="currentColor" viewBox="0 0 24 24"><path d="M12 0L1.608 6v12L12 24l10.392-6V6L12 0zm8.65 17.2l-8.65 5-8.65-5V6.8l8.65-5 8.65 5v10.4z"/></svg>
+                    </div>
+                    <div class="tech-item">
+                        <svg class="w-6 h-6 text-[#FF6F00]" fill="currentColor" viewBox="0 0 24 24"><path d="M2.35,16.89l7.74,4.24v-4.24l-3.87-2.12v-2.12l3.87,2.12v-4.24l-7.74-4.24v4.24l3.87,2.12v2.12l-3.87-2.12v4.24Z"/></svg>
+                    </div>
+                </div>
+
+                <div class="code-block mono text-white/70 mb-8">
+                    <span class="text-pink-500">async</span> <span class="text-blue-400">function</span> <span class="text-green-400">deployInterface</span>() {<br>
+                    &nbsp;&nbsp;<span class="text-slate-500">// Initialize cluster</span><br>
+                    &nbsp;&nbsp;<span class="text-blue-400">const</span> cluster = <span class="text-pink-500">await</span> Neural.connect();<br><br>
+                    &nbsp;&nbsp;<span class="text-pink-500">if</span> (cluster.status === <span class="text-yellow-400">'STABLE'</span>) {<br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;<span class="text-blue-400">return</span> cluster.loadBalancer({<br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;strategy: <span class="text-yellow-400">'LOW_LATENCY'</span>,<br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;priority: <span class="text-purple-400">1.0</span><br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;});<br>
+                    &nbsp;&nbsp;}<br>
+                    }<br><br>
+                    <span class="text-slate-500">// Run diagnostics...</span><br>
+                    cluster.monitor((err, metrics) => {<br>
+                    &nbsp;&nbsp;<span class="text-pink-500">if</span> (err) console.error(err);<br>
+                    &nbsp;&nbsp;<span class="text-green-400">updateDisplay</span>(metrics);<br>
+                    });
+                </div>
+
+                <div class="space-y-4">
+                    <div class="flex justify-between items-center p-4 bg-white/5 rounded-2xl">
+                        <span class="text-[9px] mono text-slate-500">UPTIME</span>
+                        <span class="text-xs font-bold text-white">1248:12:09</span>
+                    </div>
+                    <div class="flex justify-between items-center p-4 bg-white/5 rounded-2xl">
+                        <span class="text-[9px] mono text-slate-500">MEMORY_ALLOC</span>
+                        <span class="text-xs font-bold text-blue-400">2.4 PB</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- GUI FOOTER ACTION -->
+            <button class="w-full py-6 bg-pink-600 hover:bg-pink-500 text-white font-black text-[10px] tracking-[0.4em] uppercase transition-all active:scale-95 flex-shrink-0">
+                Initiate_System_Link
+            </button>
+        </div>
+
+        <div class="mt-20 opacity-20 text-[8px] mono tracking-[1.5em] text-center w-full uppercase">
+            © 2026 Hyper Intelligence Neural Systems // No History Reserved
+        </div>
+    </footer>
+
+    <script>
+        const canvas = document.getElementById('matrixCanvas');
+        const ctx = canvas.getContext('2d');
+        const headerCanvas = document.getElementById('headerCanvas');
+        const hCtx = headerCanvas.getContext('2d');
+
+        let w, h;
+        function resize() {
+            w = canvas.width = window.innerWidth;
+            h = canvas.height = window.innerHeight;
+            headerCanvas.width = headerCanvas.parentElement.offsetWidth;
+            headerCanvas.height = headerCanvas.parentElement.offsetHeight;
+        }
+        resize();
+        window.onresize = resize;
+
+        const chars = "01".split("");
+        const fontSize = 16;
+        const columns = w / fontSize;
+        const drops = Array(Math.floor(columns)).fill(1);
+
+        function drawMatrix() {
+            ctx.fillStyle = "rgba(2, 6, 23, 0.05)";
+            ctx.fillRect(0, 0, w, h);
+            ctx.fillStyle = "rgba(249, 38, 114, 0.4)";
+            ctx.font = fontSize + "px 'JetBrains Mono'";
+
+            for (let i = 0; i < drops.length; i++) {
+                const text = chars[Math.floor(Math.random() * chars.length)];
+                ctx.fillText(text, i * fontSize, drops[i] * fontSize);
+                if (drops[i] * fontSize > h && Math.random() > 0.975) drops[i] = 0;
+                drops[i]++;
+            }
+        }
+
+        function drawHeader() {
+            hCtx.clearRect(0, 0, headerCanvas.width, headerCanvas.height);
+            hCtx.strokeStyle = "rgba(102, 217, 239, 0.2)";
+            hCtx.beginPath();
+            const time = Date.now() * 0.002;
+            for(let i=0; i<3; i++) {
+                hCtx.moveTo(0, 60 + i*10);
+                for(let x=0; x<headerCanvas.width; x++) {
+                    const y = Math.sin(x*0.02 + time + i) * 15 + 60 + i*10;
+                    hCtx.lineTo(x, y);
+                }
+            }
+            hCtx.stroke();
+        }
+
+        function animate() {
+            drawMatrix();
+            drawHeader();
+            requestAnimationFrame(animate);
+        }
+        animate();
+    </script>
 </body>
 </html>
 
