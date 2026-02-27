@@ -31,7 +31,7 @@ Det er også et voksende felt innen kreativ programmering, hvor kunstnerisk uttr
 
 ### Et Mangfoldig Perspektiv
 
-Schizofreni gir en annen måte å forstå virkeligheten på, noe som kan berike programmeringskulturen. Ulike perspektiver fører til innovasjon, og personer med schizofreni kan bidra med unike løsninger på komplekse problemer. Ved å inkludere personer med psykiske helseutfordringer i teknologisk utvikling, kan vi skape mer inkluderende og mangfoldige miljøer.
+Schizofreni gir en annen måte å forstå virkeligheten på, noe som kan være med schizofreni personer og bidra med unike løsninger på komplekse problemer. Ved å inkludere personer med psykiske helseutfordringer i teknologisk utvikling, kan vi skape mer inkluderende og mangfoldige miljøer.
 
 ### Konklusjon
 
