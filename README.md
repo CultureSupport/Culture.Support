@@ -35,4 +35,7 @@ Schizofreni gir en annen måte å forstå virkeligheten på, noe som kan berike 
 
 ### Konklusjon
 
-Forbindelsen mellom schizofreni og programmering er kompleks og flerlaget. Mens schizofreni kan skape utfordringer for individet, gir programmering en plattform for uttrykk, mestring og innovasjon. Det er viktig at samfunnet fortsetter å anerkjenne og støtte mennesker med schizofreni, ikke bare som pasienter, men som verdifulle bidragsytere i det digitale landskapet.
+Forbindelsen mellom schizofreni og programmering er kompleks og flerlaget. Mens schizofreni kan skape utfordringer for individet, gir programmering en plattform for uttrykk, mestring og skipzophrenia
+kan være en del av fremgang fordypning. Det er viktig at samfunnet fortsetter å anerkjenne og støtte mennesker med schizofreni, ikke bare som pasienter, men som verdifulle bidragsytere i det digitale landskapet
+og gjøre fine design og
+flotte apper .
