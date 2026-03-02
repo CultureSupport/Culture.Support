@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GetDarker TV - Dubstep & Bass Culture</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        :root {
+            --gd-gold: #c9a050;
+            --dark-bg: #050505;
+            --surface: #0a0a0a;
+            --accent: #1a1a1a;
+        }
+        body {
+            background-color: var(--dark-bg);
+            color: #e0e0e0;
+            font-family: 'Inter', -apple-system, sans-serif;
+            overflow-x: hidden;
+        }
+        .glass-header {
+            background: rgba(5, 5, 5, 0.95);
+            backdrop-filter: blur(12px);
+            border-bottom: 2px solid var(--gd-gold);
+        }
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 4px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: #000;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: var(--gd-gold);
+        }
+        .lp-card {
+            background: #0a0a0a;
+            border: 1px solid #1a1a1a;
+            transition: all 0.3s ease;
+        }
+        .lp-card:hover {
+            border-color: var(--gd-gold);
+            transform: translateY(-2px);
+        }
+        #comment-viewport {
+            height: 550px;
+            overflow-y: auto;
+            position: relative;
+            background: #080808;
+        }
+        .comment-item {
+            position: absolute;
+            left: 0;
+            right: 0;
+            padding: 1rem;
+            border-bottom: 1px solid #111;
+        }
+        .getdarker-logo {
+            letter-spacing: -1px;
+            text-transform: uppercase;
+            font-weight: 900;
+            color: var(--gd-gold);
+        }
+        .live-indicator {
+            width: 8px;
+            height: 8px;
+            background: #ff0000;
+            border-radius: 50%;
+            animation: pulse 1.5s infinite;
+        }
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.3; }
+            100% { opacity: 1; }
+        }
+    </style>
+</head>
+<body class="custom-scrollbar">
+
+    <!-- Header -->
+    <header class="fixed top-0 w-full z-50 glass-header px-6 py-4 flex justify-between items-center">
+        <div class="flex items-center gap-4">
+            <span class="getdarker-logo text-2xl">GetDarker <span class="text-white">TV</span></span>
+            <div class="hidden md:flex items-center gap-2 bg-zinc-900 px-3 py-1 rounded-full text-[10px] font-bold">
+                <div class="live-indicator"></div> LIVE FROM LONDON
+            </div>
+        </div>
+        <nav class="hidden lg:flex gap-8 text-xs font-bold uppercase tracking-widest">
+            <a href="#" class="hover:text-yellow-600 transition">Archive</a>
+            <a href="#" class="text-yellow-600">Social Board</a>
+            <a href="#" class="hover:text-yellow-600 transition">LP Releases</a>
+            <a href="#" class="hover:text-yellow-600 transition">Store</a>
+        </nav>
+        <div class="flex gap-4">
+            <button class="text-xs font-bold border border-zinc-700 px-4 py-2 rounded hover:bg-white hover:text-black transition">LOGIN</button>
+        </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto pt-28 pb-24 px-4">
+        
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+            
+            <!-- Left Side: LP History & Stats (8 cols) -->
+            <div class="lg:col-span-8 space-y-12">
+                
+                <!-- LP History Grid -->
+                <section>
+                    <div class="flex justify-between items-end mb-6">
+                        <h2 class="text-3xl font-black uppercase italic tracking-tighter">LP Release Archive</h2>
+                        <span class="text-zinc-500 text-xs">Filter: All Releases</span>
+                    </div>
+                    <div id="lp-grid" class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <!-- LP Cards Injected Here -->
+                    </div>
+                </section>
+
+                <!-- Performance Chart -->
+                <section class="bg-zinc-900/20 p-8 rounded border border-zinc-800/50">
+                    <h2 class="text-xl font-bold mb-8 uppercase tracking-widest text-zinc-400">Vinyl Playback Frequency (Global)</h2>
+                    <div class="h-48 w-full flex items-end justify-between gap-4" id="stats-container">
+                        <!-- Chart Bars -->
+                    </div>
+                    <div class="flex justify-between mt-6 text-[9px] font-mono text-zinc-600 uppercase" id="stats-labels">
+                        <!-- Labels -->
+                    </div>
+                </section>
+            </div>
+
+            <!-- Right Side: GetDarker Social Board (4 cols) -->
+            <div class="lg:col-span-4">
+                <div class="sticky top-28 space-y-6">
+                    
+                    <div class="bg-zinc-900 p-5 rounded border-l-4 border-yellow-600">
+                        <h2 class="text-lg font-black uppercase mb-1">Live Social Board</h2>
+                        <p class="text-[10px] text-zinc-500 uppercase tracking-widest mb-4">Real-time Dubstep Community</p>
+                        
+                        <!-- Comment Input -->
+                        <div class="mb-6">
+                            <textarea id="comment-input" class="w-full bg-black border border-zinc-800 rounded p-3 text-sm focus:border-yellow-600 outline-none resize-none text-zinc-300 font-mono" placeholder="SUBMIT TO THE VOID..." rows="2"></textarea>
+                            <button id="post-comment-btn" class="w-full mt-2 bg-yellow-600 text-black py-2 text-xs font-black uppercase tracking-tighter hover:bg-yellow-500 transition">Post Message</button>
+                        </div>
+
+                        <!-- Virtualized Feed -->
+                        <div id="comment-viewport" class="custom-scrollbar border-t border-zinc-800">
+                            <div id="comment-content" style="height: 0px;">
+                                <!-- Comments -->
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-yellow-600 p-4 rounded text-black font-black uppercase text-center cursor-pointer hover:bg-yellow-500">
+                        Listen to This Week's Mix 🔊
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // --- Release Archive Data ---
+        const lpData = [
+            { title: "The Darker Dubs", artist: "Skream", year: 2006, bpm: 140, label: "GD001" },
+            { title: "Midnight Request", artist: "Benga", year: 2007, bpm: 138, label: "GD002" },
+            { title: "Anti-War Dub", artist: "Mala", year: 2008, bpm: 142, label: "GD003" },
+            { title: "Night", artist: "Coki", year: 2008, bpm: 140, label: "GD004" },
+            { title: "FabricLive 37", artist: "Caspa & Rusko", year: 2007, bpm: 140, label: "FAB037" },
+            { title: "Scary Monsters", artist: "Skrillex", year: 2010, bpm: 140, label: "OSL001" }
+        ];
+
+        // --- Comment Data ---
+        const names = ["DUB_HEAD", "SUB_LOW", "LONDON_BASSTARD", "DARKER_ONE", "140_KING", "VINYL_ONLY"];
+        const texts = [
+            "Heavyweight pressure! 🔊🔊",
+            "This drop just blew my speakers.",
+            "London knows how it's done.",
+            "Large up the GetDarker crew every time.",
+            "Does anyone have a 320 of that ID?",
+            "PURE BASS. NO GIMMICKS.",
+            "Classic 2006 vibes right here.",
+            "System check: 100%"
+        ];
+
+        let commentsData = Array.from({ length: 4000 }, (_, i) => ({
+            id: Date.now() - i,
+            user: names[Math.floor(Math.random() * names.length)] + "_" + (i % 99),
+            text: texts[Math.floor(Math.random() * texts.length)],
+            time: Math.floor(i / 15 + 1) + "m"
+        }));
+
+        // --- Core Elements ---
+        const lpGrid = document.getElementById('lp-grid');
+        const commentViewport = document.getElementById('comment-viewport');
+        const commentContent = document.getElementById('comment-content');
+        const commentInput = document.getElementById('comment-input');
+        const postBtn = document.getElementById('post-comment-btn');
+        const statsContainer = document.getElementById('stats-container');
+        const statsLabels = document.getElementById('stats-labels');
+
+        // --- Render Functions ---
+        function renderLPs() {
+            lpGrid.innerHTML = lpData.map(lp => `
+                <div class="lp-card p-5 rounded relative overflow-hidden">
+                    <div class="absolute top-0 right-0 p-2 text-[8px] font-mono text-zinc-800">${lp.label}</div>
+                    <h3 class="text-yellow-600 font-black uppercase text-lg leading-tight mb-1">${lp.title}</h3>
+                    <p class="text-white font-bold text-sm mb-4">${lp.artist}</p>
+                    <div class="flex justify-between items-center text-[10px] font-mono text-zinc-500 border-t border-zinc-900 pt-3">
+                        <span>YEAR: ${lp.year}</span>
+                        <span>BPM: ${lp.bpm}</span>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function renderStats() {
+            const chartData = [80, 45, 95, 30, 70, 85, 40, 60, 90, 55];
+            statsContainer.innerHTML = chartData.map(val => `
+                <div class="flex-1 bg-zinc-800 relative group cursor-help" style="height: 0%" data-h="${val}%">
+                    <div class="absolute inset-0 bg-yellow-600/40 group-hover:bg-yellow-600 transition"></div>
+                </div>
+            `).join('');
+            
+            statsLabels.innerHTML = Array.from({length: 10}, (_, i) => `<span>WK ${i+1}</span>`).join('');
+
+            setTimeout(() => {
+                document.querySelectorAll('[data-h]').forEach(bar => {
+                    bar.style.height = bar.dataset.h;
+                });
+            }, 300);
+        }
+
+        // --- Virtualized Comments Logic ---
+        const ROW_HEIGHT = 80;
+        const BUFFER = 5;
+
+        function renderComments() {
+            const scrollTop = commentViewport.scrollTop;
+            const startIndex = Math.max(0, Math.floor(scrollTop / ROW_HEIGHT) - BUFFER);
+            const endIndex = Math.min(commentsData.length, Math.floor((scrollTop + commentViewport.clientHeight) / ROW_HEIGHT) + BUFFER);
+
+            commentContent.style.height = `${commentsData.length * ROW_HEIGHT}px`;
+
+            let html = '';
+            for (let i = startIndex; i < endIndex; i++) {
+                const c = commentsData[i];
+                const isMe = c.user === 'YOU';
+                html += `
+                    <div class="comment-item" style="top: ${i * ROW_HEIGHT}px; height: ${ROW_HEIGHT}px">
+                        <div class="flex items-start gap-3">
+                            <div class="text-[9px] font-mono ${isMe ? 'text-yellow-500' : 'text-zinc-600'} w-10 shrink-0 uppercase">${c.time}</div>
+                            <div class="flex-1">
+                                <div class="text-[10px] font-black uppercase mb-1 tracking-wider ${isMe ? 'text-yellow-500' : 'text-zinc-400'}">
+                                    > ${c.user}
+                                </div>
+                                <div class="text-xs text-zinc-500 font-mono leading-snug truncate">${c.text}</div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }
+            commentContent.innerHTML = html;
+        }
+
+        function addComment() {
+            const val = commentInput.value.trim();
+            if(!val) return;
+            commentsData.unshift({
+                id: Date.now(),
+                user: "YOU",
+                text: val,
+                time: "now"
+            });
+            commentInput.value = '';
+            renderComments();
+            commentViewport.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // --- Init ---
+        window.onload = () => {
+            renderLPs();
+            renderStats();
+            renderComments();
+            
+            commentViewport.addEventListener('scroll', () => requestAnimationFrame(renderComments));
+            postBtn.addEventListener('click', addComment);
+            commentInput.addEventListener('keydown', (e) => {
+                if((e.metaKey || e.ctrlKey) && e.key === 'Enter') addComment();
+            });
+        };
+    </script>
+</body>
+</html>
