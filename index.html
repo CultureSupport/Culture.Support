@@ -3,38 +3,283 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GetDarker TV - Dubstep & Bass Culture</title>
+    <title>Culture.Support // Midi Century</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        :root {
-            --gd-gold: #c9a050;
-            --dark-bg: #050505;
-            --surface: #0a0a0a;
-            --accent: #1a1a1a;
-        }
+        @import url('https://fonts.googleapis.com/css2?family=Syncopate:wght@400;700&display=swap');
+        
         body {
-            background-color: var(--dark-bg);
-            color: #e0e0e0;
-            font-family: 'Inter', -apple-system, sans-serif;
+            margin: 0;
+            background-color: #020202;
+            color: #fff;
+            font-family: 'Syncopate', sans-serif;
             overflow-x: hidden;
         }
-        .glass-header {
-            background: rgba(5, 5, 5, 0.95);
-            backdrop-filter: blur(12px);
-            border-bottom: 2px solid var(--gd-gold);
+
+        canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: 1;
         }
-        .custom-scrollbar::-webkit-scrollbar {
-            width: 4px;
+
+        .interface {
+            position: relative;
+            z-index: 10;
+            pointer-events: none;
         }
-        .custom-scrollbar::-webkit-scrollbar-track {
-            background: #000;
+
+        section {
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            padding: 0 10%;
         }
-        .custom-scrollbar::-webkit-scrollbar-thumb {
-            background: var(--gd-gold);
+
+        .crt-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.15) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.03), rgba(0, 255, 0, 0.01), rgba(0, 0, 255, 0.03));
+            z-index: 50;
+            background-size: 100% 2px, 3px 100%;
+            pointer-events: none;
         }
-        .lp-card {
-            background: #0a0a0a;
-            border: 1px solid #1a1a1a;
+
+        .hud {
+            position: fixed;
+            z-index: 100;
+            pointer-events: all;
+        }
+
+        .radio-status {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 9px;
+            letter-spacing: 0.5em;
+            color: #ff0055;
+            text-transform: uppercase;
+        }
+
+        .pulse-dot {
+            width: 6px;
+            height: 6px;
+            background: #ff0055;
+            border-radius: 50%;
+            box-shadow: 0 0 10px #ff0055;
+            animation: pulse 1s infinite;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.5; transform: scale(1.4); }
+            100% { opacity: 1; transform: scale(1); }
+        }
+
+        .video-background {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 100vw;
+            height: 100vh;
+            z-index: 0;
+            opacity: 0.15;
+            filter: grayscale(1) contrast(1.5) blur(5px);
+            pointer-events: none;
+        }
+
+        ::-webkit-scrollbar { display: none; }
+    </style>
+</head>
+<body>
+
+    <div class="crt-overlay"></div>
+
+    <!-- Background Production Room (Video Feed) -->
+    <div class="video-background">
+        <iframe width="100%" height="100%" src="https://www.youtube.com/embed/czkhqvQFJUw?si=Al9uQIx6IimXuBub&autoplay=1&mute=1&loop=1&controls=0&playlist=czkhqvQFJUw" frameborder="0" allow="autoplay; encrypted-media"></iframe>
+    </div>
+
+    <div class="hud top-10 left-10">
+        <h1 class="text-3xl font-bold tracking-tighter italic text-white leading-none">CULTURE.SUPPORT</h1>
+        <div class="radio-status mt-4">
+            <span class="pulse-dot"></span>
+            LIVE RADIO TRANSMISSION // EST. 140.00
+        </div>
+    </div>
+
+    <div class="hud bottom-10 left-10 text-[9px] tracking-[0.4em] opacity-40 uppercase">
+        Sector: MIDI_ORBIT_01 // Voodoo_Protocol: ACTIVE
+    </div>
+
+    <div class="interface">
+        <section>
+            <div class="max-w-2xl">
+                <h2 class="text-7xl font-black italic tracking-tighter leading-none">DUBSTEP<br>ARCHITECT</h2>
+                <p class="mt-8 text-[10px] tracking-[0.5em] text-cyan-400 uppercase">Synchronizing hardware to the void</p>
+            </div>
+        </section>
+
+        <section class="justify-end">
+            <div class="text-right max-w-lg border-r-2 border-white/20 pr-8">
+                <h3 class="text-4xl font-bold italic mb-6">THE RITUAL</h3>
+                <p class="text-[10px] leading-loose opacity-40 uppercase tracking-widest">
+                    The voodoo doll hologram acts as a focal point for sub-bass pressure. Every MIDI ship in orbit transmits data directly to the production core.
+                </p>
+            </div>
+        </section>
+
+        <section>
+            <div class="bg-black/80 backdrop-blur-md p-10 border border-white/10 max-w-md">
+                <h3 class="text-xl font-bold italic mb-4 text-red-500">SYSTEM_PLANS</h3>
+                <div class="space-y-4 text-[9px] tracking-widest opacity-60 uppercase">
+                    <p>> Deploying MIDI Studio v5.0</p>
+                    <p>> Initializing Holographic Voodoo Core</p>
+                    <p>> Calibrating Space-Ships for 140Hz</p>
+                    <p>> Live Radio Link Established</p>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <script>
+        // --- Three.js Engine ---
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+        const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+        document.body.appendChild(renderer.domElement);
+
+        // --- Central Voodoo Doll Hologram ---
+        const voodooGroup = new THREE.Group();
+        scene.add(voodooGroup);
+
+        const voodooMaterial = new THREE.MeshBasicMaterial({ 
+            color: 0x00ffff, 
+            wireframe: true, 
+            transparent: true, 
+            opacity: 0.2 
+        });
+
+        // Abstract Voodoo Head/Body
+        const head = new THREE.Mesh(new THREE.IcosahedronGeometry(0.8, 1), voodooMaterial);
+        const body = new THREE.Mesh(new THREE.CylinderGeometry(0.6, 0.8, 2, 6), voodooMaterial);
+        body.position.y = -1.5;
+        voodooGroup.add(head, body);
+
+        // Voodoo Pins (Holographic Probes)
+        for(let i=0; i<10; i++) {
+            const pin = new THREE.Mesh(
+                new THREE.CylinderGeometry(0.01, 0.01, 1),
+                new THREE.MeshBasicMaterial({ color: 0xff0055 })
+            );
+            pin.position.set(Math.random()-0.5, Math.random()-0.5, Math.random()-0.5).multiplyScalar(2);
+            pin.rotation.set(Math.random(), Math.random(), Math.random());
+            voodooGroup.add(pin);
+        }
+
+        // --- MIDI Controller Space Ships ---
+        const ships = [];
+        const createShip = () => {
+            const ship = new THREE.Group();
+            // Wing/Pad hybrid
+            const wing = new THREE.Mesh(
+                new THREE.BoxGeometry(1.5, 0.05, 0.7),
+                new THREE.MeshStandardMaterial({ color: 0x111111, metalness: 1 })
+            );
+            ship.add(wing);
+            // Glowing Keys
+            const keys = new THREE.Mesh(
+                new THREE.PlaneGeometry(1.4, 0.3),
+                new THREE.MeshBasicMaterial({ color: 0x00ffff, wireframe: true, transparent: true, opacity: 0.5 })
+            );
+            keys.rotation.x = -Math.PI/2;
+            keys.position.y = 0.03;
+            ship.add(keys);
+            
+            scene.add(ship);
+            return ship;
+        };
+
+        for(let i=0; i<6; i++) {
+            const s = createShip();
+            const angle = (i/6) * Math.PI * 2;
+            s.position.set(Math.cos(angle)*6, (Math.random()-0.5)*4, Math.sin(angle)*6);
+            ships.push(s);
+        }
+
+        // --- Lights ---
+        const cyanLight = new THREE.PointLight(0x00ffff, 2, 20);
+        cyanLight.position.set(5, 5, 5);
+        scene.add(cyanLight);
+        
+        const magentaLight = new THREE.PointLight(0xff0055, 2, 20);
+        magentaLight.position.set(-5, -5, 2);
+        scene.add(magentaLight);
+
+        camera.position.z = 8;
+
+        // --- Animation & Scroll Logic ---
+        gsap.registerPlugin(ScrollTrigger);
+
+        gsap.to(voodooGroup.rotation, {
+            y: Math.PI * 4,
+            scrollTrigger: { trigger: ".interface", start: "top top", end: "bottom bottom", scrub: 1.5 }
+        });
+
+        // Pull ships in on scroll
+        ships.forEach((ship, i) => {
+            gsap.to(ship.position, {
+                x: ship.position.x * 0.3,
+                z: ship.position.z * 0.3,
+                scrollTrigger: { trigger: "section:nth-child(2)", scrub: 1 }
+            });
+        });
+
+        const clock = new THREE.Clock();
+
+        function animate() {
+            const time = clock.getElapsedTime();
+            
+            // 140 BPM Dubstep Pulse
+            const pulse = 1 + Math.sin(time * 9.3) * 0.05;
+            voodooGroup.scale.set(pulse, pulse, pulse);
+            
+            // Floating ships movement
+            ships.forEach((s, i) => {
+                s.position.y += Math.sin(time + i) * 0.005;
+                s.rotation.y += 0.01;
+                s.rotation.z += 0.005;
+            });
+
+            // Random Glitch Effect
+            if (Math.random() > 0.98) {
+                voodooMaterial.opacity = 0.8;
+                setTimeout(() => voodooMaterial.opacity = 0.2, 50);
+            }
+
+            renderer.render(scene, camera);
+            requestAnimationFrame(animate);
+        }
+
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        });
+
+        animate();
+    </script>
+</body>
+</html>            border: 1px solid #1a1a1a;
             transition: all 0.3s ease;
         }
         .lp-card:hover {
