@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="no">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WireGuard .conf Generator</title>
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            background-color: #0f172a;
+            color: #f1f5f9;
+        }
+        .glass {
+            background: rgba(30, 41, 59, 0.7);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .key-text {
+            word-break: break-all;
+            font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+        }
+    </style>
+</head>
+<body class="min-h-screen p-4 md:p-8">
+    <div id="app" class="max-w-5xl mx-auto">
+        <header class="mb-8 text-center">
+            <h1 class="text-4xl font-black text-blue-500 mb-2">WireGuard .conf Generator</h1>
+            <p class="text-slate-400 uppercase tracking-widest text-sm font-semibold">Generer fullstendige WireGuard konfigurasjonsfiler med tilfeldige subnett</p>
+        </header>
+
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 mb-8">
+            <!-- Venstre Kolonne: Kontroller og Status -->
+            <div class="lg:col-span-5 space-y-6">
+                <div class="glass p-6 rounded-2xl shadow-xl border-l-4 border-blue-500">
+                    <h2 class="text-xl font-bold mb-4 flex items-center gap-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4" />
+                        </svg>
+                        Konfigurasjon
+                    </h2>
+                    
+                    <button @click="generateAll" class="w-full bg-blue-600 hover:bg-blue-500 text-white font-black py-4 rounded-xl transition-all transform hover:scale-[1.02] active:scale-95 shadow-lg mb-6 flex items-center justify-center gap-2">
+                        GENERER NYE PARAMETERE
+                    </button>
+
+                    <div class="space-y-3">
+                        <div class="p-3 bg-slate-900/50 rounded-lg border border-slate-700">
+                            <label class="text-xs text-slate-500 font-bold uppercase">Server Endpoint</label>
+                            <div class="text-blue-300 font-mono">{{ config.endpoint }}:{{ config.port }}</div>
+                        </div>
+                        <div class="p-3 bg-slate-900/50 rounded-lg border border-slate-700">
+                            <label class="text-xs text-slate-500 font-bold uppercase">Allowed IPs (Random Subnet)</label>
+                            <div class="text-orange-400 font-mono">{{ config.allowedIPs }}</div>
+                        </div>
+                        <div class="p-3 bg-slate-900/50 rounded-lg border border-slate-700">
+                            <label class="text-xs text-slate-500 font-bold uppercase">Klient Adresse</label>
+                            <div class="text-emerald-400 font-mono">{{ config.clientIp }}/32</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="glass p-6 rounded-2xl shadow-xl border-l-4 border-emerald-500">
+                    <h2 class="text-xl font-bold mb-4">Kryptografi</h2>
+                    <div class="space-y-4">
+                        <div>
+                            <span class="text-[10px] text-slate-500 font-bold block uppercase">Interface PrivateKey</span>
+                            <div class="key-text text-xs bg-black/30 p-2 rounded text-blue-400">{{ config.privateKey }}</div>
+                        </div>
+                        <div>
+                            <span class="text-[10px] text-slate-500 font-bold block uppercase">Peer PublicKey</span>
+                            <div class="key-text text-xs bg-black/30 p-2 rounded text-emerald-400">{{ config.publicKey }}</div>
+                        </div>
+                        <div>
+                            <span class="text-[10px] text-slate-500 font-bold block uppercase">PresharedKey</span>
+                            <div class="key-text text-xs bg-black/30 p-2 rounded text-orange-400">{{ config.presharedKey }}</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Høyre Kolonne: Conf Output -->
+            <div class="lg:col-span-7">
+                <div class="glass h-full rounded-2xl shadow-xl flex flex-col overflow-hidden">
+                    <div class="bg-slate-800 px-6 py-4 border-b border-slate-700 flex justify-between items-center">
+                        <h2 class="font-bold text-emerald-400 italic">wg0.conf</h2>
+                        <span class="text-xs bg-emerald-500/20 text-emerald-500 px-2 py-1 rounded">Standard Format</span>
+                    </div>
+                    <textarea 
+                        readonly 
+                        class="flex-grow bg-black/40 p-6 font-mono text-sm text-blue-100 outline-none resize-none"
+                        v-model="confContent"
+                    ></textarea>
+                </div>
+            </div>
+        </div>
+
+        <!-- Gigantisk Nedlastingsknapp -->
+        <div class="max-w-2xl mx-auto">
+            <button @click="downloadFile" class="group w-full bg-emerald-600 hover:bg-emerald-500 text-white py-8 rounded-3xl transition-all shadow-[0_10px_40px_rgba(16,185,129,0.3)] hover:shadow-[0_15px_50px_rgba(16,185,129,0.5)] flex flex-col items-center justify-center gap-2 overflow-hidden relative">
+                <div class="flex items-center gap-4">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 animate-bounce" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="4" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                    </svg>
+                    <span class="text-3xl font-black italic uppercase">Last ned .conf fil</span>
+                </div>
+                <span class="text-emerald-100 text-sm font-medium opacity-80 tracking-widest uppercase">Klar for import i WireGuard klient</span>
+                <div class="absolute inset-0 bg-white/5 translate-y-full group-hover:translate-y-0 transition-transform duration-300"></div>
+            </button>
+        </div>
+
+        <!-- DNS Info -->
+        <div class="mt-8 flex flex-wrap gap-4 justify-center">
+            <div v-for="(dns, index) in config.dns" :key="index" class="bg-slate-800/60 px-6 py-3 rounded-full border border-slate-700 font-mono text-sm">
+                <span class="text-slate-500 mr-2">DNS:</span>
+                <span class="text-blue-400">{{ dns }}</span>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const { createApp, ref, computed, onMounted } = Vue;
+
+        createApp({
+            setup() {
+                const config = ref({
+                    privateKey: '',
+                    publicKey: '',
+                    presharedKey: '',
+                    clientIp: '',
+                    endpoint: '',
+                    port: 51820,
+                    dns: [],
+                    mtu: 1420,
+                    allowedIPs: '0.0.0.0/0'
+                });
+
+                const generateBase64 = (length = 32) => {
+                    const bytes = new Uint8Array(length);
+                    window.crypto.getRandomValues(bytes);
+                    let binary = '';
+                    for (let i = 0; i < bytes.byteLength; i++) {
+                        binary += String.fromCharCode(bytes[i]);
+                    }
+                    return window.btoa(binary);
+                };
+
+                const randomIP = () => {
+                    return Array.from({ length: 4 }, () => Math.floor(Math.random() * 254) + 1).join('.');
+                };
+
+                const generateAllowedIPs = () => {
+                    const masks = ['/32', '/30', '/24', '0.0.0.0/0'];
+                    const mask = masks[Math.floor(Math.random() * masks.length)];
+                    
+                    if (mask === '0.0.0.0/0') return mask;
+                    
+                    const baseIp = randomIP();
+                    return baseIp + mask;
+                };
+
+                const generateAll = () => {
+                    config.value.privateKey = generateBase64(32);
+                    config.value.publicKey = generateBase64(32);
+                    config.value.presharedKey = generateBase64(32);
+                    
+                    config.value.clientIp = `10.${Math.floor(Math.random()*255)}.${Math.floor(Math.random()*255)}.2`;
+                    config.value.endpoint = randomIP();
+                    config.value.port = Math.floor(Math.random() * (60000 - 1024)) + 1024;
+                    
+                    config.value.dns = [randomIP(), randomIP()];
+                    config.value.allowedIPs = generateAllowedIPs();
+                    
+                    const mtus = [1280, 1380, 1420, 1500];
+                    config.value.mtu = mtus[Math.floor(Math.random() * mtus.length)];
+                };
+
+                const confContent = computed(() => {
+                    return `[Interface]
+PrivateKey = ${config.value.privateKey}
+Address = ${config.value.clientIp}/32
+DNS = ${config.value.dns.join(', ')}
+MTU = ${config.value.mtu}
+
+[Peer]
+PublicKey = ${config.value.publicKey}
+PresharedKey = ${config.value.presharedKey}
+Endpoint = ${config.value.endpoint}:${config.value.port}
+AllowedIPs = ${config.value.allowedIPs}
+PersistentKeepalive = 25
+`;
+                });
+
+                const downloadFile = () => {
+                    const blob = new Blob([confContent.value], { type: 'text/plain' });
+                    const url = window.URL.createObjectURL(blob);
+                    const link = document.createElement('a');
+                    link.href = url;
+                    link.download = `wg_config_${Date.now()}.conf`;
+                    document.body.appendChild(link);
+                    link.click();
+                    window.URL.revokeObjectURL(url);
+                    document.body.removeChild(link);
+                };
+
+                onMounted(generateAll);
+
+                return {
+                    config,
+                    generateAll,
+                    confContent,
+                    downloadFile
+                };
+            }
+        }).mount('#app');
+    </script>
+</body>
+</html>
