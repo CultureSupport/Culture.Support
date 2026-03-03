@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="no">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Culture.Support 110 FX Editor</title>
+    <script src="https://cdn.babylonjs.com/babylon.js"></script>
+    <script src="https://cdn.babylonjs.com/gui/babylon.gui.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.44.0/min/vs/loader.min.js"></script>
+    <style>
+        :root {
+            --monokai-bg: #272822;
+            --monokai-fg: #f8f8f2;
+            --monokai-pink: #f92672;
+            --monokai-green: #a6e22e;
+            --monokai-blue: #66d9ef;
+            --monokai-purple: #ae81ff;
+        }
+
+        body, html {
+            margin: 0; padding: 0;
+            width: 100%; height: 100%;
+            overflow: hidden;
+            background-color: var(--monokai-bg);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        #renderCanvas {
+            width: 100%; height: 100%;
+            touch-action: none;
+            position: absolute;
+            z-index: 1;
+        }
+
+        /* Informasjonstavle som kan klikkes bort */
+        #info-board {
+            position: absolute;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            width: 85%;
+            max-width: 400px;
+            background: rgba(39, 40, 34, 0.95);
+            border: 2px solid var(--monokai-blue);
+            border-radius: 12px;
+            padding: 20px;
+            color: var(--monokai-fg);
+            z-index: 100;
+            box-shadow: 0 0 30px rgba(0,0,0,0.5);
+            text-align: center;
+        }
+
+        #info-board h2 { color: var(--monokai-pink); margin-top: 0; }
+        #info-board p { font-size: 14px; line-height: 1.6; }
+        #info-board button {
+            background: var(--monokai-green);
+            border: none; padding: 10px 20px;
+            border-radius: 5px; font-weight: bold;
+            cursor: pointer; margin-top: 15px;
+        }
+
+        #editor-container {
+            position: absolute;
+            bottom: 0; left: 0;
+            width: 100%; height: 50%;
+            z-index: 10;
+            background: var(--monokai-bg);
+            display: flex; flex-direction: column;
+            transition: transform 0.5s ease;
+        }
+
+        .toolbar {
+            height: 45px; background: #1e1e1e;
+            display: flex; align-items: center;
+            padding: 0 15px; gap: 10px;
+            border-top: 1px solid #3e3d32;
+        }
+
+        .btn-fx {
+            background: var(--monokai-purple);
+            color: white; border: none;
+            padding: 6px 15px; border-radius: 4px;
+            font-size: 11px; font-weight: bold;
+            cursor: pointer;
+        }
+
+        #monaco-root { flex-grow: 1; width: 100%; }
+
+        .status-overlay {
+            position: absolute; top: 15px; left: 15px;
+            color: var(--monokai-green); z-index: 5;
+            font-family: monospace; font-size: 12px;
+            text-shadow: 1px 1px 2px black;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="info-board">
+        <h2>Culture.Support V22</h2>
+        <p>Velkommen til mobil koding. Denne editoren er animert med Babylon.js og inneholder 110 dynamiske FX-variasjoner.<br><br>Trykk på knappen under for å starte kodesesjonen.</p>
+        <button onclick="dismissInfo()">START KODING</button>
+    </div>
+
+    <div class="status-overlay" id="fx-status">SYSTEM: STANDBY</div>
+    <canvas id="renderCanvas"></canvas>
+
+    <div id="editor-container">
+        <div class="toolbar">
+            <button class="btn-fx" onclick="runMassiveFX()">KJØR 110 FX</button>
+            <button class="btn-fx" style="background:var(--monokai-pink)" onclick="resetScene()">RENS SCENE</button>
+            <div style="margin-left:auto; color:var(--monokai-blue); font-size:10px;">ANIMERT_PROSESSOR_V22</div>
+        </div>
+        <div id="monaco-root"></div>
+    </div>
+
+    <script>
+        const canvas = document.getElementById("renderCanvas");
+        const engine = new BABYLON.Engine(canvas, true);
+        let scene, camera, particleSystems = [];
+
+        // Funksjon for å fjerne informasjonskortet
+        function dismissInfo() {
+            const board = document.getElementById('info-board');
+            board.style.display = 'none';
+            // Trigger en liten intro-animasjon i Babylon
+            runMassiveFX(20); 
+        }
+
+        const createScene = () => {
+            const scene = new BABYLON.Scene(engine);
+            scene.clearColor = new BABYLON.Color4(0.1, 0.1, 0.1, 1);
+            
+            camera = new BABYLON.ArcRotateCamera("cam", 0, 0.8, 15, BABYLON.Vector3.Zero(), scene);
+            camera.attachControl(canvas, true);
+            
+            const light = new BABYLON.SpotLight("spot", new BABYLON.Vector3(0, 10, 0), new BABYLON.Vector3(0, -1, 0), Math.PI/3, 2, scene);
+            light.intensity = 0.8;
+
+            return scene;
+        };
+
+        scene = createScene();
+
+        // 110 ANIMASJONER LOGIKK
+        // Vi genererer variasjoner basert på matematiske mønstre
+        function runMassiveFX(count = 110) {
+            const colors = [
+                new BABYLON.Color4(0.98, 0.15, 0.45, 1), // Pink
+                new BABYLON.Color4(0.65, 0.89, 0.18, 1), // Green
+                new BABYLON.Color4(0.40, 0.85, 0.94, 1), // Blue
+                new BABYLON.Color4(0.68, 0.51, 1, 1)    // Purple
+            ];
+
+            document.getElementById('fx-status').innerText = `PROSESSERER ${count} ANIMASJONER...`;
+
+            for(let i = 0; i < count; i++) {
+                setTimeout(() => {
+                    const ps = new BABYLON.ParticleSystem("fx_" + i, 100, scene);
+                    ps.particleTexture = new BABYLON.Texture("https://raw.githubusercontent.com/PatrickRyanMS/BabylonJS_Resources/master/ParticleSystem/Assets/Flare.png", scene);
+                    
+                    // Spredningsmønster
+                    const angle = (i / count) * Math.PI * 2;
+                    const radius = 2 + Math.random() * 3;
+                    ps.emitter = new BABYLON.Vector3(Math.cos(angle) * radius, Math.sin(i * 0.5) * 2, Math.sin(angle) * radius);
+                    
+                    ps.color1 = colors[i % colors.length];
+                    ps.colorDead = new BABYLON.Color4(0, 0, 0, 0);
+                    
+                    ps.minSize = 0.05;
+                    ps.maxSize = 0.2;
+                    ps.minLifeTime = 0.5;
+                    ps.maxLifeTime = 1.0;
+                    ps.emitRate = 50;
+                    
+                    ps.targetStopDuration = 0.8; // Automatisk stopp for å spare ytelse
+                    ps.disposeOnStop = true;
+                    
+                    ps.start();
+                    particleSystems.push(ps);
+                }, i * 15); // Sekvensiell "streaming" av animasjoner
+            }
+        }
+
+        function resetScene() {
+            particleSystems.forEach(p => p.stop());
+            particleSystems = [];
+            document.getElementById('fx-status').innerText = "SYSTEM: RENSKET";
+        }
+
+        // MONACO INITIALISERING
+        require.config({ paths: { vs: 'https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.44.0/min/vs' } });
+        require(['vs/editor/editor.main'], function () {
+            monaco.editor.defineTheme('monokai-v22', {
+                base: 'vs-dark',
+                inherit: true,
+                rules: [
+                    { token: 'keyword', foreground: 'f92672' },
+                    { token: 'type', foreground: '66d9ef' },
+                    { token: 'string', foreground: 'e6db74' },
+                    { token: 'comment', foreground: '75715e' }
+                ],
+                colors: {
+                    'editor.background': '#272822',
+                    'editor.lineHighlightBackground': '#3e3d32',
+                    'editorCursor.foreground': '#f8f8f0'
+                }
+            });
+
+            window.editor = monaco.editor.create(document.getElementById('monaco-root'), {
+                value: `// Culture.Support Android V22\n// 110 FX Modul klar\n\nfunction startAnimering() {\n    const fxAntall = 110;\n    console.log("Starter Babylon.js prosesser...");\n    // Utfør animasjonstest her\n}`,
+                language: 'javascript',
+                theme: 'monokai-v22',
+                automaticLayout: true,
+                minimap: { enabled: false },
+                scrollbar: { vertical: 'hidden' },
+                fontSize: 14
+            });
+        });
+
+        engine.runRenderLoop(() => scene.render());
+        window.addEventListener("resize", () => engine.resize());
+
+    </script>
+</body>
+</html>
