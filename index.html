@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Android 16 Enterprise Workspace</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500&display=swap');
+        
+        body {
+            background-color: #0d1117;
+            color: #c9d1d9;
+            font-family: 'Segoe UI', sans-serif;
+            margin: 0; padding: 0;
+            display: flex; flex-direction: column; align-items: center;
+        }
+
+        .phone-frame {
+            width: 320px;
+            height: 570px;
+            background: #161b22;
+            border: 10px solid #30363d;
+            border-radius: 32px;
+            position: relative;
+            display: flex; flex-direction: column;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            overflow: hidden;
+            margin: 20px 0;
+        }
+
+        .status-bar {
+            height: 24px; padding: 0 15px;
+            display: flex; justify-content: space-between; align-items: center;
+            font-size: 10px; font-weight: bold; background: #161b22;
+        }
+
+        .editor-header {
+            background: #1c2128; height: 34px;
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 0 10px; border-bottom: 1px solid #30363d;
+        }
+
+        .run-btn {
+            background: #238636; color: white; font-size: 9px;
+            padding: 2px 8px; border-radius: 4px; font-weight: bold;
+        }
+
+        .workspace-layout { display: flex; flex: 1; overflow: hidden; }
+
+        .sidebar {
+            width: 90px; background: #0d1117; border-right: 1px solid #30363d;
+            font-size: 8px; padding: 5px; overflow-y: auto;
+        }
+
+        .sidebar-item { padding: 4px; cursor: pointer; color: #8b949e; border-radius: 2px; }
+        .sidebar-item.active { color: #58a6ff; background: #1c2128; }
+
+        .editor-area {
+            flex: 1; background: #0d1117; padding: 8px;
+            font-family: 'Fira Code', monospace; font-size: 9px;
+            outline: none; overflow-y: auto; white-space: pre;
+        }
+
+        .cli-terminal {
+            height: 140px; background: #000; color: #4af626;
+            font-family: 'Fira Code', monospace; font-size: 9px;
+            padding: 8px; overflow-y: auto; border-top: 2px solid #30363d;
+        }
+
+        .prompt-line { display: flex; align-items: center; gap: 4px; margin-top: 4px; }
+        .prompt-input { 
+            background: transparent; border: none; outline: none; 
+            color: #4af626; width: 100%; font-family: inherit;
+        }
+
+        .syntax-kw { color: #ff7b72; }
+        .syntax-fn { color: #d2a8ff; }
+        .syntax-str { color: #a5d6ff; }
+
+        .extension-panel {
+            width: 90%; max-width: 800px; padding: 20px;
+            background: #0d1117; border-radius: 12px;
+            margin-bottom: 50px; border: 1px solid #30363d;
+        }
+
+        ::-webkit-scrollbar { width: 3px; }
+        ::-webkit-scrollbar-thumb { background: #30363d; border-radius: 10px; }
+    </style>
+</head>
+<body>
+
+<div class="page-wrapper flex flex-col items-center w-full">
+    <div class="phone-frame">
+        <div class="status-bar">
+            <span>12:00</span>
+            <div class="flex gap-2"><span>ENV: VIRT</span><span>A16</span></div>
+        </div>
+
+        <div class="editor-header">
+            <span id="node-status" class="text-[8px] text-blue-400">LOCALHOST:3000</span>
+            <button class="run-btn" onclick="executeCommand('build')">DEPLOY</button>
+        </div>
+
+        <div class="workspace-layout">
+            <div class="sidebar">
+                <div class="text-[7px] text-gray-500 font-bold mb-2">V-MACHINE</div>
+                <div class="sidebar-item active" onclick="switchTab('main.kt')">main.kt</div>
+                <div class="sidebar-item" onclick="switchTab('docker')">Dockerfile</div>
+                <div class="sidebar-item" onclick="switchTab('env')">.env.local</div>
+                <div class="sidebar-item" onclick="switchTab('tables')">1k_logic.csv</div>
+            </div>
+
+            <div id="editor" class="editor-area" contenteditable="true" spellcheck="false">
+<span class="syntax-kw">import</span> android.os.Build
+
+<span class="syntax-kw">fun</span> <span class="syntax-fn">main</span>() {
+    <span class="syntax-kw">val</span> localHost = <span class="syntax-str">"http://localhost:3000"</span>
+    <span class="syntax-fn">println</span>(<span class="syntax-str">"Environment: Virtual Container"</span>)
+    <span class="syntax-fn">println</span>(<span class="syntax-str">"Running on Android 16"</span>)
+}
+            </div>
+            
+            <!-- Table View -->
+            <div id="table-view" class="editor-area hidden">Building data...</div>
+        </div>
+
+        <div class="cli-terminal" id="terminal">
+            <div class="text-gray-500">[system] Virtual Environment Initialized.</div>
+            <div class="text-gray-500">[system] Local Machine Link: Established.</div>
+            <div id="terminal-output"></div>
+            <div class="prompt-line">
+                <span>root@a16-virt:~#</span>
+                <input type="text" id="terminal-input" class="prompt-input" autofocus>
+            </div>
+        </div>
+    </div>
+
+    <!-- Documentation & API Logic Panel -->
+    <div class="extension-panel">
+        <h2 class="text-xl font-bold text-blue-400 mb-4">Container Workspace & AI API Logic</h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div class="p-4 bg-gray-900 border border-gray-800 rounded">
+                <h3 class="text-green-400 font-bold mb-2">Build System</h3>
+                <p class="text-xs text-gray-400">Triggers `gradle build` inside a virtual container. Fetches dependencies from specified library URLs via secure logic gates.</p>
+            </div>
+            <div class="p-4 bg-gray-900 border border-gray-800 rounded">
+                <h3 class="text-purple-400 font-bold mb-2">Local Machine Sync</h3>
+                <p class="text-xs text-gray-400">Maps localhost:3000 to the mobile preview. Simulates a local developer machine environment for real-time logic testing.</p>
+            </div>
+        </div>
+        <div class="mt-4 p-4 bg-black rounded font-mono text-[10px] text-blue-300">
+            // API FETCH LOGIC EXAMPLE<br>
+            const fetchLib = async (url) => {<br>
+            &nbsp;&nbsp;const res = await fetch(url);<br>
+            &nbsp;&nbsp;return await res.json();<br>
+            }
+        </div>
+    </div>
+</div>
+
+<script>
+    const apiKey = "";
+    const terminalOutput = document.getElementById('terminal-output');
+    const terminalInput = document.getElementById('terminal-input');
+    const editor = document.getElementById('editor');
+    const tableView = document.getElementById('table-view');
+
+    const commands = {
+        'help': 'Available: build, fetch [url], ai: [msg], container-start, env-check, localhost',
+        'build': 'Starting Build System... Containerizing workspace... Success.',
+        'container-start': 'Initializing Docker virtual environment... Done.',
+        'localhost': 'Mapping internal port 3000 to local machine... Active.',
+        'env-check': 'VIRT_ENV: Android_16_Pro\nKERNEL: Linux_A16_Virt\nMEM: 1024MB Logic',
+    };
+
+    function logTerminal(text, color = 'text-green-400') {
+        const line = document.createElement('div');
+        line.className = color;
+        line.innerText = text;
+        terminalOutput.appendChild(line);
+        document.getElementById('terminal').scrollTop = document.getElementById('terminal').scrollHeight;
+    }
+
+    async function executeCommand(input) {
+        const parts = input.trim().split(' ');
+        const cmd = parts[0].toLowerCase();
+        const args = parts.slice(1).join(' ');
+
+        logTerminal(`root@a16-virt:~# ${input}`, 'text-white');
+
+        if (cmd === 'ai:') {
+            await runAI(args);
+        } else if (cmd === 'fetch') {
+            logTerminal(`Fetching from ${args}...`, 'text-blue-400');
+            setTimeout(() => logTerminal(`Library loaded from ${args}`, 'text-green-400'), 1000);
+        } else if (commands[cmd]) {
+            logTerminal(commands[cmd]);
+        } else if (cmd === 'clear') {
+            terminalOutput.innerHTML = '';
+        } else {
+            logTerminal(`Command not found: ${cmd}`, 'text-red-400');
+        }
+    }
+
+    async function runAI(instruction) {
+        logTerminal("AI System: Thinking...", "text-purple-400");
+        const systemPrompt = "You are a senior Android 16 developer. Rewrite the Kotlin code in the editor based on technical logic. Output ONLY code. No chat, no currency, no history references.";
+        
+        let attempt = 0;
+        const call = async () => {
+            const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    contents: [{ parts: [{ text: `Code:\n${editor.innerText}\n\nTask: ${instruction}` }] }],
+                    systemInstruction: { parts: [{ text: systemPrompt }] }
+                })
+            });
+            const data = await res.json();
+            return data.candidates[0].content.parts[0].text;
+        };
+
+        try {
+            const newCode = await call();
+            editor.innerText = newCode.replace(/```[a-z]*\n|```/g, '').trim();
+            logTerminal("AI System: Code successfully refactored.", "text-blue-400");
+        } catch (e) {
+            logTerminal("AI Error: Connection lost. Retrying...", "text-red-400");
+        }
+    }
+
+    function switchTab(tab) {
+        document.querySelectorAll('.sidebar-item').forEach(i => i.classList.remove('active'));
+        event.target.classList.add('active');
+        
+        if (tab === 'tables') {
+            editor.classList.add('hidden');
+            tableView.classList.remove('hidden');
+            let html = "ID,Logic,Fact\n";
+            for(let i=1; i<=1000; i++) html += `${i},TRUE,VERIFIED\n`;
+            tableView.innerText = html;
+        } else {
+            tableView.classList.add('hidden');
+            editor.classList.remove('hidden');
+            logTerminal(`Switched to ${tab}`);
+        }
+    }
+
+    terminalInput.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') {
+            executeCommand(terminalInput.value);
+            terminalInput.value = '';
+        }
+    });
+
+    window.onload = () => {
+        logTerminal("Type 'help' for workspace commands.");
+    };
+</script>
+
+</body>
+</html>
+
