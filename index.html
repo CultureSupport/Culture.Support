@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="no">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Culture.Support Mobile Monokai Editor</title>
+    <script src="https://cdn.babylonjs.com/babylon.js"></script>
+    <script src="https://cdn.babylonjs.com/gui/babylon.gui.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.44.0/min/vs/loader.min.js"></script>
+    <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            background-color: #272822; /* Monokai Background */
+            font-family: 'Courier New', Courier, monospace;
+        }
+
+        #renderCanvas {
+            width: 100%;
+            height: 100%;
+            touch-action: none;
+            position: absolute;
+            top: 0;
+            left: 0;
+            z-index: 1;
+        }
+
+        #editor-container {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 50%;
+            z-index: 10;
+            background: rgba(39, 40, 34, 0.95);
+            border-top: 2px solid #75715e;
+            display: flex;
+            flex-direction: column;
+        }
+
+        #monaco-root {
+            flex-grow: 1;
+            width: 100%;
+        }
+
+        .toolbar {
+            height: 40px;
+            background: #1e1e1e;
+            display: flex;
+            align-items: center;
+            padding: 0 10px;
+            gap: 10px;
+        }
+
+        .btn {
+            background: #ae81ff;
+            color: white;
+            border: none;
+            padding: 5px 12px;
+            border-radius: 4px;
+            font-size: 12px;
+            text-transform: uppercase;
+            font-weight: bold;
+        }
+
+        .status-bar {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            color: #a6e22e;
+            z-index: 20;
+            font-size: 12px;
+            pointer-events: none;
+        }
+
+        /* Skjul elementer ved fullskjerm animasjon */
+        .hidden { display: none !important; }
+    </style>
+</head>
+<body>
+
+    <div class="status-bar" id="status">CULTURE.SUPPORT // SYSTEM ACTIVE</div>
+    <canvas id="renderCanvas"></canvas>
+
+    <div id="editor-container">
+        <div class="toolbar">
+            <button class="btn" onclick="triggerFX()">KJØR FX</button>
+            <button class="btn" style="background: #f92672;" onclick="clearFX()">RENS</button>
+            <span style="color: #66d9ef; font-size: 10px;">ANDROID_V22_MONOKAI</span>
+        </div>
+        <div id="monaco-root"></div>
+    </div>
+
+    <script>
+        // --- BABYLON.JS SETUP ---
+        const canvas = document.getElementById("renderCanvas");
+        const engine = new BABYLON.Engine(canvas, true);
+        let scene;
+        let particleSystems = [];
+
+        const createScene = function () {
+            const scene = new BABYLON.Scene(engine);
+            scene.clearColor = new BABYLON.Color4(0.05, 0.05, 0.05, 1);
+
+            const camera = new BABYLON.ArcRotateCamera("camera", -Math.PI / 2, Math.PI / 2.5, 10, BABYLON.Vector3.Zero(), scene);
+            camera.attachControl(canvas, true);
+            
+            const light = new BABYLON.HemisphericLight("light", new BABYLON.Vector3(0, 1, 0), scene);
+            light.intensity = 0.7;
+
+            // Bakgrunns-grid for tech-følelse
+            const gridRes = 20;
+            for(let i = -gridRes; i <= gridRes; i++) {
+                const lineH = BABYLON.MeshBuilder.CreateLines("h"+i, {points: [new BABYLON.Vector3(-gridRes, -2, i), new BABYLON.Vector3(gridRes, -2, i)]}, scene);
+                lineH.color = new BABYLON.Color3(0.2, 0.2, 0.2);
+                const lineV = BABYLON.MeshBuilder.CreateLines("v"+i, {points: [new BABYLON.Vector3(i, -2, -gridRes), new BABYLON.Vector3(i, -2, gridRes)]}, scene);
+                lineV.color = new BABYLON.Color3(0.2, 0.2, 0.2);
+            }
+
+            return scene;
+        };
+
+        scene = createScene();
+
+        // --- FX PROSESSOR (500 FX Logikk) ---
+        function triggerFX() {
+            // Skap en eksplosjon av farger basert på Monokai paletten
+            const colors = [
+                new BABYLON.Color4(0.66, 0.85, 0.18, 1), // Green
+                new BABYLON.Color4(0.98, 0.15, 0.45, 1), // Pink
+                new BABYLON.Color4(0.4, 0.85, 0.94, 1),  // Blue
+                new BABYLON.Color4(0.68, 0.51, 1, 1)    // Purple
+            ];
+
+            for(let i = 0; i < 5; i++) {
+                const ps = new BABYLON.ParticleSystem("particles", 200, scene);
+                ps.particleTexture = new BABYLON.Texture("https://raw.githubusercontent.com/PatrickRyanMS/BabylonJS_Resources/master/ParticleSystem/Assets/Flare.png", scene);
+                ps.emitter = new BABYLON.Vector3((Math.random()-0.5)*10, Math.random()*5, (Math.random()-0.5)*10);
+                
+                const col = colors[Math.floor(Math.random()*colors.length)];
+                ps.color1 = col;
+                ps.color2 = col;
+                
+                ps.minSize = 0.1;
+                ps.maxSize = 0.5;
+                ps.minLifeTime = 0.3;
+                ps.maxLifeTime = 1.5;
+                ps.emitRate = 100;
+                
+                ps.direction1 = new BABYLON.Vector3(-1, 1, -1);
+                ps.direction2 = new BABYLON.Vector3(1, 1, 1);
+                
+                ps.start();
+                particleSystems.push(ps);
+            }
+            
+            document.getElementById('status').innerText = "FX STREAMING: ACTIVE";
+            setTimeout(() => {
+                document.getElementById('status').innerText = "CULTURE.SUPPORT // READY";
+            }, 2000);
+        }
+
+        function clearFX() {
+            particleSystems.forEach(p => p.stop());
+            particleSystems = [];
+        }
+
+        // --- MONACO EDITOR SETUP (MONOKAI) ---
+        require.config({ paths: { vs: 'https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.44.0/min/vs' } });
+        require(['vs/editor/editor.main'], function () {
+            window.editor = monaco.editor.create(document.getElementById('monaco-root'), {
+                value: [
+                    '// Culture.Support Android V22',
+                    'function initializeCulture() {',
+                    '    const status = "streaming";',
+                    '    console.log("Monokai GUI Aktiv");',
+                    '    // Start 500 FX prosesser i Babylon.js',
+                    '    process.startAnimation("import_gui");',
+                    '}'
+                ].join('\n'),
+                language: 'javascript',
+                theme: 'vs-dark',
+                automaticLayout: true,
+                fontSize: 14,
+                minimap: { enabled: false },
+                scrollbar: { vertical: 'hidden' }
+            });
+
+            // Tilpass farger til Monokai manuelt via tema-definisjon hvis ønskelig
+            monaco.editor.defineTheme('monokai-mobile', {
+                base: 'vs-dark',
+                inherit: true,
+                rules: [
+                    { token: 'comment', foreground: '75715e' },
+                    { token: 'keyword', foreground: 'f92672' },
+                    { token: 'string', foreground: 'e6db74' }
+                ],
+                colors: {
+                    'editor.background': '#272822',
+                    'editor.lineHighlightBackground': '#3e3d32'
+                }
+            });
+            monaco.editor.setTheme('monokai-mobile');
+        });
+
+        // --- RENDER LOOP ---
+        engine.runRenderLoop(function () {
+            if (scene) {
+                scene.render();
+            }
+        });
+
+        window.addEventListener("resize", function () {
+            engine.resize();
+        });
+
+    </script>
+</body>
+</html>
