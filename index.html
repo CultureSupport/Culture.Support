@@ -5,7 +5,75 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Android 16 Slim</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <style>
+   
+    
+   <style>
+  .info-container {
+    font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    max-width: 800px;
+    margin: 20px auto;
+    padding: 25px;
+    background-color: #f8f9fa;
+    border-left: 5px solid #3ddc84; /* Android Grønn */
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  }
+
+  .info-header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 20px;
+  }
+
+  .info-header h2 {
+    color: #202124;
+    margin: 0;
+    font-size: 1.5rem;
+    letter-spacing: 0.5px;
+  }
+
+  .status-badge {
+    background-color: #3ddc84;
+    color: #073042;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: bold;
+    margin-left: 15px;
+    text-transform: uppercase;
+  }
+
+  .info-content p {
+    color: #3c4043;
+    line-height: 1.6;
+    margin-bottom: 15px;
+    font-size: 1rem;
+  }
+
+  .feature-tag {
+    display: inline-block;
+    background: #e8f0fe;
+    color: #1967d2;
+    padding: 5px 10px;
+    border-radius: 4px;
+    font-size: 0.85rem;
+    margin-right: 8px;
+    margin-top: 5px;
+    border: 1px solid #d2e3fc;
+  }
+
+  .friction-node {
+    margin-top: 20px;
+    padding: 15px;
+    background: #ffffff;
+    border: 1px dashed #bdc1c6;
+    border-radius: 6px;
+  }
+</style> 
+    
+    
+    
+<style>
         @import url('https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500&family=Google+Sans:wght@400;500;700&display=swap');
 
         :root {
@@ -155,10 +223,35 @@
 </head>
 <body>
 
-<center>  <p>Vi utvikler Android-baserte enheter i et slankt og kompakt format, optimalisert for kjøring av web-baserte mobilgrensesnitt. Disse enhetene fungerer interaktivt med både eksisterende mobiler og dedikerte workspaces.</p>
-<p>Systemet er designet for videre drift og administrasjon direkte fra workspace, der applikasjoner distribueres som delings-apper integrert i selve Android OS. Denne arkitekturen reduserer friksjon i utviklingsløpet betydelig, da man kan rulle ut funksjonalitet uten de vanlige rundene med ekstern app-godkjenning.</p>
-<p>Løsningen legger til rette for sømløs deling mellom Android-brukere internt, noe som skaper et mer dynamisk og effektivt økosystem personlig verktøy og et lite app deling  miljø </p> </center>
 
+
+<div class="info-container">
+  <div class="info-header">
+    <h2>Systemarkitektur: Android Slim</h2>
+    <span class="status-badge">Aktiv Utvikling</span>
+  </div>
+
+  <div class="info-content">
+    <p>Vi utvikler Android-baserte enheter i et slankt og kompakt format, optimalisert for kjøring av web-baserte mobilgrensesnitt. Disse enhetene fungerer interaktivt med både eksisterende mobiler og dedikerte workspaces.</p>
+    
+    <p>Systemet er designet for videre drift og administrasjon direkte fra workspace, der applikasjoner distribueres som delings-apper integrert i selve Android OS. Denne arkitekturen reduserer friksjon i utviklingsløpet betydelig, da man kan rulle ut funksjonalitet uten de vanlige rundene med ekstern app-godkjenning.</p>
+    
+    <p>Løsningen legger til rette for sømløs deling mellom Android-brukere internt, noe som skaper et mer dynamisk og effektivt økosystem for personlige verktøy og et lettvektet app-delingsmiljø.</p>
+  </div>
+
+  <div class="friction-node">
+    <strong>Tekniske knagger:</strong><br>
+    <span class="feature-tag">Ingen App-Store Godkjenning</span>
+    <span class="feature-tag">Workspace Integration</span>
+    <span class="feature-tag">Inter-OS Deling</span>
+    <span class="feature-tag">Web-to-Native Bridge</span>
+  </div>
+</div>
+
+
+
+
+    
     
     <div id="device-frame">
         <div id="status-bar">
