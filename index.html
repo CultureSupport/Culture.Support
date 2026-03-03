@@ -1,137 +1,139 @@
+
 <!DOCTYPE html>
 <html lang="no">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Android 16 Slim</title>
+    <title>Android 16 Slim & Workspace</title>
     <script src="https://cdn.tailwindcss.com"></script>
-   
-    
-   <style>
-  .info-container {
-    font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-    max-width: 800px;
-    margin: 20px auto;
-    padding: 25px;
-    background-color: #f8f9fa;
-    border-left: 5px solid #3ddc84; /* Android Grønn */
-    border-radius: 8px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-  }
-
-  .info-header {
-    display: flex;
-    align-items: center;
-    margin-bottom: 20px;
-  }
-
-  .info-header h2 {
-    color: #202124;
-    margin: 0;
-    font-size: 1.5rem;
-    letter-spacing: 0.5px;
-  }
-
-  .status-badge {
-    background-color: #3ddc84;
-    color: #073042;
-    padding: 4px 12px;
-    border-radius: 20px;
-    font-size: 0.75rem;
-    font-weight: bold;
-    margin-left: 15px;
-    text-transform: uppercase;
-  }
-
-  .info-content p {
-    color: #3c4043;
-    line-height: 1.6;
-    margin-bottom: 15px;
-    font-size: 1rem;
-  }
-
-  .feature-tag {
-    display: inline-block;
-    background: #e8f0fe;
-    color: #1967d2;
-    padding: 5px 10px;
-    border-radius: 4px;
-    font-size: 0.85rem;
-    margin-right: 8px;
-    margin-top: 5px;
-    border: 1px solid #d2e3fc;
-  }
-
-  .friction-node {
-    margin-top: 20px;
-    padding: 15px;
-    background: #ffffff;
-    border: 1px dashed #bdc1c6;
-    border-radius: 6px;
-  }
-</style> 
-    
-    
-    
-<style>
+    <style>
         @import url('https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500&family=Google+Sans:wght@400;500;700&display=swap');
 
         :root {
             --m3-primary: #d0bcff;
+            --android-green: #3ddc84;
             --editor-bg: #1e1e1e;
+            --bg-dark: #0a0a0a;
         }
 
         body {
-            background-color: #0a0a0a;
-            color: white;
+            background-color: var(--bg-dark);
+            color: #e8eaed;
             font-family: 'Google Sans', sans-serif;
             margin: 0;
+            padding: 20px;
             display: flex;
-            justify-content: center;
+            flex-direction: column;
             align-items: center;
-            height: 100vh;
-            overflow: hidden;
+            min-height: 100vh;
+            overflow-y: auto;
         }
 
-        /* 200x400 Chassis */
+        /* Informasjonspanel Header */
+        .info-container {
+            max-width: 800px;
+            width: 100%;
+            margin-bottom: 40px;
+            background-color: #1a1b1e;
+            border-left: 5px solid var(--android-green);
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+
+        .info-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            border-bottom: 1px solid #333;
+            padding-bottom: 15px;
+        }
+
+        .info-header h2 {
+            color: white;
+            margin: 0;
+            font-size: 1.75rem;
+            font-weight: 700;
+        }
+
+        .status-badge {
+            background-color: var(--android-green);
+            color: #073042;
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+
+        .info-content p {
+            color: #bdc1c6;
+            line-height: 1.7;
+            margin-bottom: 18px;
+            font-size: 1.05rem;
+        }
+
+        .friction-node {
+            margin-top: 25px;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px dashed #444;
+            border-radius: 8px;
+        }
+
+        .feature-tag {
+            display: inline-block;
+            background: rgba(61, 220, 132, 0.1);
+            color: var(--android-green);
+            padding: 6px 14px;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            margin-right: 10px;
+            margin-top: 8px;
+            border: 1px solid rgba(61, 220, 132, 0.2);
+        }
+
+        /* 200x400 Chassis Simulator */
+        #device-wrapper {
+            perspective: 1000px;
+            margin-bottom: 50px;
+        }
+
         #device-frame {
             position: relative;
-            width: 200px;
-            height: 400px;
+            width: 220px;
+            height: 440px;
             background: #000;
-            border-radius: 30px;
-            border: 4px solid #333;
+            border-radius: 35px;
+            border: 8px solid #222;
             overflow: hidden;
-            box-shadow: 0 0 40px rgba(0,0,0,0.8);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7);
             display: flex;
             flex-direction: column;
         }
 
-        /* Bakgrunnsmotor */
-        #canvas-bg {
+        #canvas-bg, #glitch-overlay {
             position: absolute;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            z-index: 1;
         }
 
-        /* Statuslinje */
         #status-bar {
             position: relative;
             z-index: 100;
-            height: 24px;
-            padding: 0 12px;
+            height: 26px;
+            padding: 0 15px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            font-size: 9px;
-            background: rgba(0,0,0,0.5);
-            backdrop-filter: blur(4px);
+            font-size: 10px;
+            background: rgba(0,0,0,0.4);
+            backdrop-filter: blur(8px);
         }
 
-        /* App Innhold */
         #content-layer {
             position: relative;
             z-index: 20;
@@ -141,7 +143,6 @@
             overflow: hidden;
         }
 
-        /* VS Code / Editor Stil */
         #workspace-view {
             display: none;
             background: var(--editor-bg);
@@ -154,165 +155,163 @@
             background: transparent;
             color: #9cdcfe;
             border: none;
-            padding: 10px;
+            padding: 12px;
             font-family: 'Fira Code', monospace;
             font-size: 10px;
             resize: none;
             outline: none;
-            line-height: 1.4;
+            line-height: 1.5;
         }
 
-        /* App Ikoner */
         .app-icon {
-            width: 36px;
-            height: 36px;
-            border-radius: 10px;
-            background: rgba(255,255,255,0.1);
-            backdrop-filter: blur(8px);
+            width: 42px;
+            height: 42px;
+            border-radius: 12px;
+            background: rgba(255,255,255,0.08);
+            backdrop-filter: blur(10px);
             display: flex;
             justify-content: center;
             align-items: center;
-            margin-bottom: 4px;
+            margin-bottom: 6px;
             cursor: pointer;
-            transition: transform 0.1s;
+            transition: all 0.2s;
+            border: 1px solid rgba(255,255,255,0.05);
         }
+
+        .app-icon:hover { background: rgba(255,255,255,0.15); }
         .app-icon:active { transform: scale(0.9); }
 
-        /* Glitch lag */
-        #glitch-overlay {
-            position: absolute;
-            top: 0; left: 0; width: 100%; height: 100%;
-            pointer-events: none;
-            z-index: 60;
-            mix-blend-mode: screen;
-        }
-
-        /* Nav Bar */
         #nav-bar {
-            height: 30px;
-            background: rgba(0,0,0,0.8);
+            height: 40px;
+            background: rgba(0,0,0,0.9);
             display: flex;
             justify-content: space-around;
             align-items: center;
             z-index: 100;
+            border-top: 1px solid #222;
         }
 
         .nav-btn {
             font-size: 10px;
-            opacity: 0.6;
+            font-weight: bold;
+            opacity: 0.5;
             cursor: pointer;
+            transition: opacity 0.3s;
         }
-        .nav-btn.active { opacity: 1; color: var(--m3-primary); }
+        .nav-btn.active { opacity: 1; color: var(--android-green); }
 
-        /* Toast melding */
         #toast {
             position: absolute;
-            bottom: 50px;
+            bottom: 60px;
             left: 50%;
             transform: translateX(-50%);
-            background: rgba(255,255,255,0.9);
-            color: black;
-            padding: 4px 12px;
-            border-radius: 10px;
-            font-size: 8px;
+            background: #ffffff;
+            color: #000;
+            padding: 6px 14px;
+            border-radius: 12px;
+            font-size: 9px;
+            font-weight: bold;
             display: none;
             z-index: 200;
-            white-space: nowrap;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
         }
     </style>
 </head>
 <body>
 
-
-
-<div class="info-container">
-  <div class="info-header">
-    <h2>Systemarkitektur: Android Slim</h2>
-    <span class="status-badge">Aktiv Utvikling</span>
-  </div>
-
-  <div class="info-content">
-    <p>Vi utvikler Android-baserte enheter i et slankt og kompakt format, optimalisert for kjøring av web-baserte mobilgrensesnitt. Disse enhetene fungerer interaktivt med både eksisterende mobiler og dedikerte workspaces.</p>
-    
-    <p>Systemet er designet for videre drift og administrasjon direkte fra workspace, der applikasjoner distribueres som delings-apper integrert i selve Android OS. Denne arkitekturen reduserer friksjon i utviklingsløpet betydelig, da man kan rulle ut funksjonalitet uten de vanlige rundene med ekstern app-godkjenning.</p>
-    
-    <p>Løsningen legger til rette for sømløs deling mellom Android-brukere internt, noe som skaper et mer dynamisk og effektivt økosystem for personlige verktøy og et lettvektet app-delingsmiljø.</p>
-  </div>
-
-  <div class="friction-node">
-    <strong>Tekniske knagger:</strong><br>
-    <span class="feature-tag">Ingen App-Store Godkjenning</span>
-    <span class="feature-tag">Workspace Integration</span>
-    <span class="feature-tag">Inter-OS Deling</span>
-    <span class="feature-tag">Web-to-Native Bridge</span>
-  </div>
-</div>
-
-
-
-
-    
-    
-    <div id="device-frame">
-        <div id="status-bar">
-            <span id="clock">12:00</span>
-            <div class="flex gap-1">
-                <span>5G</span>
-                <span>100%</span>
-            </div>
+    <!-- INFORMASJONS-PANEL HEADER -->
+    <div class="info-container">
+        <div class="info-header">
+            <h2>Android Slim Arch</h2>
+            <span class="status-badge">Live Ecosystem</span>
         </div>
 
-        <canvas id="canvas-bg"></canvas>
-        <canvas id="glitch-overlay"></canvas>
+        <div class="info-content">
+            <p>Vi utvikler Android-baserte enheter i et slankt og kompakt format, optimalisert for kjøring av web-baserte mobilgrensesnitt. Disse enhetene fungerer interaktivt med både eksisterende mobiler og dedikerte workspaces.</p>
+            
+            <p>Systemet er designet for videre drift og administrasjon direkte fra workspace, der applikasjoner distribueres som <strong>delings-apper integrert i selve Android OS</strong>. Denne arkitekturen reduserer friksjon i utviklingsløpet betydelig, da man kan rulle ut funksjonalitet uten de vanlige rundene med ekstern app-godkjenning.</p>
+            
+            <p>Løsningen legger til rette for sømløs deling mellom Android-brukere internt, noe som skaper et mer dynamisk og effektivt økosystem for personlige verktøy og et lettvektet app-delingsmiljø.</p>
+        </div>
 
-        <div id="content-layer">
-            <!-- HJEM SKJERM -->
-            <div id="home-view" class="p-4 flex flex-col items-center h-full">
-                <div class="text-2xl font-light mb-6 mt-4" id="big-clock">00:00</div>
-                
-                <div class="grid grid-cols-3 gap-4">
-                    <div class="flex flex-col items-center" onclick="showEditor()">
-                        <div class="app-icon" style="background: #252526;">
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="#007acc"><path d="M1.297 17.152L0 16.31V7.69l1.297-.842 5.517 4.148-5.517 5.156zM12.13 12L7.145 8.243l-.848.636L10.303 12l-4.006 3.121.848.636L12.13 12zm8.573 4.31l1.297.842V7.69l-1.297-.842-5.517 4.148 5.517 5.156z"/></svg>
-                        </div>
-                        <span class="text-[8px]">VS Code</span>
-                    </div>
-                    <div class="flex flex-col items-center" onclick="changeFX()">
-                        <div class="app-icon" style="background: #333;">
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="#ffcc00"><path d="M12 2L4.5 20.29l.71.71L12 18l6.79 3 .71-.71z"/></svg>
-                        </div>
-                        <span class="text-[8px]">FX Engine</span>
-                    </div>
-                    <div class="flex flex-col items-center" onclick="shareApp()">
-                        <div class="app-icon" style="background: #4caf50;">
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="white"><path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81 1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9c-1.66 0-3 1.34-3 3s1.34 3 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.16c-.05.21-.08.43-.08.65 0 1.61 1.31 2.92 2.92 2.92 1.61 0 2.92-1.31 2.92-2.92s-1.31-2.92-2.92-2.92z"/></svg>
-                        </div>
-                        <span class="text-[8px]">Share IP</span>
-                    </div>
+        <div class="friction-node">
+            <span class="feature-tag">Ingen App-Store Godkjenning</span>
+            <span class="feature-tag">Workspace-Driven Deployment</span>
+            <span class="feature-tag">Inter-User Deling</span>
+            <span class="feature-tag">Android 16 Kernel Optimized</span>
+        </div>
+    </div>
+
+    <!-- MOBIL SIMULATOR -->
+    <div id="device-wrapper">
+        <div id="device-frame">
+            <div id="status-bar">
+                <span id="clock">12:00</span>
+                <div class="flex gap-2">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M12 20c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8m0-18C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z"/></svg>
+                    <span>100%</span>
                 </div>
             </div>
 
-            <!-- WORKSPACE / EDITOR -->
-            <div id="workspace-view">
-                <div class="flex items-center justify-between bg-[#2d2d2d] px-2 py-1 border-b border-[#3e3e3e]">
-                    <span class="text-[8px] text-gray-400">main.js</span>
-                    <button onclick="runCode()" class="bg-green-600 text-[8px] px-2 py-0.5 rounded">RUN</button>
+            <canvas id="canvas-bg"></canvas>
+            <canvas id="glitch-overlay"></canvas>
+
+            <div id="content-layer">
+                <!-- HOME VIEW -->
+                <div id="home-view" class="p-6 flex flex-col items-center h-full">
+                    <div class="text-3xl font-light mb-8 mt-4 text-white" id="big-clock">00:00</div>
+                    
+                    <div class="grid grid-cols-2 gap-6">
+                        <div class="flex flex-col items-center" onclick="showEditor()">
+                            <div class="app-icon" style="background: #252526;">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="#007acc"><path d="M1.297 17.152L0 16.31V7.69l1.297-.842 5.517 4.148-5.517 5.156zM12.13 12L7.145 8.243l-.848.636L10.303 12l-4.006 3.121.848.636L12.13 12zm8.573 4.31l1.297.842V7.69l-1.297-.842-5.517 4.148 5.517 5.156z"/></svg>
+                            </div>
+                            <span class="text-[9px] text-gray-400">Editor</span>
+                        </div>
+                        <div class="flex flex-col items-center" onclick="changeFX()">
+                            <div class="app-icon" style="background: #333;">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="#3ddc84"><path d="M12 2L4.5 20.29l.71.71L12 18l6.79 3 .71-.71z"/></svg>
+                            </div>
+                            <span class="text-[9px] text-gray-400">FX Kern</span>
+                        </div>
+                        <div class="flex flex-col items-center" onclick="shareApp()">
+                            <div class="app-icon" style="background: #1a73e8;">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="white"><path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81 1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9c-1.66 0-3 1.34-3 3s1.34 3 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.16c-.05.21-.08.43-.08.65 0 1.61 1.31 2.92 2.92 2.92 1.61 0 2.92-1.31 2.92-2.92s-1.31-2.92-2.92-2.92z"/></svg>
+                            </div>
+                            <span class="text-[9px] text-gray-400">Share</span>
+                        </div>
+                        <div class="flex flex-col items-center" onclick="showToast('Syncing Workspace...')">
+                            <div class="app-icon" style="background: #444;">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="white"><path d="M12 4V1L8 5l4 4V6c3.31 0 6 2.69 6 6 0 1.01-.25 1.97-.7 2.8l1.46 1.46C19.54 15.03 20 13.57 20 12c0-4.42-3.58-8-8-8zm0 14c-3.31 0-6-2.69-6-6 0-1.01.25-1.97.7-2.8L5.24 7.74C4.46 8.97 4 10.43 4 12c0 4.42 3.58 8 8 8v3l4-4-4-4v3z"/></svg>
+                            </div>
+                            <span class="text-[9px] text-gray-400">Sync</span>
+                        </div>
+                    </div>
                 </div>
-                <textarea id="code-editor" spellcheck="false">// Android 16 Logic
-function onUpdate() {
-  // Endre FX intensitet
-  intensity = 0.8;
-  showToast("Code Running...");
+
+                <!-- WORKSPACE VIEW -->
+                <div id="workspace-view">
+                    <div class="flex items-center justify-between bg-[#2d2d2d] px-3 py-2 border-b border-[#3e3e3e]">
+                        <span class="text-[9px] text-gray-400 font-mono">deploy_script.js</span>
+                        <button onclick="runCode()" class="bg-[#3ddc84] text-black text-[9px] font-bold px-3 py-1 rounded-full">DEPLOY</button>
+                    </div>
+                    <textarea id="code-editor" spellcheck="false">// Android 16 Slim Deployment
+function deploy() {
+  const version = "1.0.4-slim";
+  showToast("Pushing to Workspace...");
+  intensity = 2.0; // Trigger Glitch
+  fxMode = Math.floor(Math.random() * 30);
 }</textarea>
+                </div>
             </div>
+
+            <div id="toast">Operasjon Vellykket</div>
+
+            <nav id="nav-bar">
+                <div class="nav-btn active" id="btn-home" onclick="showHome()">HOME</div>
+                <div class="nav-btn" id="btn-work" onclick="showEditor()">WORK</div>
+            </nav>
         </div>
-
-        <div id="toast">IP: 192.168.1.45:8080</div>
-
-        <nav id="nav-bar">
-            <div class="nav-btn active" id="btn-home" onclick="showHome()">HOME</div>
-            <div class="nav-btn" id="btn-work" onclick="showEditor()">WORK</div>
-        </nav>
     </div>
 
     <script>
@@ -321,62 +320,70 @@ function onUpdate() {
         const gCanvas = document.getElementById('glitch-overlay');
         const gctx = gCanvas.getContext('2d');
         
-        let width = 200;
-        let height = 400;
-        let fxMode = 0;
+        let width = 220;
+        let height = 440;
+        let fxMode = 5;
         let intensity = 0;
         let frame = 0;
 
-        // --- FX Bakgrunner (30 varianter simulert via mod-logikk) ---
+        // --- FX Engine (30 Modulo Varianter) ---
         function drawFX() {
-            ctx.clearRect(0, 0, width, height);
+            ctx.fillStyle = '#050505';
+            ctx.fillRect(0, 0, width, height);
             frame++;
 
-            // Modulo-valg av 30 typer (her kombineres farger/former)
             const type = fxMode % 30;
-            
-            ctx.globalAlpha = 0.6;
+            ctx.globalAlpha = 0.5;
+
             if (type < 10) {
-                // Type 0-9: Partikkel/Stjerne felt
-                ctx.fillStyle = `hsl(${(frame + type * 20) % 360}, 70%, 50%)`;
-                for(let i=0; i<15; i++) {
-                    let y = (frame * (1 + type/5) + i * 30) % height;
+                // Partikkelfelt (Matrix-inspirert)
+                ctx.fillStyle = '#3ddc84';
+                for(let i=0; i<20; i++) {
+                    let y = (frame * (1 + type/4) + i * 40) % height;
                     ctx.beginPath();
-                    ctx.arc((i * 15) % width, y, 1 + type/3, 0, Math.PI*2);
+                    ctx.arc((i * 18) % width, y, 1, 0, Math.PI*2);
                     ctx.fill();
                 }
             } else if (type < 20) {
-                // Type 10-19: Geometriske linjer
-                ctx.strokeStyle = `hsl(${(type * 15) % 360}, 80%, 60%)`;
-                ctx.lineWidth = 2;
+                // Skannings-linjer
+                ctx.strokeStyle = `hsl(${(frame) % 360}, 60%, 50%)`;
+                ctx.lineWidth = 1;
                 ctx.beginPath();
-                ctx.moveTo(0, (frame % height));
-                ctx.lineTo(width, (height - (frame % height)));
+                ctx.moveTo(0, (frame * 2) % height);
+                ctx.lineTo(width, (frame * 2) % height);
                 ctx.stroke();
             } else {
-                // Type 20-29: Plasma/Bølge-effekt
-                for(let i=0; i<width; i+=10) {
-                    let hVal = Math.sin((i + frame) * 0.05) * 20 + (height/2);
-                    ctx.fillStyle = `rgba(208, 188, 255, 0.3)`;
-                    ctx.fillRect(i, hVal, 8, 8);
+                // Pulsar bølge
+                let centerH = height / 2;
+                ctx.strokeStyle = '#d0bcff';
+                ctx.beginPath();
+                for(let x=0; x<width; x+=5) {
+                    let y = centerH + Math.sin((x + frame) * 0.05) * 30;
+                    if(x === 0) ctx.moveTo(x, y);
+                    else ctx.lineTo(x, y);
                 }
+                ctx.stroke();
             }
         }
 
-        // --- Glitch Motor ---
+        // --- Glitch Motor for visuell tilbakemelding ---
         function drawGlitch() {
             gctx.clearRect(0, 0, width, height);
             if (intensity <= 0) return;
 
-            for(let i = 0; i < 20 * intensity; i++) {
-                gctx.fillStyle = i % 2 === 0 ? '#0ff' : '#f0f';
-                gctx.globalAlpha = 0.3;
-                gctx.fillRect(Math.random()*width, Math.random()*height, Math.random()*50*intensity, 2);
+            for(let i = 0; i < 15 * intensity; i++) {
+                gctx.fillStyle = Math.random() > 0.5 ? '#3ddc84' : '#d0bcff';
+                gctx.globalAlpha = 0.4;
+                gctx.fillRect(
+                    Math.random()*width, 
+                    Math.random()*height, 
+                    Math.random()*40*intensity, 
+                    1
+                );
             }
-            intensity *= 0.95;
+            intensity *= 0.9;
         }
 
-        // --- Grensesnitt Kontroll ---
         function showHome() {
             document.getElementById('home-view').style.display = 'flex';
             document.getElementById('workspace-view').style.display = 'none';
@@ -393,37 +400,39 @@ function onUpdate() {
 
         function changeFX() {
             fxMode++;
-            intensity = 1.0;
-            showToast(`FX Mode: ${fxMode % 30}`);
+            intensity = 2.0;
+            showToast(`Kernel FX: ${fxMode % 30}`);
+        }
+
+        function shareApp() {
+            const ip = "10.0.0." + Math.floor(Math.random()*255);
+            showToast(`Shared to: ${ip}`);
+            intensity = 1.2;
         }
 
         function showToast(msg) {
             const t = document.getElementById('toast');
             t.innerText = msg;
             t.style.display = 'block';
-            setTimeout(() => t.style.display = 'none', 2000);
-        }
-
-        function shareApp() {
-            const ip = "192.168." + Math.floor(Math.random()*255) + "." + Math.floor(Math.random()*255);
-            showToast(`Shared at: ${ip}:8080`);
-            intensity = 1.5;
+            setTimeout(() => t.style.display = 'none', 2500);
         }
 
         function runCode() {
             const code = document.getElementById('code-editor').value;
             try {
-                // Sikker evaluering av koden for simulatoren
-                eval(code); 
-                if(typeof onUpdate === 'function') onUpdate();
+                // Dynamisk kjøring av "deploy" scriptet
+                const tempFn = new Function(code + "; if(typeof deploy === 'function') deploy();");
+                tempFn();
             } catch(e) {
-                showToast("Error in code!");
+                showToast("Syntax Error!");
             }
         }
 
         function updateClock() {
             const now = new Date();
-            const time = now.getHours().toString().padStart(2, '0') + ":" + now.getMinutes().toString().padStart(2, '0');
+            const h = now.getHours().toString().padStart(2, '0');
+            const m = now.getMinutes().toString().padStart(2, '0');
+            const time = `${h}:${m}`;
             document.getElementById('clock').innerText = time;
             document.getElementById('big-clock').innerText = time;
         }
@@ -442,7 +451,6 @@ function onUpdate() {
         setInterval(updateClock, 1000);
         updateClock();
         loop();
-
     </script>
 </body>
 </html>
