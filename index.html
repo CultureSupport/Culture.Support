@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+
+    <title>Get Darker | Space Dubstep Sessions</title>
+    <!-- Babylon.js CDN -->
+    <script src="https://cdn.babylonjs.com/babylon.js"></script>
+    <script src="https://cdn.babylonjs.com/loaders/babylonjs.loaders.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap');
+        
+        body, html {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            overflow-x: hidden;
+            background-color: #020205;
+            color: #ffffff;
+            font-family: 'Inter', sans-serif;
+        }
+        #renderCanvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            touch-action: none;
+            z-index: 0;
+        }
+        .glass-panel {
+            background: rgba(5, 5, 10, 0.7);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 16px;
+        }
+        .glow-text {
+            text-shadow: 0 0 20px rgba(0, 242, 255, 0.6);
+        }
+        .accent-gradient {
+            background: linear-gradient(90deg, #00f2ff, #7000ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .nav-link {
+            position: relative;
+            transition: all 0.3s ease;
+        }
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            bottom: -4px;
+            left: 0;
+            width: 0%;
+            height: 2px;
+            background: #00f2ff;
+            transition: width 0.3s ease;
+        }
+        .nav-link:hover::after {
+            width: 100%;
+        }
+        
+        /* Modal Animation */
+        #loginModal {
+            display: none;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        #loginModal.active {
+            display: flex;
+            opacity: 1;
+        }
+    </style>
+</head>
+<body>
+
+    <canvas id="renderCanvas"></canvas>
+
+    <!-- Navigation Header -->
+    <nav class="fixed top-0 left-0 w-full z-50 glass-panel border-none rounded-none py-4 px-6 md:px-12 flex justify-between items-center">
+        <div class="flex items-center gap-8">
+            <h1 class="text-2xl font-black italic tracking-tighter uppercase cursor-pointer">
+                GET <span class="text-cyan-400">DARKER</span>
+            </h1>
+            <div class="hidden md:flex gap-6 text-xs font-bold uppercase tracking-widest text-gray-400">
+                <a href="#" class="nav-link hover:text-white">Sessions</a>
+                <a href="#" class="nav-link hover:text-white">Artists</a>
+                <a href="#" class="nav-link hover:text-white">Archive</a>
+                <a href="#" class="nav-link hover:text-white">Shop</a>
+            </div>
+        </div>
+        <div>
+            <button onclick="toggleLogin()" class="px-6 py-2 bg-white text-black text-xs font-black uppercase rounded-full hover:bg-cyan-400 transition-colors">
+                Member Login
+            </button>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="relative z-10 flex flex-col items-center pt-28 pb-12 px-4">
+        
+        <div class="w-full max-w-6xl text-center mb-16">
+            <h2 class="text-6xl md:text-8xl font-black uppercase italic glow-text mb-4">
+                DEEP <span class="accent-gradient">SPACE</span> BASS
+            </h2>
+            <p class="text-cyan-400 font-mono tracking-widest text-sm uppercase">Curating the underground since 2006</p>
+        </div>
+
+        <div class="w-full max-w-6xl grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <!-- Player -->
+            <div class="lg:col-span-2 glass-panel p-2 aspect-video group">
+                <iframe 
+                    id="mainPlayer"
+                    class="w-full h-full rounded-xl"
+                    src="https://www.youtube.com/embed/ywvgpfRRyqk?autoplay=0" 
+                    frameborder="0" 
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                    allowfullscreen>
+                </iframe>
+            </div>
+
+            <!-- Playlist -->
+            <div class="lg:col-span-1 glass-panel p-6 h-[500px] flex flex-col">
+                <h3 class="text-lg font-black uppercase tracking-tighter mb-4 flex justify-between">
+                    <span>Selected Transmissions</span>
+                    <span class="text-cyan-500 text-xs mt-1">LIVE</span>
+                </h3>
+                <div class="overflow-y-auto pr-2 space-y-3 custom-scroll" id="playlistItems">
+                    <!-- Dynamic Items -->
+                </div>
+            </div>
+        </div>
+
+        <footer class="mt-24 w-full max-w-6xl grid grid-cols-2 md:grid-cols-4 gap-8 text-center md:text-left opacity-60 hover:opacity-100 transition-opacity">
+            <div class="glass-panel p-6 border-none bg-white/5">
+                <div class="text-cyan-400 text-xs font-bold uppercase mb-2">Network</div>
+                <div class="text-[10px] leading-relaxed">Connecting the global bass community through high-fidelity streams.</div>
+            </div>
+            <div class="glass-panel p-6 border-none bg-white/5">
+                <div class="text-cyan-400 text-xs font-bold uppercase mb-2">Physics</div>
+                <div class="text-[10px] leading-relaxed">Real-time particle simulation synchronized to sub-frequency peaks.</div>
+            </div>
+            <div class="glass-panel p-6 border-none bg-white/5">
+                <div class="text-cyan-400 text-xs font-bold uppercase mb-2">History</div>
+                <div class="text-[10px] leading-relaxed">Preserving the roots and culture of Dubstep and Garage.</div>
+            </div>
+            <div class="glass-panel p-6 border-none bg-white/5">
+                <div class="text-cyan-400 text-xs font-bold uppercase mb-2">Quality</div>
+                <div class="text-[10px] leading-relaxed">High bitrate audio archives for true audiophile explorers.</div>
+            </div>
+        </footer>
+    </div>
+
+    <!-- Login Modal -->
+    <div id="loginModal" class="fixed inset-0 z-[100] flex items-center justify-center bg-black/80 backdrop-blur-md px-4">
+        <div class="glass-panel w-full max-w-md p-10 relative">
+            <button onclick="toggleLogin()" class="absolute top-4 right-4 text-gray-500 hover:text-white">✕</button>
+            <h2 class="text-3xl font-black uppercase italic mb-6">Enter <span class="text-cyan-400">Darkness</span></h2>
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-[10px] uppercase tracking-widest text-gray-500 mb-2">Identity</label>
+                    <input type="text" placeholder="Username" class="w-full bg-white/5 border border-white/10 rounded-lg p-3 outline-none focus:border-cyan-400 transition-colors">
+                </div>
+                <div>
+                    <label class="block text-[10px] uppercase tracking-widest text-gray-500 mb-2">Access Code</label>
+                    <input type="password" placeholder="••••••••" class="w-full bg-white/5 border border-white/10 rounded-lg p-3 outline-none focus:border-cyan-400 transition-colors">
+                </div>
+                <button class="w-full bg-cyan-500 hover:bg-cyan-400 text-black font-black uppercase py-4 rounded-lg mt-4 transition-all transform active:scale-95">
+                    Connect
+                </button>
+                <div class="text-center pt-4">
+                    <a href="#" class="text-[10px] uppercase tracking-widest text-gray-500 hover:text-white">Forgotten frequency?</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // --- DATA & UI ---
+        const videos = [
+            { id: 'ywvgpfRRyqk', title: 'Skream - GetDarker TV 001', artist: 'Classic Session' },
+            { id: 'zp6yzPDSA3w', title: 'Benga - GetDarker TV 004', artist: 'Deep Roots' },
+            { id: 'vSMnlzynV5E', title: 'Mala (DMZ) - Studio Session', artist: 'Meditational' },
+            { id: 'ELvgIwhKiSI', title: 'Hatcha - Dark Sessions', artist: 'The Foundation' },
+            { id: 'b4mJ2-1mm1w', title: 'Coki - Digital Mystikz', artist: 'Anti-War Dub' },
+            { id: 'yzxwprNP1dU', title: 'Darkside - Original Mix', artist: 'GetDarker TV' }
+        ];
+
+        const playlistContainer = document.getElementById('playlistItems');
+        const mainPlayer = document.getElementById('mainPlayer');
+
+        videos.forEach(v => {
+            const div = document.createElement('div');
+            div.className = "flex items-center gap-4 p-3 hover:bg-cyan-500/10 cursor-pointer rounded-xl border border-transparent hover:border-cyan-500/30 transition-all group";
+            div.onclick = () => {
+                mainPlayer.src = `https://www.youtube.com/embed/${v.id}?autoplay=1`;
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            };
+            div.innerHTML = `
+                <div class="relative">
+                    <img src="https://img.youtube.com/vi/${v.id}/default.jpg" class="w-20 h-14 object-cover rounded-lg border border-white/10">
+                    <div class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 bg-cyan-500/20 transition-opacity rounded-lg">
+                        <span class="text-xs">▶</span>
+                    </div>
+                </div>
+                <div class="flex-1">
+                    <div class="text-xs font-black uppercase text-gray-300 group-hover:text-cyan-400 leading-tight">${v.title}</div>
+                    <div class="text-[10px] text-gray-500 tracking-widest mt-1">${v.artist}</div>
+                </div>
+            `;
+            playlistContainer.appendChild(div);
+        });
+
+        function toggleLogin() {
+            const modal = document.getElementById('loginModal');
+            modal.classList.toggle('active');
+        }
+
+        // --- BABYLON.JS SPACE ANIMATION ---
+        const canvas = document.getElementById("renderCanvas");
+        const engine = new BABYLON.Engine(canvas, true);
+
+        const createScene = function () {
+            const scene = new BABYLON.Scene(engine);
+            scene.clearColor = new BABYLON.Color4(0.01, 0.01, 0.03, 1);
+
+            // Camera
+            const camera = new BABYLON.ArcRotateCamera("camera", 0, Math.PI / 2.2, 15, BABYLON.Vector3.Zero(), scene);
+            camera.attachControl(canvas, true);
+            camera.lowerRadiusLimit = 10;
+            camera.upperRadiusLimit = 30;
+            camera.useAutoRotationBehavior = true;
+            camera.autoRotateBehavior.idleRotationSpeed = 0.05;
+
+            // Lights
+            const hlight = new BABYLON.HemisphericLight("light", new BABYLON.Vector3(0, 1, 0), scene);
+            hlight.intensity = 0.2;
+
+            const pointLight = new BABYLON.PointLight("star", new BABYLON.Vector3(0, 0, 0), scene);
+            pointLight.diffuse = new BABYLON.Color3(0.2, 0.8, 1);
+            pointLight.intensity = 2;
+
+            // Central Space Core (Nebula Center)
+            const core = BABYLON.MeshBuilder.CreateIcoSphere("core", {radius: 1.5, subdivisions: 4}, scene);
+            const coreMat = new BABYLON.StandardMaterial("coreMat", scene);
+            coreMat.emissiveColor = new BABYLON.Color3(0, 0.3, 0.5);
+            coreMat.wireframe = true;
+            core.material = coreMat;
+
+            // Space Particle System
+            const spaceParticles = new BABYLON.ParticleSystem("space", 5000, scene);
+            spaceParticles.particleTexture = new BABYLON.Texture("https://www.babylonjs-review.com/wp-content/uploads/2014/12/flare.png", scene);
+            
+            // Box emitter for space dust
+            spaceParticles.emitter = new BABYLON.Vector3(0, 0, 0);
+            spaceParticles.minEmitBox = new BABYLON.Vector3(-40, -20, -40);
+            spaceParticles.maxEmitBox = new BABYLON.Vector3(40, 20, 40);
+
+            // Coloring
+            spaceParticles.color1 = new BABYLON.Color4(0.2, 0.8, 1, 1);
+            spaceParticles.color2 = new BABYLON.Color4(0.4, 0.1, 0.8, 1);
+            spaceParticles.colorDead = new BABYLON.Color4(0, 0, 0, 0);
+
+            spaceParticles.minSize = 0.02;
+            spaceParticles.maxSize = 0.15;
+            spaceParticles.minLifeTime = 10;
+            spaceParticles.maxLifeTime = 20;
+            spaceParticles.emitRate = 300;
+            
+            // Movement logic
+            spaceParticles.addVelocityGradient(0, 0.5);
+            spaceParticles.addVelocityGradient(1.0, 0.1);
+            
+            spaceParticles.start();
+
+            // Background Stars (Static Skybox)
+            const stars = new BABYLON.ParticleSystem("stars", 1000, scene);
+            stars.particleTexture = new BABYLON.Texture("https://www.babylonjs-review.com/wp-content/uploads/2014/12/flare.png", scene);
+            stars.emitter = new BABYLON.Vector3(0, 0, 0);
+            stars.minEmitBox = new BABYLON.Vector3(-100, -100, -100);
+            stars.maxEmitBox = new BABYLON.Vector3(100, 100, 100);
+            stars.emitRate = 1000;
+            stars.minSize = 0.05;
+            stars.maxSize = 0.2;
+            stars.minLifeTime = 9999;
+            stars.maxLifeTime = 9999;
+            stars.start();
+
+            // Update Loop
+            let time = 0;
+            scene.registerBeforeRender(() => {
+                time += 0.01;
+                core.rotation.y += 0.005;
+                core.rotation.z += 0.002;
+                
+                // Pulsate core and light
+                const pulse = 1 + Math.sin(time * 2) * 0.2;
+                core.scaling = new BABYLON.Vector3(pulse, pulse, pulse);
+                pointLight.intensity = 1.5 + Math.sin(time * 4) * 0.5;
+            });
+
+            return scene;
+        };
+
+        const scene = createScene();
+        engine.runRenderLoop(() => scene.render());
+        window.addEventListener("resize", () => engine.resize());
+    </script>
+</body>
+</html>
+
