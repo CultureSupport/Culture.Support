@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Get Darker | Dubstep 3D Experience</title>
+    <!-- Babylon.js CDN -->
+    <script src="https://cdn.babylonjs.com/babylon.js"></script>
+    <script src="https://cdn.babylonjs.com/loaders/babylonjs.loaders.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            overflow-x: hidden;
+            background-color: #050505;
+            color: #ffffff;
+            font-family: 'Inter', sans-serif;
+        }
+        #renderCanvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            touch-action: none;
+            z-index: -1;
+        }
+        .glass-panel {
+            background: rgba(10, 10, 10, 0.85);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+        }
+        .glow-text {
+            text-shadow: 0 0 15px rgba(255, 255, 255, 0.5);
+        }
+        .accent-color {
+            color: #00f2ff;
+        }
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #050505;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #333;
+            border-radius: 10px;
+        }
+    </style>
+</head>
+<body>
+
+    <canvas id="renderCanvas"></canvas>
+
+    <!-- Main Content Interface -->
+    <div class="relative z-10 flex flex-col items-center min-h-screen p-4 md:p-10">
+        
+        <!-- Header -->
+        <header class="w-full max-w-6xl mb-12 text-center">
+            <h1 class="text-5xl md:text-7xl font-black tracking-tighter uppercase glow-text italic">
+                Get <span class="accent-color">Darker</span>
+            </h1>
+            <p class="text-gray-400 mt-2 tracking-widest text-sm uppercase">Dubstep & Bass Culture</p>
+        </header>
+
+        <!-- Main Video / Player Area -->
+        <div class="w-full max-w-6xl grid grid-cols-1 lg:grid-cols-3 gap-8">
+            
+            <!-- Featured Player -->
+            <div class="lg:col-span-2 glass-panel p-4 aspect-video overflow-hidden">
+                <iframe 
+                    id="mainPlayer"
+                    class="w-full h-full rounded-lg"
+                    src="https://www.youtube.com/embed/ywvgpfRRyqk?autoplay=0" 
+                    frameborder="0" 
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                    allowfullscreen>
+                </iframe>
+            </div>
+
+            <!-- Playlist/Queue -->
+            <div class="lg:col-span-1 glass-panel p-6 overflow-y-auto max-h-[600px]">
+                <h3 class="text-xl font-bold mb-4 border-b border-white/10 pb-2">Archive Selects</h3>
+                <div class="space-y-4" id="playlistItems">
+                    <!-- Items will be generated here -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer Stats/Info -->
+        <footer class="mt-20 w-full max-w-6xl glass-panel p-8 grid grid-cols-1 md:grid-cols-3 gap-8 mb-10">
+            <div>
+                <h4 class="font-bold text-cyan-400 mb-2">3D Visuals</h4>
+                <p class="text-xs text-gray-500">Real-time Babylon.js rendering with reactive shader-emulated pulsation.</p>
+            </div>
+            <div>
+                <h4 class="font-bold text-cyan-400 mb-2">GetDarker TV</h4>
+                <p class="text-xs text-gray-500">Curated history of the underground bass movement since 2006.</p>
+            </div>
+            <div>
+                <h4 class="font-bold text-cyan-400 mb-2">Deep Bass</h4>
+                <p class="text-xs text-gray-500">Frequency focused content. Use headphones for best experience.</p>
+            </div>
+        </footer>
+    </div>
+
+    <script>
+        // --- VIDEO DATA ---
+        const videos = [
+            { id: 'ywvgpfRRyqk', title: 'Skream - GetDarker TV 001', artist: 'Skream' },
+            { id: 'zp6yzPDSA3w', title: 'Benga - GetDarker TV 004', artist: 'Benga' },
+            { id: 'vSMnlzynV5E', title: 'Mala (DMZ) - GetDarker Live', artist: 'Mala' },
+            { id: 'ELvgIwhKiSI', title: 'Hatcha - GetDarker Classics', artist: 'Hatcha' },
+            { id: 'b4mJ2-1mm1w', title: 'Coki - GetDarker Studio Mix', artist: 'Coki' },
+            { id: 'yzxwprNP1dU', title: 'Darkside - GetDarker Session', artist: 'Darkside' }
+        ];
+
+        const playlistContainer = document.getElementById('playlistItems');
+        const mainPlayer = document.getElementById('mainPlayer');
+
+        videos.forEach(v => {
+            const div = document.createElement('div');
+            div.className = "flex items-center gap-3 p-2 hover:bg-white/5 cursor-pointer rounded transition duration-200 group";
+            div.onclick = () => {
+                mainPlayer.src = `https://www.youtube.com/embed/${v.id}?autoplay=1`;
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            };
+            div.innerHTML = `
+                <img src="https://img.youtube.com/vi/${v.id}/default.jpg" class="w-16 h-12 object-cover rounded border border-white/10">
+                <div>
+                    <div class="text-sm font-medium group-hover:text-cyan-400">${v.title}</div>
+                    <div class="text-xs text-gray-500 uppercase">${v.artist}</div>
+                </div>
+            `;
+            playlistContainer.appendChild(div);
+        });
+
+        // --- BABYLON.JS ENGINE ---
+        const canvas = document.getElementById("renderCanvas");
+        const engine = new BABYLON.Engine(canvas, true);
+
+        const createScene = function () {
+            const scene = new BABYLON.Scene(engine);
+            scene.clearColor = new BABYLON.Color4(0.02, 0.02, 0.02, 1);
+
+            // Camera
+            const camera = new BABYLON.ArcRotateCamera("camera", -Math.PI / 2, Math.PI / 2.5, 10, BABYLON.Vector3.Zero(), scene);
+            camera.attachControl(canvas, true);
+            camera.lowerRadiusLimit = 5;
+            camera.upperRadiusLimit = 20;
+            camera.autoRotateBehavior = new BABYLON.AutoRotateBehavior();
+            camera.autoRotateBehavior.idleRotationSpeed = 0.1;
+
+            // Lighting
+            const light = new BABYLON.HemisphericLight("light", new BABYLON.Vector3(0, 1, 0), scene);
+            light.intensity = 0.3;
+
+            const pointLight = new BABYLON.PointLight("pointLight", new BABYLON.Vector3(0, 0, 0), scene);
+            pointLight.intensity = 1.5;
+            pointLight.diffuse = new BABYLON.Color3(0, 0.9, 1);
+
+            // Central Pulsating Core
+            const core = BABYLON.MeshBuilder.CreateSphere("core", {diameter: 2, segments: 32}, scene);
+            const coreMat = new BABYLON.StandardMaterial("coreMat", scene);
+            coreMat.emissiveColor = new BABYLON.Color3(0, 0.2, 0.3);
+            coreMat.wireframe = true;
+            core.material = coreMat;
+
+            // Background Grid / Plane
+            const ground = BABYLON.MeshBuilder.CreateGround("ground", {width: 50, height: 50, subdivisions: 20}, scene);
+            const groundMat = new BABYLON.StandardMaterial("groundMat", scene);
+            groundMat.diffuseColor = new BABYLON.Color3(0.1, 0.1, 0.1);
+            groundMat.wireframe = true;
+            groundMat.alpha = 0.2;
+            ground.material = groundMat;
+            ground.position.y = -3;
+
+            // Particles
+            const particleSystem = new BABYLON.ParticleSystem("particles", 1000, scene);
+            particleSystem.particleTexture = new BABYLON.Texture("https://www.babylonjs-review.com/wp-content/uploads/2014/12/flare.png", scene);
+            particleSystem.emitter = new BABYLON.Vector3(0, 0, 0);
+            particleSystem.minEmitBox = new BABYLON.Vector3(-10, -5, -10);
+            particleSystem.maxEmitBox = new BABYLON.Vector3(10, 5, 10);
+            particleSystem.color1 = new BABYLON.Color4(0, 1, 1, 1);
+            particleSystem.color2 = new BABYLON.Color4(0.1, 0.1, 0.5, 1);
+            particleSystem.minSize = 0.05;
+            particleSystem.maxSize = 0.2;
+            particleSystem.minLifeTime = 1;
+            particleSystem.maxLifeTime = 3;
+            particleSystem.emitRate = 200;
+            particleSystem.gravity = new BABYLON.Vector3(0, -0.1, 0);
+            particleSystem.start();
+
+            // Animation Loop logic
+            let time = 0;
+            scene.registerBeforeRender(() => {
+                time += 0.02;
+                
+                // Pulsate Core
+                const scale = 1 + Math.sin(time * 2) * 0.1;
+                core.scaling = new BABYLON.Vector3(scale, scale, scale);
+                core.rotation.y += 0.01;
+                
+                // Light intensity wobble
+                pointLight.intensity = 1.5 + Math.sin(time * 5) * 0.5;
+                
+                // Grid warp
+                ground.position.z = Math.sin(time * 0.5) * 2;
+            });
+
+            return scene;
+        };
+
+        const scene = createScene();
+
+        engine.runRenderLoop(function () {
+            scene.render();
+        });
+
+        window.addEventListener("resize", function () {
+            engine.resize();
+        });
+    </script>
+</body>
+</html>
+
