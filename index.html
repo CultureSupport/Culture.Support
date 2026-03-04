@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="no">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ole Ollessiall - JWT Security AI Agent</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;600;700&display=swap');
+        
+        body {
+            font-family: 'Space+Grotesk', sans-serif;
+            background-color: #050505;
+            color: #e0e0e0;
+        }
+
+        .glass-morphism {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 24px;
+        }
+
+        .glow-border {
+            position: relative;
+        }
+
+        .glow-border::after {
+            content: '';
+            position: absolute;
+            top: -2px; left: -2px; right: -2px; bottom: -2px;
+            background: linear-gradient(45deg, #3b82f6, #8b5cf6, #3b82f6);
+            z-index: -1;
+            border-radius: 26px;
+            opacity: 0.3;
+            filter: blur(10px);
+        }
+
+        .status-pulse {
+            width: 12px;
+            height: 12px;
+            background: #10b981;
+            border-radius: 50%;
+            display: inline-block;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7); }
+            70% { box-shadow: 0 0 0 10px rgba(16, 185, 129, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
+        }
+
+        .jwt-token-display {
+            word-break: break-all;
+            font-family: 'Courier New', Courier, monospace;
+            background: #000;
+            padding: 1rem;
+            border-radius: 8px;
+            border-left: 4px solid #3b82f6;
+        }
+    </style>
+</head>
+<body class="p-4 md:p-8 min-h-screen">
+
+    <div class="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-3 gap-8">
+        
+        <!-- PROFILKORT: OLE OLLESSIALL -->
+        <aside class="lg:col-span-1">
+            <div class="glass-morphism glow-border p-8 sticky top-8">
+                <div class="flex flex-col items-center text-center">
+                    <div class="w-32 h-32 bg-gradient-to-tr from-blue-600 to-purple-600 rounded-full mb-6 flex items-center justify-center text-5xl font-bold shadow-2xl">
+                        OO
+                    </div>
+                    <h1 class="text-3xl font-bold mb-2">Ole Ollessiall</h1>
+                    <p class="text-blue-400 font-medium mb-4 uppercase tracking-widest text-sm">AI Agent & JWT Spesialist</p>
+                    
+                    <div class="flex items-center gap-2 mb-6 bg-green-900/20 px-4 py-1 rounded-full">
+                        <span class="status-pulse"></span>
+                        <span class="text-green-400 text-xs font-bold uppercase">Aktiv Sikkerhetsmodus</span>
+                    </div>
+
+                    <p class="text-gray-400 text-sm leading-relaxed mb-6">
+                        Spesialisert på utvikling av nettsikkerhet gjennom avanserte JWT-tokens. 
+                        Arkitekt for systemer som håndterer 7 milliarder forespørsler med kvotebasert tilgangskontroll.
+                    </p>
+
+                    <div class="w-full space-y-3">
+                        <div class="flex justify-between text-xs border-b border-white/10 pb-2">
+                            <span class="text-gray-500">EKSPERTISE</span>
+                            <span class="text-white text-right">Kryptografisk Validering</span>
+                        </div>
+                        <div class="flex justify-between text-xs border-b border-white/10 pb-2">
+                            <span class="text-gray-500">VERKTØY</span>
+                            <span class="text-white text-right">JWT, RS256, Device Fingerprinting</span>
+                        </div>
+                        <div class="flex justify-between text-xs">
+                            <span class="text-gray-500">MÅL</span>
+                            <span class="text-white text-right">Eliminere Ondsinnede Aktører</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- DASHBOARD OG KODE -->
+        <main class="lg:col-span-2 space-y-8">
+            
+            <!-- LIVE MONITORING -->
+            <div class="glass-morphism p-8">
+                <h2 class="text-xl font-bold mb-6 flex items-center gap-2">
+                    <i class="fas fa-microchip text-blue-500"></i> Global Sikkerhetsovervåking
+                </h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div class="bg-black/40 p-6 rounded-xl border border-white/5">
+                        <p class="text-gray-500 text-xs uppercase mb-1">Total Trafikk Kapasitet</p>
+                        <p class="text-3xl font-bold text-white">7,000M <span class="text-sm font-normal text-gray-400">besøkende</span></p>
+                    </div>
+                    <div class="bg-black/40 p-6 rounded-xl border border-white/5">
+                        <p class="text-gray-500 text-xs uppercase mb-1">Aktive Kvoter</p>
+                        <p class="text-3xl font-bold text-purple-400" id="quota-display">24,502,128</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TEKNISK IMPLEMENTERING -->
+            <div class="glass-morphism p-8">
+                <div class="flex justify-between items-center mb-6">
+                    <h2 class="text-xl font-bold flex items-center gap-2">
+                        <i class="fas fa-code text-blue-500"></i> JWT Enhetsvalidering
+                    </h2>
+                    <span class="bg-blue-600 text-[10px] px-2 py-1 rounded">JS / NODE.JS</span>
+                </div>
+                
+                <div class="space-y-4">
+                    <p class="text-sm text-gray-400">
+                        Denne koden implementerer <span class="text-blue-400">Device Binding</span>. Tokenet valideres mot enhetens unike ID (Hardware Fingerprint) for å stoppe ondsinnede som prøver å stjele sesjoner.
+                    </p>
+                    
+                    <pre class="jwt-token-display text-xs overflow-x-auto text-blue-300">
+// Utviklet av Ole Ollessiall
+const validateSecurity = (token, hardwareId) => {
+    const payload = jwt.verify(token, process.env.SECURE_KEY);
+    
+    // Sjekk om enheten som bruker tokenet er den originale
+    if (payload.device_id !== hardwareId) {
+        logIncident("Uautorisert enhet oppdaget!");
+        return { access: false, reason: "DEVICE_MISMATCH" };
+    }
+
+    // Kvotesjekk mot 7 milliarder database
+    if (payload.tokens_remaining <= 0) {
+        return { access: false, reason: "QUOTA_EXHAUSTED" };
+    }
+
+    return { access: true, user: payload.sub };
+};</pre>
+                </div>
+            </div>
+
+            <!-- KVOTE STATUS SIMULERING -->
+            <div class="glass-morphism p-8">
+                <h2 class="text-xl font-bold mb-6 flex items-center gap-2">
+                    <i class="fas fa-shield-halved text-green-500"></i> Din Gjeldende Sesjon
+                </h2>
+                <div class="space-y-6">
+                    <div>
+                        <div class="flex justify-between mb-2 text-sm">
+                            <span>Sikkerhetskvote (AI Validert)</span>
+                            <span class="text-green-400">88% Trygg</span>
+                        </div>
+                        <div class="w-full bg-gray-800 h-2 rounded-full overflow-hidden">
+                            <div class="bg-green-500 h-full w-[88%]"></div>
+                        </div>
+                    </div>
+                    
+                    <button onclick="simulateAuth()" class="w-full py-4 bg-blue-600 hover:bg-blue-700 rounded-xl font-bold transition-all transform active:scale-95 flex items-center justify-center gap-2">
+                        <i class="fas fa-key"></i> GENERER SIKKERHETSTOKEN
+                    </button>
+                    
+                    <div id="token-result" class="hidden animate-pulse">
+                        <p class="text-xs text-gray-500 mb-2 uppercase">Ny Generert JWT for din enhet:</p>
+                        <div class="jwt-token-display text-[10px] text-green-300">
+                            eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJPbGVPbGxlc3NpYWxsIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </main>
+    </div>
+
+    <script>
+        // Simulering av kvote-oppdatering for 7 milliarder brukere
+        function updateQuotas() {
+            const display = document.getElementById('quota-display');
+            let current = parseInt(display.innerText.replace(/,/g, ''));
+            current += Math.floor(Math.random() * 500);
+            display.innerText = current.toLocaleString();
+        }
+        setInterval(updateQuotas, 3000);
+
+        function simulateAuth() {
+            const result = document.getElementById('token-result');
+            result.classList.remove('hidden');
+            // Her ville vi normalt ha kalt en backend som validerer enheten
+            console.log("Validerer enhet mot Ole Ollessialls sikkerhetsprotokoll...");
+        }
+    </script>
+</body>
+</html>
+
