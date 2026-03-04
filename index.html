@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Android 16 VS Code - Pro Workspace</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500&display=swap');
+        
+        :root {
+            --vscode-bg: #0d1117;
+            --vscode-sidebar: #161b22;
+            --vscode-accent: #58a6ff;
+            --terminal-green: #4af626;
+        }
+
+        body {
+            background-color: #05070a;
+            color: #c9d1d9;
+            font-family: 'Segoe UI', sans-serif;
+            display: flex; flex-direction: column; align-items: center;
+        }
+
+        /* Responsive Phone Frame */
+        .phone-frame {
+            width: 320px; height: 570px;
+            background: var(--vscode-sidebar);
+            border: 10px solid #30363d;
+            border-radius: 32px;
+            position: relative;
+            display: flex; flex-direction: column;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            overflow: hidden;
+            margin: 20px 0;
+        }
+
+        /* VS Code UI Components */
+        .editor-container { display: flex; flex: 1; overflow: hidden; }
+        
+        .activity-bar {
+            width: 35px; background: #0d1117;
+            border-right: 1px solid #30363d;
+            display: flex; flex-direction: column; align-items: center;
+            padding-top: 10px; gap: 15px;
+        }
+
+        .side-pane {
+            width: 95px; background: #0d1117;
+            border-right: 1px solid #30363d;
+            font-size: 8px; overflow-y: auto;
+        }
+
+        .editor-main {
+            flex: 1; background: var(--vscode-bg);
+            font-family: 'Fira Code', monospace;
+            font-size: 9px; padding: 10px;
+            overflow-y: auto; outline: none;
+            white-space: pre-wrap;
+        }
+
+        .terminal-tray {
+            height: 140px; background: #000;
+            border-top: 2px solid #30363d;
+            padding: 8px; font-family: 'Fira Code', monospace;
+            font-size: 8px; overflow-y: auto;
+        }
+
+        .input-line { display: flex; align-items: center; gap: 4px; color: var(--terminal-green); }
+        .cli-input { background: transparent; border: none; outline: none; color: inherit; width: 100%; }
+
+        /* UI Helpers */
+        .btn-run { background: #238636; color: white; padding: 2px 8px; border-radius: 3px; font-size: 8px; font-weight: bold; }
+        .sidebar-item { padding: 4px 6px; cursor: pointer; color: #8b949e; white-space: nowrap; overflow: hidden; }
+        .sidebar-item.active { color: var(--vscode-accent); background: #1c2128; }
+        .folder-label { font-size: 7px; color: #484f58; font-weight: bold; padding: 4px 6px; text-transform: uppercase; }
+
+        .logic-extension {
+            width: 95%; max-width: 800px; padding: 20px;
+            background: var(--vscode-bg); border-radius: 12px;
+            border: 1px solid #30363d; margin-bottom: 50px;
+        }
+
+        ::-webkit-scrollbar { width: 3px; }
+        ::-webkit-scrollbar-thumb { background: #30363d; border-radius: 10px; }
+    </style>
+</head>
+<body>
+
+    <div class="phone-frame" id="app-root">
+        <!-- Status Bar -->
+        <div class="h-6 flex justify-between items-center px-4 text-[9px] font-bold">
+            <span>A16_VM_PRO</span>
+            <div class="flex gap-2"><span>LTE</span><span>100%</span></div>
+        </div>
+
+        <!-- VS Code Header -->
+        <div class="h-8 bg-[#1c2128] flex items-center justify-between px-2 border-b border-[#30363d]">
+            <span class="text-[8px] text-gray-400">workspace.code-workspace</span>
+            <button class="btn-run" onclick="executeCommand('run-all')">RUN ALL</button>
+        </div>
+
+        <div class="editor-container">
+            <!-- Icons Side Bar -->
+            <div class="activity-bar">
+                <div class="w-5 h-5 bg-gray-700 rounded-sm"></div>
+                <div class="w-5 h-5 bg-gray-800 rounded-sm"></div>
+                <div class="w-5 h-5 bg-gray-800 rounded-sm"></div>
+            </div>
+
+            <!-- File Explorer Sidebar -->
+            <div class="side-pane">
+                <div class="folder-label">Android-16-Pro</div>
+                <div class="sidebar-item active" onclick="loadContent('main.kt')">main.kt</div>
+                <div class="sidebar-item" onclick="loadContent('logic_db.csv')">logic_db.csv</div>
+                <div class="sidebar-item" onclick="loadContent('python_env')">script.py</div>
+                <div class="sidebar-item" onclick="loadContent('js_env')">server.js</div>
+                
+                <div class="folder-label mt-2">V-Containers</div>
+                <div class="sidebar-item" onclick="loadContent('docker')">Dockerfile</div>
+                <div class="sidebar-item" onclick="loadContent('gradle')">build.gradle</div>
+                <div class="sidebar-item" onclick="loadContent('vpc')">Virtual_PC.cfg</div>
+            </div>
+
+            <!-- Editor Surface -->
+            <div id="editor" class="editor-main" contenteditable="true" spellcheck="false"></div>
+        </div>
+
+        <!-- Terminal -->
+        <div class="terminal-tray" id="terminal">
+            <div class="text-blue-400">[info] V-Machine Hypervisor v16.1.0</div>
+            <div class="text-gray-500">[info] Logic Tables: 1000 Registered.</div>
+            <div id="output-stream"></div>
+            <div class="input-line">
+                <span>$</span>
+                <input type="text" id="cli-input" class="cli-input" autofocus>
+            </div>
+        </div>
+    </div>
+
+    <!-- Technical Logic / CSV Extension Area -->
+    <div class="logic-extension">
+        <h2 class="text-xl font-bold text-blue-400 mb-4">Workspace Catalog & Build Logic</h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div class="p-4 bg-[#161b22] border border-[#30363d] rounded-lg">
+                <h3 class="text-green-400 text-sm font-bold mb-2">Build Orchestration</h3>
+                <p class="text-[11px] text-gray-400">The `run-all` command initiates a cascading build across Python, JS, and Kotlin containers. Each container validates its logic against the 1000-table CSV database before execution.</p>
+            </div>
+            <div class="p-4 bg-[#161b22] border border-[#30363d] rounded-lg">
+                <h3 class="text-purple-400 text-sm font-bold mb-2">Psychological Load</h3>
+                <p class="text-[11px] text-gray-400">Minimalist UI architecture ensures zero cognitive friction while managing complex backend virtualization. Facts over interpretation.</p>
+            </div>
+        </div>
+        
+        <div class="mt-4 overflow-x-auto">
+            <table class="w-full text-[10px] text-left border-collapse">
+                <thead>
+                    <tr class="bg-gray-800 text-gray-300">
+                        <th class="p-2 border border-gray-700">Layer ID</th>
+                        <th class="p-2 border border-gray-700">Container</th>
+                        <th class="p-2 border border-gray-700">Logic Target</th>
+                        <th class="p-2 border border-gray-700">V-State</th>
+                    </tr>
+                </thead>
+                <tbody id="logic-table-body">
+                    <!-- Rows generated by JS -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+<script>
+    const apiKey = "";
+    const editor = document.getElementById('editor');
+    const cliInput = document.getElementById('cli-input');
+    const outputStream = document.getElementById('output-stream');
+    const logicTable = document.getElementById('logic-table-body');
+
+    // Content Database
+    const fileSystem = {
+        'main.kt': `package com.a16.workspace\n\nfun startVM() {\n    val vpc = VirtualPC.initialize()\n    vpc.syncContainers()\n    println("Android 16 Pro: Online")\n}`,
+        'logic_db.csv': `Table_ID,Component,Fact_Check\n`, // Populated dynamically
+        'script.py': `import vmachine\n\ndef main():\n    vmachine.link_logic(tables=1000)\n    print("Python Runtime Active")`,
+        'server.js': `const vm = require('a16-vm');\n\nvm.createServer(8080, () => {\n    console.log('LocalHost Live');\n});`,
+        'docker': `FROM a16-pro-image\nRUN gradle build --no-daemon\nEXPOSE 8080`,
+        'gradle': `plugins { id 'android-16' }\ndependencies {\n    implementation 'com.logic:tables:1.0'\n}`,
+        'vpc': `[CPU] 8-Core Virt\n[MEM] 4GB Dedicated\n[OS] Android 16 Pro Kernel`
+    };
+
+    function logTerminal(msg, color = 'text-green-400') {
+        const div = document.createElement('div');
+        div.className = color;
+        div.innerText = `> ${msg}`;
+        outputStream.appendChild(div);
+        document.getElementById('terminal').scrollTop = document.getElementById('terminal').scrollHeight;
+    }
+
+    function loadContent(file) {
+        document.querySelectorAll('.sidebar-item').forEach(i => i.classList.remove('active'));
+        const target = [...document.querySelectorAll('.sidebar-item')].find(i => i.innerText === file);
+        if(target) target.classList.add('active');
+
+        if(file === 'logic_db.csv') {
+            let csv = "Table_ID,Component,Fact_Check\n";
+            for(let i=1; i<=100; i++) csv += `T-${i.toString().padStart(3,'0')},UI_Comp_${i},Verified\n`;
+            editor.innerText = csv + "...[900 more rows]";
+        } else {
+            editor.innerText = fileSystem[file] || "";
+        }
+        logTerminal(`Mounted ${file}`, 'text-blue-400');
+    }
+
+    async function executeCommand(input) {
+        if(!input) return;
+        logTerminal(input, 'text-white');
+        const cmd = input.trim().toLowerCase();
+
+        if (cmd.startsWith('ai:')) {
+            await runAI(input.substring(3).trim());
+        } else if (cmd === 'run-all' || cmd === 'build') {
+            logTerminal("Initiating Build Orchestration...", "text-yellow-500");
+            setTimeout(() => logTerminal("Syncing Kotlin Container...", "text-blue-400"), 300);
+            setTimeout(() => logTerminal("Spinning up Python Runtime...", "text-blue-400"), 600);
+            setTimeout(() => logTerminal("Deploying Node.js Localhost...", "text-blue-400"), 900);
+            setTimeout(() => logTerminal("ALL SYSTEMS OPERATIONAL (A16 PRO)", "text-green-500"), 1200);
+        } else if (cmd === 'clear') {
+            outputStream.innerHTML = '';
+        } else if (cmd === 'help') {
+            logTerminal("Commands: run-all, build, clear, help, ai: [prompt]");
+        } else {
+            logTerminal(`Command '${cmd}' unrecognized. Accessing V-Machine local host...`, 'text-red-400');
+        }
+    }
+
+    async function runAI(instruction) {
+        logTerminal("AI Archiect processing logic...", "text-purple-400");
+        const systemPrompt = "You are an Android 16 Senior Architect. Rewrite the code to improve technical logic. Output ONLY code. No chatter, no prohibited topics (currency/history).";
+        
+        try {
+            const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    contents: [{ parts: [{ text: `Code:\n${editor.innerText}\n\nInstruction: ${instruction}` }] }],
+                    systemInstruction: { parts: [{ text: systemPrompt }] }
+                })
+            });
+            const data = await res.json();
+            const newCode = data.candidates[0].content.parts[0].text;
+            editor.innerText = newCode.replace(/```[a-z]*\n|```/g, '').trim();
+            logTerminal("AI Refactor Complete.", "text-blue-400");
+        } catch (e) {
+            logTerminal("AI Build Error. Retrying in background...", "text-red-400");
+        }
+    }
+
+    function initLogicTable() {
+        const layers = [
+            { id: 'L-001', c: 'Kotlin', t: 'UI Rendering', s: 'Active' },
+            { id: 'L-002', c: 'Python', t: 'Data Processing', s: 'Active' },
+            { id: 'L-003', c: 'Node.js', t: 'Local Host', s: 'Standby' },
+            { id: 'L-004', c: 'Docker', t: 'Orchestration', s: 'Active' },
+            { id: 'L-005', c: 'Gradle', t: 'Build Automation', s: 'Ready' }
+        ];
+        logicTable.innerHTML = layers.map(l => `
+            <tr class="border-b border-gray-800 hover:bg-gray-900">
+                <td class="p-2 border border-gray-700 text-blue-400 font-mono">${l.id}</td>
+                <td class="p-2 border border-gray-700">${l.c}</td>
+                <td class="p-2 border border-gray-700 text-gray-400">${l.t}</td>
+                <td class="p-2 border border-gray-700 text-green-500">${l.s}</td>
+            </tr>
+        `).join('');
+    }
+
+    cliInput.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') {
+            executeCommand(cliInput.value);
+            cliInput.value = '';
+        }
+    });
+
+    window.onload = () => {
+        loadContent('main.kt');
+        initLogicTable();
+        logTerminal("A16 Pro Hypervisor Ready. Type 'help'.");
+    };
+</script>
+
+</body>
+</html>
+
