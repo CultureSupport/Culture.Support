@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>War Zone Monitor | USA - IRAN - ISRAEL</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --glass-bg: rgba(255, 255, 255, 0.05);
+            --glass-border: rgba(255, 255, 255, 0.1);
+            --neon-red: #ff3131;
+            --neon-yellow: #ffff00;
+        }
+
+        body {
+            background: radial-gradient(circle at center, #1a0000 0%, #050000 100%);
+            color: #e0e0e0;
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            min-height: 100vh;
+            overflow-x: hidden;
+            padding: 20px;
+        }
+
+        /* Moving Background Detail */
+        body::after {
+            content: "";
+            position: fixed;
+            top: -50%; left: -50%; width: 200%; height: 200%;
+            background-image: 
+                radial-gradient(circle, rgba(255,0,0,0.05) 1px, transparent 1px);
+            background-size: 50px 50px;
+            z-index: -1;
+            animation: move-bg 100s linear infinite;
+        }
+
+        @keyframes move-bg {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        /* Glassmorphism Class */
+        .glass-panel {
+            background: var(--glass-bg);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            border: 1px solid var(--glass-border);
+            border-radius: 16px;
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.8);
+        }
+
+        /* News Header Banner */
+        .news-header-banner {
+            background: rgba(0, 0, 0, 0.8);
+            border-bottom: 2px solid var(--neon-yellow);
+            padding: 10px 0;
+            margin-bottom: 25px;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .ticker-wrap {
+            width: 100%;
+            overflow: hidden;
+            white-space: nowrap;
+        }
+
+        .ticker-content {
+            display: inline-block;
+            padding-left: 100%;
+            animation: ticker 40s linear infinite;
+            color: var(--neon-yellow);
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-size: 1.1rem;
+        }
+
+        @keyframes ticker {
+            0% { transform: translate3d(0, 0, 0); }
+            100% { transform: translate3d(-100%, 0, 0); }
+        }
+
+        /* Player GUI Layout */
+        .main-player-area {
+            padding: 15px;
+        }
+
+        .video-container {
+            position: relative;
+            padding-bottom: 56.25%; /* 16:9 */
+            height: 0;
+            overflow: hidden;
+            border-radius: 12px;
+            background: #000;
+        }
+
+        .video-container iframe {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+        }
+
+        .video-list {
+            max-height: 600px;
+            overflow-y: auto;
+            padding-right: 5px;
+        }
+
+        .video-list::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .video-list::-webkit-scrollbar-thumb {
+            background: var(--glass-border);
+            border-radius: 10px;
+        }
+
+        .video-card {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--glass-border);
+            border-radius: 12px;
+            margin-bottom: 12px;
+            padding: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+
+        .video-card:hover {
+            background: rgba(255, 255, 255, 0.1);
+            transform: translateY(-2px);
+            border-color: var(--neon-red);
+        }
+
+        .video-card.active {
+            border-left: 4px solid var(--neon-red);
+            background: rgba(255, 49, 49, 0.05);
+        }
+
+        .thumb-placeholder {
+            width: 80px;
+            height: 45px;
+            background: #222;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.6rem;
+            color: #555;
+            flex-shrink: 0;
+        }
+
+        .video-info h6 {
+            margin: 0;
+            font-size: 0.85rem;
+            color: #fff;
+        }
+
+        .video-info p {
+            margin: 4px 0 0;
+            font-size: 0.7rem;
+            color: #aaa;
+        }
+
+        .war-status-badge {
+            background: var(--neon-red);
+            color: white;
+            font-size: 0.6rem;
+            padding: 2px 6px;
+            border-radius: 4px;
+            text-transform: uppercase;
+            font-weight: bold;
+            margin-bottom: 5px;
+            display: inline-block;
+        }
+
+        .section-title {
+            color: var(--neon-red);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            font-size: 0.9rem;
+            margin-bottom: 15px;
+            border-left: 3px solid var(--neon-red);
+            padding-left: 10px;
+        }
+
+    </style>
+</head>
+<body>
+
+<!-- Glassmorphic News Header Banner -->
+<div class="news-header-banner glass-panel">
+    <div class="ticker-wrap">
+        <div class="ticker-content">
+            *** BREAKING: USA-ISRAEL-IRAN CONFLICT ESCALATION *** DAY 4: US-ISRAELI STRIKES TARGET IRANIAN COMMAND CENTERS IN TEHRAN AND QOM /// IRAN RETALIATES WITH BALLISTIC MISSILE CLUSTER MUNITION STRIKES NEAR TEL AVIV /// PRESIDENT TRUMP WARNS OF "BIG WAVE" OF ATTACKS PENDING /// STRAIT OF HORMUZ CLOSED TO GLOBAL SHIPPING /// SIX US SERVICE MEMBERS CONFIRMED KILLED IN KUWAIT DRONE STRIKE /// ISRAELI TROOPS ADVANCE INTO SOUTHERN LEBANON /// UN SECURITY COUNCIL IN EMERGENCY SESSION...
+        </div>
+    </div>
+</div>
+
+<div class="container-fluid">
+    <div class="row g-4">
+        
+        <!-- Main Media Player GUI -->
+        <div class="col-lg-8">
+            <div class="glass-panel main-player-area h-100">
+                <div class="section-title">Live Tactical Feed</div>
+                
+                <div class="video-container">
+                    <iframe 
+                        id="mainVideo"
+                        src="https://www.youtube.com/embed/HJlSqYCDgCw?autoplay=0" 
+                        title="War Zone Monitor" 
+                        frameborder="0" 
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                        allowfullscreen>
+                    </iframe>
+                </div>
+
+                <div class="mt-4 p-3 glass-panel" style="background: rgba(0,0,0,0.4);">
+                    <h4 id="activeTitle" class="text-white">INTEL_FEED_01: US Military Damage Assessment</h4>
+                    <p id="activeDesc" class="text-muted small">Satellite analysis of retaliatory strikes on US regional infrastructure. Monitoring trilateral movements across Iranian, Israeli, and US command sectors.</p>
+                    <div class="d-flex gap-3">
+                        <span class="text-danger small">● LIVE DATA SATELLITE</span>
+                        <span class="text-warning small">DECRYPTION: ACTIVE</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Video List GUI -->
+        <div class="col-lg-4">
+            <div class="glass-panel p-4 h-100">
+                <div class="section-title">War Zone Intelligence Directory</div>
+                <div class="video-list">
+                    
+                    <div class="video-card active" onclick="loadVideo('HJlSqYCDgCw', 'INTEL_FEED_01: US Military Damage Assessment', 'Satellite analysis of regional infrastructure strikes.')">
+                        <div class="thumb-placeholder">FEED_01</div>
+                        <div class="video-info">
+                            <span class="war-status-badge">Alert</span>
+                            <h6>US Base Damage Report</h6>
+                            <p>Status: Under Assessment</p>
+                        </div>
+                    </div>
+
+                    <div class="video-card" onclick="loadVideo('1-Z0nLQs7Z0', 'INTEL_FEED_02: Joint Escalation Report', 'Tracking the trilateral strike coordination.')">
+                        <div class="thumb-placeholder">FEED_02</div>
+                        <div class="video-info">
+                            <span class="war-status-badge">Strike</span>
+                            <h6>US-Israel Joint Strikes</h6>
+                            <p>Target: Tehran Internal Security</p>
+                        </div>
+                    </div>
+
+                    <div class="video-card" onclick="loadVideo('IQkpn4XbrrQ', 'INTEL_FEED_03: Tehran/Lebanon Update', 'Ground reports from the capital.')">
+                        <div class="thumb-placeholder">FEED_03</div>
+                        <div class="video-info">
+                            <span class="war-status-badge">Urban</span>
+                            <h6>Israel Strikes on Tehran</h6>
+                            <p>Location: Qom/Tehran Sector</p>
+                        </div>
+                    </div>
+
+                    <div class="video-card" onclick="loadVideo('Uywij_XnB9E', 'INTEL_FEED_04: Retaliation Monitor', 'Iranian response patterns.')">
+                        <div class="thumb-placeholder">FEED_04</div>
+                        <div class="video-info">
+                            <span class="war-status-badge">Launch</span>
+                            <h6>Iran Retaliatory Wave</h6>
+                            <p>Status: Cluster Munition Detected</p>
+                        </div>
+                    </div>
+
+                    <div class="video-card" onclick="loadVideo('dwAzIHDeoZQ', 'INTEL_FEED_05: Expansion Monitor', 'Regional conflict spread tracking.')">
+                        <div class="thumb-placeholder">FEED_05</div>
+                        <div class="video-info">
+                            <span class="war-status-badge">Global</span>
+                            <h6>Conflict Expansion Monitor</h6>
+                            <p>Status: Wide Scale Alert</p>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function loadVideo(id, title, desc) {
+        document.getElementById('mainVideo').src = `https://www.youtube.com/embed/${id}?autoplay=1`;
+        document.getElementById('activeTitle').innerText = title;
+        document.getElementById('activeDesc').innerText = desc;
+        
+        // Update active class
+        const cards = document.querySelectorAll('.video-card');
+        cards.forEach(card => card.classList.remove('active'));
+        event.currentTarget.classList.add('active');
+    }
+</script>
+
+</body>
+</html>
+
