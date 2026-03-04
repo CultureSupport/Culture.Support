@@ -3,59 +3,194 @@
 <head>
     <meta charset="UTF-8">
 
-    <title>Conflict Video</title>
+    <title>Emergency War Room Player</title>
     <!-- Bootstrap 5 CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
+        :root {
+            --alarm-red: #8b0000;
+            --glow-red: #ff0000;
+            --dark-bg: #0a0000;
+        }
+
         body {
-            background-color: #f8f9fa;
+            background-color: var(--dark-bg);
+            color: #eee;
             min-height: 100vh;
             display: flex;
             align-items: center;
             justify-content: center;
+            font-family: 'Courier New', Courier, monospace;
+            overflow-x: hidden;
         }
-        .video-container {
-            max-width: 800px;
-            width: 95%; /* Responsive width for mobile */
-            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-            border-radius: 12px;
-            overflow: hidden;
+
+        /* Animated Scanner Background Overlay */
+        body::before {
+            content: "";
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 2px;
+            background: rgba(255, 0, 0, 0.2);
+            box-shadow: 0 0 15px var(--glow-red);
+            animation: scan 4s linear infinite;
+            z-index: 9999;
+            pointer-events: none;
+        }
+
+        @keyframes scan {
+            0% { top: 0; }
+            100% { top: 100vh; }
+        }
+
+        @keyframes pulse-red {
+            0% { box-shadow: 0 0 5px var(--alarm-red); }
+            50% { box-shadow: 0 0 20px var(--glow-red); }
+            100% { box-shadow: 0 0 5px var(--alarm-red); }
+        }
+
+        .emergency-header {
+            background-color: var(--alarm-red);
+            color: white;
+            padding: 10px;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            font-weight: bold;
+            border: 2px solid var(--glow-red);
+            animation: pulse-red 2s infinite;
+        }
+
+        .video-main-container {
+            max-width: 900px;
+            width: 95%;
+            margin: 20px auto;
+        }
+
+        .video-frame-wrapper {
             background: #000;
+            border: 3px solid #333;
+            border-radius: 4px;
+            position: relative;
+        }
+
+        .video-list-container {
+            margin-top: 30px;
+            border-top: 2px solid var(--alarm-red);
+            padding-top: 20px;
+        }
+
+        .playlist-item {
+            background: #1a1a1a;
+            border-left: 5px solid var(--alarm-red);
+            margin-bottom: 10px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            text-decoration: none;
+            color: inherit;
+            display: block;
+        }
+
+        .playlist-item:hover {
+            background: #2a0000;
+            border-left: 10px solid var(--glow-red);
+            transform: translateX(5px);
+            color: white;
+        }
+
+        .status-dot {
+            height: 10px;
+            width: 10px;
+            background-color: var(--glow-red);
+            border-radius: 50%;
+            display: inline-block;
+            margin-right: 10px;
+            animation: blink 1s infinite;
+        }
+
+        @keyframes blink {
+            0% { opacity: 1; }
+            50% { opacity: 0.2; }
+            100% { opacity: 1; }
         }
     </style>
 </head>
 <body>
 
-<div class="container">
-    <div class="row justify-content-center">
-        <div class="col-12 col-md-10 col-lg-8">
-            <div class="text-center mb-4">
-                <h2 class="fw-bold">Video Coverage: Iran-Israel Situation</h2>
-                <p class="text-muted">Analysis of the safety of Indians in the Gulf region.</p>
-            </div>
-            
-            <!-- Centered Video Wrapper -->
-            <div class="video-container mx-auto">
-                <div class="ratio ratio-16x9">
-                    <iframe 
-                        src="https://www.youtube.com/embed/-ZRAFcRTH4s" 
-                        title="Are 90 Lakh Indians Safe in the Iran-Israel War Zone?" 
-                        allowfullscreen>
-                    </iframe>
-                </div>
+<div class="video-main-container">
+    <div class="emergency-header text-center mb-4">
+        <span class="status-dot"></span> Critical Feed: Regional Escalation
+    </div>
+
+    <!-- Main Active Player -->
+    <div class="video-frame-wrapper shadow-lg">
+        <div class="ratio ratio-16x9">
+            <iframe 
+                id="mainPlayer"
+                src="https://www.youtube.com/embed/HJlSqYCDgCw" 
+                title="War Room Active Feed" 
+                allowfullscreen>
+            </iframe>
+        </div>
+    </div>
+
+    <!-- Animated Player List -->
+    <div class="video-list-container">
+        <h4 class="text-uppercase mb-3" style="color: var(--glow-red); font-size: 0.9rem;">Available Intelligence Feeds:</h4>
+        
+        <div class="row g-2">
+            <!-- Feed 1 -->
+            <div class="col-12">
+                <a href="#" class="playlist-item p-3" onclick="changeVideo('HJlSqYCDgCw')">
+                    <div class="d-flex justify-content-between">
+                        <span>[FEED_01] SATELLITE ASSESSMENT: US BASES</span>
+                        <small class="text-danger">LIVE_UPDATE</small>
+                    </div>
+                </a>
             </div>
 
-            <div class="mt-4 p-3 bg-white rounded border">
-                <h5>Video Details</h5>
-                <ul class="list-unstyled mb-0">
-                    <li><strong>Channel:</strong> Jist</li>
-                    <li><strong>Published:</strong> March 2026</li>
-                    <li><strong>Topic:</strong> Safety of Indian citizens in the Middle East conflict.</li>
-                </ul>
+            <!-- Feed 2 -->
+            <div class="col-12">
+                <a href="#" class="playlist-item p-3" onclick="changeVideo('1-Z0nLQs7Z0')">
+                    <div class="d-flex justify-content-between">
+                        <span>[FEED_02] ESCALATION REPORT: MIDDLE EAST STRIKES</span>
+                        <small class="text-danger">SECURED</small>
+                    </div>
+                </a>
+            </div>
+
+            <!-- Feed 3 -->
+            <div class="col-12">
+                <a href="#" class="playlist-item p-3" onclick="changeVideo('IQkpn4XbrrQ')">
+                    <div class="d-flex justify-content-between">
+                        <span>[FEED_03] STRATEGIC UPDATE: TEHRAN & LEBANON</span>
+                        <small class="text-danger">NEW_INTEL</small>
+                    </div>
+                </a>
+            </div>
+
+            <!-- Feed 4 -->
+            <div class="col-12">
+                <a href="#" class="playlist-item p-3" onclick="changeVideo('Uywij_XnB9E')">
+                    <div class="d-flex justify-content-between">
+                        <span>[FEED_04] LIVE COVERAGE: RETALIATORY STRIKES</span>
+                        <small class="text-danger">STREAMING</small>
+                    </div>
+                </a>
             </div>
         </div>
     </div>
+
+    <div class="mt-4 text-center">
+        <small class="text-muted" style="letter-spacing: 1px;">SYSTEM STATUS: MONITORING ALL CHANNELS // NO CLASSIFIED DATA LEAKED</small>
+    </div>
 </div>
+
+<script>
+    function changeVideo(videoId) {
+        const player = document.getElementById('mainPlayer');
+        player.src = `https://www.youtube.com/embed/${videoId}?autoplay=1`;
+        // Scroll to player for mobile usability
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+</script>
 
 <!-- Bootstrap JS -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
