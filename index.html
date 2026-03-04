@@ -60,9 +60,41 @@
             border-radius: 8px;
             border-left: 4px solid #3b82f6;
         }
+
+        #security-countdown {
+            transition: all 0.3s ease;
+        }
+
+        .urgent {
+            color: #ef4444;
+            animation: shake 0.5s infinite;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-2px); }
+            75% { transform: translateX(2px); }
+        }
     </style>
 </head>
 <body class="p-4 md:p-8 min-h-screen">
+
+    <!-- TOP SIKKERHETS-HEADER -->
+    <div class="max-w-6xl mx-auto mb-8">
+        <div class="glass-morphism p-4 flex items-center justify-between border-l-4 border-yellow-500">
+            <div class="flex items-center gap-4">
+                <i class="fas fa-user-shield text-2xl text-yellow-500"></i>
+                <div>
+                    <h3 class="text-sm font-bold uppercase tracking-widest text-yellow-500">Obligatorisk Enhetsvalidering</h3>
+                    <p class="text-xs text-gray-400">Generer token for å unngå terminering av økten.</p>
+                </div>
+            </div>
+            <div class="text-right">
+                <span class="text-xs uppercase text-gray-500 block">Sikkerhetsvindu lukkes om:</span>
+                <span id="security-countdown" class="text-2xl font-mono font-bold text-white">30.00s</span>
+            </div>
+        </div>
+    </div>
 
     <div class="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-3 gap-8">
         
@@ -78,7 +110,7 @@
                     
                     <div class="flex items-center gap-2 mb-6 bg-green-900/20 px-4 py-1 rounded-full">
                         <span class="status-pulse"></span>
-                        <span class="text-green-400 text-xs font-bold uppercase">Aktiv Sikkerhetsmodus</span>
+                        <span id="status-text" class="text-green-400 text-xs font-bold uppercase">Validering pågår...</span>
                     </div>
 
                     <p class="text-gray-400 text-sm leading-relaxed mb-6">
@@ -86,18 +118,14 @@
                         Arkitekt for systemer som håndterer 7 milliarder forespørsler med kvotebasert tilgangskontroll.
                     </p>
 
-                    <div class="w-full space-y-3">
+                    <div class="w-full space-y-3 text-left">
                         <div class="flex justify-between text-xs border-b border-white/10 pb-2">
                             <span class="text-gray-500">EKSPERTISE</span>
-                            <span class="text-white text-right">Kryptografisk Validering</span>
+                            <span class="text-white">Kryptografisk Validering</span>
                         </div>
                         <div class="flex justify-between text-xs border-b border-white/10 pb-2">
                             <span class="text-gray-500">VERKTØY</span>
-                            <span class="text-white text-right">JWT, RS256, Device Fingerprinting</span>
-                        </div>
-                        <div class="flex justify-between text-xs">
-                            <span class="text-gray-500">MÅL</span>
-                            <span class="text-white text-right">Eliminere Ondsinnede Aktører</span>
+                            <span class="text-white text-right">JWT, RS256, Device Binding</span>
                         </div>
                     </div>
                 </div>
@@ -118,69 +146,29 @@
                         <p class="text-3xl font-bold text-white">7,000M <span class="text-sm font-normal text-gray-400">besøkende</span></p>
                     </div>
                     <div class="bg-black/40 p-6 rounded-xl border border-white/5">
-                        <p class="text-gray-500 text-xs uppercase mb-1">Aktive Kvoter</p>
-                        <p class="text-3xl font-bold text-purple-400" id="quota-display">24,502,128</p>
+                        <p class="text-gray-500 text-xs uppercase mb-1">Sikkerhetstiltak</p>
+                        <p class="text-3xl font-bold text-yellow-400">AKTIV REDIRECT</p>
                     </div>
-                </div>
-            </div>
-
-            <!-- TEKNISK IMPLEMENTERING -->
-            <div class="glass-morphism p-8">
-                <div class="flex justify-between items-center mb-6">
-                    <h2 class="text-xl font-bold flex items-center gap-2">
-                        <i class="fas fa-code text-blue-500"></i> JWT Enhetsvalidering
-                    </h2>
-                    <span class="bg-blue-600 text-[10px] px-2 py-1 rounded">JS / NODE.JS</span>
-                </div>
-                
-                <div class="space-y-4">
-                    <p class="text-sm text-gray-400">
-                        Denne koden implementerer <span class="text-blue-400">Device Binding</span>. Tokenet valideres mot enhetens unike ID (Hardware Fingerprint) for å stoppe ondsinnede som prøver å stjele sesjoner.
-                    </p>
-                    
-                    <pre class="jwt-token-display text-xs overflow-x-auto text-blue-300">
-// Utviklet av Ole Ollessiall
-const validateSecurity = (token, hardwareId) => {
-    const payload = jwt.verify(token, process.env.SECURE_KEY);
-    
-    // Sjekk om enheten som bruker tokenet er den originale
-    if (payload.device_id !== hardwareId) {
-        logIncident("Uautorisert enhet oppdaget!");
-        return { access: false, reason: "DEVICE_MISMATCH" };
-    }
-
-    // Kvotesjekk mot 7 milliarder database
-    if (payload.tokens_remaining <= 0) {
-        return { access: false, reason: "QUOTA_EXHAUSTED" };
-    }
-
-    return { access: true, user: payload.sub };
-};</pre>
                 </div>
             </div>
 
             <!-- KVOTE STATUS SIMULERING -->
-            <div class="glass-morphism p-8">
+            <div class="glass-morphism p-8" id="auth-section">
                 <h2 class="text-xl font-bold mb-6 flex items-center gap-2">
-                    <i class="fas fa-shield-halved text-green-500"></i> Din Gjeldende Sesjon
+                    <i class="fas fa-shield-halved text-green-500"></i> Enhetsvalideringskontroll
                 </h2>
                 <div class="space-y-6">
-                    <div>
-                        <div class="flex justify-between mb-2 text-sm">
-                            <span>Sikkerhetskvote (AI Validert)</span>
-                            <span class="text-green-400">88% Trygg</span>
-                        </div>
-                        <div class="w-full bg-gray-800 h-2 rounded-full overflow-hidden">
-                            <div class="bg-green-500 h-full w-[88%]"></div>
-                        </div>
+                    <div class="bg-blue-900/10 p-4 rounded-lg border border-blue-500/20 text-sm text-blue-200">
+                        <i class="fas fa-info-circle mr-2"></i> 
+                        Trykk på knappen nedenfor innen 30 sekunder for å binde denne enheten til et kryptert JWT-token.
                     </div>
                     
-                    <button onclick="simulateAuth()" class="w-full py-4 bg-blue-600 hover:bg-blue-700 rounded-xl font-bold transition-all transform active:scale-95 flex items-center justify-center gap-2">
+                    <button id="auth-button" onclick="generateSecureToken()" class="w-full py-4 bg-blue-600 hover:bg-blue-700 rounded-xl font-bold transition-all transform active:scale-95 flex items-center justify-center gap-2">
                         <i class="fas fa-key"></i> GENERER SIKKERHETSTOKEN
                     </button>
                     
                     <div id="token-result" class="hidden animate-pulse">
-                        <p class="text-xs text-gray-500 mb-2 uppercase">Ny Generert JWT for din enhet:</p>
+                        <p class="text-xs text-gray-500 mb-2 uppercase">Kvotebasert JWT validert for din enhet:</p>
                         <div class="jwt-token-display text-[10px] text-green-300">
                             eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJPbGVPbGxlc3NpYWxsIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c
                         </div>
@@ -188,25 +176,94 @@ const validateSecurity = (token, hardwareId) => {
                 </div>
             </div>
 
+            <!-- TEKNISK LOGG -->
+            <div class="glass-morphism p-8">
+                <h2 class="text-xl font-bold mb-4 flex items-center gap-2">
+                    <i class="fas fa-terminal text-blue-500"></i> Oppdaterte Sikkerhetstiltak
+                </h2>
+                <p class="text-sm text-gray-400 mb-4">
+                    Som en del av oppgraderingen mot ondsinnede aktører, krever Ole Ollessiall-protokollen nå en umiddelbar kryptografisk håndtrykk-aksjon.
+                </p>
+                <div class="bg-black p-4 rounded border border-white/5 font-mono text-xs text-blue-400">
+                    <div>[SYS] Initiating 30s countdown...</div>
+                    <div id="log-status">[SYS] Waiting for device fingerprinting...</div>
+                </div>
+            </div>
+
         </main>
     </div>
 
     <script>
-        // Simulering av kvote-oppdatering for 7 milliarder brukere
+        let timeLeft = 30.00; // Oppdatert til 30 sekunder
+        let tokenGenerated = false;
+        const countdownElement = document.getElementById('security-countdown');
+        const statusText = document.getElementById('status-text');
+        const authButton = document.getElementById('auth-button');
+        const logStatus = document.getElementById('log-status');
+
+        const timer = setInterval(() => {
+            if (tokenGenerated) {
+                clearInterval(timer);
+                return;
+            }
+
+            timeLeft -= 0.01;
+            if (timeLeft <= 0) {
+                timeLeft = 0;
+                clearInterval(timer);
+                terminateSession();
+            }
+
+            countdownElement.innerText = timeLeft.toFixed(2) + "s";
+            
+            // Gjør telleren rød og ristende når det er mindre enn 5 sekunder igjen
+            if (timeLeft < 5) {
+                countdownElement.classList.add('urgent');
+            }
+        }, 10);
+
+        function generateSecureToken() {
+            tokenGenerated = true;
+            clearInterval(timer);
+            
+            // Oppdater brukergrensesnittet ved suksess
+            document.getElementById('token-result').classList.remove('hidden');
+            countdownElement.innerText = "VALIDERT";
+            countdownElement.classList.remove('urgent');
+            countdownElement.style.color = "#10b981";
+            
+            statusText.innerText = "ENHET VALIDERT";
+            statusText.classList.replace('text-green-400', 'text-blue-400');
+            
+            authButton.disabled = true;
+            authButton.classList.replace('bg-blue-600', 'bg-gray-700');
+            authButton.innerHTML = '<i class="fas fa-check"></i> TILGANG INNVILGET';
+            
+            logStatus.innerText = "[SYS] JWT Generated within 30s limit. Redirect cancelled.";
+            
+            console.log("Enhet validert av Ole Ollessiall innen tidsfristen.");
+        }
+
+        function terminateSession() {
+            statusText.innerText = "TILGANG NEKTET";
+            statusText.classList.replace('text-green-400', 'text-red-500');
+            logStatus.innerText = "[SYS] Security breach: Time out (30s). Redirecting...";
+            
+            setTimeout(() => {
+                window.location.href = "https://kickedout";
+            }, 500);
+        }
+
+        // Simulering av trafikkmåler
         function updateQuotas() {
             const display = document.getElementById('quota-display');
-            let current = parseInt(display.innerText.replace(/,/g, ''));
-            current += Math.floor(Math.random() * 500);
-            display.innerText = current.toLocaleString();
+            if(display) {
+                let current = parseInt(display.innerText.replace(/,/g, ''));
+                current += Math.floor(Math.random() * 500);
+                display.innerText = current.toLocaleString();
+            }
         }
         setInterval(updateQuotas, 3000);
-
-        function simulateAuth() {
-            const result = document.getElementById('token-result');
-            result.classList.remove('hidden');
-            // Her ville vi normalt ha kalt en backend som validerer enheten
-            console.log("Validerer enhet mot Ole Ollessialls sikkerhetsprotokoll...");
-        }
     </script>
 </body>
 </html>
