@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+   
+    <title>Children's Film Haven</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+        }
+        .video-container {
+            position: relative;
+            padding-bottom: 56.25%; /* 16:9 Aspect Ratio */
+            height: 0;
+            overflow: hidden;
+        }
+        .video-container iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+    </style>
+</head>
+<body class="bg-slate-50 text-gray-900">
+
+    <div class="min-h-screen flex flex-col">
+        <!-- Header -->
+        <header class="bg-white border-b border-gray-200 px-6 py-4 flex justify-between items-center sticky top-0 z-20">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 bg-pink-500 rounded-full flex items-center justify-center text-white shadow-sm">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="2.18" ry="2.18"/><line x1="7" y1="2" x2="7" y2="22"/><line x1="17" y1="2" x2="17" y2="22"/><line x1="2" y1="12" x2="22" y2="12"/><line x1="2" y1="7" x2="7" y2="7"/><line x1="2" y1="17" x2="7" y2="17"/><line x1="17" y1="17" x2="22" y2="17"/><line x1="17" y1="7" x2="22" y2="7"/></svg>
+                </div>
+                <div>
+                    <h1 class="text-xl font-bold tracking-tight text-gray-800">Film Haven</h1>
+                    <p class="text-xs text-pink-500 font-semibold uppercase">Children's Playlist</p>
+                </div>
+            </div>
+            <div class="flex items-center gap-4">
+                <span class="text-sm text-gray-500 hidden sm:inline">15 Films Available</span>
+                <div class="w-8 h-8 rounded-full bg-indigo-100 flex items-center justify-center text-indigo-700 font-bold text-xs border border-indigo-200">
+                    KIDS
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="flex-1 w-full max-w-7xl mx-auto p-4 md:p-8">
+            
+            <!-- Player Section (Top) -->
+            <section class="mb-10">
+                <div class="bg-black rounded-2xl overflow-hidden shadow-2xl border-4 border-white">
+                    <div class="video-container" id="player-wrapper">
+                        <iframe 
+                            id="main-player"
+                            src="https://www.youtube.com/embed/cBRcitt0f_c" 
+                            title="YouTube video player" 
+                            frameborder="0" 
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
+                            allowfullscreen>
+                        </iframe>
+                    </div>
+                </div>
+                <div class="mt-4 flex flex-col md:flex-row md:items-center justify-between gap-4">
+                    <div>
+                        <h2 id="current-title" class="text-2xl font-bold text-gray-900 leading-tight">THE SNOW QUEEN | Full Movie | Children's Films</h2>
+                        <p id="current-channel" class="text-gray-500">Playing from your selected playlist</p>
+                    </div>
+                    <button class="bg-pink-500 hover:bg-pink-600 text-white px-6 py-3 rounded-xl font-bold transition-all flex items-center gap-2 shadow-lg shadow-pink-200">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"></path></svg>
+                        Save for Later
+                    </button>
+                </div>
+            </section>
+
+            <!-- Playlist Section (Grid) -->
+            <section>
+                <div class="flex items-center justify-between mb-6 border-b border-gray-200 pb-4">
+                    <h3 class="text-xl font-bold text-gray-800">Complete Film Playlist</h3>
+                    <div class="flex gap-2">
+                        <span class="px-3 py-1 bg-white border border-gray-300 rounded-full text-xs font-medium">Full Movies</span>
+                        <span class="px-3 py-1 bg-white border border-gray-300 rounded-full text-xs font-medium">Animation</span>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6" id="playlist-grid">
+                    <!-- Movies will be injected here by JS -->
+                </div>
+            </section>
+        </main>
+
+        <footer class="py-10 border-t border-gray-200 text-center">
+            <p class="text-sm text-gray-400">&copy; 2025 Children's Film Haven. All movies sourced via YouTube.</p>
+        </footer>
+    </div>
+
+    <script>
+        const movies = [
+            { id: 'cBRcitt0f_c', title: 'THE SNOW QUEEN | Full Movie', channel: 'Children\'s Films' },
+            { id: 'vX2g-VnhbU8', title: 'THE NUTCRACKER | Full Movie', channel: 'Children\'s Films' },
+            { id: 'TP9wd8Aeh3I', title: 'THE PRINCE & THE PAUPER', channel: 'Children\'s Films' },
+            { id: 'jzksCOhcZog', title: 'BEAUTY AND THE BEAST', channel: 'Children\'s Films' },
+            { id: 'YFbNIx3ppGk', title: 'SLEEPING BEAUTY', channel: 'Children\'s Films' },
+            { id: 'Dfg474uqeW4', title: 'LITTLE RED RIDING HOOD', channel: 'Children\'s Films' },
+            { id: '97KUKNIiRgU', title: 'CINDERELLA', channel: 'Children\'s Films' },
+            { id: 'xnxWGVYVbwc', title: 'PINOCCHIO', channel: 'Children\'s Films' },
+            { id: '2-OBkK51WbU', title: 'THE THREE LITTLE PIGS', channel: 'Children\'s Films' },
+            { id: 'xejRN3F9quM', title: 'JACK AND THE BEANSTALK', channel: 'Children\'s Films' },
+            { id: 'UAbIuQ2vS4E', title: 'PUSS IN BOOTS', channel: 'Children\'s Films' },
+            { id: 'pGsRpd8zYRw', title: 'ALICE IN WONDERLAND', channel: 'Children\'s Films' },
+            { id: 'Yx745XqZd6s', title: 'GULLIVER\'S TRAVELS', channel: 'Children\'s Films' },
+            { id: 'hLrFwNGGexg', title: 'THE UGLY DUCKLING', channel: 'Children\'s Films' },
+            { id: 'V6MKQn3dT8o', title: 'THE LITTLE MERMAID', channel: 'Children\'s Films' }
+        ];
+
+        function playMovie(id, title, channel) {
+            const player = document.getElementById('main-player');
+            const titleEl = document.getElementById('current-title');
+            const channelEl = document.getElementById('current-channel');
+            
+            player.src = `https://www.youtube.com/embed/${id}?autoplay=1`;
+            titleEl.textContent = title;
+            channelEl.textContent = `Playing from ${channel}`;
+            
+            // Scroll to top to see the player
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function initPlaylist() {
+            const grid = document.getElementById('playlist-grid');
+            movies.forEach(movie => {
+                const card = document.createElement('div');
+                card.className = "group cursor-pointer bg-white rounded-xl border border-gray-200 overflow-hidden hover:shadow-xl hover:border-pink-300 transition-all";
+                card.onclick = () => playMovie(movie.id, movie.title, movie.channel);
+                
+                card.innerHTML = `
+                    <div class="relative">
+                        <img src="https://img.youtube.com/vi/${movie.id}/mqdefault.jpg" class="w-full aspect-video object-cover" alt="${movie.title}">
+                        <div class="absolute inset-0 bg-black/20 group-hover:bg-black/0 transition-colors flex items-center justify-center">
+                            <div class="w-12 h-12 bg-pink-500 rounded-full flex items-center justify-center text-white scale-90 group-hover:scale-100 transition-transform opacity-0 group-hover:opacity-100 shadow-lg">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="p-4">
+                        <h4 class="font-bold text-gray-900 group-hover:text-pink-600 transition-colors line-clamp-1">${movie.title}</h4>
+                        <p class="text-xs text-gray-500 mt-1">${movie.channel}</p>
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        window.onload = initPlaylist;
+    </script>
+</body>
+</html>
