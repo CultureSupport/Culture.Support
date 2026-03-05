@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+ 
+    <title>Family TV Box - Player List</title>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        :root {
+            --bg-dark: #0f172a;
+            --sidebar-bg: #1e293b;
+            --accent-color: #3b82f6;
+            --text-main: #f8fafc;
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            overflow-x: hidden;
+        }
+
+        .sidebar {
+            height: 100vh;
+            background-color: var(--sidebar-bg);
+            border-right: 1px solid #334155;
+            position: fixed;
+            width: 280px;
+            z-index: 1000;
+        }
+
+        .main-content {
+            margin-left: 280px;
+            padding: 2rem;
+            min-height: 100vh;
+        }
+
+        .video-card {
+            background: #334155;
+            border-radius: 12px;
+            transition: transform 0.2s, background 0.2s;
+            cursor: pointer;
+            border: none;
+            overflow: hidden;
+            height: 100%;
+        }
+
+        .video-card:hover {
+            transform: translateY(-5px);
+            background: #475569;
+        }
+
+        .video-thumbnail {
+            width: 100%;
+            aspect-ratio: 16/9;
+            background-size: cover;
+            background-position: center;
+            position: relative;
+        }
+
+        .play-overlay {
+            position: absolute;
+            inset: 0;
+            background: rgba(0,0,0,0.4);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transition: opacity 0.2s;
+        }
+
+        .video-card:hover .play-overlay {
+            opacity: 1;
+        }
+
+        .player-container {
+            background: #000;
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5);
+            margin-bottom: 2rem;
+            display: none;
+        }
+
+        .nav-link {
+            color: #94a3b8;
+            padding: 0.8rem 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            border-radius: 8px;
+            margin: 4px 12px;
+            transition: all 0.2s;
+        }
+
+        .nav-link:hover, .nav-link.active {
+            background-color: var(--accent-color);
+            color: white;
+        }
+
+        .badge-category {
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            padding: 4px 8px;
+        }
+
+        @media (max-width: 992px) {
+            .sidebar { width: 80px; }
+            .main-content { margin-left: 80px; }
+            .nav-link span { display: none; }
+            .sidebar-logo span { display: none; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Sidebar -->
+    <div class="sidebar d-flex flex-column">
+        <div class="sidebar-logo p-4 text-center">
+            <h4 class="mb-0 fw-bold"><i data-lucide="tv" class="d-inline-block"></i> <span>FamilyTV</span></h4>
+        </div>
+        
+        <nav class="flex-grow-1">
+            <a href="#" class="nav-link active" onclick="filterCategory('all')">
+                <i data-lucide="layout-grid"></i> <span>All Videos</span>
+            </a>
+            <a href="#" class="nav-link" onclick="filterCategory('educational')">
+                <i data-lucide="book-open"></i> <span>Educational</span>
+            </a>
+            <a href="#" class="nav-link" onclick="filterCategory('entertainment')">
+                <i data-lucide="smile"></i> <span>Entertainment</span>
+            </a>
+            <a href="#" class="nav-link" onclick="filterCategory('music')">
+                <i data-lucide="music"></i> <span>Music & Fun</span>
+            </a>
+        </nav>
+
+        <div class="p-4 border-top border-secondary">
+            <small class="text-muted d-block mb-2">Logged in as</small>
+            <div class="d-flex align-items-center gap-2">
+                <div class="bg-primary rounded-circle" style="width: 32px; height: 32px; display: flex; align-items: center; justify-content: center;">F</div>
+                <span>Family Admin</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <!-- Player Section -->
+        <div id="playerSection" class="player-container">
+            <div class="ratio ratio-16x9">
+                <iframe id="mainPlayer" src="" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+            </div>
+            <div class="p-3 d-flex justify-content-between align-items-center">
+                <h5 id="playingTitle" class="mb-0">Select a video to play</h5>
+                <button class="btn btn-sm btn-outline-light" onclick="closePlayer()">Close Player</button>
+            </div>
+        </div>
+
+        <header class="mb-4">
+            <h2 id="viewTitle" class="fw-bold">All Videos</h2>
+            <p class="text-muted">Explore your family playlist</p>
+        </header>
+
+        <!-- Video Grid -->
+        <div class="row g-4" id="videoGrid">
+            <!-- Videos will be injected here -->
+        </div>
+    </div>
+
+    <script>
+        const videoData = [
+            { id: "cBRcitt0f_c", title: "Learning with Fun", category: "educational" },
+            { id: "vX2g-VnhbU8", title: "Family Adventures", category: "entertainment" },
+            { id: "TP9wd8Aeh3I", title: "Music Moments", category: "music" },
+            { id: "jzksCOhcZog", title: "Creative Kids", category: "educational" },
+            { id: "YFbNIx3ppGk", title: "Story Time", category: "entertainment" },
+            { id: "Dfg474uqeW4", title: "Science Explained", category: "educational" },
+            { id: "97KUKNIiRgU", title: "Daily Fun", category: "entertainment" },
+            { id: "xnxWGVYVbwc", title: "Animated Tales", category: "entertainment" },
+            { id: "2-OBkK51WbU", title: "Interactive Learning", category: "educational" },
+            { id: "xejRN3F9quM", title: "Kids Rhymes", category: "music" },
+            { id: "UAbIuQ2vS4E", title: "Nature Wonders", category: "educational" },
+            { id: "pGsRpd8zYRw", title: "Family Games", category: "entertainment" },
+            { id: "Yx745XqZd6s", title: "Discovery Channel Style", category: "educational" },
+            { id: "hLrFwNGGexg", title: "Bedtime Stories", category: "entertainment" },
+            { id: "V6MKQn3dT8o", title: "Endless Joy", category: "music" }
+        ];
+
+        function renderVideos(filter = 'all') {
+            const grid = document.getElementById('videoGrid');
+            grid.innerHTML = '';
+            
+            const filtered = filter === 'all' 
+                ? videoData 
+                : videoData.filter(v => v.category === filter);
+
+            filtered.forEach(video => {
+                const col = document.createElement('div');
+                col.className = 'col-12 col-md-6 col-lg-4 col-xl-3';
+                
+                const thumbUrl = `https://img.youtube.com/vi/${video.id}/hqdefault.jpg`;
+                
+                col.innerHTML = `
+                    <div class="card video-card" onclick="playVideo('${video.id}', '${video.title}')">
+                        <div class="video-thumbnail" style="background-image: url('${thumbUrl}')">
+                            <div class="play-overlay">
+                                <i data-lucide="play-circle" style="width: 48px; height: 48px; color: white;"></i>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <span class="badge bg-primary badge-category mb-2">${video.category}</span>
+                            <h6 class="card-title text-truncate mb-0" title="${video.title}">${video.title}</h6>
+                        </div>
+                    </div>
+                `;
+                grid.appendChild(col);
+            });
+            
+            // Re-initialize icons
+            lucide.createIcons();
+        }
+
+        function playVideo(id, title) {
+            const playerSection = document.getElementById('playerSection');
+            const mainPlayer = document.getElementById('mainPlayer');
+            const playingTitle = document.getElementById('playingTitle');
+
+            playerSection.style.display = 'block';
+            mainPlayer.src = `https://www.youtube.com/embed/${id}?autoplay=1`;
+            playingTitle.innerText = title;
+            
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function closePlayer() {
+            const playerSection = document.getElementById('playerSection');
+            const mainPlayer = document.getElementById('mainPlayer');
+            playerSection.style.display = 'none';
+            mainPlayer.src = '';
+        }
+
+        function filterCategory(cat) {
+            // Update active states
+            document.querySelectorAll('.nav-link').forEach(link => {
+                link.classList.remove('active');
+                if(link.getAttribute('onclick').includes(`'${cat}'`)) {
+                    link.classList.add('active');
+                }
+            });
+
+            document.getElementById('viewTitle').innerText = cat === 'all' ? 'All Videos' : cat.charAt(0).toUpperCase() + cat.slice(1);
+            renderVideos(cat);
+        }
+
+        // Initialize
+        window.onload = () => {
+            renderVideos();
+            lucide.createIcons();
+        };
+    </script>
+</body>
+</html>
