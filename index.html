@@ -1,118 +1,208 @@
 <!DOCTYPE html>
-<html lang="no">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Informasjonstavle - Observasjoner</title>
+    <title>SimFlix | The Sims 4 Streaming</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap');
+        
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #f0f2f5;
-            display: flex;
-            justify-content: center;
-            padding: 20px;
+            font-family: 'Inter', sans-serif;
+            background-color: #0f0f0f;
+            color: #ffffff;
+            overflow-x: hidden;
         }
-        .info-board {
-            background-color: #ffffff;
-            width: 100%;
-            max-width: 600px;
-            border-radius: 12px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
-            overflow: hidden;
-            border: 1px solid #ddd;
+
+        .hero-gradient {
+            background: linear-gradient(to bottom, rgba(15,15,15,0) 0%, rgba(15,15,15,1) 100%),
+                        linear-gradient(to right, rgba(15,15,15,1) 0%, rgba(15,15,15,0) 50%);
         }
-        .header {
-            background-color: #d32f2f;
-            color: white;
-            padding: 20px;
-            text-align: center;
+
+        .video-card {
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            cursor: pointer;
         }
-        .header h1 {
-            margin: 0;
-            font-size: 1.5rem;
-            text-transform: uppercase;
-            letter-spacing: 1px;
+
+        .video-card:hover {
+            transform: scale(1.05);
+            z-index: 10;
         }
-        .content {
-            padding: 25px;
-            line-height: 1.6;
-            color: #333;
+
+        .plumbob {
+            color: #7cfc00;
+            filter: drop-shadow(0 0 5px #7cfc00);
         }
-        .warning-box {
-            background-color: #fff4f4;
-            border-left: 5px solid #d32f2f;
-            padding: 15px;
-            margin-bottom: 20px;
+
+        .scrollbar-hide::-webkit-scrollbar {
+            display: none;
         }
-        .warning-box p {
-            margin: 0;
-            font-weight: bold;
-            color: #b71c1c;
+
+        .modal-enter {
+            animation: fadeIn 0.3s ease-out;
         }
-        .section-title {
-            font-weight: bold;
-            color: #1a1a1a;
-            margin-top: 20px;
-            margin-bottom: 10px;
-            border-bottom: 2px solid #eee;
-            padding-bottom: 5px;
-        }
-        p {
-            margin-bottom: 15px;
-        }
-        .footer {
-            background-color: #f8f9fa;
-            padding: 15px;
-            text-align: center;
-            font-size: 0.85rem;
-            color: #666;
-            border-top: 1px solid #eee;
-        }
-        .status-badge {
-            display: inline-block;
-            background-color: #ff9800;
-            color: white;
-            padding: 4px 10px;
-            border-radius: 4px;
-            font-size: 0.8rem;
-            margin-bottom: 10px;
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: scale(0.95); }
+            to { opacity: 1; transform: scale(1); }
         }
     </style>
 </head>
-<body>
+<body class="scrollbar-hide">
 
-    <div class="info-board">
-        <div class="header">
-            <h1>Varsel om observasjoner</h1>
+    <!-- Sidebar Navigation -->
+    <nav class="fixed left-0 top-0 h-full w-20 flex flex-col items-center py-8 bg-black border-r border-white/10 z-50">
+        <div class="mb-10 text-3xl plumbob">
+            <i class="fas fa-gem"></i>
         </div>
+        <div class="flex flex-col gap-8 text-xl text-gray-400">
+            <i class="fas fa-home text-white"></i>
+            <i class="fas fa-search hover:text-white transition"></i>
+            <i class="fas fa-plus hover:text-white transition"></i>
+            <i class="fas fa-heart hover:text-white transition"></i>
+            <i class="fas fa-download hover:text-white transition"></i>
+        </div>
+        <div class="mt-auto">
+            <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Sim" class="w-10 h-10 rounded-full border border-green-500" alt="Profile">
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="ml-20 min-h-screen">
         
-        <div class="content">
-            <div class="status-badge">Psykotisk Melding / Kristiansund</div>
+        <!-- Hero Section -->
+        <header class="relative h-[70vh] w-full overflow-hidden">
+            <div class="absolute inset-0 bg-cover bg-center" style="background-image: url('https://images.unsplash.com/photo-1600132806370-bf17e65e942f?auto=format&fit=crop&q=80&w=1600');">
+                <div class="absolute inset-0 hero-gradient"></div>
+            </div>
             
-            <div class="warning-box">
-                <p>⚠️ ADVARSEL: To syke mennesker observert. Behov for akutt omsorg i psykiatrien.</p>
+            <div class="relative z-10 h-full flex flex-col justify-center px-12 max-w-4xl">
+                <span class="flex items-center gap-2 text-green-400 font-bold tracking-widest text-sm mb-4">
+                    <i class="fas fa-crown"></i> SIMFLIX ORIGINAL
+                </span>
+                <h1 class="text-7xl font-black mb-6 leading-tight">Sul Sul! <br><span class="text-green-500">Living Large</span></h1>
+                <p class="text-lg text-gray-300 mb-8 max-w-2xl leading-relaxed">
+                    Join the ultimate Sims 4 community experience. Watch live builds, family dramas, and chaotic challenges. It's time to control the neighborhood.
+                </p>
+                <div class="flex gap-4">
+                    <button onclick="openModal('mrg-mnXOuCY', 'The Sims 4 Live Event')" class="bg-white text-black px-8 py-3 rounded-md font-bold hover:bg-gray-200 flex items-center gap-2">
+                        <i class="fas fa-play"></i> Play Now
+                    </button>
+                    <button class="bg-gray-500/30 backdrop-blur-md text-white px-8 py-3 rounded-md font-bold hover:bg-gray-500/50 flex items-center gap-2">
+                        <i class="fas fa-info-circle"></i> More Info
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <!-- Video Rows -->
+        <section class="px-12 -mt-20 relative z-20 space-y-12 pb-20">
+            
+            <!-- Dynamic Videos from User -->
+            <div>
+                <h2 class="text-2xl font-bold mb-6 flex items-center gap-2">
+                    <span class="plumbob text-xs"><i class="fas fa-circle"></i></span> Featured Live Streams
+                </h2>
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6" id="video-grid">
+                    <!-- Cards will be injected here -->
+                </div>
             </div>
 
-            <div class="section-title">Beskrivelse av situasjonen</div>
-            <p>Det er gjort observasjoner mot to sjuke mennesker i Kristiansund som driver med kriminalitet og svindel.</p>
-            
-            <p>Disse personene driver med trusler og spiller bevisst på frykt overfor omgivelsene. Det vurderes at dette er syke mennesker som har en forvrengt sinnstilstand.</p>
+            <!-- Category Section -->
+            <div>
+                <h2 class="text-2xl font-bold mb-6">Trending Build Guides</h2>
+                <div class="flex gap-6 overflow-x-auto scrollbar-hide pb-4">
+                    <div class="min-w-[300px] h-44 bg-blue-900/20 border border-white/5 rounded-xl flex flex-col justify-end p-6 hover:bg-blue-900/40 transition group cursor-pointer">
+                        <h3 class="font-bold text-xl mb-1">Modern Mansions</h3>
+                        <p class="text-sm text-gray-400">12 Videos</p>
+                    </div>
+                    <div class="min-w-[300px] h-44 bg-purple-900/20 border border-white/5 rounded-xl flex flex-col justify-end p-6 hover:bg-purple-900/40 transition group cursor-pointer">
+                        <h3 class="font-bold text-xl mb-1">Legacy Challenges</h3>
+                        <p class="text-sm text-gray-400">45 Videos</p>
+                    </div>
+                    <div class="min-w-[300px] h-44 bg-green-900/20 border border-white/5 rounded-xl flex flex-col justify-end p-6 hover:bg-green-900/40 transition group cursor-pointer">
+                        <h3 class="font-bold text-xl mb-1">Chaos Mode</h3>
+                        <p class="text-sm text-gray-400">8 Videos</p>
+                    </div>
+                    <div class="min-w-[300px] h-44 bg-pink-900/20 border border-white/5 rounded-xl flex flex-col justify-end p-6 hover:bg-pink-900/40 transition group cursor-pointer">
+                        <h3 class="font-bold text-xl mb-1">CC Showcases</h3>
+                        <p class="text-sm text-gray-400">102 Videos</p>
+                    </div>
+                </div>
+            </div>
 
-            <div class="section-title">Adferd og Helsebehov</div>
-            <p>Personene fremstår som maniske og utgjør en betydelig plage gjennom stalking og uønsket oppfølging og
-                disse har sosial
-                lidelse og
-                må være tiltak basert behandling for psykose og psykisk behandling.</p>
-            
-            <p>Det understrekes at disse individene må ha profesjonell helsehjelp og tilsyn, da de ikke er i stand til å ivareta seg selv eller lovverket i sin nåværende tilstand.</p>
-        </div>
+        </section>
+    </main>
 
-        <div class="footer">
-            Dokumentert observasjon - Kristiansund-distriktet
+    <!-- Video Modal -->
+    <div id="videoModal" class="fixed inset-0 z-[100] hidden bg-black/95 flex items-center justify-center p-4 md:p-10">
+        <button onclick="closeModal()" class="absolute top-6 right-10 text-4xl text-white/50 hover:text-white">
+            <i class="fas fa-times"></i>
+        </button>
+        <div class="w-full max-w-6xl aspect-video bg-black rounded-2xl overflow-hidden shadow-2xl modal-enter">
+            <iframe id="modalIframe" class="w-full h-full" src="" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
         </div>
     </div>
 
+    <script>
+        const videos = [
+            { id: 'mrg-mnXOuCY', title: 'Life as a Sim', length: 'LIVE' },
+            { id: 'iHt-7VMLgnc', title: 'Building Dreams', length: '01:45:00' },
+            { id: 'yER-wrOCHFo', title: 'Legacy Saga', length: '03:20:12' },
+            { id: 'CBB3wuIUmGA', title: 'Chaos in Oasis Springs', length: '45:30' },
+            { id: 'P19WGR3FC-8', title: 'Ultimate Interior Design', length: '02:15:44' }
+        ];
+
+        function renderVideos() {
+            const grid = document.getElementById('video-grid');
+            grid.innerHTML = videos.map(v => `
+                <div class="video-card bg-[#181818] rounded-lg overflow-hidden border border-white/5" onclick="openModal('${v.id}', '${v.title}')">
+                    <div class="relative aspect-video">
+                        <img src="https://img.youtube.com/vi/${v.id}/maxresdefault.jpg" class="w-full h-full object-cover" alt="${v.title}" onerror="this.src='https://img.youtube.com/vi/${v.id}/0.jpg'">
+                        <div class="absolute bottom-2 right-2 bg-black/80 px-2 py-0.5 rounded text-xs font-bold">
+                            ${v.length}
+                        </div>
+                        <div class="absolute inset-0 bg-black/40 opacity-0 hover:opacity-100 flex items-center justify-center transition">
+                             <i class="fas fa-play text-4xl"></i>
+                        </div>
+                    </div>
+                    <div class="p-4">
+                        <h3 class="font-semibold text-sm line-clamp-2 mb-2">${v.title}</h3>
+                        <div class="flex items-center justify-between text-xs text-gray-500">
+                            <span>SimFlix Original</span>
+                            <span><i class="fas fa-eye"></i> ${Math.floor(Math.random() * 50) + 1}k viewers</span>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function openModal(id, title) {
+            const modal = document.getElementById('videoModal');
+            const iframe = document.getElementById('modalIframe');
+            iframe.src = `https://www.youtube.com/embed/${id}?autoplay=1`;
+            modal.classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeModal() {
+            const modal = document.getElementById('videoModal');
+            const iframe = document.getElementById('modalIframe');
+            iframe.src = '';
+            modal.classList.add('hidden');
+            document.body.style.overflow = 'auto';
+        }
+
+        // Close modal on background click
+        document.getElementById('videoModal').addEventListener('click', (e) => {
+            if (e.target.id === 'videoModal') closeModal();
+        });
+
+        // Initialize
+        renderVideos();
+    </script>
 </body>
 </html>
-
 
