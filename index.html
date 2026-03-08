@@ -241,5 +241,35 @@
             renderer.setSize(window.innerWidth, window.innerHeight);
         };
     </script>
+
+<script>
+  // 1. Deaktiver høyreklikk (Context Menu)
+  document.addEventListener('contextmenu', function(e) {
+    e.preventDefault();
+  }, false);
+
+  // 2. Blokker tastatursnarveier for inspeksjon
+  document.addEventListener('keydown', function(e) {
+    // Hindre F12
+    if (e.key === "F12") {
+      e.preventDefault();
+    }
+    // Hindre Ctrl+Shift+I (Inspeksjon), Ctrl+Shift+J (Console), Ctrl+U (Vis kildekode)
+    if (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'J' || e.key === 'C')) {
+      e.preventDefault();
+    }
+    if (e.ctrlKey && e.key === 'U') {
+      e.preventDefault();
+    }
+  }, false);
+
+  // 3. Valgfritt: Hindre dra-og-slipp av bilder/innhold
+  document.addEventListener('dragstart', function(e) {
+    e.preventDefault();
+  }, false);
+</script>
+
+
+    
 </body>
 </html>
