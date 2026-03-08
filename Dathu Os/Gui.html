@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="no">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dathu OS - Unified Intelligence</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Fira+Code:wght@300;400;700&display=swap');
+
+        :root {
+            --cyan-glow: #06b6d4;
+            --dathu-bg: #020408;
+            --dathu-panel: rgba(10, 15, 25, 0.9);
+        }
+
+        body {
+            background-color: var(--dathu-bg);
+            color: #e2e8f0;
+            font-family: 'Fira Code', monospace;
+            overflow: hidden;
+            height: 100vh;
+            margin: 0;
+            user-select: none;
+        }
+
+        /* CRT & Scanline Overlay */
+        .crt-effect::before {
+            content: " ";
+            display: block;
+            position: absolute;
+            top: 0; left: 0; bottom: 0; right: 0;
+            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.15) 50%), 
+                        linear-gradient(90deg, rgba(255, 0, 0, 0.03), rgba(0, 255, 0, 0.01), rgba(0, 0, 255, 0.03));
+            z-index: 5000;
+            background-size: 100% 2px, 3px 100%;
+            pointer-events: none;
+        }
+
+        .glass-panel {
+            background: var(--dathu-panel);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(6, 182, 212, 0.2);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            position: absolute;
+            min-width: 200px;
+            min-height: 150px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .window-header {
+            cursor: move;
+            background: rgba(6, 182, 212, 0.1);
+            border-bottom: 1px solid rgba(6, 182, 212, 0.2);
+        }
+
+        .resizer {
+            width: 15px;
+            height: 15px;
+            background: transparent;
+            position: absolute;
+            right: 0;
+            bottom: 0;
+            cursor: nwse-resize;
+        }
+
+        .terminal-input {
+            background: transparent;
+            border: none;
+            outline: none;
+            color: var(--cyan-glow);
+            flex: 1;
+        }
+
+        #desktop {
+            background: radial-gradient(circle at center, #0a1b2d 0%, #020408 100%);
+            height: 100vh;
+            display: none;
+        }
+
+        .desktop-icon {
+            transition: all 0.2s;
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 5px;
+            width: 80px;
+        }
+
+        .desktop-icon:hover {
+            background: rgba(6, 182, 212, 0.1);
+            border-radius: 8px;
+        }
+
+        .hidden { display: none !important; }
+
+        .active-window {
+            border-color: rgba(6, 182, 212, 0.6) !important;
+            z-index: 1000 !important;
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 4px; }
+        ::-webkit-scrollbar-track { background: rgba(0,0,0,0.2); }
+        ::-webkit-scrollbar-thumb { background: var(--cyan-glow); border-radius: 10px; }
+    </style>
+</head>
+<body class="crt-effect">
+
+    <!-- BOOT SCREEN -->
+    <div id="boot-screen" class="fixed inset-0 z-[6000] bg-black p-10 flex flex-col justify-end">
+        <div id="boot-log" class="space-y-1 text-sm font-mono text-cyan-500"></div>
+    </div>
+
+    <!-- LOGIN SCREEN -->
+    <div id="login-screen" class="fixed inset-0 z-[5500] bg-[#010204] flex items-center justify-center hidden">
+        <div class="glass-panel p-10 w-96 text-center border-t-4 border-cyan-500 rounded-lg">
+            <i class="fas fa-microchip text-5xl text-cyan-500 mb-6"></i>
+            <h1 class="text-2xl font-black tracking-widest text-white mb-2 uppercase">Dathu OS</h1>
+            <p class="text-[10px] text-cyan-800 mb-8 tracking-[0.3em]">SECURE KERNEL V.8</p>
+            <div class="space-y-4">
+                <div class="text-left bg-black/40 p-3 border border-cyan-900">
+                    <span class="text-[9px] text-cyan-900 block">AUTHORIZED_USER</span>
+                    <span class="text-cyan-400 font-bold">OLESSIALL</span>
+                </div>
+                <button onclick="enterDesktop()" class="w-full py-4 bg-cyan-600 hover:bg-cyan-400 text-black font-black uppercase text-xs tracking-widest transition-all">
+                    BOOT TO GUI
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- DESKTOP -->
+    <div id="desktop">
+        <!-- Top Bar -->
+        <header class="h-8 bg-black/80 border-b border-cyan-500/10 flex items-center justify-between px-4 z-[4000] relative">
+            <div class="flex items-center gap-4 text-[10px] font-bold">
+                <span class="text-cyan-500"><i class="fas fa-atom mr-2"></i>DATHU SYSTEM</span>
+                <span class="text-slate-600">|</span>
+                <span class="text-slate-400 uppercase">User: Olessiall</span>
+            </div>
+            <div class="text-[10px] flex gap-4">
+                <span id="os-clock" class="text-cyan-400">00:00:00</span>
+            </div>
+        </header>
+
+        <!-- Desktop Grid Icons -->
+        <div class="p-6 grid grid-cols-1 gap-8 w-24">
+            <div onclick="openApp('terminal')" class="desktop-icon">
+                <i class="fas fa-terminal text-3xl text-cyan-500"></i>
+                <span class="text-[9px] font-bold uppercase">Terminal</span>
+            </div>
+            <div onclick="openApp('browser')" class="desktop-icon">
+                <i class="fas fa-brain text-3xl text-emerald-500"></i>
+                <span class="text-[9px] font-bold uppercase">Dathu AI</span>
+            </div>
+            <div onclick="openApp('nodes')" class="desktop-icon">
+                <i class="fas fa-network-wired text-3xl text-amber-500"></i>
+                <span class="text-[9px] font-bold uppercase">Nodes</span>
+            </div>
+        </div>
+
+        <!-- WINDOWS CONTAINER -->
+        <div id="window-layer" class="absolute inset-0 pointer-events-none">
+            
+            <!-- TEMPLATE: TERMINAL -->
+            <div id="app-terminal" class="glass-panel rounded hidden pointer-events-auto" style="width: 600px; height: 400px; left: 150px; top: 100px;">
+                <div class="window-header h-7 flex items-center justify-between px-2">
+                    <span class="text-[9px] font-bold text-cyan-500 uppercase"><i class="fas fa-terminal mr-2"></i>Dathu Shell</span>
+                    <div class="flex gap-2">
+                        <i class="fas fa-cog text-[10px] text-slate-600 cursor-pointer hover:text-cyan-400" onclick="toggleSettings('terminal')"></i>
+                        <i class="fas fa-times text-[10px] text-red-500 cursor-pointer" onclick="closeApp('terminal')"></i>
+                    </div>
+                </div>
+                <div class="flex-1 p-3 font-mono text-[11px] overflow-y-auto" id="term-output">
+                    <p class="text-cyan-900">Dathu OS Kernel Interface [Olessiall Root]</p>
+                </div>
+                <div class="p-2 border-t border-cyan-900/20 flex gap-2 text-[11px]">
+                    <span class="text-cyan-600">root@dathu:~$</span>
+                    <input type="text" class="terminal-input" onkeydown="handleTerm(event, this)">
+                </div>
+                <div class="resizer"></div>
+                <!-- App Settings Panel -->
+                <div id="settings-terminal" class="absolute inset-0 bg-black/95 p-4 hidden z-20">
+                    <h3 class="text-xs font-bold text-cyan-500 mb-4 uppercase">Terminal Parametere</h3>
+                    <div class="space-y-3 text-[10px]">
+                        <div class="flex justify-between"><span>Opacity</span><input type="range" class="w-24" oninput="updateVar('terminal', 'opacity', this.value)"></div>
+                        <div class="flex justify-between"><span>Text Color</span><input type="color" value="#06b6d4" onchange="updateVar('terminal', 'color', this.value)"></div>
+                        <div class="flex justify-between"><span>Buffer Size</span><select class="bg-black border border-cyan-900"><option>50 lines</option><option>500 lines</option></select></div>
+                    </div>
+                    <button onclick="toggleSettings('terminal')" class="mt-4 text-[9px] border border-cyan-500 px-2 py-1 text-cyan-500">LUKK</button>
+                </div>
+            </div>
+
+            <!-- TEMPLATE: AI BROWSER -->
+            <div id="app-browser" class="glass-panel rounded hidden pointer-events-auto" style="width: 700px; height: 450px; left: 250px; top: 150px;">
+                <div class="window-header h-7 flex items-center justify-between px-2">
+                    <span class="text-[9px] font-bold text-emerald-500 uppercase"><i class="fas fa-brain mr-2"></i>Intelligence Engine</span>
+                    <div class="flex gap-2">
+                        <i class="fas fa-cog text-[10px] text-slate-600 cursor-pointer" onclick="toggleSettings('browser')"></i>
+                        <i class="fas fa-times text-[10px] text-red-500 cursor-pointer" onclick="closeApp('browser')"></i>
+                    </div>
+                </div>
+                <div class="flex-1 flex flex-col bg-black/20 p-4">
+                    <div class="flex gap-2 mb-4 bg-black/40 p-2 border border-emerald-900/30">
+                        <i class="fas fa-search text-emerald-900 text-xs"></i>
+                        <input type="text" placeholder="Spør Dathu AI..." class="bg-transparent border-none outline-none text-xs w-full text-emerald-400">
+                    </div>
+                    <div class="flex-1 border border-emerald-900/10 p-4 text-[10px] text-slate-400">
+                        <p class="mb-2 text-emerald-500 font-bold">DATHU_AI STATUS: READY</p>
+                        <p>Venter på inndata fra Olessiall...</p>
+                    </div>
+                </div>
+                <div class="resizer"></div>
+                <div id="settings-browser" class="absolute inset-0 bg-black/95 p-4 hidden z-20">
+                    <h3 class="text-xs font-bold text-emerald-500 mb-4 uppercase">AI Variabler</h3>
+                    <div class="space-y-3 text-[10px]">
+                        <div class="flex justify-between"><span>Inference Depth</span><input type="range" class="w-24"></div>
+                        <div class="flex justify-between"><span>Neural Pathing</span><select class="bg-black"><option>Quantum</option><option>Linear</option></select></div>
+                    </div>
+                    <button onclick="toggleSettings('browser')" class="mt-4 text-[9px] border border-emerald-500 px-2 py-1 text-emerald-500">LUKK</button>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Taskbar -->
+        <footer class="fixed bottom-0 w-full h-10 bg-black/90 border-t border-cyan-500/20 flex items-center px-4 gap-2 z-[5000]">
+            <div class="w-8 h-8 bg-cyan-600 flex items-center justify-center text-black cursor-pointer"><i class="fas fa-th-large"></i></div>
+            <div class="flex-1 flex gap-2 overflow-x-auto" id="taskbar-apps"></div>
+        </footer >
+    </div>
+
+    <script>
+        // SYSTEM BOOT
+        const bootMessages = [
+            "INIT DATHU_KERNEL...",
+            "VERIFYING OLESSIALL PRIVILEGES...",
+            "MOUNTING VIRTUAL_PC_NODES...",
+            "FRACTIONAL_ALGORITHM: OPTIMIZED",
+            "UI_RENDERER: STARTING...",
+            "WELCOME TO DATHU OS."
+        ];
+
+        window.onload = () => {
+            let i = 0;
+            const log = document.getElementById('boot-log');
+            const interval = setInterval(() => {
+                if(i < bootMessages.length) {
+                    const p = document.createElement('p');
+                    p.textContent = `> ${bootMessages[i]}`;
+                    log.appendChild(p);
+                    i++;
+                } else {
+                    clearInterval(interval);
+                    setTimeout(() => {
+                        document.getElementById('boot-screen').classList.add('hidden');
+                        document.getElementById('login-screen').classList.remove('hidden');
+                    }, 1000);
+                }
+            }, 300);
+        };
+
+        function enterDesktop() {
+            document.getElementById('login-screen').classList.add('hidden');
+            document.getElementById('desktop').style.display = 'block';
+            setInterval(() => {
+                document.getElementById('os-clock').textContent = new Date().toLocaleTimeString('no-NO');
+            }, 1000);
+        }
+
+        // WINDOW ENGINE (DRAG, RESIZE, Z-INDEX)
+        let activeWindow = null;
+        let isDragging = false;
+        let isResizing = false;
+        let startX, startY, startW, startH, startLeft, startTop;
+
+        document.addEventListener('mousedown', (e) => {
+            const win = e.target.closest('.glass-panel');
+            if (!win) return;
+
+            // Bring to front
+            document.querySelectorAll('.glass-panel').forEach(w => w.classList.remove('active-window'));
+            win.classList.add('active-window');
+            activeWindow = win;
+
+            if (e.target.classList.contains('window-header') || e.target.parentElement.classList.contains('window-header')) {
+                isDragging = true;
+                startX = e.clientX;
+                startY = e.clientY;
+                startLeft = parseInt(win.style.left);
+                startTop = parseInt(win.style.top);
+            }
+
+            if (e.target.classList.contains('resizer')) {
+                isResizing = true;
+                startX = e.clientX;
+                startY = e.clientY;
+                startW = parseInt(win.style.width);
+                startH = parseInt(win.style.height);
+            }
+        });
+
+        document.addEventListener('mousemove', (e) => {
+            if (!activeWindow) return;
+
+            if (isDragging) {
+                const dx = e.clientX - startX;
+                const dy = e.clientY - startY;
+                activeWindow.style.left = `${startLeft + dx}px`;
+                activeWindow.style.top = `${startTop + dy}px`;
+            }
+
+            if (isResizing) {
+                const dx = e.clientX - startX;
+                const dy = e.clientY - startY;
+                activeWindow.style.width = `${startW + dx}px`;
+                activeWindow.style.height = `${startH + dy}px`;
+            }
+        });
+
+        document.addEventListener('mouseup', () => {
+            isDragging = false;
+            isResizing = false;
+        });
+
+        // APP MANAGEMENT
+        function openApp(id) {
+            const app = document.getElementById(`app-${id}`);
+            app.classList.remove('hidden');
+            app.classList.add('active-window');
+        }
+
+        function closeApp(id) {
+            document.getElementById(`app-${id}`).classList.add('hidden');
+        }
+
+        function toggleSettings(id) {
+            const panel = document.getElementById(`settings-${id}`);
+            panel.classList.toggle('hidden');
+        }
+
+        function updateVar(appId, variable, value) {
+            const win = document.getElementById(`app-${appId}`);
+            if(variable === 'opacity') win.style.opacity = value / 100;
+            if(variable === 'color') win.style.color = value;
+        }
+
+        // TERMINAL LOGIC
+        function handleTerm(e, input) {
+            if(e.key === 'Enter') {
+                const cmd = input.value.trim().toLowerCase();
+                const out = document.getElementById('term-output');
+                const p = document.createElement('p');
+                p.innerHTML = `<span class="text-cyan-500">> ${input.value}</span>`;
+                out.appendChild(p);
+
+                const res = document.createElement('p');
+                res.className = "text-slate-500 mb-2";
+                
+                if(cmd === 'run-vm') {
+                    res.innerHTML = "INITIALIZING CLIENT_PC_01...<br>RESOURCES ALLOCATED: 16GB RAM / 4 CORES<br>STATUS: <span class='text-emerald-500'>ONLINE</span>";
+                } else if(cmd === 'clear') {
+                    out.innerHTML = '';
+                } else {
+                    res.textContent = `Dathu_OS: '${cmd}' unrecognized command. Try 'help'.`;
+                }
+                
+                out.appendChild(res);
+                input.value = '';
+                out.scrollTop = out.scrollHeight;
+            }
+        }
+    </script>
+</body>
+</html>
