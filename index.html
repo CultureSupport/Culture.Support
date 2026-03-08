@@ -495,5 +495,28 @@
             }
         }
     </script>
+
+<script>
+  document.addEventListener('contextmenu', function(e) {
+    e.preventDefault();
+  }, false);
+</script>
+
+
+    <script>
+
+
+document.addEventListener('keydown', function(e) {
+  // Blocks Ctrl+C, Ctrl+U (View Source), and Ctrl+Shift+I (DevTools)
+  if (e.ctrlKey && (e.key === 'c' || e.key === 'u' || e.key === 'i')) {
+    e.preventDefault();
+    alert('Copying is disabled on this site.');
+  }
+});
+
+        
+    </script>
+
+    
 </body>
 </html>
