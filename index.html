@@ -85,17 +85,6 @@
             flex-shrink: 0;
         }
 
-        .start-menu {
-            position: absolute;
-            bottom: 50px;
-            left: 10px;
-            width: 300px;
-            background: var(--dathu-panel);
-            border: 1px solid rgba(6, 182, 212, 0.3);
-            display: none;
-            z-index: 9999;
-        }
-
         .desktop-icon {
             width: 80px;
             display: flex;
@@ -110,23 +99,41 @@
 
         .desktop-icon:hover { background: rgba(255, 255, 255, 0.1); }
 
-        .resizer {
-            width: 10px; height: 10px;
-            position: absolute;
-            right: 0; bottom: 0;
-            cursor: nwse-resize;
-            z-index: 10;
-        }
-
         .hidden { display: none !important; }
 
-        /* App Store Specifics */
-        .store-sidebar {
-            width: 140px;
-            border-right: 1px solid rgba(255,255,255,0.05);
-            background: rgba(0,0,0,0.2);
+        /* Radio App Specifics */
+        .radio-station-item {
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+            transition: all 0.2s;
+        }
+        .radio-station-item:hover {
+            background: rgba(6, 182, 212, 0.1);
+        }
+        .eq-bar {
+            width: 3px;
+            background: var(--cyan-glow);
+            margin: 0 1px;
+            height: 2px;
         }
 
+        .volume-slider {
+            -webkit-appearance: none;
+            width: 100%;
+            height: 4px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 2px;
+            outline: none;
+        }
+        .volume-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 12px;
+            height: 12px;
+            background: var(--cyan-glow);
+            border-radius: 50%;
+            cursor: pointer;
+        }
+
+        /* App Store Specifics */
         .store-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
@@ -140,12 +147,6 @@
             padding: 12px;
             border-radius: 8px;
             text-align: center;
-            transition: all 0.2s;
-        }
-
-        .app-card:hover {
-            border-color: var(--cyan-glow);
-            background: rgba(6, 182, 212, 0.05);
         }
 
         /* CRT Effect */
@@ -157,18 +158,13 @@
             background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.05) 50%), 
                         linear-gradient(90deg, rgba(255, 0, 0, 0.01), rgba(0, 255, 0, 0.005), rgba(0, 0, 255, 0.01));
             z-index: 10000;
-            background-size: 100% 2px, 3px 100%;
             pointer-events: none;
         }
-
-        ::-webkit-scrollbar { width: 4px; }
-        ::-webkit-scrollbar-track { background: transparent; }
-        ::-webkit-scrollbar-thumb { background: rgba(6, 182, 212, 0.3); border-radius: 10px; }
     </style>
 </head>
 <body class="crt">
 
-    <!-- 1. MOBILE INITIALIZATION GUI -->
+    <!-- 1. MOBILE INITIALIZATION -->
     <div id="mobile-init-container">
         <div class="mobile-device">
             <div class="mobile-screen">
@@ -177,21 +173,12 @@
                     <h1 class="text-xl font-black tracking-widest text-white uppercase">Dathu OS</h1>
                     <p class="text-[10px] text-cyan-800">MOBILE AUTHENTICATOR</p>
                 </div>
-
-                <div id="auth-zone" class="w-full space-y-6">
-                    <div class="flex flex-col items-center gap-4">
-                        <div id="fingerprint-btn" onclick="startLoading()" class="w-20 h-20 rounded-full border-2 border-cyan-500 flex items-center justify-center cursor-pointer hover:bg-cyan-500/10 transition-all">
-                            <i class="fas fa-fingerprint text-3xl text-cyan-400"></i>
-                        </div>
-                        <p id="auth-text" class="text-[10px] text-cyan-600 uppercase font-bold animate-pulse">Touch to Authorize Desktop</p>
-                    </div>
+                <div onclick="startLoading()" class="w-20 h-20 rounded-full border-2 border-cyan-500 flex items-center justify-center cursor-pointer hover:bg-cyan-500/10">
+                    <i class="fas fa-fingerprint text-3xl text-cyan-400"></i>
                 </div>
-
-                <div id="mobile-loader" class="hidden w-full space-y-4 mt-10">
-                    <div class="h-1 w-full bg-cyan-950 overflow-hidden">
-                        <div id="load-progress" class="h-full bg-cyan-500 transition-all duration-300" style="width: 0%"></div>
-                    </div>
-                    <p id="load-status" class="text-[8px] font-mono text-cyan-700 uppercase">Init Shell...</p>
+                <p class="text-[10px] text-cyan-600 mt-4 animate-pulse">Touch to Authorize</p>
+                <div id="mobile-loader" class="hidden w-full mt-10">
+                    <div class="h-1 bg-cyan-950 overflow-hidden"><div id="load-progress" class="h-full bg-cyan-500" style="width: 0%"></div></div>
                 </div>
             </div>
         </div>
@@ -202,58 +189,82 @@
         <div class="h-8 bg-black/60 backdrop-blur-md border-b border-white/10 flex items-center justify-between px-4">
             <div class="flex items-center gap-4 text-[10px]">
                 <span class="text-cyan-500 font-bold">DATHU KERNEL 9.0.1</span>
-                <span class="text-slate-500 uppercase">GPU_STATUS: STABLE</span>
+                <span id="gpu-status" class="text-slate-500 uppercase">GPU_STATUS: STABLE</span>
             </div>
             <div id="os-clock" class="text-[10px] text-slate-300 font-bold">00:00:00</div>
         </div>
 
         <!-- Icons -->
         <div class="p-4 grid grid-cols-1 gap-4 w-max">
-            <div onclick="openApp('terminal')" class="desktop-icon">
-                <i class="fas fa-terminal text-3xl text-cyan-500"></i>
-                <span class="text-[9px] text-white font-bold uppercase">Terminal</span>
-            </div>
-            <div onclick="openApp('editor')" class="desktop-icon">
-                <i class="fas fa-code text-3xl text-indigo-400"></i>
-                <span class="text-[9px] text-white font-bold uppercase">Editor</span>
+            <div onclick="openApp('radio')" class="desktop-icon">
+                <i class="fas fa-broadcast-tower text-3xl text-red-500"></i>
+                <span class="text-[9px] text-white font-bold uppercase text-center">Frequency</span>
             </div>
             <div onclick="openApp('store')" class="desktop-icon">
                 <i class="fas fa-shopping-bag text-3xl text-amber-400"></i>
-                <span class="text-[9px] text-white font-bold uppercase">App Store</span>
+                <span class="text-[9px] text-white font-bold uppercase text-center">App Store</span>
+            </div>
+            <div onclick="openApp('terminal')" class="desktop-icon">
+                <i class="fas fa-terminal text-3xl text-cyan-500"></i>
+                <span class="text-[9px] text-white font-bold uppercase text-center">Terminal</span>
             </div>
         </div>
 
+        <!-- Windows -->
         <div id="window-layer">
             
-            <!-- APP STORE WINDOW -->
-            <div id="app-store" class="glass-panel hidden" style="width: 900px; height: 600px; left: 150px; top: 80px;">
+            <!-- FREQUENCY RADIO APP -->
+            <div id="app-radio" class="glass-panel hidden" style="width: 650px; height: 480px; left: 300px; top: 120px;">
                 <div class="window-header">
-                    <span class="text-[10px] font-bold text-amber-400 uppercase"><i class="fas fa-shopping-bag mr-2"></i>Dathu Enterprise Store</span>
-                    <i class="fas fa-times text-xs text-red-500 cursor-pointer" onclick="closeApp('store')"></i>
+                    <span class="text-[10px] font-bold text-red-500 uppercase"><i class="fas fa-radio mr-2"></i>Dathu Frequency Streamer</span>
+                    <i class="fas fa-times text-xs text-red-500 cursor-pointer" onclick="closeApp('radio')"></i>
                 </div>
                 <div class="flex flex-1 overflow-hidden">
-                    <!-- Sidebar -->
-                    <div class="store-sidebar p-2 space-y-1">
-                        <button onclick="filterStore('all')" class="w-full text-left p-2 text-[9px] uppercase hover:bg-white/5 rounded text-amber-200">All Apps</button>
-                        <button onclick="filterStore('gpu')" class="w-full text-left p-2 text-[9px] uppercase hover:bg-white/5 rounded text-slate-400">GPU & Stability</button>
-                        <button onclick="filterStore('games')" class="w-full text-left p-2 text-[9px] uppercase hover:bg-white/5 rounded text-slate-400">Gaming</button>
-                        <button onclick="filterStore('widgets')" class="w-full text-left p-2 text-[9px] uppercase hover:bg-white/5 rounded text-slate-400">Widgets</button>
-                        <button onclick="filterStore('server')" class="w-full text-left p-2 text-[9px] uppercase hover:bg-white/5 rounded text-slate-400">Server Clients</button>
-                    </div>
-                    <!-- Main Store Area -->
-                    <div class="flex-1 overflow-y-auto" id="store-content">
-                        <div class="p-4 border-b border-white/5 flex justify-between items-center">
-                            <h2 class="text-xs font-bold uppercase">Marketplace <span class="text-slate-500 font-normal ml-2">312 Apps Found</span></h2>
-                            <div class="text-[9px] bg-amber-500/10 text-amber-500 px-2 py-1 rounded border border-amber-500/20">
-                                D-Credits: 50,000
-                            </div>
+                    <div class="w-2/5 bg-black/40 border-r border-white/5 flex flex-col">
+                        <div class="p-3 border-b border-white/5">
+                            <input type="text" placeholder="Search Global Radio..." class="w-full bg-white/5 border border-white/10 text-[9px] p-2 outline-none text-white">
                         </div>
-                        <div class="store-grid" id="app-grid">
-                            <!-- Apps injected here -->
+                        <div class="flex-1 overflow-y-auto" id="radio-list">
+                            <!-- Populated by JS -->
+                        </div>
+                    </div>
+                    <div class="flex-1 p-6 flex flex-col items-center justify-between text-center">
+                        <div class="w-full">
+                            <div class="w-24 h-24 rounded-full border-4 border-red-500/20 mx-auto flex items-center justify-center relative mb-4">
+                                <i id="radio-main-icon" class="fas fa-broadcast-tower text-3xl text-red-500"></i>
+                                <div class="absolute inset-0 flex items-end justify-center gap-1 pb-4" id="eq-container"></div>
+                            </div>
+                            <h2 id="current-station" class="text-sm font-bold uppercase text-white tracking-widest truncate">Idle...</h2>
+                            <p id="current-status-text" class="text-[9px] text-red-500/60 uppercase mt-1">Ready for Sync</p>
+                        </div>
+                        
+                        <div class="w-full space-y-6">
+                            <div class="flex items-center gap-4">
+                                <i class="fas fa-volume-down text-[10px] text-slate-500"></i>
+                                <input type="range" min="0" max="1" step="0.01" value="0.5" class="volume-slider" id="radio-volume">
+                                <i class="fas fa-volume-up text-[10px] text-slate-500"></i>
+                            </div>
+                            <div class="flex justify-center gap-8 items-center">
+                                <i class="fas fa-step-backward cursor-pointer hover:text-red-500"></i>
+                                <div onclick="toggleRadioPlay()" class="w-12 h-12 bg-red-500/10 border border-red-500/30 rounded-full flex items-center justify-center cursor-pointer hover:bg-red-500/20">
+                                    <i id="play-pause-icon" class="fas fa-play text-red-500"></i>
+                                </div>
+                                <i class="fas fa-step-forward cursor-pointer hover:text-red-500"></i>
+                            </div>
                         </div>
                     </div>
                 </div>
-                <div class="resizer"></div>
+            </div>
+
+            <!-- APP STORE -->
+            <div id="app-store" class="glass-panel hidden" style="width: 800px; height: 500px; left: 150px; top: 80px;">
+                <div class="window-header">
+                    <span class="text-[10px] font-bold text-amber-400 uppercase">Dathu Marketplace</span>
+                    <i class="fas fa-times text-xs text-red-500 cursor-pointer" onclick="closeApp('store')"></i>
+                </div>
+                <div class="flex-1 overflow-y-auto p-4">
+                    <div class="store-grid" id="app-grid"></div>
+                </div>
             </div>
 
             <!-- TERMINAL -->
@@ -267,105 +278,149 @@
                     <span class="text-cyan-600 text-[10px]">root@dathu:~$</span>
                     <input type="text" onkeydown="handleTerm(event, this)" class="bg-transparent border-none outline-none text-[10px] text-white flex-1">
                 </div>
-                <div class="resizer"></div>
             </div>
 
         </div>
 
         <!-- Taskbar -->
         <div class="fixed bottom-0 w-full h-10 bg-black/90 backdrop-blur-md border-t border-white/10 flex items-center px-2 gap-2 z-[9999]">
-            <button onclick="toggleStart()" class="w-8 h-8 bg-cyan-600 hover:bg-cyan-500 text-black flex items-center justify-center font-black text-lg">D</button>
-            <div class="flex-1 flex gap-1 h-full items-center px-4" id="taskbar-items"></div>
-            <div id="os-clock" class="px-4 text-slate-500 text-[10px] font-bold">00:00:00</div>
-        </div>
-
-        <!-- Start Menu -->
-        <div id="start-menu" class="start-menu rounded-t-lg shadow-2xl overflow-hidden">
-            <div class="p-4 bg-cyan-600 text-black flex items-center gap-3">
-                <div class="w-8 h-8 bg-black/20 rounded-full flex items-center justify-center"><i class="fas fa-user text-xs"></i></div>
-                <div class="text-[10px] font-bold uppercase">Olessiall Admin</div>
-            </div>
-            <div class="p-1">
-                <div onclick="openApp('store')" class="p-2 hover:bg-white/5 flex items-center gap-3 text-[10px] cursor-pointer"><i class="fas fa-shopping-bag w-4"></i> Marketplace</div>
-                <div onclick="openApp('terminal')" class="p-2 hover:bg-white/5 flex items-center gap-3 text-[10px] cursor-pointer"><i class="fas fa-terminal w-4"></i> Terminal</div>
-                <hr class="border-white/5 my-1">
-                <div onclick="location.reload()" class="p-2 hover:bg-red-500/10 text-red-400 flex items-center gap-3 text-[10px] cursor-pointer"><i class="fas fa-power-off w-4"></i> Shutdown</div>
-            </div>
+            <div class="w-8 h-8 bg-cyan-600 flex items-center justify-center font-black text-black">D</div>
+            <div class="flex-1"></div>
+            <div id="os-clock-taskbar" class="px-4 text-slate-500 text-[10px] font-bold">00:00:00</div>
         </div>
     </div>
 
     <script>
-        // Store Data Generation
-        const appTypes = [
-            { cat: 'gpu', icon: 'fas fa-microchip', color: 'text-emerald-400', names: ['CoreX Optimizer', 'Vulkan Stable', 'GPU Stress-7', 'RTX Proxy', 'Buffer Clear'] },
-            { cat: 'games', icon: 'fas fa-gamepad', color: 'text-purple-400', names: ['Cyber Strike', 'Void Runner', 'Neural Chess', 'Quantum Racer', 'Grid Wars'] },
-            { cat: 'widgets', icon: 'fas fa-th-large', color: 'text-cyan-400', names: ['Clock-Z', 'Net Monitor', 'RAM Bar', 'Weather-D', 'Crypto Feed'] },
-            { cat: 'server', icon: 'fas fa-server', color: 'text-amber-400', names: ['Node Link', 'SQL Proxy', 'Auth Gate', 'Log Stream', 'API Shield'] }
+        // --- RADIO ENGINE ---
+        const radioPlayer = new Audio();
+        let isPlaying = false;
+        let eqInterval;
+
+        const liveStations = [
+            { name: "Slay Radio (Synth/Retro)", url: "https://www.slayradio.org/tune_in.php/128kbps.m3u", genre: "SID / SYNTH" },
+            { name: "Nightride FM", url: "https://stream.nightride.fm/nightride.mp3", genre: "SYNTHWAVE" },
+            { name: "Lofi Girl (Global)", url: "https://icecast.lofigirl.com/lofigirl.mp3", genre: "LO-FI" },
+            { name: "Deep Space One", url: "https://ice6.somafm.com/deepspaceone-128-mp3", genre: "AMBIENT" },
+            { name: "DEF CON Radio", url: "https://ice6.somafm.com/defcon-128-mp3", genre: "TECH / NEWS" }
         ];
 
-        let allApps = [];
-        for(let i = 0; i < 312; i++) {
-            const type = appTypes[Math.floor(Math.random() * appTypes.length)];
-            const name = type.names[Math.floor(Math.random() * type.names.length)] + " " + (Math.floor(Math.random() * 9) + 1);
-            allApps.push({ id: i, name, cat: type.cat, icon: type.icon, color: type.color });
-        }
-
-        function renderApps(filter = 'all') {
-            const grid = document.getElementById('app-grid');
-            grid.innerHTML = '';
-            const filtered = filter === 'all' ? allApps : allApps.filter(a => a.cat === filter);
+        function initFrequency() {
+            const list = document.getElementById('radio-list');
+            const eq = document.getElementById('eq-container');
             
-            filtered.forEach(app => {
-                const card = document.createElement('div');
-                card.className = 'app-card';
-                card.innerHTML = `
-                    <i class="${app.icon} ${app.color} text-xl mb-2"></i>
-                    <h3 class="text-[9px] font-bold uppercase truncate">${app.name}</h3>
-                    <p class="text-[7px] text-slate-600 mt-1 uppercase">${app.cat}</p>
-                    <button class="mt-2 w-full text-[8px] border border-white/10 py-1 hover:bg-white/5 transition-all">GET</button>
+            // Setup Equalizer
+            for(let i=0; i<12; i++) {
+                const bar = document.createElement('div');
+                bar.className = 'eq-bar';
+                eq.appendChild(bar);
+            }
+
+            liveStations.forEach(s => {
+                const div = document.createElement('div');
+                div.className = 'radio-station-item p-3 cursor-pointer';
+                div.innerHTML = `
+                    <h4 class="text-[10px] font-bold text-white uppercase">${s.name}</h4>
+                    <p class="text-[8px] text-red-500/50 uppercase">${s.genre}</p>
                 `;
-                grid.appendChild(card);
+                div.onclick = () => streamStation(s);
+                list.appendChild(div);
             });
+
+            // Volume sync
+            document.getElementById('radio-volume').addEventListener('input', (e) => {
+                radioPlayer.volume = e.target.value;
+            });
+
+            // Audio Events
+            radioPlayer.onplaying = () => {
+                isPlaying = true;
+                updateRadioUI('playing');
+                startEQ();
+            };
+            radioPlayer.onpause = () => {
+                isPlaying = false;
+                updateRadioUI('paused');
+                stopEQ();
+            };
+            radioPlayer.onloadstart = () => updateRadioUI('buffering');
+            radioPlayer.onerror = () => updateRadioUI('error');
         }
 
-        function filterStore(cat) {
-            renderApps(cat);
-            document.querySelectorAll('.store-sidebar button').forEach(btn => btn.className = btn.className.replace('text-amber-200', 'text-slate-400'));
-            event.target.className = event.target.className.replace('text-slate-400', 'text-amber-200');
+        function streamStation(station) {
+            radioPlayer.src = station.url;
+            radioPlayer.play().catch(e => console.log("Stream failed: " + e));
+            document.getElementById('current-station').textContent = station.name;
         }
 
-        // Boot Logic
+        function toggleRadioPlay() {
+            if(!radioPlayer.src) return;
+            if(isPlaying) radioPlayer.pause();
+            else radioPlayer.play();
+        }
+
+        function updateRadioUI(status) {
+            const icon = document.getElementById('play-pause-icon');
+            const statusText = document.getElementById('current-status-text');
+            const mainIcon = document.getElementById('radio-main-icon');
+
+            switch(status) {
+                case 'playing':
+                    icon.className = "fas fa-pause text-red-500";
+                    statusText.textContent = "SIGNAL ACQUIRED - STREAMING";
+                    mainIcon.classList.add('animate-pulse');
+                    break;
+                case 'paused':
+                    icon.className = "fas fa-play text-red-500";
+                    statusText.textContent = "SIGNAL ON STANDBY";
+                    mainIcon.classList.remove('animate-pulse');
+                    break;
+                case 'buffering':
+                    statusText.textContent = "SYNCHRONIZING DATA NODES...";
+                    break;
+                case 'error':
+                    statusText.textContent = "SIGNAL LOST - TRY ANOTHER FREQUENCY";
+                    break;
+            }
+        }
+
+        function startEQ() {
+            clearInterval(eqInterval);
+            const bars = document.querySelectorAll('.eq-bar');
+            eqInterval = setInterval(() => {
+                bars.forEach(bar => {
+                    bar.style.height = (Math.random() * 25 + 2) + 'px';
+                });
+            }, 100);
+        }
+
+        function stopEQ() {
+            clearInterval(eqInterval);
+            document.querySelectorAll('.eq-bar').forEach(b => b.style.height = '2px');
+        }
+
+        // --- CORE OS LOGIC ---
         function startLoading() {
-            const btn = document.getElementById('fingerprint-btn');
-            const loader = document.getElementById('mobile-loader');
-            const progress = document.getElementById('load-progress');
-            const status = document.getElementById('load-status');
-            
-            btn.classList.add('bg-cyan-500');
-            btn.querySelector('i').className = 'fas fa-check text-3xl text-black';
-            loader.classList.remove('hidden');
-
+            document.getElementById('mobile-loader').classList.remove('hidden');
             let p = 0;
             const interval = setInterval(() => {
-                p += Math.random() * 15;
+                p += 5;
+                document.getElementById('load-progress').style.width = p + '%';
                 if(p >= 100) {
-                    p = 100;
                     clearInterval(interval);
-                    setTimeout(() => {
-                        document.getElementById('mobile-init-container').classList.add('hidden');
-                        document.getElementById('desktop-environment').style.display = 'block';
-                        renderApps();
-                        startClock();
-                    }, 500);
+                    document.getElementById('mobile-init-container').classList.add('hidden');
+                    document.getElementById('desktop-environment').style.display = 'block';
+                    initFrequency();
+                    renderStore();
+                    startClock();
                 }
-                progress.style.width = p + '%';
-                status.textContent = p < 50 ? "Linking GPU..." : "Mounting Nodes...";
-            }, 200);
+            }, 100);
         }
 
         function startClock() {
             setInterval(() => {
-                document.getElementById('os-clock').textContent = new Date().toLocaleTimeString('no-NO');
+                const time = new Date().toLocaleTimeString('no-NO');
+                document.getElementById('os-clock').textContent = time;
+                document.getElementById('os-clock-taskbar').textContent = time;
             }, 1000);
         }
 
@@ -373,18 +428,28 @@
             const app = document.getElementById(`app-${id}`);
             app.classList.remove('hidden');
             app.style.zIndex = 1000;
-            document.getElementById('start-menu').style.display = 'none';
         }
 
-        function closeApp(id) { document.getElementById(`app-${id}`).classList.add('hidden'); }
-        function toggleStart() {
-            const m = document.getElementById('start-menu');
-            m.style.display = m.style.display === 'block' ? 'none' : 'block';
+        function closeApp(id) {
+            document.getElementById(`app-${id}`).classList.add('hidden');
+            if(id === 'radio') {
+                radioPlayer.pause();
+            }
         }
 
-        // Window Engine
+        function renderStore() {
+            const grid = document.getElementById('app-grid');
+            for(let i=0; i<20; i++) {
+                const card = document.createElement('div');
+                card.className = 'app-card';
+                card.innerHTML = `<i class="fas fa-cube text-cyan-500 text-xl mb-2"></i><p class="text-[8px] uppercase">D-App ${i+1}</p>`;
+                grid.appendChild(card);
+            }
+        }
+
+        // Window Dragger
         let activeWin = null, isDragging = false, dx, dy;
-        document.addEventListener('mousedown', (e) => {
+        document.addEventListener('mousedown', e => {
             const h = e.target.closest('.window-header');
             if(h) {
                 activeWin = h.parentElement;
@@ -395,7 +460,7 @@
                 activeWin.style.zIndex = 1000;
             }
         });
-        document.addEventListener('mousemove', (e) => {
+        document.addEventListener('mousemove', e => {
             if(isDragging && activeWin) {
                 activeWin.style.left = (e.clientX - dx) + 'px';
                 activeWin.style.top = (e.clientY - dy) + 'px';
@@ -406,16 +471,7 @@
         function handleTerm(e, input) {
             if(e.key === 'Enter') {
                 const out = document.getElementById('term-out');
-                const p = document.createElement('p');
-                p.innerHTML = `<span class="text-cyan-500">> ${input.value}</span>`;
-                out.appendChild(p);
-                const cmd = input.value.toLowerCase();
-                const res = document.createElement('p');
-                res.className = "text-slate-500 mb-2";
-                if(cmd === 'gpu-check') res.innerHTML = "GPU CORE 0: STABLE (42°C)<br>GPU CORE 1: STABLE (44°C)<br>VRAM: 16GB OK";
-                else if(cmd === 'apps') res.innerHTML = "SYSTEM REPORT: 312 APPS LOADED IN STORE CACHE.";
-                else res.textContent = "QUEUED: " + cmd;
-                out.appendChild(res);
+                out.innerHTML += `<p class="text-cyan-500">> ${input.value}</p>`;
                 input.value = '';
                 out.scrollTop = out.scrollHeight;
             }
