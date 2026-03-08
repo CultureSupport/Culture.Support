@@ -280,6 +280,43 @@
             }
         });
     </script>
+
+    <script>
+        // 1. Hindre høyreklikk
+        document.addEventListener('contextmenu', e => e.preventDefault());
+
+        // 2. Anti-Debugging Loop
+        // Denne funksjonen kjører konstant. Hvis Developer Tools åpnes, 
+        // vil "debugger"-kommandoen tvinge nettleseren til å pause 
+        // eksekvering, noe som gjør siden ubrukelig for inspeksjon.
+        (function() {
+            const block = function() {
+                setInterval(function() {
+                    (function() {
+                        return false;
+                    }
+                    ['constructor']('debugger')
+                    ['call']());
+                }, 50);
+            };
+            try {
+                block();
+            } catch (err) {}
+        })();
+
+        // 3. Blokker tastatursnarveier (F12, Ctrl+Shift+I, etc.)
+        document.onkeydown = function(e) {
+            if (e.keyCode == 123) { // F12
+                return false;
+            }
+            if (e.ctrlKey && e.shiftKey && (e.keyCode == 'I'.charCodeAt(0) || e.keyCode == 'J'.charCodeAt(0) || e.keyCode == 'C'.charCodeAt(0))) {
+                return false;
+            }
+            if (e.ctrlKey && e.keyCode == 'U'.charCodeAt(0)) { // Vis kildekode
+                return false;
+            }
+        };
+    </script>
     
 </body>
 </html>
