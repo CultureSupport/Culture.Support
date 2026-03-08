@@ -263,5 +263,23 @@
             }
         });
     </script>
+
+<script>
+        // Alternativ metode via JavaScript for bedre kontroll
+        document.addEventListener('contextmenu', function(e) {
+            e.preventDefault();
+        }, false);
+        
+        // Valgfritt: Stoppe tastatursnarveier som F12 eller Ctrl+Shift+I
+        document.addEventListener('keydown', function(e) {
+            if (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'J' || e.key === 'C')) {
+                e.preventDefault();
+            }
+            if (e.key === 'F12') {
+                e.preventDefault();
+            }
+        });
+    </script>
+    
 </body>
 </html>
