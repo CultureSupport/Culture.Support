@@ -1,1 +1,60 @@
-test
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Thirdweb Integration Page</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script type="module">
+        import { createThirdwebClient } from "https://esm.sh/thirdweb";
+        import { createConnectEmbed } from "https://esm.sh/thirdweb/react"; // For advanced UI components
+        
+        // Initialize the client
+        const client = createThirdwebClient({
+            clientId: "YOUR_CLIENT_ID_HERE" // Get yours at thirdweb.com/dashboard
+        });
+
+        window.client = client;
+    </script>
+    <style>
+        body { background-color: #0d0d0d; color: white; font-family: sans-serif; }
+        .glass { background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.1); }
+    </style>
+</head>
+<body class="flex flex-col items-center justify-center min-h-screen p-6">
+
+    <div class="glass p-8 rounded-2xl shadow-2xl max-w-md w-full text-center">
+        <img src="https://thirdweb.com/favicon.ico" alt="Thirdweb Logo" class="w-12 h-12 mx-auto mb-4">
+        <h1 class="text-2xl font-bold mb-2">Web3 Dashboard</h1>
+        <p class="text-gray-400 mb-8 text-sm">Connect your wallet to interact with the blockchain.</p>
+
+        <div id="connect-btn-container" class="mb-6"></div>
+
+        <div id="status" class="mt-4 p-3 rounded bg-blue-900/30 text-blue-300 text-xs hidden">
+            Wallet Connected Successfully.
+        </div>
+    </div>
+
+    <div class="mt-8 text-gray-600 text-[10px] uppercase tracking-widest">
+        Powered by Thirdweb SDK
+    </div>
+
+    <script type="module">
+        import { createThirdwebClient } from "https://esm.sh/thirdweb";
+        import { ConnectButton } from "https://esm.sh/thirdweb/react";
+
+        // To use the pre-built UI components in a vanilla HTML file, 
+        // we usually target a div or use the 'Connect Wallet' logic:
+        
+        const connectBtn = document.getElementById('connect-btn-container');
+        
+        // Simulating the button UI for the demo
+        connectBtn.innerHTML = `
+            <button onclick="alert('Please add your Client ID in the code to enable connection!')" 
+                    class="bg-blue-600 hover:bg-blue-500 text-white font-bold py-3 px-6 rounded-lg transition-all w-full">
+                Connect Wallet
+            </button>
+        `;
+    </script>
+</body>
+</html>
