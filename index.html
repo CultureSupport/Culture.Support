@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+  
+    <title>Spirit Science </title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            background-color: #0f172a;
+            color: #f8fafc;
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+        }
+        .video-card {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .video-card:hover {
+            transform: translateY(-4px);
+            background-color: #1e293b;
+        }
+        .active-video {
+            border-left: 4px solid #38bdf8;
+            background-color: #1e293b;
+        }
+        .aspect-video-container {
+            position: relative;
+            padding-bottom: 56.25%;
+            height: 0;
+            overflow: hidden;
+            border-radius: 0.75rem;
+            background: #000;
+        }
+        .aspect-video-container iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #0f172a;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #334155;
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #475569;
+        }
+    </style>
+</head>
+<body class="min-h-screen">
+
+    <div class="max-w-7xl mx-auto px-4 py-8">
+        <header class="mb-8 text-center md:text-left">
+            <h1 class="text-3xl md:text-4xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-emerald-400">
+                Spirit Science Archive
+            </h1>
+            <p class="text-slate-400 mt-2">Exploring the nature of reality and consciousness</p>
+        </header>
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <!-- Main Player Area -->
+            <div class="lg:col-span-2 space-y-4">
+                <div id="player-container" class="aspect-video-container shadow-2xl ring-1 ring-white/10">
+                    <div id="player-placeholder" class="flex items-center justify-center h-full text-slate-500 italic">
+                        Select a video to begin
+                    </div>
+                </div>
+                <div id="video-info" class="p-6 bg-slate-800/50 rounded-xl border border-white/5 backdrop-blur-sm">
+                    <h2 id="current-title" class="text-2xl font-semibold mb-2">Welcome</h2>
+                    <p id="current-description" class="text-slate-400">Select a video from the list on the right to start watching. Each video explores a different aspect of the Spirit Science series.</p>
+                </div>
+            </div>
+
+            <!-- Playlist Sidebar -->
+            <div class="lg:col-span-1">
+                <div class="bg-slate-900/50 rounded-xl border border-white/5 overflow-hidden">
+                    <div class="p-4 border-b border-white/5 bg-slate-800/30">
+                        <h3 class="font-medium flex items-center gap-2">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-blue-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m16 6 4 4-4 4"/><path d="M12 18h8"/><path d="M20 10H4c-1.1 0-2 .9-2 2v5c0 1.1.9 2 2 2h1"/></svg>
+                            Up Next
+                        </h3>
+                    </div>
+                    <div id="playlist" class="max-h-[600px] overflow-y-auto">
+                        <!-- Videos will be injected here -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const videoList = [
+            { id: 'hVYv9ktilQw', title: 'The Emerald Tablets' },
+            { id: 'JoRwXMLsVis', title: 'The Human History Movie' },
+            { id: 'BUL7ei8BGrU', title: 'The Flower of Life' },
+            { id: 'n0YuPpw_xrw', title: 'The Power of Crystals' },
+            { id: 'zLvr80ZrCqo', title: 'Source Energy' },
+            { id: 'VTxmblOKJDI', title: 'The Sacred Geometry' },
+            { id: 'wymi3AxcqnU', title: 'The Astral Travel' },
+            { id: 'eXfyrWRbmss', title: 'The Chakras' },
+            { id: 'GrWhX1BixBk', title: 'The Tree of Life' },
+            { id: 'byowX4wusNk', title: 'Evolution of Consciousness' },
+            { id: 'H83Z6TshYec', title: 'Ancient Civilizations' },
+            { id: 'oKlNqL_bP-c', title: 'The Nature of Reality' },
+            { id: 'SMH0RtRw6Mw', title: 'The Global Shift' },
+            { id: 'QkCIfevpx2o', title: 'The Cosmic Connection' },
+            { id: '5imgmomcgRo', title: 'The Future of Humanity' },
+            { id: 'oOReBkMrTew', title: 'Conspiracy Theory of Everything' }
+        ];
+
+        const playlistEl = document.getElementById('playlist');
+        const playerContainer = document.getElementById('player-container');
+        const currentTitle = document.getElementById('current-title');
+        const currentDescription = document.getElementById('current-description');
+
+        function loadVideo(videoId, title) {
+            // Update Iframe
+            playerContainer.innerHTML = `
+                <iframe 
+                    src="https://www.youtube.com/embed/${videoId}?autoplay=1" 
+                    frameborder="0" 
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                    allowfullscreen>
+                </iframe>
+            `;
+
+            // Update UI
+            currentTitle.textContent = title;
+            currentDescription.textContent = `Now playing: ${title}. Part of the comprehensive Spirit Science series exploring human history, sacred geometry, and consciousness.`;
+
+            // Update active state in list
+            document.querySelectorAll('.video-card').forEach(card => {
+                card.classList.remove('active-video');
+                if (card.dataset.id === videoId) {
+                    card.classList.add('active-video');
+                }
+            });
+
+            // Scroll to top on mobile
+            if (window.innerWidth < 1024) {
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            }
+        }
+
+        function renderPlaylist() {
+            videoList.forEach((video, index) => {
+                const card = document.createElement('button');
+                card.className = 'video-card w-full p-4 text-left border-b border-white/5 flex items-start gap-3 outline-none focus:bg-slate-800';
+                card.dataset.id = video.id;
+                
+                const thumb = `https://img.youtube.com/vi/${video.id}/mqdefault.jpg`;
+                
+                card.innerHTML = `
+                    <div class="relative flex-shrink-0 w-24 aspect-video rounded overflow-hidden bg-slate-800">
+                        <img src="${thumb}" alt="${video.title}" class="object-cover w-full h-full opacity-80 group-hover:opacity-100">
+                        <div class="absolute inset-0 flex items-center justify-center opacity-0 hover:opacity-100 transition-opacity bg-black/40">
+                             <svg class="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+                        </div>
+                    </div>
+                    <div class="flex-1 min-w-0">
+                        <div class="text-xs text-blue-400 font-medium mb-1 uppercase tracking-wider">Lesson ${index + 1}</div>
+                        <div class="font-medium text-sm text-slate-200 truncate">${video.title}</div>
+                    </div>
+                `;
+
+                card.addEventListener('click', () => loadVideo(video.id, video.title));
+                playlistEl.appendChild(card);
+            });
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            renderPlaylist();
+            // Automatically load the first video
+            if (videoList.length > 0) {
+                loadVideo(videoList[0].id, videoList[0].title);
+            }
+        });
+    </script>
+</body>
+</html>
