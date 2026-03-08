@@ -1,60 +1,267 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="no">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Thirdweb Integration Page</title>
+    <title>OLESSIALL | Robotised Workspace</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <script type="module">
-        import { createThirdwebClient } from "https://esm.sh/thirdweb";
-        import { createConnectEmbed } from "https://esm.sh/thirdweb/react"; // For advanced UI components
-        
-        // Initialize the client
-        const client = createThirdwebClient({
-            clientId: "YOUR_CLIENT_ID_HERE" // Get yours at thirdweb.com/dashboard
-        });
-
-        window.client = client;
-    </script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;700;900&family=JetBrains+Mono:wght@300;400;700&display=swap" rel="stylesheet">
     <style>
-        body { background-color: #0d0d0d; color: white; font-family: sans-serif; }
-        .glass { background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.1); }
+        :root {
+            --bg-dark: #020203;
+            --olessiall-red: #dc2626;
+        }
+        body {
+            background-color: var(--bg-dark);
+            color: #cbd5e1;
+            font-family: 'Inter', sans-serif;
+            cursor: crosshair;
+            overflow-x: hidden;
+        }
+        .font-mono { font-family: 'JetBrains+Mono', monospace; }
+        
+        .custom-scrollbar::-webkit-scrollbar { width: 4px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #310000; border-radius: 10px; }
+        
+        @keyframes spin-slow { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+        @keyframes spin-reverse { from { transform: rotate(360deg); } to { transform: rotate(0deg); } }
+        .animate-spin-slow { animation: spin-slow 15s linear infinite; }
+        .animate-spin-reverse { animation: spin-reverse 20s linear infinite; }
+        
+        .robot-orb-shadow {
+            box-shadow: inset -5px -5px 20px black, 0 0 40px rgba(220, 38, 38, 0.3);
+        }
+        .cyber-3d-sirkel {
+            box-shadow: inset -4px -4px 10px black, 0 0 20px rgba(220, 38, 38, 0.5);
+        }
     </style>
 </head>
-<body class="flex flex-col items-center justify-center min-h-screen p-6">
+<body class="selection:bg-red-600/50">
 
-    <div class="glass p-8 rounded-2xl shadow-2xl max-w-md w-full text-center">
-        <img src="https://thirdweb.com/favicon.ico" alt="Thirdweb Logo" class="w-12 h-12 mx-auto mb-4">
-        <h1 class="text-2xl font-bold mb-2">Web3 Dashboard</h1>
-        <p class="text-gray-400 mb-8 text-sm">Connect your wallet to interact with the blockchain.</p>
+    <!-- Olessiall Neural HUD -->
+    <nav id="nav" class="fixed top-0 w-full z-50 transition-all duration-500 py-8 px-10">
+        <div class="max-w-[1800px] mx-auto flex justify-between items-center">
+            <div class="flex items-center gap-6">
+                <div class="flex items-center -space-x-3">
+                    <div class="w-10 h-10 rounded-full bg-gradient-to-br from-red-600 to-black cyber-3d-sirkel border border-red-500/20"></div>
+                    <div class="w-6 h-6 rounded-full bg-slate-900 border border-white/10 flex items-center justify-center shadow-lg">
+                        <div class="w-2 h-2 bg-red-500 rounded-full animate-ping"></div>
+                    </div>
+                </div>
+                <div class="flex flex-col">
+                    <span class="text-xl font-black tracking-[0.6em] text-white">OLESSIALL</span>
+                    <span class="text-[8px] font-mono text-red-600 tracking-[0.4em] uppercase">Robotised Workspace</span>
+                </div>
+            </div>
 
-        <div id="connect-btn-container" class="mb-6"></div>
-
-        <div id="status" class="mt-4 p-3 rounded bg-blue-900/30 text-blue-300 text-xs hidden">
-            Wallet Connected Successfully.
+            <div class="hidden xl:flex items-center gap-12 font-mono text-[9px] text-slate-500 uppercase tracking-widest">
+                <div class="flex flex-col items-end">
+                    <span class="text-red-600">Power_Status</span>
+                    <span id="power-scale" class="text-white">99.900%</span>
+                </div>
+                <div class="w-px h-8 bg-red-900/30"></div>
+                <div class="flex flex-col items-end">
+                    <span class="text-red-600">Cloning_Temple</span>
+                    <span class="text-white">Active</span>
+                </div>
+            </div>
         </div>
-    </div>
+    </nav>
 
-    <div class="mt-8 text-gray-600 text-[10px] uppercase tracking-widest">
-        Powered by Thirdweb SDK
-    </div>
+    <main class="pt-40">
+        <!-- Workspace Section -->
+        <section class="px-10 mb-20">
+            <div class="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-10">
+                <!-- Terminal Sidebar -->
+                <div class="lg:col-span-4 space-y-6">
+                    <div class="bg-black/60 border border-red-900/20 p-6 rounded-sm backdrop-blur-md">
+                        <div class="flex items-center gap-3 mb-6 border-b border-red-900/10 pb-4 text-white">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-red-600"><polyline points="4 17 10 11 4 5"></polyline><line x1="12" y1="19" x2="20" y2="19"></line></svg>
+                            <span class="text-[10px] font-mono uppercase tracking-widest">Olessiall_Agent_Terminal</span>
+                        </div>
+                        <div id="terminal-content" class="space-y-3 font-mono text-[10px] h-80 overflow-y-auto custom-scrollbar">
+                            <!-- Logs injected here -->
+                        </div>
+                    </div>
 
-    <script type="module">
-        import { createThirdwebClient } from "https://esm.sh/thirdweb";
-        import { ConnectButton } from "https://esm.sh/thirdweb/react";
+                    <!-- Agent Status -->
+                    <div class="bg-black/40 border border-white/5 p-6 rounded-sm">
+                        <h4 class="text-[10px] font-mono text-slate-500 mb-6 uppercase tracking-[0.3em]">Autonome Agenter</h4>
+                        <div class="space-y-4">
+                            <div class="flex justify-between items-center p-3 border border-white/5 bg-white/5">
+                                <div class="flex flex-col">
+                                    <span class="text-[10px] font-bold text-white">AGENT_ALPHA</span>
+                                    <span class="text-[8px] text-slate-500 uppercase">Cloning Temple Structures</span>
+                                </div>
+                                <div class="text-[8px] px-2 py-0.5 rounded-full bg-red-600/20 text-red-500">ACTIVE</div>
+                            </div>
+                            <div class="flex justify-between items-center p-3 border border-white/5 bg-white/5 opacity-60">
+                                <div class="flex flex-col">
+                                    <span class="text-[10px] font-bold text-white">AGENT_BETA</span>
+                                    <span class="text-[8px] text-slate-500 uppercase">API Injection</span>
+                                </div>
+                                <div class="text-[8px] px-2 py-0.5 rounded-full bg-slate-800 text-slate-400">READY</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
 
-        // To use the pre-built UI components in a vanilla HTML file, 
-        // we usually target a div or use the 'Connect Wallet' logic:
+                <!-- Workspace Main View -->
+                <div class="lg:col-span-8">
+                    <div class="bg-[#050508] border border-red-900/20 rounded-sm overflow-hidden shadow-2xl">
+                        <div class="p-4 bg-black/40 border-b border-red-900/20 flex justify-between items-center">
+                            <div class="flex gap-4">
+                                <button class="text-[9px] font-mono tracking-widest px-4 py-1 text-red-500 border-b border-red-500 uppercase">Indiske-Templer-Clone</button>
+                                <button class="text-[9px] font-mono tracking-widest px-4 py-1 text-slate-600 hover:text-white transition-all uppercase">Cyber-CICD-Pipeline</button>
+                            </div>
+                            <div class="flex gap-2">
+                                <div class="w-2 h-2 rounded-full bg-red-600 shadow-[0_0_5px_red]"></div>
+                                <div class="w-2 h-2 rounded-full bg-slate-800"></div>
+                            </div>
+                        </div>
+
+                        <div class="p-10 grid grid-cols-1 md:grid-cols-2 gap-12">
+                            <div class="space-y-8">
+                                <div>
+                                    <h2 class="text-4xl font-black text-white mb-2 uppercase tracking-tighter leading-none">Clone <span class="text-red-600">Technology</span></h2>
+                                    <p class="text-slate-500 text-sm leading-relaxed italic">Robotisert kloning av komplekse strukturer. Vi overfører den hellige arkitekturen fra indiske templer til digital råskap.</p>
+                                </div>
+
+                                <div class="space-y-4">
+                                    <div class="flex flex-col gap-2">
+                                        <div class="flex justify-between text-[9px] font-mono">
+                                            <span>API_LOAD_STATUS</span>
+                                            <span class="text-red-600">98%</span>
+                                        </div>
+                                        <div class="h-1 bg-white/5 rounded-full overflow-hidden">
+                                            <div class="h-full bg-red-600" style="width: 98%"></div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="flex gap-4">
+                                    <button class="relative group px-6 py-3 bg-red-600 text-white font-mono text-[10px] tracking-widest uppercase shadow-[0_10px_30px_rgba(220,38,38,0.4)] transition-all active:scale-95">Kjør CD/CI Pipeline</button>
+                                    <button class="px-6 py-3 border border-red-900/40 text-red-500 font-mono text-[10px] tracking-widest uppercase hover:bg-red-600/10 transition-all">Last inn API</button>
+                                </div>
+                            </div>
+
+                            <div class="relative aspect-square flex items-center justify-center">
+                                <div class="absolute inset-0 bg-red-600/5 rounded-full blur-3xl animate-pulse"></div>
+                                <div class="relative w-64 h-64">
+                                    <div class="absolute inset-0 border-2 border-red-900/20 rounded-full animate-spin-slow"></div>
+                                    <div class="absolute inset-4 border border-red-600/40 rounded-full animate-spin-reverse"></div>
+                                    <div class="absolute inset-0 flex items-center justify-center">
+                                        <div class="w-32 h-32 rounded-full bg-gradient-to-tr from-red-600 to-black robot-orb-shadow border border-red-500/20 flex items-center justify-center">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-red-500 animate-pulse"><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"></path><path d="m3.3 7 8.7 5 8.7-5"></path><path d="M12 22V12"></path></svg>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="bg-black/60 p-6 border-t border-red-900/20">
+                            <h5 class="text-[9px] font-mono text-slate-600 mb-4 tracking-widest">WORKSPACE_FILES</h5>
+                            <div class="grid grid-cols-3 gap-4">
+                                <div class="flex items-center gap-3 p-2 border border-white/5 bg-white/5 font-mono text-[9px] text-slate-400 hover:text-white hover:border-red-600/30 transition-all">mandir_structure.obj</div>
+                                <div class="flex items-center gap-3 p-2 border border-white/5 bg-white/5 font-mono text-[9px] text-slate-400 hover:text-white hover:border-red-600/30 transition-all">neural_alignment.py</div>
+                                <div class="flex items-center gap-3 p-2 border border-white/5 bg-white/5 font-mono text-[9px] text-slate-400 hover:text-white hover:border-red-600/30 transition-all">ancient_geometry.sh</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Cards Section -->
+        <section class="py-20 px-10 bg-[#040406]">
+            <div class="max-w-7xl mx-auto">
+                <div class="flex items-center gap-6 mb-16">
+                    <div class="h-[1px] flex-grow bg-red-900/20"></div>
+                    <h3 class="text-2xl font-black text-white tracking-[0.4em] uppercase">Hyper Robot Herføring</h3>
+                    <div class="h-[1px] flex-grow bg-red-900/20"></div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+                    <div class="p-8 border border-red-900/10 hover:border-red-600 transition-all group">
+                        <div class="text-red-600 mb-6 group-hover:scale-110 transition-all uppercase font-mono text-xs">Autonome Agenter</div>
+                        <p class="text-slate-500 text-[10px] leading-relaxed uppercase">Selvgående koder som optimaliserer seg selv uten menneskelig friksjon.</p>
+                    </div>
+                    <div class="p-8 border border-red-900/10 hover:border-red-600 transition-all group">
+                        <div class="text-red-600 mb-6 group-hover:scale-110 transition-all uppercase font-mono text-xs">Indisk Tempel Klon</div>
+                        <p class="text-slate-500 text-[10px] leading-relaxed uppercase">Avansert geometri-mapping for overlegne digitale strukturer.</p>
+                    </div>
+                    <div class="p-8 border border-red-900/10 hover:border-red-600 transition-all group">
+                        <div class="text-red-600 mb-6 group-hover:scale-110 transition-all uppercase font-mono text-xs">Cyber CD/CI</div>
+                        <p class="text-slate-500 text-[10px] leading-relaxed uppercase">Nådeløs distribusjon av robotisert logikk i sanntid.</p>
+                    </div>
+                    <div class="p-8 border border-red-900/10 hover:border-red-600 transition-all group">
+                        <div class="text-red-600 mb-6 group-hover:scale-110 transition-all uppercase font-mono text-xs">API Dominans</div>
+                        <p class="text-slate-500 text-[10px] leading-relaxed uppercase">Laster inn data i dimensjoner spioner aldri vil forstå.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="py-10 px-10 border-t border-red-900/10 flex justify-between items-center text-[8px] font-mono tracking-[0.5em] text-slate-700">
+        <div>OLESSIALL_WORKSPACE_V_ROBOT</div>
+        <div class="flex gap-10">
+            <span>No_Friction</span>
+            <span>No_Spying</span>
+            <span>Pure_Judgement</span>
+        </div>
+    </footer>
+
+    <script>
+        const terminalContent = document.getElementById('terminal-content');
+        const powerScaleText = document.getElementById('power-scale');
+        const nav = document.getElementById('nav');
         
-        const connectBtn = document.getElementById('connect-btn-container');
-        
-        // Simulating the button UI for the demo
-        connectBtn.innerHTML = `
-            <button onclick="alert('Please add your Client ID in the code to enable connection!')" 
-                    class="bg-blue-600 hover:bg-blue-500 text-white font-bold py-3 px-6 rounded-lg transition-all w-full">
-                Connect Wallet
-            </button>
-        `;
+        const securityLogs = [
+            { text: "INIT: Robot Clone Technology - Source: India Temples", type: "system" },
+            { text: "CYBER CD/CI: Deploying autonomous agents...", type: "action" },
+            { text: "WORKSPACE: Mapping ancient structures to robot code", type: "system" },
+            { text: "API: Loading temple metadata (14.4 TB)", type: "success" },
+            { text: "ALERT: Blocking Norwegian economic sniffers", type: "alert" },
+            { text: "STATUS: Olessiall Dominans bekreftet", type: "success" }
+        ];
+
+        let power = 99.9;
+        let logIdx = 0;
+
+        function addLog() {
+            const log = securityLogs[logIdx];
+            const logEl = document.createElement('div');
+            logEl.className = `flex gap-3 ${log.type === 'alert' ? 'text-red-500 bg-red-500/5 p-1' : log.type === 'success' ? 'text-emerald-500' : 'text-slate-400'}`;
+            
+            const time = new Date().toLocaleTimeString();
+            logEl.innerHTML = `<span class="opacity-30">[${time}]</span><span>${log.text}</span>`;
+            
+            terminalContent.appendChild(logEl);
+            if (terminalContent.children.length > 15) {
+                terminalContent.removeChild(terminalContent.children[0]);
+            }
+            terminalContent.scrollTop = terminalContent.scrollHeight;
+            
+            logIdx = (logIdx + 1) % securityLogs.length;
+            
+            power = Math.min(100, power + 0.001);
+            powerScaleText.innerText = power.toFixed(3) + "%";
+        }
+
+        setInterval(addLog, 2500);
+        addLog(); // Initial log
+
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 50) {
+                nav.classList.add('bg-black/90', 'backdrop-blur-xl', 'border-b', 'border-red-600/30', 'py-3');
+                nav.classList.remove('bg-transparent', 'py-8');
+            } else {
+                nav.classList.remove('bg-black/90', 'backdrop-blur-xl', 'border-b', 'border-red-600/30', 'py-3');
+                nav.classList.add('bg-transparent', 'py-8');
+            }
+        });
     </script>
 </body>
 </html>
