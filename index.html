@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="no">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Culture.Support</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+    <style>
+        body { margin: 0; overflow: hidden; background-color: #000; font-family: 'Inter', sans-serif; }
+        #ui-layer {
+            position: absolute; top: 20px; left: 20px; color: #ffffff; z-index: 10;
+            pointer-events: none; text-transform: uppercase; letter-spacing: 1px;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.8);
+        }
+        .controls {
+            position: absolute; bottom: 30px; left: 50%; transform: translateX(-50%);
+            display: flex; gap: 10px; z-index: 20; background: rgba(0, 0, 0, 0.7);
+            padding: 12px 20px; border-radius: 50px; border: 1px solid rgba(255,255,255,0.2);
+            backdrop-filter: blur(10px);
+        }
+        button {
+            background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.3); color: #fff;
+            padding: 10px 20px; border-radius: 25px; cursor: pointer; transition: 0.3s;
+            font-size: 14px;
+        }
+        button:hover { background: rgba(255,255,255,0.3); border-color: #fff; }
+        #status-panel {
+            position: absolute; top: 20px; right: 20px; background: rgba(0,0,0,0.85);
+            padding: 20px; border-radius: 12px; color: #fff; width: 280px;
+            font-size: 13px; display: none; border: 1px solid rgba(76, 201, 240, 0.5);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+        .planet-label { color: #4cc9f0; font-weight: bold; margin-bottom: 5px; font-size: 1.2em; }
+        .weather-info { color: #a2d2ff; margin-top: 10px; padding: 10px; background: rgba(255,255,255,0.05); border-radius: 8px; }
+    </style>
+</head>
+<body>
+
+    <div id="ui-layer">
+        <div style="font-size: 0.7em; opacity: 0.8;">Data Stream: <span id="auth-status" style="color: #4cc9f0;">Aktiv</span></div>
+        <h2 style="margin: 5px 0;">Planet Utforsker</h2>
+    </div>
+
+    <div id="status-panel">
+        <div class="planet-label" id="planet-title">JORDEN</div>
+        <div id="live-stats">Søker etter satellitt-data...</div>
+        <div class="weather-info" id="weather-data">
+            <b>Værforhold:</b> Laster inn...
+        </div>
+        <div id="jwt-info" style="font-size: 10px; margin-top: 10px; opacity: 0.5;">JWT SECURE CONNECTION</div>
+    </div>
+
+    <div class="controls">
+        <button onclick="focusPlanet('Earth')">Fokus Jorden</button>
+        <button onclick="focusPlanet('Mars')">Mars</button>
+        <button onclick="resetCamera()">Vis Solsystemet</button>
+        <button id="ar-button" style="background: #4cc9f0; color: #000; font-weight: bold;">AR MODUS</button>
+    </div>
+
+    <script>
+        let scene, camera, renderer, controls, sun, starField;
+        let clouds;
+        const planets = {};
+        const textureLoader = new THREE.TextureLoader();
+
+        function init() {
+            scene = new THREE.Scene();
+            camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 2000);
+            camera.position.set(0, 40, 80);
+
+            renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+            renderer.outputEncoding = THREE.sRGBEncoding;
+            document.body.appendChild(renderer.domElement);
+
+            // Orbit Controls for rotasjon og vinkel
+            controls = new THREE.OrbitControls(camera, renderer.domElement);
+            controls.enableDamping = true;
+            controls.dampingFactor = 0.05;
+
+            // Lys
+            const ambientLight = new THREE.AmbientLight(0xffffff, 0.2);
+            scene.add(ambientLight);
+
+            const sunLight = new THREE.PointLight(0xffffff, 2, 200);
+            scene.add(sunLight);
+
+            // Stjernehimmel (Utsiden av systemet)
+            createStars();
+
+            // Solen
+            const sunGeo = new THREE.SphereGeometry(10, 64, 64);
+            const sunMat = new THREE.MeshBasicMaterial({ color: 0xffdd44 });
+            sun = new THREE.Mesh(sunGeo, sunMat);
+            scene.add(sun);
+
+            // Jorden med skyer
+            createEarth(25);
+            
+            // Mars
+            createMars(45);
+
+            animate();
+            setupAR();
+        }
+
+        function createStars() {
+            const starGeo = new THREE.BufferGeometry();
+            const starCoords = [];
+            for(let i=0; i<8000; i++) {
+                starCoords.push((Math.random()-0.5)*1500, (Math.random()-0.5)*1500, (Math.random()-0.5)*1500);
+            }
+            starGeo.setAttribute('position', new THREE.Float32BufferAttribute(starCoords, 3));
+            starField = new THREE.Points(starGeo, new THREE.PointsMaterial({color: 0xffffff, size: 0.8}));
+            scene.add(starField);
+        }
+
+        function createEarth(dist) {
+            const group = new THREE.Group();
+            
+            // Selve planeten
+            const geo = new THREE.SphereGeometry(4, 64, 64);
+            const mat = new THREE.MeshStandardMaterial({ 
+                map: textureLoader.load('https://raw.githubusercontent.com/mrdoob/three.js/master/examples/textures/planets/earth_atmos_2048.jpg'),
+                roughness: 0.7
+            });
+            const earthMesh = new THREE.Mesh(geo, mat);
+            group.add(earthMesh);
+
+            // Sky-lag (Weather overlay)
+            const cloudGeo = new THREE.SphereGeometry(4.1, 64, 64);
+            const cloudMat = new THREE.MeshPhongMaterial({
+                map: textureLoader.load('https://raw.githubusercontent.com/mrdoob/three.js/master/examples/textures/planets/earth_clouds_1024.png'),
+                transparent: true,
+                opacity: 0.5
+            });
+            clouds = new THREE.Mesh(cloudGeo, cloudMat);
+            group.add(clouds);
+
+            const orbit = new THREE.Group();
+            orbit.add(group);
+            group.position.x = dist;
+            
+            scene.add(orbit);
+            planets["Earth"] = group;
+            planets["Earth_orbit"] = orbit;
+        }
+
+        function createMars(dist) {
+            const group = new THREE.Group();
+            const geo = new THREE.SphereGeometry(2.5, 64, 64);
+            const mat = new THREE.MeshStandardMaterial({ 
+                map: textureLoader.load('https://raw.githubusercontent.com/mrdoob/three.js/master/examples/textures/planets/mars_1k_color.jpg')
+            });
+            const mesh = new THREE.Mesh(geo, mat);
+            group.add(mesh);
+
+            const orbit = new THREE.Group();
+            orbit.add(group);
+            group.position.x = dist;
+            
+            scene.add(orbit);
+            planets["Mars"] = group;
+            planets["Mars_orbit"] = orbit;
+        }
+
+        function focusPlanet(name) {
+            const panel = document.getElementById('status-panel');
+            const stats = document.getElementById('live-stats');
+            const weather = document.getElementById('weather-data');
+            
+            panel.style.display = 'block';
+            document.getElementById('planet-title').innerText = name === 'Earth' ? 'JORDEN' : 'MARS';
+
+            const p = planets[name];
+            const worldPos = new THREE.Vector3();
+            p.getWorldPosition(worldPos);
+
+            // Zoom-animasjon
+            controls.target.copy(worldPos);
+            camera.position.set(worldPos.x + 8, worldPos.y + 3, worldPos.z + 10);
+            controls.update();
+
+            if(name === 'Earth') {
+                stats.innerHTML = "<b>Status:</b> Operativ<br><b>Lokasjon:</b> 3. stein fra Solen";
+                weather.innerHTML = `
+                    <b>Atmosfærisk data:</b><br>
+                    Temp: 14.8°C (Globalt snitt)<br>
+                    Skydekke: 42% (Simulert)<br>
+                    Vind: 12 km/s (Jetstrøm)
+                `;
+            } else {
+                stats.innerHTML = "<b>Status:</b> Utforskes<br><b>Atmosfære:</b> Tynn CO2";
+                weather.innerHTML = "<b>Vær:</b> Støvstorm i Quadrant 4";
+            }
+        }
+
+        function resetCamera() {
+            camera.position.set(0, 60, 100);
+            controls.target.set(0, 0, 0);
+            controls.update();
+            document.getElementById('status-panel').style.display = 'none';
+        }
+
+        function setupAR() {
+            const btn = document.getElementById('ar-button');
+            if ('xr' in navigator) {
+                navigator.xr.isSessionSupported('immersive-ar').then(ok => {
+                    if (ok) btn.onclick = () => {
+                        renderer.xr.enabled = true;
+                        navigator.xr.requestSession('immersive-ar').then(s => renderer.xr.setSession(s));
+                    };
+                });
+            }
+        }
+
+        function animate() {
+            renderer.setAnimationLoop(() => {
+                sun.rotation.y += 0.001;
+                
+                // Omløp
+                if(planets["Earth_orbit"]) planets["Earth_orbit"].rotation.y += 0.002;
+                if(planets["Mars_orbit"]) planets["Mars_orbit"].rotation.y += 0.0015;
+                
+                // Planetrotasjon og skyer
+                if(planets["Earth"]) planets["Earth"].children[0].rotation.y += 0.005;
+                if(clouds) clouds.rotation.y += 0.007; // Skyer beveger seg raskere
+                if(planets["Mars"]) planets["Mars"].children[0].rotation.y += 0.004;
+
+                controls.update();
+                renderer.render(scene, camera);
+            });
+        }
+
+        window.onload = init;
+        window.onresize = () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        };
+    </script>
+</body>
+</html>
