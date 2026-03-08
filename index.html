@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <!-- Comprehensive Meta Tags for All Devices -->
+  
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="theme-color" content="#020617">
+    
+    <title>Spirit Science Archive | Multimedia Player</title>
+
+    <!-- External Fonts & jQuery -->
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --bg-dark: #020617;
+            --bg-card: #0f172a;
+            --accent: #a78bfa;
+            --accent-glow: rgba(167, 139, 250, 0.4);
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --header-height: 70px;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            height: 100vh;
+            overflow: hidden; /* Desktop default */
+        }
+
+        /* Responsive Grid System */
+        .app-container {
+            display: grid;
+            grid-template-columns: 1fr 400px;
+            grid-template-rows: var(--header-height) 1fr;
+            height: 100vh;
+            width: 100vw;
+        }
+
+        /* Header Area */
+        .app-header {
+            grid-column: 1 / -1;
+            background: rgba(15, 23, 42, 0.8);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            display: flex;
+            align-items: center;
+            justify-content: center; /* Centered Header Title */
+            padding: 0 30px;
+            z-index: 100;
+        }
+
+        .app-header h1 {
+            font-size: 1.2rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: var(--accent);
+            font-weight: 700;
+            text-align: center;
+        }
+
+        /* Player Section */
+        .player-content {
+            padding: 30px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            align-items: center; /* Center player content */
+            gap: 20px;
+        }
+
+        .video-container {
+            position: relative;
+            width: 100%;
+            max-width: 1000px; /* Limit width for better centering aesthetics */
+            aspect-ratio: 16 / 9;
+            background: #000;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7);
+        }
+
+        .video-container iframe {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            border: none;
+        }
+
+        .meta-info {
+            text-align: center; /* Center text info */
+            width: 100%;
+        }
+
+        .meta-info h2 {
+            font-size: 2rem;
+            margin-bottom: 10px;
+        }
+
+        .meta-info p {
+            color: var(--text-muted);
+            line-height: 1.7;
+            font-size: 1.1rem;
+            max-width: 800px;
+            margin: 0 auto; /* Center paragraph */
+        }
+
+        /* Playlist Section */
+        .playlist-sidebar {
+            background: var(--bg-card);
+            border-left: 1px solid rgba(255, 255, 255, 0.05);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .playlist-header {
+            padding: 20px;
+            text-align: center;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .playlist-header h2 {
+            font-size: 1rem;
+            color: var(--accent);
+            letter-spacing: 1px;
+        }
+
+        .playlist-items {
+            flex: 1;
+            overflow-y: auto;
+            padding: 15px;
+            display: flex;
+            flex-direction: column;
+            align-items: center; /* Center cards in sidebar */
+        }
+
+        .video-card {
+            display: flex;
+            flex-direction: column; /* Stack thumb and text for centering */
+            align-items: center;    /* Center content horizontally */
+            text-align: center;     /* Center text alignment */
+            width: 100%;
+            max-width: 320px;
+            gap: 12px;
+            padding: 20px;
+            border-radius: 16px;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            margin-bottom: 15px;
+            border: 1px solid transparent;
+        }
+
+        .video-card:hover {
+            background: rgba(255, 255, 255, 0.03);
+            transform: translateY(-3px);
+        }
+
+        .video-card.active {
+            background: rgba(167, 139, 250, 0.1);
+            border-color: var(--accent-glow);
+        }
+
+        .thumb-box {
+            width: 100%;
+            aspect-ratio: 16/9;
+            border-radius: 10px;
+            overflow: hidden;
+            background: #000;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+        }
+
+        .thumb-box img {
+            width: 100%; height: 100%; object-fit: cover;
+        }
+
+        .card-details h3 {
+            font-size: 1rem;
+            margin-bottom: 6px;
+            line-height: 1.4;
+        }
+
+        .card-details span {
+            font-size: 0.8rem;
+            color: var(--accent);
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        /* --- MEDIA QUERIES --- */
+
+        @media (max-width: 1024px) {
+            .app-container {
+                grid-template-columns: 1fr;
+                grid-template-rows: var(--header-height) auto auto;
+                height: auto;
+                overflow-y: auto;
+            }
+            body { overflow-y: auto; }
+            .playlist-sidebar { height: auto; border-left: none; border-top: 1px solid #1e293b; }
+            .playlist-items { flex-direction: row; flex-wrap: wrap; justify-content: center; gap: 15px; }
+            .video-card { width: 280px; margin-bottom: 0; }
+        }
+
+        @media (max-width: 640px) {
+            .meta-info h2 { font-size: 1.4rem; }
+            .video-card { width: 100%; max-width: none; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="app-container">
+    <header class="app-header">
+        <h1>Spirit Science Archive</h1>
+    </header>
+
+    <main class="player-content">
+        <div class="video-container">
+            <iframe id="youtube-frame" src="" allow="autoplay; fullscreen"></iframe>
+        </div>
+        <div class="meta-info">
+            <h2 id="video-title">Loading...</h2>
+            <p id="video-desc">Please select a transmission from the archive.</p>
+        </div>
+    </main>
+
+    <aside class="playlist-sidebar">
+        <div class="playlist-header">
+            <h2>TRANSMISSION LOG</h2>
+        </div>
+        <div class="playlist-items" id="playlist">
+            <!-- Populated by jQuery -->
+        </div>
+    </aside>
+</div>
+
+<script>
+$(document).ready(function() {
+    const archiveData = [
+        { id: 'hVYv9ktilQw', title: 'The Emerald Tablets', desc: 'Ancient wisdom of Thoth the Atlantean.' },
+        { id: 'JoRwXMLsVis', title: 'The Human History Movie', desc: 'Our forgotten cosmic origins.' },
+        { id: 'BUL7ei8BGrU', title: 'The Flower of Life', desc: 'The blueprint of all creation.' },
+        { id: 'n0YuPpw_xrw', title: 'The Power of Crystals', desc: 'Vibrational science of minerals.' },
+        { id: 'zLvr80ZrCqo', title: 'Source Energy', desc: 'The field that connects us all.' },
+        { id: 'VTxmblOKJDI', title: 'The Sacred Geometry', desc: 'The mathematical signatures of God.' },
+        { id: 'wymi3AxcqnU', title: 'The Astral Travel', desc: 'Navigating the non-physical realms.' },
+        { id: 'eXfyrWRbmss', title: 'The Chakras', desc: 'Balancing the internal energy centers.' },
+        { id: 'GrWhX1BixBk', title: 'The Tree of Life', desc: 'The Kabbalistic map of consciousness.' },
+        { id: 'byowX4wusNk', title: 'Evolution of Consciousness', desc: 'The shift into higher awareness.' },
+        { id: 'H83Z6TshYec', title: 'Ancient Civilizations', desc: 'Secrets of the builders of the past.' },
+        { id: 'oKlNqL_bP-c', title: 'The Nature of Reality', desc: 'Questioning the fabric of existence.' },
+        { id: 'SMH0RtRw6Mw', title: 'The Global Shift', desc: 'Preparing for the new earth.' },
+        { id: 'QkCIfevpx2o', title: 'The Cosmic Connection', desc: 'Interstellar relations and human growth.' },
+        { id: '5imgmomcgRo', title: 'The Future of Humanity', desc: 'Technological and spiritual integration.' },
+        { id: 'oOReBkMrTew', title: 'Conspiracy Theory of Everything', desc: 'The ultimate synthesis of hidden truth.' }
+    ];
+
+    function playVideo(index) {
+        const item = archiveData[index];
+        const videoUrl = `https://www.youtube.com/embed/${item.id}?autoplay=1&modestbranding=1&rel=0`;
+        
+        $('#youtube-frame').fadeOut(200, function() {
+            $(this).attr('src', videoUrl).fadeIn(400);
+        });
+
+        $('#video-title').text(item.title);
+        $('#video-desc').text(item.desc);
+
+        $('.video-card').removeClass('active');
+        $(`.video-card[data-index="${index}"]`).addClass('active');
+
+        if (window.innerWidth <= 1024) {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+    }
+
+    const $playlist = $('#playlist');
+    $.each(archiveData, function(i, film) {
+        const card = `
+            <div class="video-card" data-index="${i}" data-id="${film.id}">
+                <div class="thumb-box">
+                    <img src="https://img.youtube.com/vi/${film.id}/mqdefault.jpg" alt="thumb">
+                </div>
+                <div class="card-details">
+                    <span>PART ${i + 1}</span>
+                    <h3>${film.title}</h3>
+                </div>
+            </div>
+        `;
+        $playlist.append(card);
+    });
+
+    $(document).on('click', '.video-card', function() {
+        const idx = $(this).data('index');
+        playVideo(idx);
+    });
+
+    playVideo(0);
+});
+</script>
+
+</body>
+</html>
