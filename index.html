@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nitro Voxel Radio - 100FPS Edition</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/simplex-noise@2.4.0/simplex-noise.min.js"></script>
+    <style>
+        body { margin: 0; overflow: hidden; background: #000; font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; }
+        
+        #ui {
+            position: absolute; top: 20px; left: 20px; color: white;
+            background: rgba(0,0,0,0.8); padding: 15px; border-radius: 12px;
+            pointer-events: none; border: 1px solid #333; z-index: 10;
+            backdrop-filter: blur(8px);
+        }
+
+        .controls-hint { 
+            position: absolute; top: 20px; right: 20px; color: #4ade80; 
+            font-size: 11px; background: rgba(0,0,0,0.7); padding: 10px; 
+            border-radius: 8px; z-index: 10; border: 1px solid #222;
+        }
+
+        #player-ui { margin-top: 10px; padding-top: 10px; border-top: 1px solid #444; pointer-events: auto; }
+        .now-playing { font-size: 12px; color: #22d3ee; margin-bottom: 8px; font-weight: bold; letter-spacing: 0.5px; }
+        .volume-slider { width: 100%; cursor: pointer; accent-color: #4ade80; }
+
+        /* Enhanced Footer for clear visibility */
+        footer {
+            position: absolute; bottom: 0; width: 100%;
+            background: linear-gradient(to top, rgba(0,0,0,1) 80%, rgba(0,0,0,0.8) 100%);
+            color: #eee; border-top: 2px solid #22d3ee;
+            padding: 20px 0; font-size: 12px; z-index: 20;
+            height: 30vh; overflow-y: auto;
+        }
+
+        .footer-content { 
+            display: grid; 
+            grid-template-columns: 2fr 1fr; 
+            gap: 30px; 
+            max-width: 1200px; 
+            margin: 0 auto; 
+            padding: 0 30px; 
+        }
+
+        .station-group h4 { 
+            margin: 0 0 15px 0; 
+            color: #22d3ee; 
+            text-transform: uppercase; 
+            letter-spacing: 2px; 
+            border-bottom: 1px solid #333; 
+            padding-bottom: 5px;
+            font-size: 14px;
+        }
+
+        .station-grid { 
+            display: grid; 
+            grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); 
+            gap: 8px; 
+        }
+
+        .station-link { 
+            color: #bbb; 
+            text-decoration: none; 
+            transition: all 0.15s ease; 
+            cursor: pointer; 
+            padding: 4px 8px;
+            border-radius: 4px;
+            background: rgba(255,255,255,0.03);
+            white-space: nowrap; 
+            overflow: hidden; 
+            text-overflow: ellipsis;
+            border: 1px solid transparent;
+        }
+
+        .station-link:hover { 
+            color: #fff; 
+            background: rgba(34, 211, 238, 0.1); 
+            border-color: #22d3ee;
+        }
+
+        .active-station { 
+            color: #fff !important; 
+            background: #22d3ee !important; 
+            font-weight: bold;
+            box-shadow: 0 0 10px rgba(34, 211, 238, 0.4);
+        }
+
+        #loading {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: #000; color: #22d3ee; display: flex;
+            align-items: center; justify-content: center; z-index: 100; font-size: 20px;
+        }
+
+        footer::-webkit-scrollbar { width: 8px; }
+        footer::-webkit-scrollbar-thumb { background: #333; border-radius: 4px; }
+        footer::-webkit-scrollbar-thumb:hover { background: #444; }
+    </style>
+</head>
+<body>
+
+<div id="loading">UNLEASHING 100 FPS ENGINE...</div>
+
+<div id="ui">
+    <h2 style="margin:0; font-size: 16px; letter-spacing: 1px;">NITRO VOXEL RADIO</h2>
+    <p id="stats" style="font-family: 'Courier New', monospace; font-size: 14px; color: #4ade80; margin: 8px 0;">FPS: 100 | Chunks: 0</p>
+    <p style="margin: 0; font-size: 12px; color: #aaa;">Target: 100FPS Stability</p>
+    
+    <div id="player-ui">
+        <div class="now-playing" id="current-station">Radio: Off</div>
+        <input type="range" class="volume-slider" id="volume" min="0" max="1" step="0.01" value="0.5">
+    </div>
+</div>
+
+<div class="controls-hint">
+    WASD + SHIFT (Turbo) | SPACE/C (Fly) | Z (Planet View)
+</div>
+
+<footer>
+    <div class="footer-content">
+        <!-- SomaFM Main Section -->
+        <div class="station-group">
+            <h4>SomaFM Network</h4>
+            <div class="station-grid" id="somafm-list">
+                <span onclick="playStream('https://ice1.somafm.com/groovesalad-128-mp3', 'Groove Salad', this)" class="station-link">Groove Salad</span>
+                <span onclick="playStream('https://ice1.somafm.com/dronezone-128-mp3', 'Drone Zone', this)" class="station-link">Drone Zone</span>
+                <span onclick="playStream('https://ice1.somafm.com/spacestation-128-mp3', 'Space Station', this)" class="station-link">Space Station</span>
+                <span onclick="playStream('https://ice1.somafm.com/lush-128-mp3', 'Lush', this)" class="station-link">Lush</span>
+                <span onclick="playStream('https://ice1.somafm.com/deepspaceone-128-mp3', 'Deep Space One', this)" class="station-link">Deep Space One</span>
+                <span onclick="playStream('https://ice1.somafm.com/synphaera-128-mp3', 'Synphaera', this)" class="station-link">Synphaera</span>
+                <span onclick="playStream('https://ice1.somafm.com/vaporwaves-128-mp3', 'Vaporwaves', this)" class="station-link">Vaporwaves</span>
+                <span onclick="playStream('https://ice1.somafm.com/cliqhop-128-mp3', 'Cliqhop IDM', this)" class="station-link">Cliqhop IDM</span>
+                <span onclick="playStream('https://ice1.somafm.com/beatblender-128-mp3', 'Beat Blender', this)" class="station-link">Beat Blender</span>
+                <span onclick="playStream('https://ice1.somafm.com/fluid-128-mp3', 'Fluid', this)" class="station-link">Fluid</span>
+                <span onclick="playStream('https://ice1.somafm.com/secretagent-128-mp3', 'Secret Agent', this)" class="station-link">Secret Agent</span>
+                <span onclick="playStream('https://ice1.somafm.com/suburbansprawl-128-mp3', 'Suburban Sprawl', this)" class="station-link">Suburban Sprawl</span>
+            </div>
+        </div>
+
+        <!-- Dedicated Dubstep Section -->
+        <div class="station-group">
+            <h4>Dubstep Radio</h4>
+            <div class="station-grid" style="grid-template-columns: 1fr;">
+                <span onclick="playStream('https://ice1.somafm.com/dubstep-128-mp3', 'SomaFM: Dubstep', this)" class="station-link">SomaFM Dubstep Beyond</span>
+                <span onclick="playStream('https://ice4.digitalsyndicate.fm/dubstep.128.mp3', 'Dubstep.FM', this)" class="station-link">Dubstep.FM (Heavy)</span>
+                <span onclick="playStream('http://pub1.di.fm/di_dubstep', 'DI.FM Dubstep', this)" class="station-link">DI.FM Dubstep</span>
+                <span onclick="playStream('http://icecast.unitedradio.it/Dubstep.mp3', 'United Dubstep', this)" class="station-link">United Dubstep</span>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<script>
+    // --- AUDIO ENGINE ---
+    const audio = new Audio();
+    audio.crossOrigin = "anonymous";
+    const stationLabel = document.getElementById('current-station');
+    const volumeSlider = document.getElementById('volume');
+
+    function playStream(url, name, el) {
+        audio.src = url;
+        audio.play().catch(() => console.log("User interaction required"));
+        stationLabel.innerText = `Radio: ${name}`;
+        document.querySelectorAll('.station-link').forEach(s => s.classList.remove('active-station'));
+        el.classList.add('active-station');
+    }
+    volumeSlider.addEventListener('input', (e) => audio.volume = e.target.value);
+
+    // --- VOXEL NITRO ENGINE ---
+    const CHUNK_SIZE = 16;
+    const RENDER_DIST = 4; // Tight render for high FPS
+    const simplex = new SimplexNoise();
+    
+    let scene, camera, renderer, chunks = {};
+    let player = { 
+        pos: new THREE.Vector3(0, 40, 0), 
+        rotation: new THREE.Euler(0, 0, 0),
+        moveSpeed: 30,
+        sprintMult: 4.0
+    };
+    let isPlanetMode = false;
+    let clock = new THREE.Clock();
+    let frameTimes = [];
+
+    const boxGeo = new THREE.BoxBufferGeometry(1, 1, 1); // Use BufferGeometry for speed
+    const mats = {
+        STONE: new THREE.MeshLambertMaterial({ color: 0x666666 }),
+        GRASS: new THREE.MeshLambertMaterial({ color: 0x3a9d23 }),
+        DIRT:  new THREE.MeshLambertMaterial({ color: 0x5d4037 }),
+        SNOW:  new THREE.MeshLambertMaterial({ color: 0xffffff }),
+        WATER: new THREE.MeshLambertMaterial({ color: 0x00aaff, transparent: true, opacity: 0.5 })
+    };
+
+    function init() {
+        scene = new THREE.Scene();
+        scene.background = new THREE.Color(0x87ceeb);
+        scene.fog = new THREE.FogExp2(0x87ceeb, 0.02);
+
+        camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 3000);
+        
+        renderer = new THREE.WebGLRenderer({ antialias: false, powerPreference: "high-performance" });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.setPixelRatio(1);
+        document.body.appendChild(renderer.domElement);
+
+        scene.add(new THREE.AmbientLight(0xffffff, 0.8));
+        const sun = new THREE.DirectionalLight(0xffffff, 0.6);
+        sun.position.set(50, 100, 50);
+        scene.add(sun);
+
+        setupControls();
+        animate();
+        document.getElementById('loading').style.display = 'none';
+    }
+
+    function getTerrainHeight(x, z) {
+        let n = simplex.noise2D(x / 100, z / 100) * 12;
+        let m = Math.pow(Math.max(0, simplex.noise2D(x / 50, z / 50)), 2) * 35;
+        return Math.floor(n + m);
+    }
+
+    function createChunk(cx, cz) {
+        const key = `${cx},${cz}`;
+        if (chunks[key]) return;
+
+        const group = new THREE.Group();
+        const registry = { STONE: [], GRASS: [], DIRT: [], SNOW: [], WATER: [] };
+
+        for (let x = 0; x < CHUNK_SIZE; x++) {
+            for (let z = 0; z < CHUNK_SIZE; z++) {
+                const wx = cx * CHUNK_SIZE + x;
+                const wz = cz * CHUNK_SIZE + z;
+                const h = getTerrainHeight(wx, wz);
+
+                // Optimization: Only render the top layer and water
+                for (let y = h - 1; y <= Math.max(h, 4); y++) {
+                    let type = 'STONE';
+                    if (y > h) type = 'WATER';
+                    else if (y === h) {
+                        if (h > 20) type = 'SNOW';
+                        else if (h > 5) type = 'GRASS';
+                        else type = 'DIRT';
+                    }
+
+                    const matrix = new THREE.Matrix4().makeTranslation(x, y, z);
+                    registry[type].push(matrix);
+                }
+            }
+        }
+
+        Object.keys(registry).forEach(matKey => {
+            const list = registry[matKey];
+            if (list.length > 0) {
+                const imesh = new THREE.InstancedMesh(boxGeo, mats[matKey], list.length);
+                list.forEach((m, i) => imesh.setMatrixAt(i, m));
+                group.add(imesh);
+            }
+        });
+
+        group.position.set(cx * CHUNK_SIZE, 0, cz * CHUNK_SIZE);
+        scene.add(group);
+        chunks[key] = group;
+    }
+
+    function updateChunks() {
+        const pCX = Math.floor(player.pos.x / CHUNK_SIZE);
+        const pCZ = Math.floor(player.pos.z / CHUNK_SIZE);
+
+        for (let x = -RENDER_DIST; x <= RENDER_DIST; x++) {
+            for (let z = -RENDER_DIST; z <= RENDER_DIST; z++) {
+                createChunk(pCX + x, pCZ + z);
+            }
+        }
+
+        Object.keys(chunks).forEach(key => {
+            const [cx, cz] = key.split(',').map(Number);
+            if (Math.abs(cx - pCX) > RENDER_DIST + 1 || Math.abs(cz - pCZ) > RENDER_DIST + 1) {
+                scene.remove(chunks[key]);
+                chunks[key].children.forEach(c => {
+                    c.dispose(); // Custom dispose call for InstancedMesh
+                });
+                delete chunks[key];
+            }
+        });
+    }
+
+    const keys = {};
+    function setupControls() {
+        window.onkeydown = e => keys[e.code] = true;
+        window.onkeyup = e => keys[e.code] = false;
+        window.onmousemove = e => {
+            if (document.pointerLockElement) {
+                player.rotation.y -= e.movementX * 0.002;
+                player.rotation.x -= e.movementY * 0.002;
+                player.rotation.x = Math.max(-1.5, Math.min(1.5, player.rotation.x));
+            }
+        };
+        window.onmousedown = (e) => {
+            if (!e.target.closest('footer') && !e.target.closest('#ui')) {
+                document.body.requestPointerLock();
+            }
+        };
+        window.addEventListener('keydown', e => {
+            if(e.code === 'KeyZ') {
+                isPlanetMode = !isPlanetMode;
+                document.getElementById('modeText').innerText = isPlanetMode ? "Planet View" : "Explorer";
+            }
+        });
+    }
+
+    function animate() {
+        requestAnimationFrame(animate);
+        const delta = clock.getDelta();
+        
+        // FPS Meter logic for 100 FPS target
+        const fps = Math.round(1 / delta);
+        if (fps > 0) {
+            frameTimes.push(fps);
+            if(frameTimes.length > 20) frameTimes.shift();
+            const avgFps = Math.round(frameTimes.reduce((a,b) => a+b) / frameTimes.length);
+            document.getElementById('stats').innerText = `FPS: ${avgFps} | Chunks: ${Object.keys(chunks).length}`;
+        }
+
+        if (isPlanetMode) {
+            const targetPos = new THREE.Vector3(player.pos.x, 400, player.pos.z + 200);
+            camera.position.lerp(targetPos, 0.1);
+            camera.lookAt(player.pos);
+        } else {
+            const speed = (keys['ShiftLeft'] ? player.moveSpeed * player.sprintMult : player.moveSpeed) * delta;
+            const dir = new THREE.Vector3();
+            if (keys['KeyW']) dir.z -= 1;
+            if (keys['KeyS']) dir.z += 1;
+            if (keys['KeyA']) dir.x -= 1;
+            if (keys['KeyD']) dir.x += 1;
+            
+            dir.applyEuler(new THREE.Euler(0, player.rotation.y, 0)).normalize();
+            player.pos.addScaledVector(dir, speed);
+            
+            if (keys['Space']) player.pos.y += speed;
+            if (keys['KeyC']) player.pos.y -= speed;
+
+            camera.position.copy(player.pos);
+            camera.rotation.copy(player.rotation);
+        }
+
+        updateChunks();
+        renderer.render(scene, camera);
+    }
+
+    window.onload = init;
+    window.onresize = () => {
+        camera.aspect = window.innerWidth / window.innerHeight;
+        camera.updateProjectionMatrix();
+        renderer.setSize(window.innerWidth, window.innerHeight);
+    };
+</script>
+</body>
+</html>
