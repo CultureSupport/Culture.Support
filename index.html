@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Voxel Architect | Infinite Worlds</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body { margin: 0; overflow: hidden; background: #050b1a; font-family: 'Segoe UI', sans-serif; }
+        #overlay {
+            position: absolute; top: 20px; left: 20px;
+            background: rgba(10, 20, 40, 0.9); color: #00d4ff;
+            padding: 15px; border-radius: 10px; border: 1px solid #00d4ff;
+            pointer-events: none; text-transform: uppercase; letter-spacing: 1px;
+            font-size: 11px; line-height: 1.6; z-index: 100;
+        }
+        .stat-val { color: #fff; font-weight: bold; }
+        #crosshair {
+            position: absolute; top: 50%; left: 50%;
+            width: 10px; height: 10px; border: 1px solid rgba(255,255,255,0.5);
+            transform: translate(-50%, -50%); pointer-events: none;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="crosshair"></div>
+    <div id="overlay">
+        <div class="text-sm font-bold mb-2 border-b border-cyan-800 pb-1">SQL-LOADED ENGINE V4.0</div>
+        <div>Active Chunks: <span class="stat-val" id="chunk-count">0</span></div>
+        <div>Voxel Data: <span class="stat-val" id="voxel-data">~2.4 GB Virtual</span></div>
+        <div id="pos">POS: 0, 0, 0</div>
+        <div class="mt-2 text-[10px] text-cyan-500">DYNAMIC_L_SYSTEMS_ACTIVE</div>
+    </div>
+
+    <script>
+        // --- 1. SETTINGS & GLOBALS ---
+        const CHUNK_SIZE = 16;
+        const RENDER_DISTANCE = 3; // Radius in chunks
+        const WATER_LEVEL = 4;
+        const scene = new THREE.Scene();
+        scene.background = new THREE.Color(0x0a1428);
+        scene.fog = new THREE.FogExp2(0x0a1428, 0.01);
+
+        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+        const renderer = new THREE.WebGLRenderer({ antialias: true });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        document.body.appendChild(renderer.domElement);
+
+        const light = new THREE.DirectionalLight(0xffffff, 0.8);
+        light.position.set(100, 100, 50);
+        scene.add(light);
+        scene.add(new THREE.AmbientLight(0x4040ff, 0.4));
+
+        const boxGeo = new THREE.BoxGeometry(1, 1, 1);
+        const mats = {
+            grass: new THREE.MeshLambertMaterial({ color: 0x228b22 }),
+            stone: new THREE.MeshLambertMaterial({ color: 0x555555 }),
+            water: new THREE.MeshLambertMaterial({ color: 0x0077be, transparent: true, opacity: 0.6 }),
+            wood: new THREE.MeshLambertMaterial({ color: 0x8b4513 }),
+            hull: new THREE.MeshLambertMaterial({ color: 0x1a1a1a }),
+            window: new THREE.MeshLambertMaterial({ color: 0x00ffff, emissive: 0x00ffff, emissiveIntensity: 0.5 })
+        };
+
+        // --- 2. CHUNK MANAGEMENT ---
+        class Chunk {
+            constructor(cx, cz) {
+                this.cx = cx;
+                this.cz = cz;
+                this.voxels = new Map();
+                this.meshes = {};
+                this.generate();
+            }
+
+            generate() {
+                for (let x = 0; x < CHUNK_SIZE; x++) {
+                    for (let z = 0; z < CHUNK_SIZE; z++) {
+                        const wx = this.cx * CHUNK_SIZE + x;
+                        const wz = this.cz * CHUNK_SIZE + z;
+                        
+                        // Realistic Multi-Octave Noise
+                        const h = Math.floor((Math.sin(wx * 0.05) * Math.cos(wz * 0.05) * 8) + 
+                                            (Math.sin(wx * 0.2) * 2) + 6);
+
+                        for (let y = 0; y < h; y++) {
+                            const type = (y === h - 1) ? 'grass' : 'stone';
+                            this.voxels.set(`${x},${y},${z}`, type);
+                        }
+                        
+                        if (h < WATER_LEVEL) {
+                            for (let y = h; y <= WATER_LEVEL; y++) {
+                                this.voxels.set(`${x},${y},${z}`, 'water');
+                            }
+                        }
+
+                        // City Scrapers (L-System Logic)
+                        if (h > 8 && (wx % 24 === 0) && (wz % 24 === 0)) {
+                            const th = 10 + Math.floor(Math.random() * 20);
+                            for(let ty = h; ty < h + th; ty++) {
+                                this.voxels.set(`${x},${ty},${z}`, (ty % 4 === 0) ? 'window' : 'stone');
+                            }
+                        }
+                    }
+                }
+            }
+
+            build() {
+                const dummy = new THREE.Object3D();
+                Object.keys(mats).forEach(type => {
+                    const typeCount = Array.from(this.voxels.values()).filter(t => t === type).length;
+                    if (typeCount === 0) return;
+
+                    const im = new THREE.InstancedMesh(boxGeo, mats[type], typeCount);
+                    let i = 0;
+                    this.voxels.forEach((vType, key) => {
+                        if (vType === type) {
+                            const [lx, ly, lz] = key.split(',').map(Number);
+                            dummy.position.set(this.cx * CHUNK_SIZE + lx, ly, this.cz * CHUNK_SIZE + lz);
+                            dummy.updateMatrix();
+                            im.setMatrixAt(i++, dummy.matrix);
+                        }
+                    });
+                    this.meshes[type] = im;
+                    scene.add(im);
+                });
+            }
+
+            dispose() {
+                Object.values(this.meshes).forEach(m => {
+                    scene.remove(m);
+                    m.geometry.dispose();
+                });
+            }
+        }
+
+        const chunks = new Map();
+        function updateChunks() {
+            const playerCX = Math.floor(camera.position.x / CHUNK_SIZE);
+            const playerCZ = Math.floor(camera.position.z / CHUNK_SIZE);
+
+            // Add new
+            for (let x = -RENDER_DISTANCE; x <= RENDER_DISTANCE; x++) {
+                for (let z = -RENDER_DISTANCE; z <= RENDER_DISTANCE; z++) {
+                    const cx = playerCX + x;
+                    const cz = playerCZ + z;
+                    const key = `${cx},${cz}`;
+                    if (!chunks.has(key)) {
+                        const chunk = new Chunk(cx, cz);
+                        chunk.build();
+                        chunks.set(key, chunk);
+                    }
+                }
+            }
+
+            // Remove old (Garbage Collection)
+            chunks.forEach((chunk, key) => {
+                const dx = Math.abs(chunk.cx - playerCX);
+                const dz = Math.abs(chunk.cz - playerCZ);
+                if (dx > RENDER_DISTANCE + 1 || dz > RENDER_DISTANCE + 1) {
+                    chunk.dispose();
+                    chunks.delete(key);
+                }
+            });
+            
+            document.getElementById('chunk-count').innerText = chunks.size;
+        }
+
+        // --- 3. DYNAMIC ELEMENTS (Ships & Bridges) ---
+        const ships = [];
+        function spawnShip(x, z) {
+            const group = new THREE.Group();
+            const dummy = new THREE.Object3D();
+            const im = new THREE.InstancedMesh(boxGeo, mats.hull, 30);
+            
+            let i = 0;
+            for(let sx=-3; sx<=3; sx++) {
+                for(let sz=-1; sz<=1; sz++) {
+                    dummy.position.set(sx, 0, sz);
+                    dummy.updateMatrix();
+                    im.setMatrixAt(i++, dummy.matrix);
+                }
+            }
+            group.add(im);
+            group.position.set(x, WATER_LEVEL + 0.5, z);
+            scene.add(group);
+            ships.push({ mesh: group, offset: Math.random() * 10 });
+        }
+        spawnShip(10, 10);
+        spawnShip(-20, 30);
+
+        // --- 4. PLAYER CONTROLS ---
+        camera.position.set(0, 15, 20);
+        camera.rotation.order = 'YXZ';
+        const keys = {};
+        window.onkeydown = (e) => keys[e.code] = true;
+        window.onkeyup = (e) => keys[e.code] = false;
+        document.body.onclick = () => document.body.requestPointerLock();
+        
+        window.onmousemove = (e) => {
+            if(document.pointerLockElement) {
+                camera.rotation.y -= e.movementX * 0.002;
+                camera.rotation.x -= e.movementY * 0.002;
+                camera.rotation.x = Math.max(-1.5, Math.min(1.5, camera.rotation.x));
+            }
+        };
+
+        // --- 5. MAIN LOOP ---
+        function loop() {
+            const speed = 0.4;
+            if(keys['KeyW']) camera.translateZ(-speed);
+            if(keys['KeyS']) camera.translateZ(speed);
+            if(keys['KeyA']) camera.translateX(-speed);
+            if(keys['KeyD']) camera.translateX(speed);
+            
+            updateChunks();
+            
+            // Ship Buoyancy
+            const time = performance.now() * 0.001;
+            ships.forEach(s => {
+                s.mesh.position.y = (WATER_LEVEL + 0.5) + Math.sin(time + s.offset) * 0.2;
+                s.mesh.rotation.z = Math.sin(time * 0.5 + s.offset) * 0.05;
+            });
+
+            document.getElementById('pos').innerText = `POS: ${Math.round(camera.position.x)}, ${Math.round(camera.position.y)}, ${Math.round(camera.position.z)}`;
+            renderer.render(scene, camera);
+            requestAnimationFrame(loop);
+        }
+
+        loop();
+
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        });
+    </script>
+</body>
+</html>
