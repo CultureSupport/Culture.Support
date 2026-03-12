@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Voxel Architect | Zen & SomaFM</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body { margin: 0; overflow: hidden; background: #010409; font-family: 'Segoe UI', sans-serif; }
+        
+        .glass-panel {
+            background: rgba(15, 23, 42, 0.85);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(99, 102, 241, 0.3);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        #overlay {
+            position: absolute; top: 20px; left: 20px;
+            color: #818cf8; padding: 15px; border-radius: 12px;
+            pointer-events: none; text-transform: uppercase; letter-spacing: 1px;
+            font-size: 11px; line-height: 1.6; z-index: 100;
+        }
+
+        #radio-panel {
+            position: absolute; right: 20px; top: 20px;
+            width: 320px; max-height: 70vh; color: #e2e8f0; 
+            padding: 20px; border-radius: 12px; z-index: 100;
+            display: flex; flex-direction: column;
+        }
+
+        .ui-hidden { transform: translateY(-120%); opacity: 0; pointer-events: none; }
+        .panel-hidden { transform: translateX(120%); opacity: 0; pointer-events: none; }
+        .view-clear #overlay, .view-clear #radio-panel, .view-clear #crosshair { opacity: 0; pointer-events: none; }
+
+        #station-list {
+            overflow-y: auto; flex-grow: 1; margin-top: 10px;
+            scrollbar-width: thin; scrollbar-color: #6366f1 #0f172a;
+        }
+        .station-item {
+            padding: 10px; border-radius: 6px; cursor: pointer;
+            transition: all 0.2s; font-size: 11px;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+        }
+        .station-item:hover { background: rgba(99, 102, 241, 0.2); transform: translateX(5px); }
+        
+        #radio-footer {
+            position: absolute; bottom: 0; left: 0; right: 0;
+            height: 80px; background: rgba(2, 6, 23, 0.98);
+            border-top: 1px solid #4338ca; display: flex; align-items: center;
+            padding: 0 20px; z-index: 110; justify-content: space-between;
+        }
+
+        .footer-btn {
+            background: #1e1b4b; border: 1px solid #4338ca; color: #818cf8;
+            padding: 8px 14px; border-radius: 6px; font-size: 10px; font-weight: bold;
+            transition: all 0.2s; text-transform: uppercase; display: flex; align-items: center; gap: 6px;
+        }
+        .footer-btn:hover { background: #4338ca; color: white; }
+        .footer-btn.active { background: #6366f1; color: white; }
+
+        #crosshair {
+            position: absolute; top: 50%; left: 50%;
+            width: 12px; height: 12px; border: 1px solid rgba(255,255,255,0.2);
+            transform: translate(-50%, -50%); pointer-events: none; transition: opacity 0.3s;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="crosshair"></div>
+    
+    <div id="overlay" class="glass-panel">
+        <div class="text-sm font-bold mb-2 border-b border-indigo-900 pb-1">ZEN ARCHITECT V2.0</div>
+        <div>Chunks: <span class="stat-val" id="chunk-count">0</span></div>
+        <div>Cycle: <span class="stat-val" id="time-state">NIGHT</span></div>
+        <div id="pos">POS: 0, 0, 0</div>
+    </div>
+
+    <div id="radio-panel" class="glass-panel">
+        <div class="flex justify-between items-center mb-2">
+            <h2 class="text-indigo-400 font-bold uppercase tracking-widest text-xs">SomaFM Directory</h2>
+            <button onclick="togglePanel('radio-panel')" class="text-slate-500 hover:text-white">✕</button>
+        </div>
+        <input type="text" id="station-search" placeholder="Filter SomaFM..." 
+               class="w-full bg-slate-800/50 border border-indigo-900/50 rounded p-2 text-xs text-white outline-none focus:border-indigo-500 mb-2">
+        <div id="station-list">
+            <div class="text-xs text-slate-500 p-4">Linking SomaFM...</div>
+        </div>
+    </div>
+
+    <div id="radio-footer">
+        <div class="flex items-center gap-4 max-w-[35%]">
+            <div id="playing-indicator" class="w-10 h-10 bg-indigo-950 rounded-lg flex items-center justify-center border border-indigo-500/30">
+                <svg class="w-5 h-5 text-indigo-400" fill="currentColor" viewBox="0 0 20 20"><path d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zM7 8v4l8-2-8-2z"></path></svg>
+            </div>
+            <div class="overflow-hidden">
+                <div class="text-xs text-white truncate font-medium" id="current-station-name">Ready for Meditation</div>
+                <div class="text-[9px] text-indigo-400 uppercase tracking-tighter" id="current-station-tags">Commercial-free Radio</div>
+            </div>
+        </div>
+        
+        <div class="flex gap-3 items-center">
+            <button id="toggle-dir-btn" class="footer-btn active">Channels</button>
+            <button id="time-toggle-btn" class="footer-btn">🌙 Night</button>
+            <button id="clear-view-btn" class="footer-btn">Clear View</button>
+            
+            <div class="h-8 w-[1px] bg-indigo-900 mx-1"></div>
+
+            <audio id="audio-player" crossorigin="anonymous"></audio>
+            <button id="play-btn" class="bg-indigo-600 hover:bg-indigo-500 text-white px-6 py-2 rounded font-bold text-xs transition-all">PLAY</button>
+            
+            <div class="flex flex-col items-end ml-1">
+                <input type="range" id="volume-slider" min="0" max="1" step="0.05" value="0.5" class="w-16 h-1 bg-slate-700 rounded-lg appearance-none cursor-pointer accent-indigo-500">
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // --- 1. WORLD ENGINE ---
+        const CHUNK_SIZE = 16;
+        const RENDER_DISTANCE = 4;
+        let isDay = false;
+        
+        const scene = new THREE.Scene();
+        const skyColors = {
+            night: new THREE.Color(0x010409),
+            day: new THREE.Color(0x87ceeb)
+        };
+        scene.background = skyColors.night;
+        scene.fog = new THREE.FogExp2(0x010409, 0.02);
+
+        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+        const renderer = new THREE.WebGLRenderer({ antialias: true });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        document.body.appendChild(renderer.domElement);
+
+        const mainLight = new THREE.DirectionalLight(0xffffff, 0.8);
+        mainLight.position.set(50, 100, 50);
+        scene.add(mainLight);
+
+        const ambientLight = new THREE.AmbientLight(0x1e1b4b, 0.4);
+        scene.add(ambientLight);
+
+        const boxGeo = new THREE.BoxGeometry(1, 1, 1);
+        const mats = {
+            stone: new THREE.MeshLambertMaterial({ color: 0x1f2937 }),
+            grass: new THREE.MeshLambertMaterial({ color: 0x064e3b }),
+            gold: new THREE.MeshStandardMaterial({ color: 0xffd700, metalness: 0.8, roughness: 0.2 }),
+            temple: new THREE.MeshLambertMaterial({ color: 0x450a0a }), // Reddish wood
+            water: new THREE.MeshPhongMaterial({ color: 0x0c0a09, transparent: true, opacity: 0.8 })
+        };
+
+        class Chunk {
+            constructor(cx, cz) {
+                this.cx = cx; this.cz = cz;
+                this.meshes = [];
+                this.generate();
+            }
+            generate() {
+                const dummy = new THREE.Object3D();
+                const voxelData = []; // To store for batching
+
+                // Terrain & Meditation Temples
+                for (let x = 0; x < CHUNK_SIZE; x++) {
+                    for (let z = 0; z < CHUNK_SIZE; z++) {
+                        const wx = this.cx * CHUNK_SIZE + x;
+                        const wz = this.cz * CHUNK_SIZE + z;
+                        
+                        // Noise-based hills
+                        const h = Math.floor(Math.abs(Math.sin(wx * 0.1) * Math.cos(wz * 0.1)) * 12) + 2;
+                        
+                        for(let y=0; y<h; y++) {
+                            voxelData.push({ x: wx, y: y, z: wz, type: 'stone' });
+                        }
+
+                        // Random Zen Temple Area (Top of hills)
+                        if (h > 10 && (wx % 20 === 0) && (wz % 20 === 0)) {
+                            this.createTemple(wx, h, wz, voxelData);
+                        }
+                    }
+                }
+
+                // Create Instanced Meshes per type
+                const types = ['stone', 'gold', 'temple'];
+                types.forEach(type => {
+                    const filtered = voxelData.filter(v => v.type === type);
+                    if (filtered.length > 0) {
+                        const im = new THREE.InstancedMesh(boxGeo, mats[type], filtered.length);
+                        filtered.forEach((v, i) => {
+                            dummy.position.set(v.x, v.y, v.z);
+                            dummy.updateMatrix();
+                            im.setMatrixAt(i, dummy.matrix);
+                        });
+                        scene.add(im);
+                        this.meshes.push(im);
+                    }
+                });
+            }
+
+            createTemple(wx, h, wz, voxelData) {
+                // Tiered Pagoda Structure
+                for (let ty = 0; ty < 5; ty++) {
+                    let size = 3 - ty;
+                    if (size < 1) size = 1;
+                    for (let tx = -size; tx <= size; tx++) {
+                        for (let tz = -size; tz <= size; tz++) {
+                            voxelData.push({ x: wx + tx, y: h + (ty * 2), z: wz + tz, type: 'temple' });
+                        }
+                    }
+                }
+                // Central Gold Pillar (Buddha influence)
+                for (let by = 0; by < 3; by++) {
+                    voxelData.push({ x: wx, y: h + by, z: wz, type: 'gold' });
+                }
+            }
+
+            dispose() {
+                this.meshes.forEach(m => { scene.remove(m); m.geometry.dispose(); });
+            }
+        }
+
+        const chunks = new Map();
+        function updateWorld() {
+            const pcx = Math.floor(camera.position.x / CHUNK_SIZE);
+            const pcz = Math.floor(camera.position.z / CHUNK_SIZE);
+            for(let x = -RENDER_DISTANCE; x <= RENDER_DISTANCE; x++) {
+                for(let z = -RENDER_DISTANCE; z <= RENDER_DISTANCE; z++) {
+                    const key = `${pcx+x},${pcz+z}`;
+                    if(!chunks.has(key)) chunks.set(key, new Chunk(pcx+x, pcz+z));
+                }
+            }
+        }
+
+        // --- 2. RADIO & TIME CONTROLS ---
+        const audio = document.getElementById('audio-player');
+        const playBtn = document.getElementById('play-btn');
+        const stationList = document.getElementById('station-list');
+        const timeBtn = document.getElementById('time-toggle-btn');
+        const timeLabel = document.getElementById('time-state');
+
+        const togglePanel = (id) => {
+            const el = document.getElementById(id);
+            const btn = id === 'radio-panel' ? document.getElementById('toggle-dir-btn') : null;
+            const isHidden = el.classList.toggle('panel-hidden');
+            if(btn) btn.classList.toggle('active', !isHidden);
+        };
+
+        document.getElementById('toggle-dir-btn').onclick = () => togglePanel('radio-panel');
+        
+        timeBtn.onclick = () => {
+            isDay = !isDay;
+            timeBtn.innerText = isDay ? "☀️ Day" : "🌙 Night";
+            timeLabel.innerText = isDay ? "DAYLIGHT" : "NIGHT";
+            
+            // Visual transition
+            const targetColor = isDay ? skyColors.day : skyColors.night;
+            const targetFog = isDay ? 0.01 : 0.02;
+            scene.background = targetColor;
+            scene.fog.color = targetColor;
+            scene.fog.density = targetFog;
+            mainLight.intensity = isDay ? 1.2 : 0.3;
+            ambientLight.intensity = isDay ? 0.6 : 0.2;
+        };
+
+        document.getElementById('clear-view-btn').onclick = function() {
+            document.body.classList.toggle('view-clear');
+            this.classList.toggle('active');
+        };
+
+        async function initSomaFM() {
+            try {
+                const response = await fetch('https://de1.api.radio-browser.info/json/stations/byname/somafm');
+                const stations = (await response.json()).filter(s => s.name.toLowerCase().includes('somafm'));
+                renderStations(stations);
+            } catch (err) { stationList.innerHTML = `<div class="p-4 text-xs">Error loading radio.</div>`; }
+        }
+
+        function renderStations(list) {
+            stationList.innerHTML = '';
+            list.forEach(station => {
+                const div = document.createElement('div');
+                div.className = 'station-item';
+                div.innerHTML = `<div class="font-bold text-indigo-300 truncate">${station.name.replace('SomaFM - ', '')}</div>`;
+                div.onclick = () => {
+                    document.getElementById('current-station-name').innerText = station.name.replace('SomaFM - ', '');
+                    audio.src = station.url_resolved || station.url;
+                    audio.play();
+                    playBtn.innerText = "PAUSE";
+                };
+                stationList.appendChild(div);
+            });
+        }
+
+        playBtn.onclick = () => {
+            if (audio.paused) { audio.play(); playBtn.innerText = "PAUSE"; }
+            else { audio.pause(); playBtn.innerText = "PLAY"; }
+        };
+
+        // --- 3. MOVEMENT ---
+        camera.position.set(5, 15, 25);
+        camera.rotation.order = 'YXZ';
+        const keys = {};
+        window.onkeydown = (e) => keys[e.code] = true;
+        window.onkeyup = (e) => keys[e.code] = false;
+
+        document.body.onclick = (e) => {
+            if (e.target.closest('#radio-panel') || e.target.closest('#radio-footer') || e.target.closest('#overlay')) return;
+            document.body.requestPointerLock();
+        };
+
+        window.onmousemove = (e) => {
+            if(document.pointerLockElement) {
+                camera.rotation.y -= e.movementX * 0.002;
+                camera.rotation.x -= e.movementY * 0.002;
+                camera.rotation.x = Math.max(-1.5, Math.min(1.5, camera.rotation.x));
+            }
+        };
+
+        function animate() {
+            const speed = 0.2;
+            if(keys['KeyW']) camera.translateZ(-speed);
+            if(keys['KeyS']) camera.translateZ(speed);
+            if(keys['KeyA']) camera.translateX(-speed);
+            if(keys['KeyD']) camera.translateX(speed);
+            updateWorld();
+            document.getElementById('pos').innerText = `POS: ${Math.round(camera.position.x)}, ${Math.round(camera.position.y)}, ${Math.round(camera.position.z)}`;
+            renderer.render(scene, camera);
+            requestAnimationFrame(animate);
+        }
+
+        window.onload = () => { initSomaFM(); animate(); };
+        window.onresize = () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        };
+    </script>
+</body>
+</html>
