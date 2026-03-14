@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="no">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gjemnes Helsevern - Kart og Forskningsdata</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+    <style>
+        body { background-color: #0f172a; color: #f8fafc; font-family: 'Inter', sans-serif; }
+        .glass { background: rgba(30, 41, 59, 0.7); backdrop-filter: blur(12px); border: 1px solid rgba(255,255,255,0.1); }
+        .map-container { background: url('https://api.placeholder.com/1200/800') center/cover; position: relative; height: 500px; border-radius: 1.5rem; overflow: hidden; border: 2px solid #1e293b; }
+        .dot { position: absolute; width: 12px; height: 12px; border-radius: 50%; border: 2px solid white; cursor: pointer; transform: translate(-50%, -50%); transition: scale 0.2s; }
+        .dot:hover { scale: 2; z-index: 10; }
+        .dot.psykose { background-color: #ef4444; box-shadow: 0 0 10px #ef4444; }
+        .dot.schizo { background-color: #f59e0b; box-shadow: 0 0 10px #f59e0b; }
+        .dot.manisk { background-color: #a855f7; box-shadow: 0 0 10px #a855f7; }
+        .dot.nedsatt { background-color: #3b82f6; box-shadow: 0 0 10px #3b82f6; }
+        .label { position: absolute; color: white; font-size: 10px; font-weight: bold; text-transform: uppercase; background: rgba(0,0,0,0.6); padding: 2px 4px; border-radius: 4px; pointer-events: none; }
+    </style>
+</head>
+<body class="p-4 md:p-8">
+    <div class="max-w-7xl mx-auto">
+        <!-- Header -->
+        <header class="flex flex-col md:flex-row justify-between items-center mb-8 gap-4">
+            <div>
+                <h1 class="text-3xl font-black tracking-tighter text-white uppercase">Gjemnes Kommune Helsekart</h1>
+                <p class="text-blue-400 font-medium">Fysisk plotting: 459 registrerte tilfeller innen psykisk helsevern</p>
+            </div>
+            <div class="glass px-4 py-2 rounded-lg border border-red-500/30">
+                <span class="text-red-500 font-bold animate-pulse">● KRITISK OVERVÅKING AKTIV</span>
+            </div>
+        </header>
+
+        <!-- Kart og Plotting -->
+        <div class="grid grid-cols-1 lg:grid-cols-4 gap-6 mb-8">
+            <div class="lg:col-span-3">
+                <div class="map-container glass mb-4">
+                    <!-- Plotting områder -->
+                    <!-- Batnfjord sentrum -->
+                    <div class="dot psykose" style="top: 40%; left: 35%;"></div>
+                    <div class="label" style="top: 38%; left: 35%;">Batnfjord Sentrum</div>
+                    
+                    <!-- Solsida -->
+                    <div class="dot schizo" style="top: 45%; left: 38%;"></div>
+                    <div class="label" style="top: 43%; left: 38%;">Solsida</div>
+
+                    <!-- Gjemnes Stranda / Strandboliger -->
+                    <div class="dot manisk" style="top: 30%; left: 55%;"></div>
+                    <div class="dot manisk" style="top: 32%; left: 56%;"></div>
+                    <div class="label" style="top: 28%; left: 55%;">Gjemnes Stranda</div>
+
+                    <!-- Torvikbukt -->
+                    <div class="dot psykose" style="top: 55%; left: 75%;"></div>
+                    <div class="label" style="top: 53%; left: 75%;">Torvikbukt (Helsevern Område)</div>
+
+                    <!-- Åndal -->
+                    <div class="dot nedsatt" style="top: 65%; left: 25%;"></div>
+                    <div class="label" style="top: 63%; left: 25%;">Åndal</div>
+
+                    <!-- Silset -->
+                    <div class="dot schizo" style="top: 25%; left: 45%;"></div>
+                    <div class="label" style="top: 23%; left: 45%;">Silset</div>
+
+                    <!-- Flere 459 dots simulert med tekst -->
+                    <div class="absolute bottom-4 right-4 bg-black/80 p-3 rounded-lg border border-white/20 text-xs">
+                        <p class="font-bold text-blue-300">Plotting Data: 459 Punkter</p>
+                        <ul class="mt-1 space-y-1">
+                            <li><span class="inline-block w-2 h-2 bg-red-500 rounded-full mr-1"></span> Psykoser: 112</li>
+                            <li><span class="inline-block w-2 h-2 bg-yellow-500 rounded-full mr-1"></span> Schizofreni: 94</li>
+                            <li><span class="inline-block w-2 h-2 bg-purple-500 rounded-full mr-1"></span> Maniske Vrangf.: 78</li>
+                            <li><span class="inline-block w-2 h-2 bg-blue-500 rounded-full mr-1"></span> Nedsatt Helse: 175</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Legende og Info -->
+            <div class="glass p-6 rounded-2xl">
+                <h3 class="text-xl font-bold mb-6 text-blue-300">SQL Kart-Logikk</h3>
+                <div class="space-y-4 font-mono text-[10px] text-green-400 bg-black/40 p-4 rounded-xl border border-green-900/30">
+                    <p>SELECT ID, Koordinat, Tilstand</p>
+                    <p>FROM Gjemnes_Kart</p>
+                    <p>WHERE Omrade IN ('Solsida', 'Torvikbukt', 'Silset')</p>
+                    <p>AND Status = 'Aktiv_Psykose';</p>
+                    <hr class="border-green-900/50">
+                    <p class="text-slate-400 italic">// 459 rader returnert</p>
+                </div>
+                <div class="mt-6">
+                    <h4 class="text-xs font-bold text-slate-400 uppercase mb-4">Område Risiko</h4>
+                    <div class="space-y-3">
+                        <div class="flex justify-between text-sm"><span>Torvikbukt</span><span class="text-red-400">KRITISK</span></div>
+                        <div class="flex justify-between text-sm"><span>Åndal / Silset</span><span class="text-yellow-400">HØY</span></div>
+                        <div class="flex justify-between text-sm"><span>Batnfjord Sentrum</span><span class="text-blue-400">STABIL</span></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Forskning og Befolkningsplan 2030 -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            <div class="glass p-6 rounded-2xl">
+                <h3 class="text-xl font-bold mb-4">Befolkningsplan Gjemnes 2030</h3>
+                <p class="text-slate-400 text-sm mb-6">Forskning viser mål om reduksjon/nedsettelse til 1800 personer.</p>
+                <div class="h-[300px]">
+                    <canvas id="popChart"></canvas>
+                </div>
+            </div>
+
+            <div class="glass p-6 rounded-2xl">
+                <h3 class="text-xl font-bold mb-6">SQL Forskningsdata: Plan 1800</h3>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left text-sm">
+                        <thead class="text-slate-500 uppercase text-xs border-b border-slate-700">
+                            <tr>
+                                <th class="pb-3">Årstall</th>
+                                <th class="pb-3">Mål Befolkning</th>
+                                <th class="pb-3">Helsebelastning</th>
+                                <th class="pb-3">Trend</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-slate-800">
+                            <tr>
+                                <td class="py-3">2024</td>
+                                <td class="py-3 font-bold">2600</td>
+                                <td class="py-3">12.4%</td>
+                                <td class="py-3 text-red-400">Stigende</td>
+                            </tr>
+                            <tr>
+                                <td class="py-3">2026</td>
+                                <td class="py-3 font-bold">2350</td>
+                                <td class="py-3">10.1%</td>
+                                <td class="py-3 text-orange-400">Nedadgående</td>
+                            </tr>
+                            <tr>
+                                <td class="py-3">2028</td>
+                                <td class="py-3 font-bold">2050</td>
+                                <td class="py-3">8.5%</td>
+                                <td class="py-3 text-blue-400">Optimalisering</td>
+                            </tr>
+                            <tr class="bg-blue-900/20">
+                                <td class="py-3 font-black text-blue-400">2030</td>
+                                <td class="py-3 font-black text-blue-400">1800</td>
+                                <td class="py-3 font-black text-blue-400">6.0%</td>
+                                <td class="py-3 font-black text-blue-400">MÅL NÅDD</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="mt-6 p-4 bg-blue-900/10 border border-blue-500/30 rounded-xl">
+                    <p class="text-xs text-blue-200 leading-relaxed italic">
+                        *Forskningsnotat: Planlagt nedsettelse av antall innbyggere i Gjemnes kommune forutsetter økt fokus på psykisk helsevern i de tette bofellesskapene i Batnfjord og Torvikbukt.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        window.onload = function() {
+            const ctx = document.getElementById('popChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: ['2024', '2025', '2026', '2027', '2028', '2029', '2030'],
+                    datasets: [{
+                        label: 'Innbyggermål (Gjemnes Plan 1800)',
+                        data: [2600, 2480, 2350, 2210, 2050, 1920, 1800],
+                        borderColor: '#3b82f6',
+                        backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                        borderWidth: 3,
+                        fill: true,
+                        tension: 0.4,
+                        pointBackgroundColor: '#fff'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            grid: { color: 'rgba(255,255,255,0.05)' },
+                            ticks: { color: '#94a3b8' }
+                        },
+                        x: {
+                            grid: { display: false },
+                            ticks: { color: '#94a3b8' }
+                        }
+                    },
+                    plugins: {
+                        legend: { display: false }
+                    }
+                }
+            });
+        };
+    </script>
+</body>
+</html>
