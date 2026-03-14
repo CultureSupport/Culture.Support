@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="no">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gjemnes Helsevern - Kart, Rapportering og SQL-Lagring</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+    <style>
+        body { background-color: #0f172a; color: #f8fafc; font-family: 'Inter', sans-serif; }
+        .glass { background: rgba(30, 41, 59, 0.7); backdrop-filter: blur(12px); border: 1px solid rgba(255,255,255,0.1); }
+        .map-container { 
+            background: #1e293b; 
+            position: relative; 
+            height: 500px; 
+            border-radius: 1.5rem; 
+            overflow: hidden; 
+            border: 2px solid #334155;
+            background-image: radial-gradient(#334155 1px, transparent 1px);
+            background-size: 20px 20px;
+        }
+        .dot { position: absolute; width: 14px; height: 14px; border-radius: 50%; border: 2px solid white; cursor: pointer; transform: translate(-50%, -50%); transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+        .dot:hover { scale: 1.5; z-index: 50; }
+        .dot.psykose { background-color: #ef4444; box-shadow: 0 0 15px #ef4444; }
+        .dot.schizo { background-color: #f59e0b; box-shadow: 0 0 15px #f59e0b; }
+        .dot.manisk { background-color: #a855f7; box-shadow: 0 0 15px #a855f7; }
+        .dot.nedsatt { background-color: #3b82f6; box-shadow: 0 0 15px #3b82f6; }
+        .label { position: absolute; color: white; font-size: 9px; font-weight: bold; text-transform: uppercase; background: rgba(0,0,0,0.8); padding: 2px 6px; border-radius: 4px; pointer-events: none; white-space: nowrap; border: 1px solid rgba(255,255,255,0.1); }
+        .sql-console { font-family: 'Fira Code', monospace; font-size: 11px; }
+        .status-badge { padding: 2px 6px; border-radius: 4px; font-size: 10px; font-weight: bold; text-transform: uppercase; }
+        .badge-akutt { background: #7f1d1d; color: #fca5a5; border: 1px solid #ef4444; }
+        .badge-obs { background: #78350f; color: #fcd34d; border: 1px solid #f59e0b; }
+        .badge-stabil { background: #1e3a8a; color: #bfdbfe; border: 1px solid #3b82f6; }
+    </style>
+</head>
+<body class="p-4 md:p-8">
+    <div class="max-w-7xl mx-auto">
+        <!-- Header -->
+        <header class="flex flex-col md:flex-row justify-between items-center mb-8 gap-4">
+            <div>
+                <h1 class="text-3xl font-black tracking-tighter text-white uppercase italic underline decoration-blue-500">Gjemnes Kommune: Helsevern 2030</h1>
+                <p class="text-blue-400 font-medium">Overvåking av psykose, schizofreni og manisk helse</p>
+            </div>
+            <div class="flex gap-4">
+                <div class="glass px-4 py-2 rounded-lg border border-red-500/30">
+                    <p class="text-[10px] text-slate-400 uppercase">Status Behandlingsplasser</p>
+                    <span class="text-red-400 font-bold">92% BELEGG</span>
+                </div>
+                <div class="glass px-4 py-2 rounded-lg border border-green-500/30">
+                    <span id="dbStatus" class="text-green-500 font-bold animate-pulse uppercase text-xs">● SQL Database Synkronisert</span>
+                </div>
+            </div>
+        </header>
+
+        <!-- Kart og Plotting -->
+        <div class="grid grid-cols-1 lg:grid-cols-4 gap-6 mb-8">
+            <div class="lg:col-span-3">
+                <div id="gjemnesMap" class="map-container glass mb-4">
+                    <div class="label" style="top: 38%; left: 35%;">Batnfjord Sentrum</div>
+                    <div class="label" style="top: 43%; left: 38%;">Solsida</div>
+                    <div class="label" style="top: 28%; left: 55%;">Gjemnes Stranda</div>
+                    <div class="label" style="top: 53%; left: 75%;">Torvikbukt</div>
+                    <div class="label" style="top: 63%; left: 25%;">Åndal</div>
+                    <div class="label" style="top: 23%; left: 45%;">Silset</div>
+                    
+                    <div id="dynamicDots"></div>
+
+                    <div class="absolute bottom-4 right-4 bg-black/90 p-3 rounded-lg border border-white/20 text-[10px]">
+                        <p class="font-bold text-blue-300 mb-2 underline">Diagnose-plotting</p>
+                        <ul class="space-y-1">
+                            <li><span class="inline-block w-2 h-2 bg-red-500 rounded-full mr-2"></span> Akutt Psykose / Paranoid</li>
+                            <li><span class="inline-block w-2 h-2 bg-yellow-500 rounded-full mr-2"></span> Schizofreni / Rus-reklame</li>
+                            <li><span class="inline-block w-2 h-2 bg-purple-500 rounded-full mr-2"></span> Manisk / Fest-arrangør</li>
+                            <li><span class="inline-block w-2 h-2 bg-blue-500 rounded-full mr-2"></span> Sosiale kriterier / Depresjon</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Innmeldingsportal -->
+            <div class="glass p-5 rounded-2xl flex flex-col border border-blue-500/20 shadow-2xl">
+                <h3 class="text-sm font-black mb-4 text-blue-300 uppercase italic tracking-widest border-b border-blue-500/30 pb-2">Diagnose-portal</h3>
+                <form id="innmeldingForm" class="space-y-3 text-[10px] overflow-y-auto pr-1">
+                    <div class="bg-slate-900/80 p-3 rounded-lg border border-slate-700">
+                        <label class="block mb-2 text-red-400 font-bold uppercase">Symptomer & Kriterier:</label>
+                        <div class="grid grid-cols-2 gap-2">
+                            <label class="flex items-center gap-1"><input type="checkbox" name="kriterie" value="Psykose"> Psykose</label>
+                            <label class="flex items-center gap-1"><input type="checkbox" name="kriterie" value="Paranoid"> Paranoid</label>
+                            <label class="flex items-center gap-1"><input type="checkbox" name="kriterie" value="Sjuk av alkohol"> Alkoholsyk</label>
+                            <label class="flex items-center gap-1"><input type="checkbox" name="kriterie" value="Rus-reklame"> Rus-reklame</label>
+                            <label class="flex items-center gap-1"><input type="checkbox" name="kriterie" value="Klaging/Sutring"> Klaging</label>
+                            <label class="flex items-center gap-1"><input type="checkbox" name="kriterie" value="Lite idrett"> Inaktiv</label>
+                            <label class="flex items-center gap-1"><input type="checkbox" name="kriterie" value="Depresjon"> Depresjon</label>
+                            <label class="flex items-center gap-1"><input type="checkbox" name="kriterie" value="Mani/Fest"> Mani/Fest</label>
+                        </div>
+                    </div>
+                    
+                    <div class="space-y-2">
+                        <input type="text" id="pNavn" placeholder="Navn på pasient" class="w-full bg-black border border-slate-700 p-2 rounded text-blue-100 outline-none" required>
+                        <select id="pBehandling" class="w-full bg-black border border-slate-700 p-2 rounded text-slate-300 outline-none" required>
+                            <option value="">Velg Behandlingstype</option>
+                            <option value="Psykose-belte">Psykose-belte (Akutt)</option>
+                            <option value="Sengepost">Sengepost (Institusjon)</option>
+                            <option value="Mani-overvåking">Mani-overvåking</option>
+                            <option value="Stress-klinikk">Stress-klinikk</option>
+                        </select>
+                        
+                        <div class="grid grid-cols-2 gap-2">
+                            <select id="pOmrade" class="bg-black border border-slate-700 p-2 rounded text-slate-300 outline-none" required>
+                                <option value="">Område</option>
+                                <option value="Batnfjord">Batnfjord</option>
+                                <option value="Torvikbukt">Torvikbukt</option>
+                                <option value="Solsida">Solsida</option>
+                                <option value="Silset">Silset</option>
+                            </select>
+                            <select id="pParti" class="bg-black border border-slate-700 p-2 rounded text-slate-300 outline-none">
+                                <option value="Ukjent">Parti</option>
+                                <option value="H">H</option><option value="AP">AP</option><option value="SP">SP</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="w-full bg-red-700 hover:bg-red-600 py-3 rounded font-black uppercase tracking-tighter shadow-lg shadow-red-900/40">
+                        OPPRETT SQL-JOURNAL
+                    </button>
+                    <button type="button" onclick="clearDatabase()" class="w-full text-[8px] text-slate-600 hover:text-white uppercase mt-1">Slett database</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- SQL Rapporteringstabeller -->
+        <div class="mb-8 glass rounded-2xl p-6 border border-slate-700">
+            <h3 class="text-lg font-black mb-6 flex items-center gap-2 italic uppercase">
+                <span class="text-blue-500">SQL QUERY:</span> SELECT * FROM Journal_Gjemnes_Helsevern;
+            </h3>
+            <div class="overflow-x-auto">
+                <table class="w-full text-left text-[11px]">
+                    <thead>
+                        <tr class="text-slate-500 uppercase border-b border-slate-700">
+                            <th class="pb-3 px-2">Logg-ID</th>
+                            <th class="pb-3 px-2">Pasient / Område</th>
+                            <th class="pb-3 px-2">Symptombilde (Kriterier)</th>
+                            <th class="pb-3 px-2">Behandlingstiltak</th>
+                            <th class="pb-3 px-2">Status</th>
+                            <th class="pb-3 px-2 text-right">Inntekt</th>
+                        </tr>
+                    </thead>
+                    <tbody id="sqlTableBody" class="divide-y divide-slate-800 sql-console">
+                        <!-- Dynamisk innhold her -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Behandlingsstatistikk -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div class="glass p-5 rounded-2xl border-t-2 border-red-600">
+                <h4 class="text-xs font-bold text-red-400 uppercase mb-2">Psykose / Paranoid</h4>
+                <div class="text-2xl font-black">112 <span class="text-xs text-slate-500 font-normal">Senger på belte</span></div>
+                <div class="mt-2 text-[10px] text-slate-400">Gjennomsnittlig liggetid: 14 dager</div>
+            </div>
+            <div class="glass p-5 rounded-2xl border-t-2 border-purple-600">
+                <h4 class="text-xs font-bold text-purple-400 uppercase mb-2">Manisk / Mani-fest</h4>
+                <div class="text-2xl font-black">78 <span class="text-xs text-slate-500 font-normal">Overvåkes</span></div>
+                <div class="mt-2 text-[10px] text-slate-400">Trigger: Alkohol & Rus-arrangement</div>
+            </div>
+            <div class="glass p-5 rounded-2xl border-t-2 border-blue-600">
+                <h4 class="text-xs font-bold text-blue-400 uppercase mb-2">Sosial Nedsettelse</h4>
+                <div class="text-2xl font-black">269 <span class="text-xs text-slate-500 font-normal">Lite idrett / Depr.</span></div>
+                <div class="mt-2 text-[10px] text-slate-400">Mål 2030: 2500 personer</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const locations = {
+            'Batnfjord': { top: 40, left: 35 },
+            'Torvikbukt': { top: 55, left: 75 },
+            'Solsida': { top: 45, left: 38 },
+            'Silset': { top: 25, left: 45 }
+        };
+
+        function getDB() {
+            const data = localStorage.getItem('gjemnes_journal_db');
+            return data ? JSON.parse(data) : [];
+        }
+
+        function saveToDB(entry) {
+            const db = getDB();
+            db.push(entry);
+            localStorage.setItem('gjemnes_journal_db', JSON.stringify(db));
+            renderData();
+        }
+
+        function clearDatabase() {
+            if(confirm("Sikker på at du vil slette alle pasientjournaler?")) {
+                localStorage.removeItem('gjemnes_journal_db');
+                renderData();
+            }
+        }
+
+        function renderData() {
+            const db = getDB();
+            const tableBody = document.getElementById('sqlTableBody');
+            const dotContainer = document.getElementById('dynamicDots');
+            tableBody.innerHTML = '';
+            dotContainer.innerHTML = '';
+
+            db.forEach((person, index) => {
+                const statusClass = person.behandling.includes('belte') ? 'badge-akutt' : 
+                                  (person.behandling.includes('overvåking') ? 'badge-obs' : 'badge-stabil');
+                
+                const row = document.createElement('tr');
+                row.className = 'hover:bg-slate-800/50';
+                row.innerHTML = `
+                    <td class="py-3 px-2 text-slate-500 font-mono">REG_#${8000 + index}</td>
+                    <td class="py-3 px-2"><span class="font-bold">${person.navn}</span><br><span class="text-[9px] text-slate-500">${person.omrade} | Parti: ${person.parti}</span></td>
+                    <td class="py-3 px-2 text-slate-300 italic">${person.kriterier.join(', ')}</td>
+                    <td class="py-3 px-2 text-blue-300">${person.behandling}</td>
+                    <td class="py-3 px-2"><span class="status-badge ${statusClass}">${person.behandling.includes('belte') ? 'INNLEGGELSE' : 'JOURNALFØRT'}</span></td>
+                    <td class="py-3 px-2 text-right text-green-400 font-bold">+ 41 111,-</td>
+                `;
+                tableBody.prepend(row);
+
+                const pos = locations[person.omrade] || { top: 50, left: 50 };
+                const dot = document.createElement('div');
+                let color = 'nedsatt';
+                if(person.kriterier.includes('Psykose') || person.kriterier.includes('Paranoid')) color = 'psykose';
+                if(person.kriterier.includes('Mani/Fest')) color = 'manisk';
+                
+                dot.className = `dot ${color}`;
+                dot.style.top = `${pos.top + (Math.random()*6-3)}%`;
+                dot.style.left = `${pos.left + (Math.random()*6-3)}%`;
+                dotContainer.appendChild(dot);
+            });
+        }
+
+        document.getElementById('innmeldingForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const kriterier = Array.from(document.querySelectorAll('input[name="kriterie"]:checked')).map(cb => cb.value);
+            const nyJournal = {
+                navn: document.getElementById('pNavn').value,
+                behandling: document.getElementById('pBehandling').value,
+                omrade: document.getElementById('pOmrade').value,
+                parti: document.getElementById('pParti').value,
+                kriterier: kriterier.length ? kriterier : ["Generell nedsettelse"],
+                timestamp: new Date().toISOString()
+            };
+            saveToDB(nyJournal);
+            e.target.reset();
+            document.getElementById('dbStatus').innerText = "● JOURNAL LAGRET I SQL";
+            setTimeout(() => document.getElementById('dbStatus').innerText = "● SQL DATABASE SYNKRONISERT", 2000);
+        });
+
+        window.onload = renderData;
+    </script>
+</body>
+</html>
