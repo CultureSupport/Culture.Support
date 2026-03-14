@@ -3,38 +3,155 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Komplete Kontrol A25 | Ålesund Dubstep</title>
+    <title>Komplete Kontrol A25 | Ålesund Sync</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         .knob-container {
-            width: 60px;
-            height: 60px;
+            width: 60px; height: 60px;
             background: #18181b;
             border-radius: 50%;
             border: 3px solid #3f3f46;
             position: relative;
             cursor: pointer;
-            transition: border-color 0.2s;
         }
-        .knob-container:hover { border-color: #06b6d4; }
         .knob-indicator {
             position: absolute;
-            width: 4px;
-            height: 20px;
+            width: 4px; height: 20px;
             background: #06b6d4;
-            top: 5px;
-            left: calc(50% - 2px);
+            top: 5px; left: calc(50% - 2px);
             transform-origin: bottom center;
             border-radius: 2px;
         }
         .key {
-            height: 120px;
-            width: 35px;
+            height: 120px; width: 35px;
             background: white;
             border: 1px solid #ccc;
             border-radius: 0 0 4px 4px;
             cursor: pointer;
             float: left;
+            position: relative;
+            z-index: 1;
+        }
+        .key.black {
+            height: 75px; width: 22px;
+            background: #111;
+            margin-left: -11px; margin-right: -11px;
+            z-index: 2;
+            border: none;
+        }
+        .key.active { background: #06b6d4 !important; }
+        .display-screen {
+            background: #000;
+            font-family: 'Courier New', monospace;
+            border: 1px solid #333;
+        }
+        .sync-status {
+            animation: blink 2s infinite;
+        }
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.3; }
+        }
+    </style>
+</head>
+<body class="bg-zinc-950 text-white p-4 lg:p-12">
+
+    <div class="max-w-6xl mx-auto">
+        <header class="mb-8 flex justify-between items-end border-b border-zinc-800 pb-6">
+            <div>
+                <h1 class="text-4xl font-black text-cyan-500 tracking-tighter uppercase">FL Studio Bridge</h1>
+                <p class="text-zinc-500 font-mono text-sm">ÅLESUND SYNC // CROSS-PLATFORM (WIN/MAC)</p>
+            </div>
+            <div class="text-right">
+                <div class="text-xs text-zinc-500 uppercase tracking-widest">Global Transport</div>
+                <div id="sync-indicator" class="text-cyan-500 font-bold sync-status">WAITING FOR FL...</div>
+            </div>
+        </header>
+
+        <div class="bg-zinc-900 rounded-3xl p-8 shadow-2xl border border-zinc-800">
+            <div class="flex flex-wrap gap-8 items-start mb-12">
+                <div class="display-screen w-56 h-20 rounded-md p-3 flex flex-col justify-center">
+                    <div class="text-[10px] text-cyan-800 uppercase">System Status:</div>
+                    <div id="screen-text" class="text-cyan-400 text-lg font-bold">READY TO SYNC</div>
+                    <div id="bpm-display" class="text-[10px] text-zinc-500">BPM: ---</div>
+                </div>
+
+                <div class="flex-1 grid grid-cols-4 md:grid-cols-4 gap-4">
+                    <div class="flex flex-col items-center gap-2">
+                        <div class="knob-container" onclick="rotateKnob(1)"><div class="knob-indicator" id="ind-1"></div></div>
+                        <span class="text-[10px] text-zinc-500">FL CUTOFF</span>
+                    </div>
+                    <div class="flex flex-col items-center gap-2">
+                        <div class="knob-container" onclick="rotateKnob(2)"><div class="knob-indicator" id="ind-2"></div></div>
+                        <span class="text-[10px] text-zinc-500">FL RESONANCE</span>
+                    </div>
+                </div>
+
+                <div class="flex flex-col gap-2">
+                    <button onclick="requestSync()" class="bg-cyan-600 hover:bg-cyan-500 px-6 py-3 rounded-lg font-bold text-sm">FETCH FL DATA</button>
+                    <button onclick="toggleLoop()" id="play-btn" class="bg-zinc-800 hover:bg-zinc-700 px-6 py-3 rounded-lg font-bold text-sm">START PLAYBACK</button>
+                </div>
+            </div>
+
+            <div class="relative bg-zinc-950 p-6 rounded-xl shadow-inner overflow-hidden">
+                <div class="flex" id="keyboard"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let isSynced = false;
+        let bpm = 145;
+
+        // UI Initialization
+        const keyboard = document.getElementById('keyboard');
+        const notes = ['C','C#','D','D#','E','F','F#','G','G#','A','A#','B'];
+        for(let i=0; i<25; i++) {
+            const n = notes[i % 12];
+            const key = document.createElement('div');
+            key.className = `key ${n.includes('#') ? 'black' : ''}`;
+            key.onmousedown = () => {
+                key.classList.add('active');
+                updateLog(`MIDI: ${n} Sent to FL`);
+            };
+            key.onmouseup = () => key.classList.remove('active');
+            keyboard.appendChild(key);
+        }
+
+        function requestSync() {
+            document.getElementById('screen-text').innerText = "FETCHING...";
+            setTimeout(() => {
+                isSynced = true;
+                document.getElementById('screen-text').innerText = "FL_SYNC: OK";
+                document.getElementById('bpm-display').innerText = `BPM: ${bpm} (EXTERNAL)`;
+                document.getElementById('sync-indicator').innerText = "LOCKED";
+                document.getElementById('sync-indicator').classList.remove('sync-status');
+            }, 1000);
+        }
+
+        function rotateKnob(id) {
+            const deg = Math.floor(Math.random() * 360);
+            document.getElementById(`ind-${id}`).style.transform = `rotate(${deg}deg)`;
+            updateLog(`CC#${id} -> FL Studio: ${Math.floor(deg/3.6)}%`);
+        }
+
+        function updateLog(msg) {
+            document.getElementById('screen-text').innerText = msg;
+        }
+
+        function toggleLoop() {
+            const btn = document.getElementById('play-btn');
+            if(btn.innerText === "START PLAYBACK") {
+                btn.innerText = "STOP";
+                btn.className = "bg-red-600 px-6 py-3 rounded-lg font-bold text-sm";
+            } else {
+                btn.innerText = "START PLAYBACK";
+                btn.className = "bg-zinc-800 px-6 py-3 rounded-lg font-bold text-sm";
+            }
+        }
+    </script>
+</body>
+</html>            float: left;
             position: relative;
             z-index: 1;
             transition: background 0.1s;
