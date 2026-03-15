@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Full Stack Dev Boards - Infrastructure & MPC</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <style>
+        :root {
+            --accent: #2ea44f;
+            --bg: #0d1117;
+            --card-bg: #161b22;
+            --code-bg: #010409;
+        }
+
+        body, html {
+            margin: 0;
+            padding: 0;
+            background-color: var(--bg);
+            color: #c9d1d9;
+            font-family: 'Inter', -apple-system, system-ui, sans-serif;
+            overflow: hidden;
+        }
+
+        #three-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        #scroll-container {
+            position: relative;
+            z-index: 10;
+            height: 100vh;
+            overflow-y: scroll;
+            scroll-snap-type: y mandatory;
+            scrollbar-width: none;
+        }
+        #scroll-container::-webkit-scrollbar { display: none; }
+
+        section {
+            height: 100vh;
+            width: 100%;
+            scroll-snap-align: start;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+            position: relative;
+        }
+
+        .gh-card {
+            background: var(--card-bg);
+            border: 1px solid #30363d;
+            border-radius: 12px;
+            padding: 1.5rem;
+            max-width: 750px;
+            width: 100%;
+            box-shadow: 0 12px 40px rgba(0,0,0,0.4);
+            transform: translateY(30px) scale(0.95);
+            opacity: 0;
+            transition: all 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        section.active .gh-card {
+            transform: translateY(0) scale(1);
+            opacity: 1;
+        }
+
+        .code-snippet {
+            background: var(--code-bg);
+            border-radius: 6px;
+            padding: 1rem;
+            font-family: 'Fira Code', 'Courier New', monospace;
+            font-size: 0.8rem;
+            margin-top: 1rem;
+            border: 1px solid #30363d;
+            overflow-x: auto;
+            position: relative;
+            max-height: 250px;
+        }
+
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 0.2rem 0.6rem;
+            border-radius: 20px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            border: 1px solid rgba(255,255,255,0.1);
+            background: rgba(255,255,255,0.05);
+        }
+
+        .console-text {
+            font-family: 'Fira Code', monospace;
+            color: var(--accent);
+            border-right: 2px solid var(--accent);
+            white-space: nowrap;
+            overflow: hidden;
+            width: 0;
+        }
+
+        section.active .console-text {
+            animation: typing 1.5s steps(40, end) forwards, blink 0.75s step-end infinite;
+        }
+
+        @keyframes typing { from { width: 0 } to { width: 100% } }
+        @keyframes blink { from, to { border-color: transparent } 50% { border-color: var(--accent) } }
+
+        #hud {
+            position: fixed;
+            left: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            z-index: 100;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .dot {
+            width: 6px;
+            height: 6px;
+            background: #30363d;
+            border-radius: 2px;
+            transition: 0.3s;
+        }
+
+        .dot.active {
+            background: var(--accent);
+            height: 20px;
+        }
+    </style>
+</head>
+<body>
+
+    <canvas id="three-canvas"></canvas>
+    <div id="hud"></div>
+
+    <div id="scroll-container">
+        <!-- Boards 1-3 remain (MPC, YAML, Bash) -->
+        <section id="board-1">
+            <div class="gh-card">
+                <div class="flex gap-2 mb-3"><span class="badge text-blue-400">#Security</span></div>
+                <div class="console-text text-sm mb-2">> Initializing MPC...</div>
+                <h2 class="text-2xl font-bold mb-2 text-white">Build MPC Core</h2>
+                <div class="code-snippet">async function sign(shares) { return MPC.combine(shares); }</div>
+            </div>
+        </section>
+
+        <section id="board-2">
+            <div class="gh-card">
+                <div class="flex gap-2 mb-3"><span class="badge text-orange-400">#DevOps</span></div>
+                <div class="console-text text-sm mb-2">> Parsing workflow.yml...</div>
+                <h2 class="text-2xl font-bold mb-2 text-white">CI/CD Pipelines</h2>
+                <div class="code-snippet">name: Deploy<br>on: [push]</div>
+            </div>
+        </section>
+
+        <section id="board-3">
+            <div class="gh-card">
+                <div class="flex gap-2 mb-3"><span class="badge text-red-400">#Shell</span></div>
+                <div class="console-text text-sm mb-2">> Executing setup.sh...</div>
+                <h2 class="text-2xl font-bold mb-2 text-white">Local Node Setup</h2>
+                <div class="code-snippet">npm install && node server.js</div>
+            </div>
+        </section>
+
+        <!-- Board 4: MPC & LLM Integration -->
+        <section id="board-4">
+            <div class="gh-card">
+                <div class="flex gap-2 mb-3">
+                    <span class="badge text-pink-400">#AI</span>
+                    <span class="badge text-blue-400">#MPC</span>
+                </div>
+                <div class="console-text text-sm mb-2">> Connecting LLM to MPC Guard...</div>
+                <h2 class="text-2xl font-bold mb-2 text-white">Privacy-Preserving LLM</h2>
+                <p class="text-sm text-gray-400 mb-4">Using MPC to encrypt LLM prompts before cloud inference.</p>
+                <div class="code-snippet">
+                    <span class="text-purple-400">const</span> encryptedPrompt = <span class="text-yellow-300">mpcEncrypt</span>(userPrompt);<br>
+                    <span class="text-purple-400">const</span> response = <span class="text-purple-400">await</span> <span class="text-blue-400">llmApi</span>.<span class="text-yellow-300">predict</span>(encryptedPrompt);
+                </div>
+            </div>
+        </section>
+
+        <!-- Board 5: Server Apps & Localhost -->
+        <section id="board-5">
+            <div class="gh-card">
+                <div class="flex gap-2 mb-3"><span class="badge">#Localhost</span><span class="badge">#Dev</span></div>
+                <div class="console-text text-sm mb-2">> Settle Node Localhost:3000...</div>
+                <h2 class="text-2xl font-bold mb-2 text-white">Local Runtime Synchronization</h2>
+                <div class="code-snippet">
+                    <span class="text-purple-400">const</span> express = <span class="text-yellow-300">require</span>(<span class="text-green-400">'express'</span>);<br>
+                    app.<span class="text-yellow-300">listen</span>(<span class="text-blue-400">3000</span>, () => <span class="text-green-400">console.log</span>(<span class="text-yellow-300">"Initialized"</span>));
+                </div>
+            </div>
+        </section>
+
+        <!-- Board 6: Cloud MPC with Go -->
+        <section id="board-6">
+            <div class="gh-card">
+                <div class="flex gap-2 mb-3"><span class="badge text-cyan-400">#GoLang</span><span class="badge">#Cloud</span></div>
+                <div class="console-text text-sm mb-2">> go build -o mpc-cloud...</div>
+                <h2 class="text-2xl font-bold mb-2 text-white">Go-Lang Cloud MPC</h2>
+                <div class="code-snippet">
+                    <span class="text-purple-400">package</span> main<br>
+                    <span class="text-purple-400">func</span> <span class="text-yellow-300">main</span>() {<br>
+                    &nbsp;&nbsp;mpc.<span class="text-yellow-300">RunCloudNode</span>(<span class="text-green-400">":8080"</span>)<br>
+                    }
+                </div>
+            </div>
+        </section>
+
+        <!-- Board 7: Docker & Containers -->
+        <section id="board-7">
+            <div class="gh-card">
+                <div class="flex gap-2 mb-3"><span class="badge">#Docker</span><span class="badge">#Kubernetes</span></div>
+                <div class="console-text text-sm mb-2">> docker-compose up -d...</div>
+                <h2 class="text-2xl font-bold mb-2 text-white">Containerized Infrastructure</h2>
+                <div class="code-snippet">
+                    <span class="text-blue-400">services:</span><br>
+                    &nbsp;&nbsp;<span class="text-blue-400">api:</span><br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;<span class="text-blue-400">image:</span> mpc-node-stack:latest<br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;<span class="text-blue-400">ports:</span> [ <span class="text-green-400">"5000:5000"</span> ]
+                </div>
+            </div>
+        </section>
+
+        <!-- Board 8: Virtual Machines -->
+        <section id="board-8">
+            <div class="gh-card">
+                <div class="flex gap-2 mb-3"><span class="badge">#VM</span><span class="badge">#HyperV</span></div>
+                <div class="console-text text-sm mb-2">> Booting VM Instance...</div>
+                <h2 class="text-2xl font-bold mb-2 text-white">Virtual Machine Isolation</h2>
+                <p class="text-sm text-gray-400">Running sensitive MPC validators in isolated KVM environments.</p>
+            </div>
+        </section>
+
+        <!-- Board 9: Socket.io Real-time -->
+        <section id="board-9">
+            <div class="gh-card">
+                <div class="flex gap-2 mb-3"><span class="badge text-yellow-400">#RealTime</span></div>
+                <div class="console-text text-sm mb-2">> io.on('connection')...</div>
+                <h2 class="text-2xl font-bold mb-2 text-white">Socket.io Instances</h2>
+                <div class="code-snippet">
+                    io.<span class="text-yellow-300">on</span>(<span class="text-green-400">'mpc-sync'</span>, (data) => {<br>
+                    &nbsp;&nbsp;socket.<span class="text-yellow-300">broadcast</span>.<span class="text-yellow-300">emit</span>(<span class="text-green-400">'share-update'</span>, data);<br>
+                    });
+                </div>
+            </div>
+        </section>
+
+        <!-- Board 10: PHP & C# Backends -->
+        <section id="board-10">
+            <div class="gh-card">
+                <div class="flex gap-2 mb-3"><span class="badge text-indigo-400">#DotNet</span><span class="badge text-blue-500">#PHP</span></div>
+                <div class="console-text text-sm mb-2">> dotnet run | php -S localhost...</div>
+                <h2 class="text-2xl font-bold mb-2 text-white">Legacy & Enterprise Bridge</h2>
+                <div class="code-snippet">
+                    <span class="text-gray-500">// C# Controller</span><br>
+                    [<span class="text-yellow-300">HttpPost</span>] <span class="text-purple-400">public</span> <span class="text-blue-400">IActionResult</span> <span class="text-yellow-300">InitMPC</span>() { ... }
+                </div>
+            </div>
+        </section>
+
+        <!-- Board 11: JS & Node Stack -->
+        <section id="board-11">
+            <div class="gh-card">
+                <div class="flex gap-2 mb-3"><span class="badge">#NodeJS</span><span class="badge">#ESM</span></div>
+                <div class="console-text text-sm mb-2">> node --loader ts-node...</div>
+                <h2 class="text-2xl font-bold mb-2 text-white">Fully Code Stack JS</h2>
+                <div class="code-snippet">
+                    <span class="text-purple-400">import</span> { node } <span class="text-purple-400">from</span> <span class="text-green-400">'@mpc/core'</span>;<br>
+                    <span class="text-purple-400">await</span> node.<span class="text-yellow-300">initialize</span>();
+                </div>
+            </div>
+        </section>
+
+        <!-- Board 12: GitHub MPC Repository -->
+        <section id="board-12">
+            <div class="gh-card">
+                <div class="flex gap-2 mb-3"><span class="badge">#GitHub</span><span class="badge">#OpenSource</span></div>
+                <div class="console-text text-sm mb-2">> git clone mpc-protocol...</div>
+                <h2 class="text-2xl font-bold mb-2 text-white">GitHub MPC Repo Build</h2>
+                <p class="text-sm text-gray-400">Managed version control for shared cryptographic primitives.</p>
+            </div>
+        </section>
+
+    </div>
+
+    <script>
+        const canvas = document.querySelector('#three-canvas');
+        const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+        camera.position.z = 8;
+
+        const group = new THREE.Group();
+        scene.add(group);
+
+        // Nodes for 3D background
+        for(let i=0; i<40; i++) {
+            const geo = new THREE.IcosahedronGeometry(0.15, 0);
+            const mat = new THREE.MeshBasicMaterial({ color: i % 2 === 0 ? 0x2ea44f : 0x6366f1, wireframe: true });
+            const mesh = new THREE.Mesh(geo, mat);
+            mesh.position.set((Math.random()-0.5)*15, (Math.random()-0.5)*15, (Math.random()-0.5)*15);
+            group.add(mesh);
+        }
+
+        const hud = document.getElementById('hud');
+        for (let i = 1; i <= 20; i++) {
+            const dot = document.createElement('div');
+            dot.className = 'dot';
+            dot.id = `dot-${i}`;
+            hud.appendChild(dot);
+        }
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('active');
+                    const index = entry.target.id.split('-')[1];
+                    document.querySelectorAll('.dot').forEach(d => d.classList.remove('active'));
+                    document.getElementById(`dot-${index}`).classList.add('active');
+                    group.position.y = (index - 1) * -2;
+                }
+            });
+        }, { threshold: 0.6 });
+
+        document.querySelectorAll('section').forEach(s => observer.observe(s));
+
+        function animate() {
+            requestAnimationFrame(animate);
+            group.rotation.y += 0.002;
+            renderer.setSize(window.innerWidth, window.innerHeight, false);
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.render(scene, camera);
+        }
+        animate();
+    </script>
+</body>
+</html>
+
