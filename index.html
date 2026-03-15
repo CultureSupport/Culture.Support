@@ -1,0 +1,560 @@
+<!DOCTYPE html>
+<html lang="no">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Win95 Smartwatch OS - Solitaire Pro</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --win-teal: #008080;
+            --win-gray: #c0c0c0;
+            --win-dark: #808080;
+            --win-white: #ffffff;
+            --win-black: #000000;
+            --win-blue: #000080;
+        }
+
+        body {
+            background: #1a1a1a;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            font-family: 'Tahoma', sans-serif;
+            overflow: hidden;
+            user-select: none;
+            touch-action: none;
+        }
+
+        .watch-frame {
+            width: 440px;
+            height: 550px;
+            background: #333;
+            border-radius: 60px;
+            padding: 20px;
+            box-shadow: 0 0 0 10px #444, inset 0 0 20px rgba(0,0,0,0.5);
+            position: relative;
+            border: 4px solid #222;
+            transform: scale(0.95);
+        }
+
+        @media (max-width: 450px) {
+            .watch-frame { transform: scale(0.8); }
+        }
+
+        .screen {
+            width: 100%;
+            height: 100%;
+            background: var(--win-teal);
+            border-radius: 40px;
+            position: relative;
+            overflow: hidden;
+            border: 2px solid #000;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .win-border {
+            border: 2px solid;
+            border-color: var(--win-white) var(--win-dark) var(--win-dark) var(--win-white);
+        }
+
+        .win-button {
+            background: var(--win-gray);
+            border: 2px solid;
+            border-color: var(--win-white) var(--win-dark) var(--win-dark) var(--win-white);
+            padding: 4px 8px;
+            cursor: pointer;
+            font-size: 11px;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .win-button:active {
+            border-color: var(--win-dark) var(--win-white) var(--win-white) var(--win-dark);
+            padding: 5px 7px 3px 9px;
+        }
+
+        .window {
+            position: absolute;
+            background: var(--win-gray);
+            border: 2px solid;
+            border-color: var(--win-white) var(--win-dark) var(--win-dark) var(--win-white);
+            box-shadow: 1px 1px 0 var(--win-black);
+            z-index: 10;
+        }
+
+        .window-header {
+            background: var(--win-blue);
+            color: white;
+            padding: 4px 6px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-weight: bold;
+            font-size: 11px;
+        }
+
+        .taskbar {
+            height: 35px;
+            background: var(--win-gray);
+            border-top: 2px solid var(--win-white);
+            display: flex;
+            align-items: center;
+            padding: 2px;
+            margin-top: auto;
+        }
+
+        .solitaire-container {
+            width: 395px;
+            height: 420px;
+            background: #007000;
+            position: relative;
+            padding: 5px;
+            overflow: hidden;
+            border: 2px inset rgba(0,0,0,0.5);
+        }
+
+        .card {
+            width: 46px;
+            height: 68px;
+            background: white;
+            border-radius: 4px;
+            border: 1px solid #000;
+            position: absolute;
+            display: flex;
+            flex-direction: column;
+            padding: 2px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 1px 1px 2px rgba(0,0,0,0.3);
+            transition: top 0.2s, left 0.2s, transform 0.1s;
+        }
+
+        .card.dragging { transition: none; z-index: 5000 !important; transform: scale(1.05); }
+        .card.red { color: #d00; }
+        .card.black { color: #000; }
+        .card.back {
+            background: #000080;
+            background-image: repeating-linear-gradient(45deg, #0000a0, #0000a0 2px, #000080 2px, #000080 4px);
+            color: transparent;
+        }
+        
+        .hint-highlight {
+            box-shadow: 0 0 15px 5px #ffff00 !important;
+            border: 2px solid #ffff00 !important;
+        }
+
+        .slot {
+            width: 46px;
+            height: 68px;
+            border: 1px solid rgba(255,255,255,0.2);
+            border-radius: 4px;
+            position: absolute;
+            background: rgba(0,0,0,0.1);
+        }
+
+        .menu-bar {
+            background: var(--win-gray);
+            border-bottom: 1px solid var(--win-dark);
+            padding: 4px 5px;
+            font-size: 11px;
+            display: flex;
+            gap: 10px;
+        }
+
+        .menu-item { cursor: pointer; padding: 2px 4px; }
+        .menu-item:hover { background: var(--win-blue); color: white; }
+
+        .foundation-pile { top: 10px; }
+        .tableau-pile { top: 90px; }
+    </style>
+</head>
+<body>
+
+    <div class="watch-frame">
+        <div class="screen">
+            <div id="windows-container"></div>
+            
+            <div class="taskbar">
+                <button class="win-button font-bold" onclick="openSolitaire()">
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/3/30/Windows_95_logo.png" width="16">
+                    Start
+                </button>
+                <div class="ml-auto text-xs px-2 win-border bg-gray-200" id="clock">12:00</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // System variables
+        let zIndex = 100;
+        const suits = ['♠', '♣', '♥', '♦'];
+        const values = ['A', '2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K'];
+        const valMap = { 'A':1, '2':2, '3':3, '4':4, '5':5, '6':6, '7':7, '8':8, '9':9, '10':10, 'J':11, 'Q':12, 'K':13 };
+        
+        let state = {
+            stock: [],
+            waste: [],
+            foundation: [[], [], [], []],
+            tableau: [[], [], [], [], [], [], []]
+        };
+
+        function updateClock() {
+            document.getElementById('clock').innerText = new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
+        }
+        setInterval(updateClock, 1000);
+        updateClock();
+
+        function openSolitaire() {
+            if (document.getElementById('win-solitaire')) return;
+            
+            const win = document.createElement('div');
+            win.className = 'window';
+            win.id = 'win-solitaire';
+            win.style.left = '4px';
+            win.style.top = '4px';
+            win.style.zIndex = ++zIndex;
+            
+            win.innerHTML = `
+                <div class="window-header">
+                    <span>Solitaire - Kabal</span>
+                    <button class="win-button py-0 px-1" onclick="document.getElementById('win-solitaire').remove()">X</button>
+                </div>
+                <div class="menu-bar">
+                    <span class="menu-item" onclick="initGame()">Nytt Spill</span>
+                    <span class="menu-item" onclick="giveHint()">Hint</span>
+                    <span class="menu-item" onclick="startSQL()">Start SQL</span>
+                </div>
+                <div class="solitaire-container" id="board"></div>
+            `;
+            document.getElementById('windows-container').appendChild(win);
+            initGame();
+        }
+
+        function initGame() {
+            let deck = [];
+            suits.forEach(s => {
+                values.forEach(v => {
+                    deck.push({ s, v, color: (s==='♥' || s==='♦' ? 'red' : 'black'), val: valMap[v], revealed: false });
+                });
+            });
+            deck.sort(() => Math.random() - 0.5);
+
+            state.tableau = [[], [], [], [], [], [], []];
+            state.foundation = [[], [], [], []];
+            state.waste = [];
+            
+            for(let i=0; i<7; i++) {
+                for(let j=0; j<=i; j++) {
+                    let card = deck.pop();
+                    if (j === i) card.revealed = true;
+                    state.tableau[i].push(card);
+                }
+            }
+            state.stock = deck;
+            render();
+        }
+
+        function render() {
+            const board = document.getElementById('board');
+            if (!board) return;
+            board.innerHTML = '';
+
+            // Kortstokk (Stock)
+            const stockSlot = createSlot(10, 10);
+            if (state.stock.length > 0) {
+                const c = createCardUI(state.stock[state.stock.length-1], 'stock');
+                c.classList.add('back');
+                c.onclick = drawCard;
+                stockSlot.appendChild(c);
+            } else {
+                stockSlot.innerHTML = `<div class="w-full h-full flex items-center justify-center text-white opacity-20"><i class="fas fa-redo"></i></div>`;
+                stockSlot.onclick = recycleWaste;
+            }
+            board.appendChild(stockSlot);
+
+            // Avkast (Waste)
+            const wasteSlot = createSlot(10, 65);
+            if (state.waste.length > 0) {
+                const c = createCardUI(state.waste[state.waste.length-1], 'waste', 0, state.waste.length-1);
+                wasteSlot.appendChild(c);
+            }
+            board.appendChild(wasteSlot);
+
+            // Foundation (Målområde)
+            for(let i=0; i<4; i++) {
+                const fSlot = createSlot(10, 185 + i*52);
+                fSlot.id = `found-${i}`;
+                if (state.foundation[i].length > 0) {
+                    const c = createCardUI(state.foundation[i][state.foundation[i].length-1], 'foundation', i);
+                    fSlot.appendChild(c);
+                }
+                board.appendChild(fSlot);
+            }
+
+            // Tablå (Spillefelt)
+            for(let i=0; i<7; i++) {
+                state.tableau[i].forEach((card, j) => {
+                    const cUI = createCardUI(card, 'tableau', i, j);
+                    cUI.style.top = (90 + j*16) + 'px';
+                    cUI.style.left = (10 + i*54) + 'px';
+                    board.appendChild(cUI);
+                });
+            }
+        }
+
+        function createSlot(top, left) {
+            const s = document.createElement('div');
+            s.className = 'slot';
+            s.style.top = top + 'px';
+            s.style.left = left + 'px';
+            return s;
+        }
+
+        function createCardUI(data, type, col, row) {
+            const c = document.createElement('div');
+            c.className = `card ${data.color} ${!data.revealed ? 'back' : ''}`;
+            if (data.revealed) {
+                c.innerHTML = `<div>${data.v}</div><div class="mt-auto text-right">${data.s}</div>`;
+            }
+
+            // Drag and drop logikk
+            if (data.revealed) {
+                c.onmousedown = (e) => startDrag(e, c, data, type, col, row);
+                c.ontouchstart = (e) => startDrag(e, c, data, type, col, row);
+                c.ondblclick = () => autoMove(data, type, col, row);
+            }
+
+            return c;
+        }
+
+        function drawCard() {
+            if (state.stock.length > 0) {
+                const card = state.stock.pop();
+                card.revealed = true;
+                state.waste.push(card);
+                render();
+            }
+        }
+
+        function recycleWaste() {
+            if (state.waste.length > 0) {
+                state.stock = [...state.waste].reverse().map(c => ({...c, revealed: false}));
+                state.waste = [];
+                render();
+            }
+        }
+
+        function startDrag(e, cardEl, data, type, col, row) {
+            e.preventDefault();
+            const rect = cardEl.getBoundingClientRect();
+            const clientX = e.clientX || e.touches[0].clientX;
+            const clientY = e.clientY || e.touches[0].clientY;
+            
+            const offsetX = clientX - rect.left;
+            const offsetY = clientY - rect.top;
+
+            cardEl.classList.add('dragging');
+            
+            // Finn alle kort under hvis det er fra tablået
+            let attachedCards = [];
+            if (type === 'tableau') {
+                const cardsInCol = state.tableau[col];
+                for (let i = row + 1; i < cardsInCol.length; i++) {
+                    const child = Array.from(document.querySelectorAll('.card')).find(el => 
+                        el.style.left === (10 + col * 54) + 'px' && 
+                        el.style.top === (90 + i * 16) + 'px'
+                    );
+                    if (child) {
+                        child.style.zIndex = 6000 + i;
+                        attachedCards.push({el: child, offTop: parseInt(child.style.top) - parseInt(cardEl.style.top)});
+                    }
+                }
+            }
+
+            const onMove = (me) => {
+                const mX = me.clientX || (me.touches ? me.touches[0].clientX : 0);
+                const mY = me.clientY || (me.touches ? me.touches[0].clientY : 0);
+                
+                const boardRect = document.getElementById('board').getBoundingClientRect();
+                const newLeft = mX - boardRect.left - offsetX;
+                const newTop = mY - boardRect.top - offsetY;
+
+                cardEl.style.left = newLeft + 'px';
+                cardEl.style.top = newTop + 'px';
+
+                attachedCards.forEach(c => {
+                    c.el.style.left = newLeft + 'px';
+                    c.el.style.top = (newTop + c.offTop) + 'px';
+                });
+            };
+
+            const onUp = (ue) => {
+                const uX = ue.clientX || (ue.changedTouches ? ue.changedTouches[0].clientX : 0);
+                const uY = ue.clientY || (ue.changedTouches ? ue.changedTouches[0].clientY : 0);
+                
+                window.removeEventListener('mousemove', onMove);
+                window.removeEventListener('touchmove', onMove);
+                window.removeEventListener('mouseup', onUp);
+                window.removeEventListener('touchend', onUp);
+
+                handleDrop(data, type, col, row, uX, uY);
+                render();
+            };
+
+            window.addEventListener('mousemove', onMove);
+            window.addEventListener('touchmove', onMove, {passive: false});
+            window.addEventListener('mouseup', onUp);
+            window.addEventListener('touchend', onUp);
+        }
+
+        function handleDrop(card, srcType, srcCol, srcRow, x, y) {
+            const board = document.getElementById('board').getBoundingClientRect();
+            const relX = x - board.left;
+            const relY = y - board.top;
+
+            // Sjekk Foundation (Ess-bunker)
+            if (relY < 85 && relX > 180) {
+                const targetIdx = Math.floor((relX - 185) / 52);
+                if (targetIdx >= 0 && targetIdx < 4) {
+                    const pile = state.foundation[targetIdx];
+                    const top = pile[pile.length - 1];
+                    if ((!top && card.val === 1) || (top && top.s === card.s && card.val === top.val + 1)) {
+                        if (srcType === 'tableau' && srcRow !== state.tableau[srcCol].length - 1) return; // Kan bare flytte øverste
+                        move(srcType, srcCol, srcRow, 'foundation', targetIdx);
+                        return;
+                    }
+                }
+            }
+
+            // Sjekk Tablå
+            if (relY > 70) {
+                const targetCol = Math.floor((relX - 5) / 54);
+                if (targetCol >= 0 && targetCol < 7) {
+                    const pile = state.tableau[targetCol];
+                    const top = pile[pile.length - 1];
+                    if (!top) {
+                        if (card.val === 13) move(srcType, srcCol, srcRow, 'tableau', targetCol);
+                    } else if (top.revealed && top.color !== card.color && top.val === card.val + 1) {
+                        move(srcType, srcCol, srcRow, 'tableau', targetCol);
+                    }
+                }
+            }
+        }
+
+        function move(srcType, srcCol, srcRow, destType, destCol) {
+            let cards = [];
+            if (srcType === 'tableau') {
+                cards = state.tableau[srcCol].splice(srcRow);
+                if (state.tableau[srcCol].length > 0) state.tableau[srcCol][state.tableau[srcCol].length-1].revealed = true;
+            } else if (srcType === 'waste') {
+                cards = [state.waste.pop()];
+            } else if (srcType === 'foundation') {
+                cards = [state.foundation[srcCol].pop()];
+            }
+
+            if (destType === 'tableau') state.tableau[destCol].push(...cards);
+            else state.foundation[destCol].push(...cards);
+
+            checkWin();
+        }
+
+        function autoMove(card, type, col, row) {
+            // Prøv foundation først
+            for (let i=0; i<4; i++) {
+                const pile = state.foundation[i];
+                const top = pile[pile.length - 1];
+                if ((!top && card.val === 1) || (top && top.s === card.s && card.val === top.val + 1)) {
+                    if (type === 'tableau' && row !== state.tableau[col].length - 1) continue;
+                    move(type, col, row, 'foundation', i);
+                    render();
+                    return;
+                }
+            }
+        }
+
+        function giveHint() {
+            // Enkel hint-logikk: Finn trekk fra tablå eller waste til foundation eller tablå
+            const allCards = Array.from(document.querySelectorAll('.card'));
+            allCards.forEach(c => c.classList.remove('hint-highlight'));
+
+            // Sjekk waste
+            if (state.waste.length > 0) {
+                const topWaste = state.waste[state.waste.length-1];
+                // Sjekk tablåer
+                for(let i=0; i<7; i++) {
+                    const topTab = state.tableau[i][state.tableau[i].length-1];
+                    if ((!topTab && topWaste.val === 13) || (topTab && topTab.color !== topWaste.color && topTab.val === topWaste.val + 1)) {
+                        highlightHint('waste', 0);
+                        return;
+                    }
+                }
+            }
+            // Sjekk tablå-til-tablå
+            for(let i=0; i<7; i++) {
+                const col = state.tableau[i];
+                const firstRevIdx = col.findIndex(c => c.revealed);
+                if (firstRevIdx === -1) continue;
+                
+                const card = col[firstRevIdx];
+                for(let j=0; j<7; j++) {
+                    if (i === j) continue;
+                    const target = state.tableau[j][state.tableau[j].length-1];
+                    if ((!target && card.val === 13 && firstRevIdx > 0) || (target && target.color !== card.color && target.val === card.val + 1)) {
+                        highlightHint('tableau', i, firstRevIdx);
+                        return;
+                    }
+                }
+            }
+        }
+
+        function highlightHint(type, col, row) {
+            const all = Array.from(document.querySelectorAll('.card'));
+            let found;
+            if (type === 'waste') {
+                found = all.find(c => c.parentElement.classList.contains('waste-pile'));
+            } else {
+                found = all.find(c => parseInt(c.style.left) === (10 + col * 54) && parseInt(c.style.top) === (90 + row * 16));
+            }
+            if (found) {
+                found.classList.add('hint-highlight');
+                setTimeout(() => found.classList.remove('hint-highlight'), 2000);
+            }
+        }
+
+        function startSQL() {
+            const board = document.getElementById('board');
+            const overlay = document.createElement('div');
+            overlay.style = "position:absolute; top:0; left:0; width:100%; height:100%; background:black; color:#0f0; font-family:monospace; padding:10px; font-size:10px; z-index:9000;";
+            overlay.innerHTML = `
+                <div>C:\\> START SQL_SERVER /SOLITAIRE_DB</div>
+                <div>[INFO] Initializing tables...</div>
+                <div>[INFO] Loading deck_params... OK</div>
+                <div>[INFO] Check constraints: alternating_colors=TRUE</div>
+                <div>[INFO] SQL Solitaire Agent active. Ready for transactions.</div>
+                <div class="mt-4 animate-pulse">_</div>
+            `;
+            board.appendChild(overlay);
+            setTimeout(() => overlay.remove(), 3000);
+        }
+
+        function checkWin() {
+            const count = state.foundation.reduce((a, b) => a + b.length, 0);
+            if (count === 52) {
+                alert("Gratulerer! Du vant Kabal!");
+                initGame();
+            }
+        }
+
+        // Start spillet med en gang
+        window.onload = openSolitaire;
+    </script>
+</body>
+</html>
+
