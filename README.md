@@ -1,2 +1,0 @@
-# Culture.Support
-Culture.Support
