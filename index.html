@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+  
+    <title>Culture.Support</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500&family=Inter:wght@300;400;600;700&display=swap');
+
+        :root {
+            --bg-dark: #0d1117;
+            --card-bg: #161b22;
+            --accent: #3fb950;
+            --text-main: #e6edf3;
+            --text-dim: #8b949e;
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            font-family: 'Inter', sans-serif;
+            overflow-x: hidden;
+        }
+
+        .mono { font-family: 'Fira Code', monospace; }
+
+        .cursor {
+            display: inline-block;
+            width: 8px;
+            height: 18px;
+            background-color: var(--accent);
+            margin-left: 4px;
+            animation: blink 1s step-end infinite;
+            vertical-align: middle;
+        }
+
+        @keyframes blink {
+            from, to { opacity: 1; }
+            50% { opacity: 0; }
+        }
+
+        .gradient-text {
+            background: linear-gradient(90deg, #3fb950, #238636, #58a6ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .glass-panel {
+            background: rgba(22, 27, 34, 0.8);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .terminal-header {
+            background: #21262d;
+            border-bottom: 1px solid #30363d;
+        }
+
+        .dot { height: 12px; width: 12px; border-radius: 50%; display: inline-block; margin-right: 6px; }
+        .dot-red { background: #ff5f56; }
+        .dot-yellow { background: #ffbd2e; }
+        .dot-green { background: #27c93f; }
+
+        .fade-in { opacity: 0; transform: translateY(20px); transition: all 0.6s ease-out; }
+        .fade-in.visible { opacity: 1; transform: translateY(0); }
+
+        pre { margin: 0; padding: 0; white-space: pre-wrap; word-break: break-all; }
+        
+        .syntax-keyword { color: #ff7b72; }
+        .syntax-func { color: #d2a8ff; }
+        .syntax-string { color: #a5d6ff; }
+        .syntax-comment { color: #8b949e; }
+        .syntax-type { color: #ffa657; }
+    </style>
+</head>
+<body class="antialiased">
+
+    <!-- Navbar -->
+    <nav class="fixed w-full z-50 glass-panel">
+        <div class="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
+            <div class="flex items-center space-x-3">
+                <i class="fa-brands fa-github text-3xl"></i>
+                <span class="font-bold text-xl tracking-tight">DevFlow<span class="text-green-500">.</span></span>
+            </div>
+            <div class="hidden md:flex space-x-8 text-sm font-medium">
+                <a href="#" class="hover:text-green-400 transition">Workspace</a>
+                <a href="#" class="hover:text-green-400 transition">Actions</a>
+                <a href="#" class="hover:text-green-400 transition">Architecture</a>
+                <a href="#" class="hover:text-green-400 transition text-green-500">Login</a>
+            </div>
+            <button class="bg-green-600 hover:bg-green-500 text-white px-5 py-2 rounded-lg text-sm font-semibold transition shadow-lg shadow-green-900/20">
+                Deploy Now
+            </button>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <header class="relative pt-32 pb-20 px-6 overflow-hidden">
+        <div class="max-w-7xl mx-auto flex flex-col lg:flex-row items-center gap-12">
+            <div class="flex-1 text-center lg:text-left">
+                <h1 class="text-5xl lg:text-7xl font-extrabold leading-tight mb-6">
+                    Build. <span class="gradient-text">Commit.</span> <br>Scale Faster.
+                </h1>
+                <p class="text-xl text-gray-400 mb-8 max-w-xl mx-auto lg:mx-0">
+                    The modern automation engine for high-performance TypeScript applications. Seamlessly bridge your local workspace with global cloud infrastructure.
+                </p>
+                <div class="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
+                    <button class="bg-white text-black px-8 py-4 rounded-xl font-bold hover:bg-gray-200 transition">Start Building</button>
+                    <button class="border border-gray-700 px-8 py-4 rounded-xl font-bold hover:bg-gray-800 transition">View Docs</button>
+                </div>
+            </div>
+
+            <!-- Interactive Terminal Animation -->
+            <div class="flex-1 w-full max-w-2xl">
+                <div class="glass-panel rounded-xl overflow-hidden shadow-2xl border-gray-700">
+                    <div class="terminal-header px-4 py-3 flex items-center justify-between">
+                        <div class="flex">
+                            <span class="dot dot-red"></span>
+                            <span class="dot dot-yellow"></span>
+                            <span class="dot dot-green"></span>
+                        </div>
+                        <div class="text-xs text-gray-500 mono font-medium">~/projects/enterprise-app — -zsh</div>
+                    </div>
+                    <div class="p-6 h-[400px] mono text-sm overflow-y-auto bg-[#0d1117]" id="terminal-content">
+                        <!-- Dynamic Content Inserted Here -->
+                        <div id="typing-area"></div><span class="cursor"></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Features Section -->
+    <section class="py-24 px-6 bg-[#090c10]">
+        <div class="max-w-7xl mx-auto">
+            <div class="text-center mb-16 fade-in" id="features-header">
+                <h2 class="text-3xl font-bold mb-4">Enterprise Grade Workflow</h2>
+                <p class="text-gray-400">Everything you need to ship production-ready code with confidence.</p>
+            </div>
+
+            <div class="grid md:grid-cols-3 gap-8">
+                <!-- Card 1 -->
+                <div class="p-8 rounded-2xl glass-panel hover:border-green-500/50 transition duration-500 fade-in">
+                    <div class="w-12 h-12 bg-green-500/10 rounded-lg flex items-center justify-center mb-6 text-green-500">
+                        <i class="fa-solid fa-code text-2xl"></i>
+                    </div>
+                    <h3 class="text-xl font-bold mb-3">Strongly Typed</h3>
+                    <p class="text-gray-400 text-sm leading-relaxed">Full scale TypeScript support with zero-config compilation and type-safe environment variables.</p>
+                </div>
+                <!-- Card 2 -->
+                <div class="p-8 rounded-2xl glass-panel hover:border-blue-500/50 transition duration-500 fade-in">
+                    <div class="w-12 h-12 bg-blue-500/10 rounded-lg flex items-center justify-center mb-6 text-blue-500">
+                        <i class="fa-brands fa-github-alt text-2xl"></i>
+                    </div>
+                    <h3 class="text-xl font-bold mb-3">GitHub Integration</h3>
+                    <p class="text-gray-400 text-sm leading-relaxed">Direct workspace mapping. Automatic branch detection and PR-driven environment provisioning.</p>
+                </div>
+                <!-- Card 3 -->
+                <div class="p-8 rounded-2xl glass-panel hover:border-purple-500/50 transition duration-500 fade-in">
+                    <div class="w-12 h-12 bg-purple-500/10 rounded-lg flex items-center justify-center mb-6 text-purple-500">
+                        <i class="fa-solid fa-bolt text-2xl"></i>
+                    </div>
+                    <h3 class="text-xl font-bold mb-3">Fast CI/CD</h3>
+                    <p class="text-gray-400 text-sm leading-relaxed">Lightning fast GitHub Actions optimization with parallel test execution and build caching.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- App Preview Section -->
+    <section class="py-20 px-6">
+        <div class="max-w-5xl mx-auto">
+            <div class="text-center mb-12">
+                <span class="text-green-500 font-bold uppercase tracking-widest text-xs">Production Ready</span>
+                <h2 class="text-4xl font-bold mt-2">Scalable Microservices</h2>
+            </div>
+            <div class="bg-[#161b22] border border-gray-800 rounded-3xl p-1 shadow-2xl overflow-hidden fade-in">
+                <div class="bg-gray-900 rounded-[22px] p-6 lg:p-12">
+                    <div class="flex flex-col lg:flex-row gap-12 items-center">
+                        <div class="w-full lg:w-1/2">
+                            <div class="space-y-6">
+                                <div class="flex items-center space-x-4">
+                                    <div class="w-10 h-10 rounded-full bg-green-500 flex items-center justify-center font-bold">1</div>
+                                    <h4 class="text-lg font-bold">Write in TypeScript</h4>
+                                </div>
+                                <div class="flex items-center space-x-4 opacity-50">
+                                    <div class="w-10 h-10 rounded-full bg-gray-700 flex items-center justify-center font-bold">2</div>
+                                    <h4 class="text-lg font-bold">Push to Main Branch</h4>
+                                </div>
+                                <div class="flex items-center space-x-4 opacity-50">
+                                    <div class="w-10 h-10 rounded-full bg-gray-700 flex items-center justify-center font-bold">3</div>
+                                    <h4 class="text-lg font-bold">Deploy to Edge</h4>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="w-full lg:w-1/2 bg-[#0d1117] p-6 rounded-2xl border border-gray-800">
+                            <div class="flex items-center space-x-2 mb-4">
+                                <span class="w-3 h-3 bg-red-500 rounded-full"></span>
+                                <span class="w-3 h-3 bg-yellow-500 rounded-full"></span>
+                                <span class="text-[10px] text-gray-500 mono ml-2">App.tsx</span>
+                            </div>
+                            <code class="text-xs sm:text-sm mono leading-relaxed">
+                                <span class="syntax-keyword">import</span> { App } <span class="syntax-keyword">from</span> <span class="syntax-string">'@core'</span>;<br><br>
+                                <span class="syntax-keyword">const</span> service = <span class="syntax-keyword">new</span> <span class="syntax-func">ClusterManager</span>({<br>
+                                &nbsp;&nbsp;id: <span class="syntax-string">"prod-west-1"</span>,<br>
+                                &nbsp;&nbsp;scaling: <span class="syntax-keyword">true</span><br>
+                                });<br><br>
+                                <span class="syntax-keyword">await</span> service.<span class="syntax-func">init</span>();
+                            </code>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="py-12 px-6 border-t border-gray-800">
+        <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center opacity-60">
+            <p class="text-sm">© 2024 DevFlow Systems. Built for developers.</p>
+            <div class="flex space-x-6 mt-4 md:mt-0">
+                <i class="fa-brands fa-github cursor-pointer hover:text-white transition"></i>
+                <i class="fa-brands fa-twitter cursor-pointer hover:text-white transition"></i>
+                <i class="fa-brands fa-discord cursor-pointer hover:text-white transition"></i>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Typing Animation Logic
+        const terminalArea = document.getElementById('typing-area');
+        const sequences = [
+            { text: "$ git checkout -b feat/enterprise-auth", delay: 50 },
+            { text: "\nSwitched to a new branch 'feat/enterprise-auth'\n", delay: 0, instant: true },
+            { text: "$ nano src/App.ts", delay: 50 },
+            { text: "\n\n", delay: 0, instant: true },
+            { text: "interface User {\n  id: string;\n  name: string;\n  role: 'ADMIN' | 'USER';\n}\n\nexport const validate = (u: User) => {\n  console.log('Validating...', u.name);\n};", delay: 30 },
+            { text: "\n\n$ git add . && git commit -m 'feat: add typed auth logic'", delay: 40 },
+            { text: "\n[feat/enterprise-auth 4ac291b] feat: add typed auth logic\n 1 file changed, 8 insertions(+)\n", delay: 0, instant: true },
+            { text: "$ git push origin feat/enterprise-auth", delay: 60 },
+            { text: "\nEnumerating objects: 5, done.\nDelta compression using up to 8 threads\nTotal 3 (delta 1), reused 0 (delta 0)\nTo github.com:org/repo.git\n * [new branch]      feat/enterprise-auth -> feat/enterprise-auth\n\n", delay: 0, instant: true },
+            { text: "Running GitHub Actions...\n", delay: 0, instant: true },
+            { text: "✓ Linting: Success\n✓ Type-check: Success\n✓ Unit Tests: 42 passed\n🚀 Deploying to staging environment...", delay: 80 }
+        ];
+
+        let seqIdx = 0;
+        let charIdx = 0;
+
+        function type() {
+            if (seqIdx < sequences.length) {
+                const current = sequences[seqIdx];
+                
+                if (current.instant) {
+                    const span = document.createElement('span');
+                    span.className = current.text.includes('✓') || current.text.includes('🚀') ? 'text-green-400' : 'text-gray-400';
+                    span.innerText = current.text;
+                    terminalArea.appendChild(span);
+                    seqIdx++;
+                    setTimeout(type, 1000);
+                } else if (charIdx < current.text.length) {
+                    const char = current.text[charIdx];
+                    const charSpan = document.createElement('span');
+                    
+                    // Highlight syntax-like parts
+                    if (current.text.startsWith('$')) charSpan.className = 'text-green-500';
+                    if (current.text.includes('interface')) charSpan.className = 'text-blue-400';
+                    
+                    charSpan.innerText = char;
+                    terminalArea.appendChild(charSpan);
+                    charIdx++;
+                    setTimeout(type, current.delay);
+                } else {
+                    terminalArea.appendChild(document.createElement('br'));
+                    seqIdx++;
+                    charIdx = 0;
+                    setTimeout(type, 800);
+                }
+            } else {
+                // Loop or stop
+                setTimeout(() => {
+                    terminalArea.innerHTML = '';
+                    seqIdx = 0;
+                    charIdx = 0;
+                    type();
+                }, 5000);
+            }
+        }
+
+        // Scroll Observer for animations
+        const observerOptions = {
+            threshold: 0.1
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                }
+            });
+        }, observerOptions);
+
+        document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
+
+        // Initialize typing
+        window.onload = () => {
+            type();
+        };
+    </script>
+</body>
+</html>
