@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="no">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Culture.Support - Mobil Verifisering</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background: radial-gradient(circle at top left, #0f172a, #020617);
+            min-height: 100vh;
+            color: white;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        .bg-icon {
+            position: absolute;
+            z-index: -1;
+            opacity: 0.1;
+            pointer-events: none;
+        }
+
+        @keyframes float {
+            0% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-20px) rotate(10deg); }
+            100% { transform: translateY(0px) rotate(0deg); }
+        }
+
+        .animate-float { animation: float 6s ease-in-out infinite; }
+
+        .glass {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        /* Mobil Ramme */
+        .phone-container {
+            width: 320px;
+            height: 600px;
+            border: 8px solid rgba(255,255,255,0.1);
+            border-radius: 40px;
+            position: relative;
+            background: #020617;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+        }
+
+        .phone-notch {
+            width: 120px;
+            height: 25px;
+            background: rgba(255,255,255,0.1);
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            border-bottom-left-radius: 15px;
+            border-bottom-right-radius: 15px;
+            z-index: 40;
+        }
+
+        /* Betalingskort Design */
+        .payment-card {
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.4), rgba(168, 85, 247, 0.4));
+            border-radius: 1rem;
+            cursor: grab;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            user-select: none;
+        }
+
+        .payment-card:active { cursor: grabbing; }
+
+        .card-slot {
+            height: 100px;
+            border: 2px dashed rgba(139, 92, 246, 0.3);
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .card-inserted {
+            animation: insert-card 0.6s forwards cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        @keyframes insert-card {
+            0% { transform: scale(1) translateY(0); opacity: 1; }
+            100% { transform: scale(0.6) translateY(10px); opacity: 0.8; }
+        }
+
+        .vibrate { animation: vibrate 0.1s linear infinite; }
+        @keyframes vibrate {
+            0%, 100% { transform: translate(0); }
+            25% { transform: translate(2px, 2px); }
+            75% { transform: translate(-2px, -2px); }
+        }
+
+        /* SMS Popup */
+        .sms-popup {
+            background: rgba(255, 255, 255, 0.95);
+            color: #1a1a1a;
+            border-radius: 16px;
+            padding: 12px 16px;
+            position: absolute;
+            top: 40px;
+            left: 10px;
+            right: 10px;
+            z-index: 50;
+            box-shadow: 0 15px 30px rgba(0,0,0,0.4);
+            animation: slideDown 0.6s cubic-bezier(0.23, 1, 0.32, 1);
+            border: 1px solid rgba(0,0,0,0.1);
+        }
+
+        @keyframes slideDown {
+            from { transform: translateY(-120%); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        .digit-btn {
+            height: 44px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 1.1rem;
+            border-radius: 12px;
+            transition: all 0.2s;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+        
+        .digit-btn:active {
+            transform: scale(0.9);
+            background: rgba(99, 102, 241, 0.4);
+        }
+    </style>
+</head>
+<body class="p-4 md:p-8 flex items-center justify-center min-h-screen">
+
+    <!-- Animerte bakgrunnsikoner -->
+    <div class="bg-icon top-10 left-10 animate-float"><svg width="100" height="100" viewBox="0 0 24 24" fill="white"><circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2" fill="none"/></svg></div>
+    <div class="bg-icon bottom-10 right-10 animate-float" style="animation-delay: -2s;"><svg width="80" height="80" viewBox="0 0 24 24" fill="white"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" stroke="currentColor" stroke-width="2" fill="none"/></svg></div>
+
+    <div class="max-w-6xl w-full grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+        
+        <!-- Venstre: Kortutvalg og Vilkår -->
+        <div class="space-y-6">
+            <header>
+                <h2 class="text-3xl font-bold flex items-center gap-3">
+                    <span class="w-3 h-10 bg-indigo-500 rounded-full"></span> 
+                    Låneportal
+                </h2>
+                <p class="text-gray-400 mt-2">Følg instruksjonene for å fullføre utbetalingen.</p>
+            </header>
+            
+            <div class="glass p-5 rounded-2xl text-sm space-y-4 text-gray-300 border-l-4 border-l-red-500">
+                <p class="font-bold text-red-400 uppercase tracking-wider underline text-base">Kritisk Informasjon</p>
+                <p>Ved å bruke koden mottatt på SMS godtar du uopprettelig tap av din fremtidige pensjon mot en utbetaling på <strong>60 000,00 kr</strong>.</p>
+                <div class="p-3 bg-indigo-500/10 border border-indigo-500/20 rounded-xl text-indigo-300 text-xs italic">
+                    Flytt kortet ditt inn i mobilvinduet til høyre, tast deretter verifiseringskoden for å signere avtalen.
+                </div>
+            </div>
+            
+            <div id="card-selection" class="space-y-4">
+                <!-- Kort genereres dynamisk -->
+            </div>
+        </div>
+
+        <!-- Høyre: Mobil GUI -->
+        <div class="flex justify-center">
+            <div class="phone-container overflow-hidden flex flex-col">
+                <div class="phone-notch"></div>
+                
+                <!-- SMS Varsel -->
+                <div class="sms-popup">
+                    <div class="flex justify-between items-center mb-1">
+                        <div class="flex items-center gap-2">
+                            <div class="bg-indigo-600 w-2 h-2 rounded-full animate-pulse"></div>
+                            <span class="text-[10px] font-bold uppercase tracking-tight text-gray-500">Melding • Nå</span>
+                        </div>
+                        <span class="text-[9px] text-gray-400">SMS</span>
+                    </div>
+                    <p class="text-[11px] leading-tight text-gray-800">
+                        <strong>KulturSupport:</strong> Din kode for lån (60k) er <span class="bg-indigo-100 px-1 rounded font-bold text-indigo-700">1 3 2 4</span>. Ved bruk godtar du tap av fremtidig pensjon.
+                    </p>
+                </div>
+                
+                <!-- Mobil Innhold -->
+                <div class="flex-1 p-6 flex flex-col mt-20">
+                    <div class="mb-6 flex justify-between items-center px-2">
+                        <span class="text-[11px] font-bold opacity-70">9:41</span>
+                        <div class="flex gap-1.5 items-center">
+                            <div class="w-4 h-2 rounded-sm bg-white/30"></div>
+                            <div class="w-2 h-2 rounded-full bg-indigo-500"></div>
+                        </div>
+                    </div>
+
+                    <div class="text-center mb-6">
+                        <h3 class="text-lg font-bold">Verifiser Lån</h3>
+                        <p class="text-[10px] text-gray-500 uppercase tracking-widest mt-1">Sikker signering</p>
+                    </div>
+
+                    <!-- Kortleser / Drop Zone -->
+                    <div id="drop-zone" class="card-slot mb-8 bg-white/5" ondragover="event.preventDefault()" ondrop="dropCard(event)">
+                        <div id="slot-text" class="text-center p-2">
+                            <div class="w-12 h-12 mx-auto mb-2 border-2 border-dashed border-white/20 rounded-full flex items-center justify-center">
+                                <svg class="w-6 h-6 opacity-40" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+                            </div>
+                            <span class="text-[9px] uppercase font-semibold opacity-40">Dra kortet hit</span>
+                        </div>
+                    </div>
+
+                    <!-- Verifiserings-grensesnitt -->
+                    <div id="phone-controls" class="opacity-10 pointer-events-none transition-all duration-700 transform translate-y-4">
+                        <div class="mb-6 text-center">
+                            <p class="text-[10px] text-gray-400 uppercase mb-1">Utbetaling (Netto)</p>
+                            <div class="text-3xl font-bold tracking-tight">60 000<span class="text-sm ml-1 opacity-50">kr</span></div>
+                            <div class="mt-2 py-1 px-3 bg-red-500/10 border border-red-500/20 inline-block rounded-full">
+                                <span class="text-[8px] text-red-400 font-bold uppercase">Pensjonstap Bekreftes</span>
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-4 gap-3 mb-8">
+                            <button onclick="pressKey(1)" class="digit-btn">1</button>
+                            <button onclick="pressKey(2)" class="digit-btn">2</button>
+                            <button onclick="pressKey(3)" class="digit-btn">3</button>
+                            <button onclick="pressKey(4)" class="digit-btn">4</button>
+                        </div>
+
+                        <button id="confirm-btn" class="w-full py-4 bg-indigo-600 rounded-2xl font-bold text-xs uppercase tracking-widest shadow-lg shadow-indigo-950/50 disabled:opacity-50 active:scale-95 transition-all">
+                            Signer & Utbetal
+                        </button>
+                    </div>
+                    
+                    <p id="code-display" class="mt-auto text-[10px] text-center text-gray-500 font-medium uppercase tracking-tighter">
+                        Venter på identifikasjon...
+                    </p>
+                </div>
+
+                <!-- Hjem-indikator -->
+                <div class="h-1.5 w-32 bg-white/10 mx-auto mb-3 rounded-full"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Suksess-skjerm -->
+    <div id="success-overlay" class="fixed inset-0 bg-slate-950/98 z-[100] flex flex-col items-center justify-center opacity-0 pointer-events-none transition-all duration-1000 backdrop-blur-xl">
+        <div class="relative mb-8">
+            <div class="absolute inset-0 bg-indigo-500 blur-3xl opacity-20 animate-pulse"></div>
+            <div class="w-24 h-24 bg-indigo-600 rounded-full flex items-center justify-center relative z-10 animate-bounce">
+                <svg class="w-14 h-14 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>
+            </div>
+        </div>
+        <h2 class="text-4xl font-bold text-center px-6 bg-clip-text text-transparent bg-gradient-to-b from-white to-gray-400">
+            UTBETALING GODKJENT
+        </h2>
+        <div class="mt-6 space-y-4 text-center px-10">
+            <p class="text-indigo-300 font-medium">60 000 kr utbetales til din konto innen 7 dager.</p>
+            <div class="p-4 bg-white/5 border border-white/10 rounded-2xl">
+                <p class="text-red-400 text-xs font-bold uppercase tracking-widest">Bekreftet Status:</p>
+                <p class="text-[11px] text-gray-400 mt-1 italic">Din fremtidige pensjon er nå permanent overført som finansiering av dette lånet.</p>
+            </div>
+        </div>
+        <button onclick="window.location.reload()" class="mt-12 px-10 py-3 glass rounded-full text-[10px] font-bold uppercase tracking-widest hover:bg-white/10 transition-colors">
+            Fullfør & Lukk
+        </button>
+    </div>
+
+    <script>
+        // Generer tilfeldige kortdata ved hver last
+        const cardData = [
+            { id: 'card1', name: "Lønnskonto", balance: (Math.random() * 50000).toFixed(2).replace('.', ',') },
+            { id: 'card2', name: "Sikkerhetskort", balance: "0,00" }
+        ];
+
+        function generateCard(data) {
+            // Tilfeldig kortnummer og utløp
+            const p1 = Math.floor(4000 + Math.random() * 999);
+            const p2 = Math.floor(1000 + Math.random() * 8999);
+            const num = `${p1} **** **** ${p2}`;
+            const month = String(Math.floor(1 + Math.random() * 11)).padStart(2, '0');
+            const year = Math.floor(26 + Math.random() * 5);
+            
+            return `
+                <div id="${data.id}" draggable="true" ondragstart="dragCard(event)" class="payment-card p-6 shadow-2xl glass relative z-10 hover:scale-[1.02] transition-transform">
+                    <div class="flex justify-between items-start mb-6">
+                        <div>
+                            <span class="text-[9px] uppercase font-black tracking-widest text-indigo-400">${data.name}</span>
+                            <div class="w-8 h-1 bg-indigo-500/50 mt-1 rounded-full"></div>
+                        </div>
+                        <div class="w-10 h-8 bg-gradient-to-br from-yellow-400/40 to-yellow-600/20 rounded-md border border-yellow-500/20"></div>
+                    </div>
+                    <div class="font-mono text-lg tracking-[0.2em] mb-6 text-gray-200">${num}</div>
+                    <div class="flex justify-between items-end">
+                        <div>
+                            <p class="text-[8px] uppercase opacity-40 mb-1">Disponibelt</p>
+                            <span class="text-xl font-bold tracking-tight text-white">kr ${data.balance}</span>
+                        </div>
+                        <div class="text-right">
+                            <p class="text-[8px] uppercase opacity-40 mb-1">Utløp</p>
+                            <span class="text-[10px] font-bold font-mono opacity-80">${month}/${year}</span>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        const container = document.getElementById('card-selection');
+        cardData.forEach(c => container.innerHTML += generateCard(c));
+
+        function dragCard(ev) {
+            ev.dataTransfer.setData("text", ev.target.id);
+            // Legg til visuell feedback under drag
+            ev.target.style.opacity = "0.5";
+        }
+
+        function dropCard(ev) {
+            ev.preventDefault();
+            const cardId = ev.dataTransfer.getData("text");
+            const originalCard = document.getElementById(cardId);
+            originalCard.style.opacity = "1";
+            
+            // Start animasjon for innsetting
+            originalCard.classList.add('card-inserted');
+            
+            setTimeout(() => {
+                document.getElementById('slot-text').innerHTML = `
+                    <div class="animate-pulse">
+                        <div class="text-green-400 font-black text-[10px] uppercase tracking-widest">Kort Identifisert ✅</div>
+                        <div class="text-[8px] text-gray-500 mt-1">Kopler til pensjonsregister...</div>
+                    </div>
+                `;
+                document.getElementById('drop-zone').classList.add('bg-indigo-500/20', 'border-indigo-500', 'border-solid');
+                
+                // Lås opp kontroller
+                const controls = document.getElementById('phone-controls');
+                controls.classList.remove('opacity-10', 'pointer-events-none', 'translate-y-4');
+                document.getElementById('code-display').innerText = "Tast signaturkode fra SMS";
+                document.getElementById('code-display').classList.add('text-indigo-400', 'font-bold');
+            }, 600);
+        }
+
+        // Signerings-logikk
+        let sequence = [];
+        const target = [1, 3, 2, 4];
+
+        function pressKey(n) {
+            if (sequence.length >= 4) return;
+            
+            sequence.push(n);
+            document.getElementById('code-display').innerText = "SIGNATUR: " + sequence.map(() => "•").join(" ");
+            
+            if (sequence.length === 4) {
+                if (JSON.stringify(sequence) === JSON.stringify(target)) {
+                    document.getElementById('code-display').innerText = "KODE VALIDERT - KLAR FOR SIGNERING";
+                    document.getElementById('code-display').className = "mt-auto text-[10px] text-center text-green-400 font-black tracking-widest";
+                    document.getElementById('confirm-btn').classList.replace('bg-indigo-600', 'bg-green-600');
+                } else {
+                    document.getElementById('code-display').innerText = "UGYLDIG KODE - PRØV IGJEN";
+                    document.getElementById('code-display').className = "mt-auto text-[10px] text-center text-red-400 font-bold";
+                    sequence = [];
+                    setTimeout(() => {
+                        document.getElementById('code-display').innerText = "Tast signaturkode fra SMS";
+                    }, 1500);
+                }
+            }
+        }
+
+        document.getElementById('confirm-btn').addEventListener('click', () => {
+            if (JSON.stringify(sequence) !== JSON.stringify(target)) return;
+            
+            const btn = document.getElementById('confirm-btn');
+            btn.innerText = "BEHANDLER PENSJONSTAP...";
+            btn.disabled = true;
+            
+            // Simulerer prosessering
+            setTimeout(() => {
+                document.getElementById('success-overlay').classList.replace('opacity-0', 'opacity-100');
+                document.getElementById('success-overlay').classList.remove('pointer-events-none');
+                document.body.classList.add('vibrate');
+                
+                // Vibrasjonseffekt ferdig
+                setTimeout(() => {
+                    document.body.classList.remove('vibrate');
+                }, 1000);
+            }, 2000);
+        });
+    </script>
+</body>
+</html>
