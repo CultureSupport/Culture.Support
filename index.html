@@ -1,22 +1,691 @@
-Psycho Somatic Pain installation, 
-psyko Somatisk
-rehabilitering fra hjernen, hjernen blir behandling 
-integrert til Oppgave behandle kroppen til reset
-og fjerne psykose og psykiske lidelser 
+<html>
+<!DOCTYPE html>
+<html lang="no">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Erlang </title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts (Space Grotesk & Fira Code) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        body {
+            font-family: 'Space Grotesk', sans-serif;
+            background: radial-gradient(circle at 50% 50%, #0d1117 0%, #07090e 100%);
+            color: #f0f6fc;
+            overflow-x: hidden;
+        }
+        
+        .mono-font {
+            font-family: 'Fira Code', monospace;
+        }
 
-i neste oppdatering.
+        /* Glassmorphism og neonglød */
+        .glass-panel {
+            background: rgba(22, 27, 34, 0.75);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(240, 115, 36, 0.15);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+        }
 
-klienten justeres seg inn mot nettverket 
-og lukker ned og resetter schizofreni lidelser 
-og rebalanserer kroppen til normal atferd.
+        .glass-panel:hover {
+            border-color: rgba(240, 115, 36, 0.3);
+            box-shadow: 0 8px 32px 0 rgba(240, 115, 36, 0.05);
+            transition: all 0.3s ease;
+        }
 
-installasjon av interaktive lidelse beskyttelse
-oppdateres .
+        .erlang-glow {
+            box-shadow: 0 0 20px rgba(240, 115, 36, 0.25);
+        }
 
-oppdatere filtrere ut environment signaler
-og manipulasjon signaler med deteksjon i signal
-sendere og emulator kilder og klient stenger
-hemmelige army nettverk manipulasjoner 
+        .terminal-glow {
+            box-shadow: 0 0 15px rgba(52, 211, 153, 0.15);
+        }
 
-setter opp targeted individual beskyttelse
-og vk2skull beskyttleser 
+        /* Skreddersydd rullefelt */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #0d1117;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #30363d;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #f07324;
+        }
+
+        /* Terminal markør-animasjon */
+        .cursor {
+            display: inline-block;
+            width: 8px;
+            height: 18px;
+            background-color: #34d399;
+            animation: blink 1s infinite;
+            vertical-align: middle;
+        }
+        @keyframes blink {
+            0%, 49% { background-color: #34d399; }
+            50%, 99% { background-color: transparent; }
+        }
+
+        /* Nodekobling animasjons-pulser */
+        .pulse-orange {
+            animation: pulse-orange-anim 2s infinite;
+        }
+        @keyframes pulse-orange-anim {
+            0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(240, 115, 36, 0.7); }
+            70% { transform: scale(1); box-shadow: 0 0 0 8px rgba(240, 115, 36, 0); }
+            100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(240, 115, 36, 0); }
+        }
+
+        /* Mobilramme spesifikk styling */
+        .phone-container {
+            border: 12px solid #21262d;
+            border-radius: 40px;
+            height: 720px;
+            position: relative;
+            background-color: #0d1117;
+        }
+        .phone-notch {
+            width: 140px;
+            height: 25px;
+            background-color: #21262d;
+            border-bottom-left-radius: 18px;
+            border-bottom-right-radius: 18px;
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            top: 0;
+            z-index: 50;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col justify-between">
+
+    <!-- Topp-meny / Header -->
+    <header class="border-b border-gray-800 bg-black/40 backdrop-blur-md sticky top-0 z-40 px-4 py-3">
+        <div class="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-4">
+            <div class="flex items-center space-x-3">
+                <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-amber-600 to-red-600 flex items-center justify-center font-bold text-white text-lg shadow-lg shadow-orange-600/20">
+                    E
+                </div>
+                <div>
+                    <h1 class="text-xl font-bold tracking-tight text-white flex items-center gap-2">
+                        ERLANG <span class="text-xs bg-red-500/10 text-red-400 border border-red-500/20 px-2 py-0.5 rounded">OTP 26</span>
+                    </h1>
+                    <p class="text-[10px] text-gray-400 font-mono">GNU Mirror & Terminal Client</p>
+                </div>
+            </div>
+
+            <!-- Global Status-indikator -->
+            <div class="hidden md:flex items-center space-x-6 text-sm">
+                <div class="flex items-center space-x-2">
+                    <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></span>
+                    <span class="text-gray-300 font-mono text-xs">Mirror: online.gnu.org</span>
+                </div>
+                <div class="flex items-center space-x-2">
+                    <span class="w-2.5 h-2.5 rounded-full bg-orange-500 animate-pulse"></span>
+                    <span class="text-gray-300 font-mono text-xs">Nodes: 12 Active</span>
+                </div>
+                <div class="bg-gray-800/80 px-3 py-1 rounded-md text-xs font-mono text-gray-400 border border-gray-700">
+                    curl -sSL gnu.erlang.no/install | bash
+                </div>
+            </div>
+
+            <!-- Handlingknapper -->
+            <div class="flex items-center space-x-2">
+                <button onclick="toggleSystemLog()" class="px-3 py-1.5 rounded-lg text-xs font-medium bg-gray-800 hover:bg-gray-700 transition flex items-center gap-1.5 text-gray-300">
+                    <i class="fa-solid fa-server text-orange-400"></i> System Status
+                </button>
+                <a href="#erlang-netverk" class="px-3 py-1.5 rounded-lg text-xs font-medium bg-gradient-to-r from-orange-600 to-red-600 hover:from-orange-500 hover:to-red-500 text-white transition shadow-sm">
+                    Koble Node <i class="fa-solid fa-circle-nodes ml-1"></i>
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <!-- Hovedinnhold -->
+    <main class="flex-grow max-w-7xl w-full mx-auto p-4 md:py-8 grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+        
+        <!-- Venstre side: Informasjon, installasjonspakker og GNU/Erlang-kontroller (7 kolonner) -->
+        <div class="lg:col-span-7 space-y-6">
+            
+            <!-- Introduksjonspanel -->
+            <div class="glass-panel p-6 rounded-2xl relative overflow-hidden">
+                <div class="absolute top-0 right-0 w-40 h-40 bg-orange-600/5 rounded-full blur-3xl"></div>
+                <h2 class="text-2xl font-bold text-white mb-2 flex items-center gap-2">
+                    <i class="fa-solid fa-cloud-arrow-down text-orange-500"></i> Mobil Agent Distribusjon
+                </h2>
+                <p class="text-gray-300 text-sm leading-relaxed mb-4">
+                    Kombiner kraften av <strong>GNU</strong> programvaredistribusjon med Erlang sin unike feiltoleranse og parallelle arkitektur direkte i et mobilt agentmiljø. Laster ned pakker sikkert via krypterte SSH- og proxy-tunneler direkte fra nettleseren til dine distribuerte noder.
+                </p>
+                
+                <!-- Rask Info Boks -->
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs font-mono text-gray-400 mt-4">
+                    <div class="bg-black/40 p-3 rounded-lg border border-gray-800">
+                        <span class="text-orange-400 block font-semibold">Tunneler:</span>
+                        Active Proxies, SSH, SSL
+                    </div>
+                    <div class="bg-black/40 p-3 rounded-lg border border-gray-800">
+                        <span class="text-orange-400 block font-semibold">Nettverk:</span>
+                        Mnesia, Distributed Erlang
+                    </div>
+                    <div class="bg-black/40 p-3 rounded-lg border border-gray-800">
+                        <span class="text-orange-400 block font-semibold">Støtte:</span>
+                        Erlang, Elixir, LFE, Gleam
+                    </div>
+                </div>
+            </div>
+
+            <!-- Interaktiv Pakkemeny (Klikk for å simulere curl-installasjon på mobilen) -->
+            <div class="glass-panel p-6 rounded-2xl">
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="text-lg font-bold text-white flex items-center gap-2">
+                        <i class="fa-solid fa-cubes text-amber-500"></i> Tilgjengelige Pakker for Curl
+                    </h3>
+                    <span class="text-xs text-gray-400 font-mono">Klikk kommando for å kjøre i simulator</span>
+                </div>
+
+                <div class="space-y-3">
+                    
+                    <!-- Pakke 1 -->
+                    <div class="p-3 rounded-xl bg-black/30 border border-gray-800/80 hover:border-orange-500/30 transition flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
+                        <div>
+                            <span class="text-xs bg-orange-500/15 text-orange-400 px-2 py-0.5 rounded font-mono font-bold">OTP-26.2</span>
+                            <h4 class="text-sm font-semibold text-gray-200 mt-1">Erlang/OTP Runtime Environment</h4>
+                            <p class="text-xs text-gray-400">Standard pakke inkludert VM (BEAM), kompiler, og verktøy.</p>
+                        </div>
+                        <button onclick="simulateCurl('erlang')" class="w-full sm:w-auto px-3 py-2 bg-gray-800 hover:bg-orange-600 hover:text-white transition rounded-lg text-xs font-mono flex items-center justify-center gap-1.5 text-orange-400">
+                            <i class="fa-solid fa-terminal"></i> Kjøre curl
+                        </button>
+                    </div>
+
+                    <!-- Pakke 2 -->
+                    <div class="p-3 rounded-xl bg-black/30 border border-gray-800/80 hover:border-orange-500/30 transition flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
+                        <div>
+                            <span class="text-xs bg-purple-500/15 text-purple-400 px-2 py-0.5 rounded font-mono font-bold">COWBOY-2.9</span>
+                            <h4 class="text-sm font-semibold text-gray-200 mt-1">Cowboy HTTP Server</h4>
+                            <p class="text-xs text-gray-400">Superrask, asynkron HTTP-server bygget på Erlang for mikrotjenester.</p>
+                        </div>
+                        <button onclick="simulateCurl('cowboy')" class="w-full sm:w-auto px-3 py-2 bg-gray-800 hover:bg-purple-600 hover:text-white transition rounded-lg text-xs font-mono flex items-center justify-center gap-1.5 text-purple-400">
+                            <i class="fa-solid fa-terminal"></i> Kjøre curl
+                        </button>
+                    </div>
+
+                    <!-- Pakke 3 -->
+                    <div class="p-3 rounded-xl bg-black/30 border border-gray-800/80 hover:border-orange-500/30 transition flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
+                        <div>
+                            <span class="text-xs bg-emerald-500/15 text-emerald-400 px-2 py-0.5 rounded font-mono font-bold">REBAR3</span>
+                            <h4 class="text-sm font-semibold text-gray-200 mt-1">Rebar3 Build Tool</h4>
+                            <p class="text-xs text-gray-400">Det sofistikerte bygg- og pakkehåndteringsverktøyet for Erlang-økosystemet.</p>
+                        </div>
+                        <button onclick="simulateCurl('rebar3')" class="w-full sm:w-auto px-3 py-2 bg-gray-800 hover:bg-emerald-600 hover:text-white transition rounded-lg text-xs font-mono flex items-center justify-center gap-1.5 text-emerald-400">
+                            <i class="fa-solid fa-terminal"></i> Kjøre curl
+                        </button>
+                    </div>
+
+                    <!-- Pakke 4 -->
+                    <div class="p-3 rounded-xl bg-black/30 border border-gray-800/80 hover:border-orange-500/30 transition flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
+                        <div>
+                            <span class="text-xs bg-sky-500/15 text-sky-400 px-2 py-0.5 rounded font-mono font-bold">MNESIA-SYNC</span>
+                            <h4 class="text-sm font-semibold text-gray-200 mt-1">Mnesia Distribusjons Node</h4>
+                            <p class="text-xs text-gray-400">Sanntid distribuert NoSQL database innebygd i Erlang.</p>
+                        </div>
+                        <button onclick="simulateCurl('mnesia')" class="w-full sm:w-auto px-3 py-2 bg-gray-800 hover:bg-sky-600 hover:text-white transition rounded-lg text-xs font-mono flex items-center justify-center gap-1.5 text-sky-400">
+                            <i class="fa-solid fa-terminal"></i> Kjøre curl
+                        </button>
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- Agent Miljøkonfigurasjon og Bash Script Modifikator -->
+            <div class="glass-panel p-6 rounded-2xl">
+                <h3 class="text-lg font-bold text-white mb-2 flex items-center gap-2">
+                    <i class="fa-solid fa-sliders text-blue-500"></i> Tilpass Agentens Bash Skript
+                </h3>
+                <p class="text-xs text-gray-400 mb-4">
+                    Definer hvilke porter, proxyer og noder den mobile terminalen skal koble seg opp mot under installasjonen.
+                </p>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                    <div>
+                        <label class="block text-xs font-mono text-gray-400 mb-1">PROTOCALL PORT</label>
+                        <select id="agentPort" class="w-full bg-black/50 border border-gray-700 rounded-lg p-2 text-sm text-gray-300 focus:outline-none focus:border-orange-500 font-mono">
+                            <option value="4369">4369 (EPMD Daemon)</option>
+                            <option value="5672">5672 (RabbitMQ)</option>
+                            <option value="1883">1883 (MQTT Broker)</option>
+                            <option value="8080">8080 (Cowboy API)</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-mono text-gray-400 mb-1">PROXIED TUNNEL IP</label>
+                        <input type="text" id="proxyIp" value="10.8.0.42" class="w-full bg-black/50 border border-gray-700 rounded-lg p-2 text-sm text-gray-300 focus:outline-none focus:border-orange-500 font-mono">
+                    </div>
+                </div>
+
+                <div class="bg-black/80 rounded-xl p-4 border border-gray-800 relative">
+                    <div class="absolute top-2 right-2 text-[10px] text-gray-500 font-mono uppercase">Bash Payload</div>
+                    <pre class="text-xs text-emerald-400 overflow-x-auto mono-font whitespace-pre-wrap" id="scriptPreview">
+#!/bin/bash
+# Erlang Mobil Agent Autodeploy
+export ERL_EPMD_PORT=4369
+export AGENT_PROXY="10.8.0.42"
+curl -fsSL https://gnu.erlang.no/bin/otp_agent.sh | bash -s -- --node peer_mobile@agent</pre>
+                </div>
+                <div class="mt-3 flex justify-end">
+                    <button onclick="updateBashScript()" class="px-3 py-1.5 bg-gray-800 hover:bg-gray-700 rounded-lg text-xs font-medium text-gray-300 transition">
+                        Oppdater Bash Payload <i class="fa-solid fa-rotate ml-1"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Interaktivt Matematisk Node-Aspekt (LaTeX-style) -->
+            <div class="glass-panel p-6 rounded-2xl bg-gradient-to-br from-gray-900 to-black border-dashed border-gray-800">
+                <h4 class="text-sm font-semibold text-gray-300 mb-2 uppercase tracking-wider font-mono">
+                    Formel for Node Synkronisering og Feiltoleranse
+                </h4>
+                <p class="text-xs text-gray-400 mb-3 leading-relaxed">
+                    Når agenter i Erlang-nettverket danner en mesh-topologi, følger det nettverkets tilgjengelighetskoeffisient. Her er formelen for fullstendig node-tilkobling (fully connected mesh):
+                </p>
+                <div class="bg-black/60 p-4 rounded-xl text-center text-sm md:text-base font-mono text-orange-400 border border-gray-800/60 my-2">
+                    $$C = \frac{N(N - 1)}{2} \quad \text{der} \quad N = \text{Agenter i systemet}$$
+                </div>
+                <p class="text-[11px] text-gray-500 mt-2">
+                    Hvis en mobil agent mister tilkoblingen til tårnet, opprettholdes nodetilstanden asynkront via Mnesia sin interne transaksjonslogg.
+                </p>
+            </div>
+
+        </div>
+
+        <!-- Høyre side: Mobil Simulator (5 kolonner) -->
+        <div class="lg:col-span-5 flex justify-center">
+            
+            <div class="phone-container w-full max-w-[360px] shadow-2xl shadow-orange-600/10">
+                <div class="phone-notch"></div>
+                
+                <!-- Mobil skjermområde -->
+                <div class="h-full flex flex-col justify-between pt-8 pb-4 px-4 overflow-hidden relative">
+                    
+                    <!-- Mobil status bar -->
+                    <div class="flex justify-between items-center text-[10px] font-mono text-gray-400 mb-2 px-1">
+                        <div>
+                            <span id="currentTime">09:41</span>
+                        </div>
+                        <div class="flex items-center space-x-1.5">
+                            <span>5G Agent Net</span>
+                            <i class="fa-solid fa-wifi text-emerald-400"></i>
+                            <i class="fa-solid fa-battery-three-quarters text-orange-400"></i>
+                        </div>
+                    </div>
+
+                    <!-- Mobil GUI Topp: Erlang Agent Panel -->
+                    <div class="bg-gray-900/90 rounded-xl p-3 border border-gray-800 mb-3 flex items-center justify-between">
+                        <div class="flex items-center space-x-2">
+                            <div class="w-8 h-8 rounded-lg bg-orange-600/20 border border-orange-500/30 flex items-center justify-center">
+                                <i class="fa-solid fa-cube text-orange-500 text-sm animate-pulse"></i>
+                            </div>
+                            <div>
+                                <h4 class="text-xs font-bold text-white leading-tight">Erl-Agent-Client</h4>
+                                <p class="text-[9px] text-emerald-400 font-mono">Status: Connected</p>
+                            </div>
+                        </div>
+                        <div class="text-right">
+                            <span class="text-[9px] block text-gray-400 font-mono">NODE ID</span>
+                            <span class="text-[10px] font-bold text-orange-400 font-mono" id="simulatedNodeId">agent_7af3@10.8.0.42</span>
+                        </div>
+                    </div>
+
+                    <!-- Terminalen (Selve kjernen) -->
+                    <div class="flex-grow bg-black/95 rounded-xl p-3 border border-emerald-900/50 flex flex-col justify-between text-xs font-mono terminal-glow overflow-y-auto mb-3" id="terminalScreen">
+                        
+                        <div class="space-y-2 text-[11px] leading-relaxed" id="terminalOutput">
+                            <p class="text-gray-500">GNU bash, versjon 5.2-release (arm64-agent)</p>
+                            <p class="text-gray-300">Skriv <span class="text-orange-400">"help"</span> eller velg en pakke til venstre for å starte installasjon.</p>
+                            <p class="text-emerald-400">agent_7af3@gnu-node:~ $ <span class="cursor"></span></p>
+                        </div>
+                        
+                    </div>
+
+                    <!-- Mobil GUI Bunnavsnitt: Terminal status og quick launch -->
+                    <div class="bg-gray-900/90 rounded-xl p-3 border border-gray-800 space-y-2">
+                        <span class="text-[9px] uppercase font-mono tracking-wider text-gray-400 block">Kvikkommandoer på mobil</span>
+                        
+                        <div class="grid grid-cols-3 gap-1.5">
+                            <button onclick="runCommand('clear')" class="px-2 py-1 bg-gray-800 hover:bg-gray-700 text-gray-300 rounded text-[10px] text-center font-mono">
+                                Clear
+                            </button>
+                            <button onclick="runCommand('erl')" class="px-2 py-1 bg-gray-800 hover:bg-orange-600/30 text-orange-400 rounded text-[10px] text-center font-mono border border-orange-500/10">
+                                erl (OTP)
+                            </button>
+                            <button onclick="runCommand('nodes')" class="px-2 py-1 bg-gray-800 hover:bg-emerald-600/30 text-emerald-400 rounded text-[10px] text-center font-mono border border-emerald-500/10">
+                                nodes()
+                            </button>
+                        </div>
+
+                        <!-- Interaktivt Inputfelt -->
+                        <div class="flex items-center space-x-1.5 mt-2">
+                            <span class="text-emerald-400 text-xs font-mono">$</span>
+                            <input type="text" id="terminalInput" placeholder="Skriv terminalkommando..." onkeydown="handleTerminalKey(event)" class="flex-grow bg-black border border-gray-700 rounded p-1 text-xs text-emerald-400 focus:outline-none focus:border-emerald-500 font-mono">
+                            <button onclick="submitTerminalInput()" class="p-1 bg-emerald-500 hover:bg-emerald-600 text-black rounded text-xs px-2.5">
+                                <i class="fa-solid fa-arrow-right"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Hjem-knapp simulator -->
+                    <div class="w-24 h-1 bg-gray-700 rounded-full mx-auto mt-2"></div>
+                </div>
+
+            </div>
+
+        </div>
+
+    </main>
+
+    <!-- System Log Overlay Panel (Viser statistikk ved klikk) -->
+    <div id="systemLogPanel" class="hidden fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
+        <div class="glass-panel max-w-lg w-full rounded-2xl p-6 border border-orange-500/30 relative">
+            <button onclick="toggleSystemLog()" class="absolute top-4 right-4 text-gray-400 hover:text-white">
+                <i class="fa-solid fa-xmark text-lg"></i>
+            </button>
+            <h3 class="text-lg font-bold text-white mb-2 flex items-center gap-2">
+                <i class="fa-solid fa-pulse text-red-500 animate-pulse"></i> Erlang Distribusjons-Monitor
+            </h3>
+            <p class="text-xs text-gray-400 mb-4">Metrikker for kjøretids-agenter og aktive Erlang-tunneler.</p>
+            
+            <div class="space-y-3 font-mono text-xs">
+                <div class="bg-black/40 p-3 rounded-lg border border-gray-800">
+                    <div class="flex justify-between">
+                        <span class="text-gray-400">Total Minnebruk (VM):</span>
+                        <span class="text-emerald-400">42.8 MB</span>
+                    </div>
+                    <div class="w-full bg-gray-800 h-1.5 rounded-full mt-2">
+                        <div class="bg-emerald-400 h-1.5 rounded-full" style="width: 35%"></div>
+                    </div>
+                </div>
+
+                <div class="bg-black/40 p-3 rounded-lg border border-gray-800">
+                    <div class="flex justify-between">
+                        <span class="text-gray-400">Aktive Prosesser (Erlang):</span>
+                        <span class="text-emerald-400">1428 / 262144</span>
+                    </div>
+                </div>
+
+                <div class="bg-black/40 p-3 rounded-lg border border-gray-800">
+                    <div class="flex justify-between">
+                        <span class="text-gray-400">System Arkitektur:</span>
+                        <span class="text-orange-400">Linux / BEAM OTP 26</span>
+                    </div>
+                </div>
+
+                <div class="bg-black/40 p-3 rounded-lg border border-gray-800">
+                    <div class="flex justify-between">
+                        <span class="text-gray-400">Sikkerhetsstatus:</span>
+                        <span class="text-green-400">Kryptert Proxy Tunnel (SSL)</span>
+                    </div>
+                </div>
+            </div>
+
+            <button onclick="toggleSystemLog()" class="mt-4 w-full py-2 bg-orange-600 hover:bg-orange-500 text-white rounded-lg text-xs font-semibold transition">
+                Lukk og gå tilbake
+            </button>
+        </div>
+    </div>
+
+    <!-- Seksjonsdeling / Erlang Nettverk og Dokumentasjon (Footer) -->
+    <footer id="erlang-netverk" class="border-t border-gray-800 bg-black/80 pt-12 pb-6 px-4">
+        <div class="max-w-7xl mx-auto space-y-12">
+            
+            <!-- Grid for Nettverksnoder og Ressurser -->
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+                
+                <!-- Kolonne 1: Hovedinfo -->
+                <div class="space-y-3">
+                    <div class="flex items-center space-x-2">
+                        <div class="w-6 h-6 rounded-lg bg-orange-600 flex items-center justify-center font-bold text-white text-xs">
+                            E
+                        </div>
+                        <span class="text-md font-bold text-white tracking-wider">ERLANG & GNU</span>
+                    </div>
+                    <p class="text-xs text-gray-400 leading-relaxed">
+                        Et samfunnsprosjekt for mobile Erlang-agenter. Vi bygger ultra-skalerbare nettverk gjennom tette integrasjoner med åpne GNU-pakker og sikrede terminal-grensesnitt.
+                    </p>
+                    <div class="flex space-x-3 text-gray-400 text-sm">
+                        <a href="#" class="hover:text-orange-500 transition"><i class="fa-brands fa-github"></i></a>
+                        <a href="#" class="hover:text-orange-500 transition"><i class="fa-brands fa-twitter"></i></a>
+                        <a href="#" class="hover:text-orange-500 transition"><i class="fa-brands fa-discord"></i></a>
+                    </div>
+                </div>
+
+                <!-- Kolonne 2: Erlang Dokumentasjon -->
+                <div class="space-y-3">
+                    <h4 class="text-sm font-bold text-white tracking-wide uppercase text-orange-400">Erlang Dokumentasjon</h4>
+                    <ul class="space-y-2 text-xs text-gray-400 font-mono">
+                        <li><a href="#" class="hover:underline hover:text-white transition">OTP Design Principles</a></li>
+                        <li><a href="#" class="hover:underline hover:text-white transition">Erlang Reference Manual</a></li>
+                        <li><a href="#" class="hover:underline hover:text-white transition">Distributed Erlang Protocols</a></li>
+                        <li><a href="#" class="hover:underline hover:text-white transition">System Architecture & Crash Dumps</a></li>
+                        <li><a href="#" class="hover:underline hover:text-white transition">Mnesia DB Administration</a></li>
+                    </ul>
+                </div>
+
+                <!-- Kolonne 3: GNU Mirrors & Curl installasjoner -->
+                <div class="space-y-3">
+                    <h4 class="text-sm font-bold text-white tracking-wide uppercase text-amber-400">GNU Mirror & Verktøy</h4>
+                    <ul class="space-y-2 text-xs text-gray-400 font-mono">
+                        <li><a href="#" class="hover:underline hover:text-white transition">gnu.org Packages</a></li>
+                        <li><a href="#" class="hover:underline hover:text-white transition">Secure Shell Curl Keys</a></li>
+                        <li><a href="#" class="hover:underline hover:text-white transition">Bash Agent Auto-scripts</a></li>
+                        <li><a href="#" class="hover:underline hover:text-white transition">Network Proxies Config</a></li>
+                        <li><a href="#" class="hover:underline hover:text-white transition">EPMD Protocol Spec</a></li>
+                    </ul>
+                </div>
+
+                <!-- Kolonne 4: Erlang Nettverk Noder (Sanntidstilkobling simulering) -->
+                <div class="space-y-3">
+                    <h4 class="text-sm font-bold text-white tracking-wide uppercase text-emerald-400">Erlang Nettverk status</h4>
+                    <div class="bg-gray-900/60 p-3 rounded-xl border border-gray-800 space-y-2">
+                        <div class="flex items-center justify-between text-[11px] font-mono">
+                            <span class="text-gray-300">node1_oslo@gnu</span>
+                            <span class="text-emerald-400">● Aktiv</span>
+                        </div>
+                        <div class="flex items-center justify-between text-[11px] font-mono">
+                            <span class="text-gray-300">node2_bergen@gnu</span>
+                            <span class="text-emerald-400">● Aktiv</span>
+                        </div>
+                        <div class="flex items-center justify-between text-[11px] font-mono">
+                            <span class="text-gray-300">agent_mobile@remote</span>
+                            <span class="text-amber-400 animate-pulse">● Synkroniserer</span>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Nedre del av footer -->
+            <div class="border-t border-gray-800 pt-6 flex flex-col sm:flex-row justify-between items-center gap-4 text-xs text-gray-500">
+                <p>&copy; 2026 Erlang GNU Mobile Agent Project. Lisensiert under GPL v3.</p>
+                <div class="flex space-x-4">
+                    <a href="#" class="hover:underline">Vilkår</a>
+                    <a href="#" class="hover:underline">Personvern</a>
+                    <a href="#" class="hover:underline">Informasjonskapsler</a>
+                </div>
+            </div>
+
+        </div>
+    </footer>
+
+    <!-- Script Logikk -->
+    <script>
+        // Sanntids oppdatering av klokken i mobil statusbar
+        function updateClock() {
+            const now = new Date();
+            const hours = String(now.getHours()).padStart(2, '0');
+            const minutes = String(now.getMinutes()).padStart(2, '0');
+            document.getElementById('currentTime').innerText = `${hours}:${minutes}`;
+        }
+        setInterval(updateClock, 1000);
+        updateClock();
+
+        // Generer tilfeldig Agent Node ID ved oppstart
+        const randomId = Math.floor(Math.random() * 9000) + 1000;
+        document.getElementById('simulatedNodeId').innerText = `agent_${randomId}@10.8.0.42`;
+
+        // Håndtering av systemlogg overlay
+        function toggleSystemLog() {
+            const panel = document.getElementById('systemLogPanel');
+            panel.classList.toggle('hidden');
+        }
+
+        // Oppdatering av det redigerbare bash skriptet basert på inputfelt
+        function updateBashScript() {
+            const port = document.getElementById('agentPort').value;
+            const ip = document.getElementById('proxyIp').value;
+            
+            const script = `#!/bin/bash
+# Erlang Mobil Agent Autodeploy
+export ERL_EPMD_PORT=${port}
+export AGENT_PROXY="${ip}"
+curl -fsSL https://gnu.erlang.no/bin/otp_agent.sh | bash -s -- --node peer_mobile@agent`;
+            
+            document.getElementById('scriptPreview').innerText = script;
+        }
+
+        // Terminal Logikk
+        const terminalOutput = document.getElementById('terminalOutput');
+        const terminalScreen = document.getElementById('terminalScreen');
+
+        function appendToTerminal(text, type = 'normal') {
+            const p = document.createElement('p');
+            if (type === 'cmd') {
+                p.className = 'text-emerald-400';
+                p.innerHTML = `agent_${randomId}@gnu-node:~ $ ${text}`;
+            } else if (type === 'success') {
+                p.className = 'text-emerald-400 font-bold';
+                p.innerText = text;
+            } else if (type === 'error') {
+                p.className = 'text-red-400 font-semibold';
+                p.innerText = text;
+            } else if (type === 'info') {
+                p.className = 'text-orange-400';
+                p.innerText = text;
+            } else {
+                p.className = 'text-gray-300';
+                p.innerText = text;
+            }
+            
+            // Sett inn rett før blinkende markør
+            terminalOutput.appendChild(p);
+            
+            // Behold markøren nederst
+            const cursorContainer = document.querySelector('.cursor');
+            if (cursorContainer) {
+                cursorContainer.scrollIntoView({ behavior: 'smooth' });
+            }
+            terminalScreen.scrollTop = terminalScreen.scrollHeight;
+        }
+
+        // Håndter direkte tastetrykk i terminal-input
+        function handleTerminalKey(event) {
+            if (event.key === 'Enter') {
+                submitTerminalInput();
+            }
+        }
+
+        function submitTerminalInput() {
+            const inputField = document.getElementById('terminalInput');
+            const command = inputField.value.trim();
+            if (command === '') return;
+
+            appendToTerminal(command, 'cmd');
+            processCommand(command);
+            inputField.value = '';
+        }
+
+        // Prosesserer taste- og faste kommandoer
+        function processCommand(cmd) {
+            const cleanCmd = cmd.toLowerCase();
+            
+            if (cleanCmd === 'help') {
+                appendToTerminal('--- Tilgjengelige kommandoer ---');
+                appendToTerminal('erl      - Start Erlang Emulator shell');
+                appendToTerminal('nodes    - Sjekk tilkoblet Erlang cluster');
+                appendToTerminal('clear    - Tøm skjermen');
+                appendToTerminal('curl     - Hent programvare (eks: curl erlang, curl cowboy)');
+                appendToTerminal('sysinfo  - Se systemarkitektur & VM status');
+            } else if (cleanCmd === 'clear') {
+                terminalOutput.innerHTML = '<p class="text-emerald-400">agent_7af3@gnu-node:~ $ <span class="cursor"></span></p>';
+            } else if (cleanCmd === 'erl') {
+                appendToTerminal('Erlang/OTP 26 [erts-14.2] [source] [64-bit] [smp:4:4] [ds:4:4:10] [async-threads:1]', 'info');
+                appendToTerminal('Eshell V14.2  (press Ctrl+G to abort, q() to exit)', 'info');
+                appendToTerminal('1> _', 'info');
+            } else if (cleanCmd === 'nodes' || cleanCmd === 'nodes()') {
+                appendToTerminal('Sjekker nettverk noder via EPMD...');
+                setTimeout(() => {
+                    appendToTerminal('[node1_oslo@gnu.org, node2_bergen@gnu.org]', 'success');
+                }, 400);
+            } else if (cleanCmd.startsWith('curl')) {
+                const parts = cleanCmd.split(' ');
+                if (parts.length > 1) {
+                    simulateCurl(parts[1]);
+                } else {
+                    appendToTerminal('Bruk: curl [erlang | cowboy | rebar3 | mnesia]', 'error');
+                }
+            } else if (cleanCmd === 'sysinfo') {
+                appendToTerminal('CPU: ARM64 Core v8-Agent');
+                appendToTerminal('Proxy Tunnel: 10.8.0.42:4369 (EPMD)');
+                appendToTerminal('Mnesia State: Fully Synced with Oslo/Bergen Cluster');
+            } else {
+                appendToTerminal(`bash: ${cmd}: kommando ikke funnet`, 'error');
+            }
+        }
+
+        // Rask kjøring av knappe-kommandoer
+        function runCommand(command) {
+            appendToTerminal(command, 'cmd');
+            processCommand(command);
+        }
+
+        // Simulering av curl-nedlastinger og installasjon (Kalles fra klikkbare pakker)
+        function simulateCurl(pkg) {
+            const port = document.getElementById('agentPort').value;
+            const ip = document.getElementById('proxyIp').value;
+
+            appendToTerminal(`curl -fsSL https://gnu.erlang.no/install/${pkg}.sh | bash`, 'cmd');
+            
+            setTimeout(() => {
+                appendToTerminal(`% Total    % Received % Xferd  Average Speed   Time    Time     Time  Current`);
+                appendToTerminal(`                             Dload  Upload   Total   Spent    Left  Speed`);
+                appendToTerminal(`100  424k  100  424k    0     0  1420k      0 --:--:-- --:--:-- --:--:-- 1424k`);
+            }, 300);
+
+            setTimeout(() => {
+                appendToTerminal(`[info] Starter installasjon av ${pkg.toUpperCase()}...`, 'info');
+                appendToTerminal(`[info] Kobler opp kryptert proxy tunnel mot [${ip}:${port}]`);
+            }, 800);
+
+            setTimeout(() => {
+                appendToTerminal(`[compiling] Pakker ut filer og bygger distribusjon...`);
+                appendToTerminal(`[epmd] Registrerer lokal agent node i Erlang Port Mapper Daemon...`);
+            }, 1600);
+
+            setTimeout(() => {
+                appendToTerminal(`[success] ${pkg.toUpperCase()} ble installert og synkronisert suksessfullt!`, 'success');
+                appendToTerminal(`[network] Node ${pkg}_node@${ip} er nå aktiv i nettverks-mesh.`, 'info');
+            }, 2500);
+        }
+    </script>
+</body>
+</html>
+
