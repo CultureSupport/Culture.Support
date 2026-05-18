@@ -1,0 +1,958 @@
+<html>
+<!DOCTYPE html>
+<html lang="no">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Culture.Support</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts (Space Grotesk & Fira Code) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        body {
+            font-family: 'Space Grotesk', sans-serif;
+            background: radial-gradient(circle at 50% 50%, #0d1117 0%, #07090e 100%);
+            color: #f0f6fc;
+            overflow-x: hidden;
+        }
+        
+        .mono-font {
+            font-family: 'Fira Code', monospace;
+        }
+
+        /* Glassmorphism og neonglød */
+        .glass-panel {
+            background: rgba(22, 27, 34, 0.75);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(16, 185, 129, 0.15);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.4);
+        }
+
+        .glass-panel:hover {
+            border-color: rgba(16, 185, 129, 0.35);
+            box-shadow: 0 8px 32px 0 rgba(16, 185, 129, 0.05);
+            transition: all 0.3s ease;
+        }
+
+        .erlang-glow {
+            box-shadow: 0 0 20px rgba(240, 115, 36, 0.25);
+        }
+
+        .terminal-glow {
+            box-shadow: 0 0 15px rgba(52, 211, 153, 0.15);
+        }
+
+        /* Skreddersydd rullefelt */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #0d1117;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #30363d;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #10b981;
+        }
+
+        /* Terminal markør-animasjon */
+        .cursor {
+            display: inline-block;
+            width: 8px;
+            height: 18px;
+            background-color: #34d399;
+            animation: blink 1s infinite;
+            vertical-align: middle;
+        }
+        @keyframes blink {
+            0%, 49% { background-color: #34d399; }
+            50%, 99% { background-color: transparent; }
+        }
+
+        /* 50 Gbps Ultra-høyhastighets mesh-linjer */
+        @keyframes dash {
+            to {
+                stroke-dashoffset: -80;
+            }
+        }
+        .mesh-line-50g {
+            stroke: rgba(16, 185, 129, 0.6);
+            stroke-width: 2.5;
+            stroke-dasharray: 12, 6;
+            animation: dash 0.8s linear infinite; /* Ekstremt kjapp bevegelse for 50 Gbps */
+            filter: drop-shadow(0 0 3px rgba(16, 185, 129, 0.5));
+        }
+
+        /* Grønn Node-pulsing i mesh-kartet */
+        .node-pulse-green {
+            animation: node-pulse-green-anim 1.5s infinite alternate;
+        }
+        @keyframes node-pulse-green-anim {
+            0% { r: 6; fill: #10b981; filter: drop-shadow(0 0 3px #10b981); }
+            100% { r: 10; fill: #34d399; filter: drop-shadow(0 0 12px #34d399); }
+        }
+
+        /* Mobilramme spesifikk styling */
+        .phone-container {
+            border: 12px solid #21262d;
+            border-radius: 40px;
+            height: 720px;
+            position: relative;
+            background-color: #0d1117;
+        }
+        .phone-notch {
+            width: 140px;
+            height: 25px;
+            background-color: #21262d;
+            border-bottom-left-radius: 18px;
+            border-bottom-right-radius: 18px;
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            top: 0;
+            z-index: 50;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col justify-between">
+
+    <!-- Topp-meny / Header -->
+    <header class="border-b border-gray-800 bg-black/40 backdrop-blur-md sticky top-0 z-40 px-4 py-3">
+        <div class="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-4">
+            <div class="flex items-center space-x-3">
+                <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-emerald-600 to-teal-500 flex items-center justify-center font-bold text-white text-lg shadow-lg shadow-emerald-600/20">
+                    E
+                </div>
+                <div>
+                    <h1 class="text-xl font-bold tracking-tight text-white flex items-center gap-2">
+                        ERLANG <span class="text-xs bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 px-2 py-0.5 rounded">HYBRID 50 Gbps MESH</span>
+                    </h1>
+                    <p class="text-[10px] text-gray-400 font-mono">GNU Distributed Speed Telemetry & Routing</p>
+                </div>
+            </div>
+
+            <!-- Global Status-indikator -->
+            <div class="hidden md:flex items-center space-x-6 text-sm">
+                <div class="flex items-center space-x-2">
+                    <span class="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse"></span>
+                    <span class="text-gray-300 font-mono text-xs">Mirror: online.gnu.org (50G Link)</span>
+                </div>
+                <div class="flex items-center space-x-2">
+                    <span class="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse"></span>
+                    <span class="text-gray-300 font-mono text-xs">Nettverk: 4 Noder Grønn/Tilkoblet</span>
+                </div>
+                <div class="bg-gray-800/80 px-3 py-1 rounded-md text-xs font-mono text-gray-400 border border-gray-700">
+                    curl -sSL telemetry.erlang.no/50g-mesh | bash
+                </div>
+            </div>
+
+            <!-- Handlingknapper -->
+            <div class="flex items-center space-x-2">
+                <button onclick="toggleSystemLog()" class="px-3 py-1.5 rounded-lg text-xs font-medium bg-gray-800 hover:bg-gray-700 transition flex items-center gap-1.5 text-gray-300">
+                    <i class="fa-solid fa-server text-emerald-400"></i> System status
+                </button>
+                <a href="#erlang-netverk" class="px-3 py-1.5 rounded-lg text-xs font-medium bg-gradient-to-r from-emerald-600 to-teal-500 hover:from-emerald-500 hover:to-teal-400 text-white transition shadow-sm">
+                    Koble Node <i class="fa-solid fa-circle-nodes ml-1"></i>
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <!-- Hovedinnhold -->
+    <main class="max-w-7xl w-full mx-auto p-4 md:py-8 grid grid-cols-1 lg:grid-cols-12 gap-8 items-start flex-grow">
+        
+        <!-- Venstre side: Informasjon, 50G Mesh og Speedtest logg (7 kolonner) -->
+        <div class="lg:col-span-7 space-y-6">
+            
+            <!-- Telemetrisk Mesh Visualiseringstavle (4 noder, diamond layout) -->
+            <div class="glass-panel p-6 rounded-2xl relative overflow-hidden">
+                <div class="absolute top-0 right-0 w-40 h-40 bg-emerald-600/5 rounded-full blur-3xl"></div>
+                <div class="flex justify-between items-center mb-4">
+                    <div>
+                        <h2 class="text-xl font-bold text-white flex items-center gap-2">
+                            <i class="fa-solid fa-network-wired text-emerald-400"></i> Erlang Hybrid Mesh (50 Gbps)
+                        </h2>
+                        <p class="text-xs text-gray-400">Trykk på en node for å koble til, feilsøke eller overvåke datestrømmer.</p>
+                    </div>
+                    <span class="text-[10px] font-mono px-2 py-1 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+                        METRIKKER: 100% GRØNN / OPERASJONELL
+                    </span>
+                </div>
+
+                <!-- Det interaktive SVG Mesh-kartet (Diamond 4-noder) -->
+                <div class="bg-black/40 rounded-xl p-2 border border-gray-800 flex justify-center items-center relative h-[260px] md:h-[300px]">
+                    <svg viewBox="0 0 500 300" class="w-full h-full">
+                        <!-- Forbindelser (Mesh Linjer - 50 Gbps Hybrid fiber) -->
+                        <g id="meshConnections">
+                            <!-- Ytre ring -->
+                            <line x1="250" y1="40" x2="410" y2="150" class="mesh-line-50g" />
+                            <line x1="410" y1="150" x2="250" y2="260" class="mesh-line-50g" />
+                            <line x1="250" y1="260" x2="90" y2="150" class="mesh-line-50g" />
+                            <line x1="90" y1="150" x2="250" y2="40" class="mesh-line-50g" />
+                            
+                            <!-- Kryssforbindelser for redundant feiltoleranse -->
+                            <line x1="250" y1="40" x2="250" y2="260" class="mesh-line-50g" style="opacity: 0.6; stroke-dasharray: 8, 4;" />
+                            <line x1="90" y1="150" x2="410" y2="150" class="mesh-line-50g" style="opacity: 0.6; stroke-dasharray: 8, 4;" />
+                        </g>
+
+                        <!-- Hastighetsmerkelapper (50 Gbps Indikasjoner) -->
+                        <g font-size="8" font-family="monospace" fill="#34d399" opacity="0.85">
+                            <text x="350" y="90" text-anchor="middle">50 Gbps</text>
+                            <text x="350" y="215" text-anchor="middle">50 Gbps</text>
+                            <text x="150" y="215" text-anchor="middle">50 Gbps</text>
+                            <text x="150" y="90" text-anchor="middle">50 Gbps</text>
+                            <text x="255" y="130" text-anchor="start">50 Gbps Backbone</text>
+                        </g>
+
+                        <!-- Noder (Klikkbare elementer med telemetri trigger) -->
+                        <g id="meshNodes">
+                            <!-- Node 1: Skeidsdalen -->
+                            <g class="cursor-pointer" onclick="selectNode('node1_skeidsdalen@gnu', '0.22ms', '24 proc', '48.9 Gbps', '100%')">
+                                <circle cx="250" cy="40" r="14" fill="rgba(16, 185, 129, 0.1)"/>
+                                <circle cx="250" cy="40" r="7" class="node-pulse-green"/>
+                                <text x="250" y="22" fill="#ffffff" font-size="9" font-family="monospace" font-weight="bold" text-anchor="middle">node1_skeidsdalen@gnu</text>
+                            </g>
+
+                            <!-- Node 2: Mobilen (Hovedklient) -->
+                            <g class="cursor-pointer" onclick="selectNode('node2_mobilen@gnu', '0.12ms', '56 proc', '49.8 Gbps', '100%')">
+                                <circle cx="90" cy="150" r="14" fill="rgba(16, 185, 129, 0.1)"/>
+                                <circle cx="90" cy="150" r="8" fill="#10b981" filter="drop-shadow(0 0 6px #10b981)"/>
+                                <text x="90" y="132" fill="#34d399" font-weight="bold" font-size="10" font-family="monospace" text-anchor="middle">node2_mobilen@gnu [her]</text>
+                            </g>
+
+                            <!-- Node 3: Terminal -->
+                            <g class="cursor-pointer" onclick="selectNode('node3_terminal@gnu', '0.31ms', '14 proc', '47.5 Gbps', '100%')">
+                                <circle cx="410" cy="150" r="14" fill="rgba(16, 185, 129, 0.1)"/>
+                                <circle cx="410" cy="150" r="7" class="node-pulse-green"/>
+                                <text x="410" y="132" fill="#ffffff" font-size="9" font-family="monospace" font-weight="bold" text-anchor="middle">node3_terminal@gnu</text>
+                            </g>
+
+                            <!-- Node 4: Raspberry Pi -->
+                            <g class="cursor-pointer" onclick="selectNode('node4_raspberry_pi@gnu', '0.45ms', '32 proc', '49.1 Gbps', '100%')">
+                                <circle cx="250" cy="260" r="14" fill="rgba(16, 185, 129, 0.1)"/>
+                                <circle cx="250" cy="260" r="7" class="node-pulse-green"/>
+                                <text x="250" y="284" fill="#ffffff" font-size="9" font-family="monospace" font-weight="bold" text-anchor="middle">node4_raspberry_pi@gnu</text>
+                            </g>
+                        </g>
+                    </svg>
+
+                    <!-- Telemetry Boks som popper opp ved nodeklikk -->
+                    <div id="nodeTelemetryPopup" class="absolute bottom-3 left-3 right-3 bg-black/95 border border-emerald-500/30 rounded-lg p-3 text-xs font-mono flex flex-wrap justify-between items-center gap-2">
+                        <div>
+                            <span class="text-emerald-400 font-bold block" id="popNodeName">Aktiv Node: node2_mobilen@gnu</span>
+                            <span class="text-gray-400">Nettverkshastighet: </span><span class="text-emerald-400 font-semibold" id="popNodeSpeed">49.8 Gbps (Tilkoblet)</span>
+                        </div>
+                        <div class="flex gap-4 text-[11px]">
+                            <div><span class="text-emerald-400">Latency:</span> <span id="popNodePing">0.12ms</span></div>
+                            <div><span class="text-emerald-400">Mnesia Load:</span> <span id="popNodeProcs">56 proc</span></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Telemetrisk Nettverk Hastighet Log Panel (Speedtest og live linjegraf) -->
+            <div class="glass-panel p-6 rounded-2xl">
+                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-4">
+                    <div>
+                        <h3 class="text-lg font-bold text-white flex items-center gap-2">
+                            <i class="fa-solid fa-gauge-high text-emerald-400"></i> Hastighet & Kapasitetsmonitor
+                        </h3>
+                        <p class="text-xs text-gray-400">Sanntids strømming av nettverksgjennomstrømning på 50 Gbps hybridlinker</p>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <span class="text-xs font-mono text-emerald-400 bg-emerald-950/50 border border-emerald-800 px-2 py-1 rounded" id="liveSpeedText">
+                            Last: 49.85 Gbps
+                        </span>
+                        <button onclick="startSpeedTest()" class="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-black font-semibold text-xs rounded-lg transition flex items-center gap-1">
+                            <i class="fa-solid fa-play"></i> Kjør Speedtest
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Live Speed Graph Canvas -->
+                <div class="bg-black/80 rounded-xl p-3 border border-gray-800 relative">
+                    <div class="absolute top-2 left-2 text-[9px] text-gray-500 font-mono">BÅNDBREDDE GJENNOMSTRØMMING (Gbps)</div>
+                    <div class="absolute top-2 right-2 text-[9px] text-emerald-500 font-mono animate-pulse" id="testIndicator">MONITORER AKTIV MESH</div>
+                    <canvas id="speedChart" class="w-full h-[140px] mt-4"></canvas>
+                </div>
+
+                <!-- Detaljert statistikk boks -->
+                <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs font-mono text-gray-300 mt-4">
+                    <div class="bg-black/50 p-2 rounded-lg border border-gray-800">
+                        <span class="text-gray-500 block text-[10px]">MAKS BÅNDBREDDE</span>
+                        <span class="text-white font-bold text-sm">50.00 Gbps</span>
+                    </div>
+                    <div class="bg-black/50 p-2 rounded-lg border border-gray-800">
+                        <span class="text-gray-500 block text-[10px]">AVG LATENCY</span>
+                        <span class="text-emerald-400 font-bold text-sm" id="avgLatency">0.24 ms</span>
+                    </div>
+                    <div class="bg-black/50 p-2 rounded-lg border border-gray-800">
+                        <span class="text-gray-500 block text-[10px]">PAKKETAP LOGG</span>
+                        <span class="text-white font-bold text-sm">0.0000 %</span>
+                    </div>
+                    <div class="bg-black/50 p-2 rounded-lg border border-gray-800">
+                        <span class="text-gray-500 block text-[10px]">LINK TYPE</span>
+                        <span class="text-emerald-400 font-bold text-sm">RF / Fiber Hybrid</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Agent Miljøkonfigurasjon og Bash Script Modifikator -->
+            <div class="glass-panel p-6 rounded-2xl">
+                <h3 class="text-lg font-bold text-white mb-2 flex items-center gap-2">
+                    <i class="fa-solid fa-sliders text-emerald-400"></i> Tilpass Agentens Bash Skript
+                </h3>
+                <p class="text-xs text-gray-400 mb-4">
+                    Definer hvilke porter, proxyer og noder den mobile terminalen skal koble seg opp mot under installasjonen.
+                </p>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                    <div>
+                        <label class="block text-xs font-mono text-gray-400 mb-1">PROTOCALL PORT</label>
+                        <select id="agentPort" class="w-full bg-black/50 border border-gray-700 rounded-lg p-2 text-sm text-gray-300 focus:outline-none focus:border-emerald-500 font-mono">
+                            <option value="4369">4369 (EPMD Daemon)</option>
+                            <option value="5672">5672 (RabbitMQ)</option>
+                            <option value="1883">1883 (MQTT Broker)</option>
+                            <option value="8080">8080 (Cowboy API)</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-mono text-gray-400 mb-1">PROXIED TUNNEL IP</label>
+                        <input type="text" id="proxyIp" value="10.8.0.42" class="w-full bg-black/50 border border-gray-700 rounded-lg p-2 text-sm text-gray-300 focus:outline-none focus:border-emerald-500 font-mono">
+                    </div>
+                </div>
+
+                <div class="bg-black/80 rounded-xl p-4 border border-gray-800 relative">
+                    <div class="absolute top-2 right-2 text-[10px] text-gray-500 font-mono uppercase">Bash Payload</div>
+                    <pre class="text-xs text-emerald-400 overflow-x-auto mono-font whitespace-pre-wrap" id="scriptPreview">
+#!/bin/bash
+# Erlang Mobil Agent Autodeploy (50 Gbps Optimized)
+export ERL_EPMD_PORT=4369
+export AGENT_PROXY="10.8.0.42"
+curl -fsSL https://gnu.erlang.no/bin/otp_agent.sh | bash -s -- --node node2_mobilen@gnu --speed 50g</pre>
+                </div>
+                <div class="mt-3 flex justify-end">
+                    <button onclick="updateBashScript()" class="px-3 py-1.5 bg-gray-800 hover:bg-gray-700 rounded-lg text-xs font-medium text-gray-300 transition">
+                        Oppdater Bash Payload <i class="fa-solid fa-rotate ml-1"></i>
+                    </button>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Høyre side: Mobil Simulator (5 kolonner) -->
+        <div class="lg:col-span-5 flex justify-center">
+            
+            <div class="phone-container w-full max-w-[360px] shadow-2xl shadow-emerald-950/10">
+                <div class="phone-notch"></div>
+                
+                <!-- Mobil skjermområde -->
+                <div class="h-full flex flex-col justify-between pt-8 pb-4 px-4 overflow-hidden relative">
+                    
+                    <!-- Mobil status bar -->
+                    <div class="flex justify-between items-center text-[10px] font-mono text-gray-400 mb-2 px-1">
+                        <div>
+                            <span id="currentTime">09:41</span>
+                        </div>
+                        <div class="flex items-center space-x-1.5">
+                            <span>5G Hybrid Core</span>
+                            <i class="fa-solid fa-wifi text-emerald-400"></i>
+                            <i class="fa-solid fa-battery-three-quarters text-emerald-400"></i>
+                        </div>
+                    </div>
+
+                    <!-- Mobil GUI Topp: Erlang Agent Panel -->
+                    <div class="bg-gray-900/90 rounded-xl p-3 border border-gray-800 mb-3 flex items-center justify-between">
+                        <div class="flex items-center space-x-2">
+                            <div class="w-8 h-8 rounded-lg bg-emerald-600/20 border border-emerald-500/30 flex items-center justify-center">
+                                <i class="fa-solid fa-cube text-emerald-400 text-sm animate-pulse"></i>
+                            </div>
+                            <div>
+                                <h4 class="text-xs font-bold text-white leading-tight">Erl-Agent-Client</h4>
+                                <p class="text-[9px] text-emerald-400 font-mono">Telemetri status: Aktiv</p>
+                            </div>
+                        </div>
+                        <div class="text-right">
+                            <span class="text-[9px] block text-gray-400 font-mono">NODE ID</span>
+                            <span class="text-[10px] font-bold text-emerald-400 font-mono" id="simulatedNodeId">node2_mobilen@gnu</span>
+                        </div>
+                    </div>
+
+                    <!-- Terminalen (Selve kjernen) -->
+                    <div class="flex-grow bg-black/95 rounded-xl p-3 border border-emerald-900/50 flex flex-col justify-between text-xs font-mono terminal-glow overflow-y-auto mb-3" id="terminalScreen">
+                        
+                        <div class="space-y-2 text-[11px] leading-relaxed" id="terminalOutput">
+                            <p class="text-gray-500">GNU bash, versjon 5.2-release (arm64-agent)</p>
+                            <p class="text-gray-300">Skriv <span class="text-emerald-400">"help"</span> eller velg en pakke til venstre for å starte installasjon.</p>
+                            <p class="text-emerald-400">node2_mobilen@gnu:~ $ <span class="cursor"></span></p>
+                        </div>
+                        
+                    </div>
+
+                    <!-- Mobil GUI Bunnavsnitt: Terminal status og quick launch -->
+                    <div class="bg-gray-900/90 rounded-xl p-3 border border-gray-800 space-y-2">
+                        <span class="text-[9px] uppercase font-mono tracking-wider text-gray-400 block">Kvikkommandoer på mobil</span>
+                        
+                        <div class="grid grid-cols-3 gap-1.5">
+                            <button onclick="runCommand('clear')" class="px-2 py-1 bg-gray-800 hover:bg-gray-700 text-gray-300 rounded text-[10px] text-center font-mono">
+                                Clear
+                            </button>
+                            <button onclick="runCommand('erl')" class="px-2 py-1 bg-gray-800 hover:bg-emerald-600/30 text-emerald-400 rounded text-[10px] text-center font-mono border border-emerald-500/10">
+                                erl (OTP)
+                            </button>
+                            <button onclick="runCommand('nodes')" class="px-2 py-1 bg-gray-800 hover:bg-emerald-600/30 text-emerald-400 rounded text-[10px] text-center font-mono border border-emerald-500/10">
+                                nodes()
+                            </button>
+                        </div>
+
+                        <!-- Interaktivt Inputfelt -->
+                        <div class="flex items-center space-x-1.5 mt-2">
+                            <span class="text-emerald-400 text-xs font-mono">$</span>
+                            <input type="text" id="terminalInput" placeholder="Skriv terminalkommando..." onkeydown="handleTerminalKey(event)" class="flex-grow bg-black border border-gray-700 rounded p-1 text-xs text-emerald-400 focus:outline-none focus:border-emerald-500 font-mono">
+                            <button onclick="submitTerminalInput()" class="p-1 bg-emerald-500 hover:bg-emerald-600 text-black rounded text-xs px-2.5">
+                                <i class="fa-solid fa-arrow-right"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Hjem-knapp simulator -->
+                    <div class="w-24 h-1 bg-gray-700 rounded-full mx-auto mt-2"></div>
+                </div>
+
+            </div>
+
+        </div>
+
+    </main>
+
+    <!-- System Log Overlay Panel (Viser statistikk ved klikk) -->
+    <div id="systemLogPanel" class="hidden fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
+        <div class="glass-panel max-w-lg w-full rounded-2xl p-6 border border-emerald-500/30 relative">
+            <button onclick="toggleSystemLog()" class="absolute top-4 right-4 text-gray-400 hover:text-white">
+                <i class="fa-solid fa-xmark text-lg"></i>
+            </button>
+            <h3 class="text-lg font-bold text-white mb-2 flex items-center gap-2">
+                <i class="fa-solid fa-pulse text-emerald-400 animate-pulse"></i> Erlang Distribusjons-Monitor
+            </h3>
+            <p class="text-xs text-gray-400 mb-4">Metrikker for kjøretids-agenter og aktive Erlang-tunneler.</p>
+            
+            <div class="space-y-3 font-mono text-xs">
+                <div class="bg-black/40 p-3 rounded-lg border border-gray-800">
+                    <div class="flex justify-between">
+                        <span class="text-gray-400">Total Minnebruk (VM):</span>
+                        <span class="text-emerald-400" id="totalMemoryUse">42.8 MB</span>
+                    </div>
+                    <div class="w-full bg-gray-800 h-1.5 rounded-full mt-2">
+                        <div class="bg-emerald-400 h-1.5 rounded-full" id="totalMemoryBar" style="width: 35%"></div>
+                    </div>
+                </div>
+
+                <div class="bg-black/40 p-3 rounded-lg border border-gray-800">
+                    <div class="flex justify-between">
+                        <span class="text-gray-400">Aktive Prosesser (Erlang):</span>
+                        <span class="text-emerald-400" id="activeProcs">1428 / 262144</span>
+                    </div>
+                </div>
+
+                <div class="bg-black/40 p-3 rounded-lg border border-gray-800">
+                    <div class="flex justify-between">
+                        <span class="text-gray-400">Nettverkskapasitet:</span>
+                        <span class="text-emerald-400">50.00 Gbps Hybrid Mesh</span>
+                    </div>
+                </div>
+
+                <div class="bg-black/40 p-3 rounded-lg border border-gray-800">
+                    <div class="flex justify-between">
+                        <span class="text-gray-400">Sikkerhetsstatus:</span>
+                        <span class="text-emerald-400">Kryptert Proxy Tunnel (SSL/AES)</span>
+                    </div>
+                </div>
+            </div>
+
+            <button onclick="toggleSystemLog()" class="mt-4 w-full py-2 bg-emerald-600 hover:bg-emerald-500 text-black rounded-lg text-xs font-semibold transition">
+                Lukk og gå tilbake
+            </button>
+        </div>
+    </div>
+
+    <!-- Seksjonsdeling / Erlang Nettverk og Dokumentasjon (Footer) -->
+    <footer id="erlang-netverk" class="border-t border-gray-800 bg-black/80 pt-12 pb-6 px-4">
+        <div class="max-w-7xl mx-auto space-y-12">
+            
+            <!-- Grid for Nettverksnoder og Ressurser -->
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+                
+                <!-- Kolonne 1: Hovedinfo -->
+                <div class="space-y-3">
+                    <div class="flex items-center space-x-2">
+                        <div class="w-6 h-6 rounded-lg bg-emerald-600 flex items-center justify-center font-bold text-white text-xs">
+                            E
+                        </div>
+                        <span class="text-md font-bold text-white tracking-wider">ERLANG & GNU</span>
+                    </div>
+                    <p class="text-xs text-gray-400 leading-relaxed">
+                        Et samfunnsprosjekt for mobile Erlang-agenter. Vi bygger ultra-skalerbare nettverk gjennom tette integrasjoner med åpne GNU-pakker og sikrede terminal-grensesnitt.
+                    </p>
+                    <div class="flex space-x-3 text-gray-400 text-sm">
+                        <a href="https://github.com/search" target="_blank" title="GitHub" class="hover:text-emerald-400 transition"><i class="fa-brands fa-github"></i></a>
+                        <a href="https://stackoverflow.com" target="_blank" title="Stack Overflow" class="hover:text-emerald-400 transition"><i class="fa-brands fa-stack-overflow"></i></a>
+                        <a href="https://mathoverflow.net" target="_blank" title="MathOverflow" class="hover:text-emerald-400 transition"><i class="fa-brands fa-stack-exchange"></i></a>
+                    </div>
+                </div>
+
+                <!-- Kolonne 2: Erlang Dokumentasjon -->
+                <div class="space-y-3">
+                    <h4 class="text-sm font-bold text-white tracking-wide uppercase text-emerald-400">Erlang Dokumentasjon</h4>
+                    <ul class="space-y-2 text-xs text-gray-400 font-mono">
+                        <li><a href="#" class="hover:underline hover:text-white transition">OTP Design Principles</a></li>
+                        <li><a href="#" class="hover:underline hover:text-white transition">Erlang Reference Manual</a></li>
+                        <li><a href="#" class="hover:underline hover:text-white transition">Distributed Erlang Protocols</a></li>
+                        <li><a href="#" class="hover:underline hover:text-white transition">System Architecture & Crash Dumps</a></li>
+                        <li><a href="#" class="hover:underline hover:text-white transition">Mnesia DB Administration</a></li>
+                    </ul>
+                </div>
+
+                <!-- Kolonne 3: GNU Mirrors & Curl installasjoner -->
+                <div class="space-y-3">
+                    <h4 class="text-sm font-bold text-white tracking-wide uppercase text-amber-400">GNU Mirror & Verktøy</h4>
+                    <ul class="space-y-2 text-xs text-gray-400 font-mono">
+                        <li><a href="#" class="hover:underline hover:text-white transition">gnu.org Packages</a></li>
+                        <li><a href="#" class="hover:underline hover:text-white transition">Secure Shell Curl Keys</a></li>
+                        <li><a href="#" class="hover:underline hover:text-white transition">Bash Agent Auto-scripts</a></li>
+                        <li><a href="#" class="hover:underline hover:text-white transition">Network Proxies Config</a></li>
+                        <li><a href="#" class="hover:underline hover:text-white transition">EPMD Protocol Spec</a></li>
+                    </ul>
+                </div>
+
+                <!-- Kolonne 4: Erlang Nettverk Noder (Sanntidstilkobling simulering) -->
+                <div class="space-y-3">
+                    <h4 class="text-sm font-bold text-white tracking-wide uppercase text-emerald-400">Telemetrisk Status (Mesh)</h4>
+                    <div class="bg-gray-900/60 p-3 rounded-xl border border-gray-800 space-y-1.5 max-h-[190px] overflow-y-auto">
+                        <!-- Node 1 -->
+                        <div class="flex flex-col text-[10px] font-mono p-1.5 rounded hover:bg-black/20 border-b border-gray-800/40">
+                            <div class="flex justify-between items-center mb-0.5">
+                                <span class="text-gray-200 font-bold">node1_skeidsdalen@gnu</span>
+                                <span class="text-emerald-400">● Tilkoblet (50G)</span>
+                            </div>
+                            <div class="flex justify-between text-gray-500 text-[9px]">
+                                <span>Ping: <b class="text-emerald-500 font-normal" id="ping_node1">0.22ms</b></span>
+                                <span>Procs: <b class="text-emerald-500 font-normal" id="proc_node1">24</b></span>
+                                <span>Speed: <b class="text-emerald-500 font-normal" id="mem_node1">48.9 Gbps</b></span>
+                            </div>
+                        </div>
+                        <!-- Node 2 -->
+                        <div class="flex flex-col text-[10px] font-mono p-1.5 rounded bg-emerald-950/30 border border-emerald-800/40 border-b">
+                            <div class="flex justify-between items-center mb-0.5">
+                                <span class="text-white font-bold">node2_mobilen@gnu</span>
+                                <span class="text-emerald-400 animate-pulse">● Tilkoblet (50G)</span>
+                            </div>
+                            <div class="flex justify-between text-gray-400 text-[9px]">
+                                <span>Ping: <b class="text-emerald-400 font-normal" id="ping_node2">0.12ms</b></span>
+                                <span>Procs: <b class="text-emerald-400 font-normal" id="proc_node2">56</b></span>
+                                <span>Speed: <b class="text-emerald-400 font-normal" id="mem_node2">49.8 Gbps</b></span>
+                            </div>
+                        </div>
+                        <!-- Node 3 -->
+                        <div class="flex flex-col text-[10px] font-mono p-1.5 rounded hover:bg-black/20 border-b border-gray-800/40">
+                            <div class="flex justify-between items-center mb-0.5">
+                                <span class="text-gray-200 font-bold">node3_terminal@gnu</span>
+                                <span class="text-emerald-400">● Tilkoblet (50G)</span>
+                            </div>
+                            <div class="flex justify-between text-gray-500 text-[9px]">
+                                <span>Ping: <b class="text-emerald-500 font-normal" id="ping_node3">0.31ms</b></span>
+                                <span>Procs: <b class="text-emerald-500 font-normal" id="proc_node3">14</b></span>
+                                <span>Speed: <b class="text-emerald-500 font-normal" id="mem_node3">47.5 Gbps</b></span>
+                            </div>
+                        </div>
+                        <!-- Node 4 -->
+                        <div class="flex flex-col text-[10px] font-mono p-1.5 rounded hover:bg-black/20">
+                            <div class="flex justify-between items-center mb-0.5">
+                                <span class="text-gray-200 font-bold">node4_raspberry_pi@gnu</span>
+                                <span class="text-emerald-400">● Tilkoblet (50G)</span>
+                            </div>
+                            <div class="flex justify-between text-gray-500 text-[9px]">
+                                <span>Ping: <b class="text-emerald-500 font-normal" id="ping_node4">0.45ms</b></span>
+                                <span>Procs: <b class="text-emerald-500 font-normal" id="proc_node4">32</b></span>
+                                <span>Speed: <b class="text-emerald-500 font-normal" id="mem_node4">49.1 Gbps</b></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Nedre del av footer med nye culture.support lenker -->
+            <div class="border-t border-gray-800 pt-6 flex flex-col sm:flex-row justify-between items-center gap-4 text-xs">
+                <div class="flex flex-wrap gap-4 md:gap-6 font-mono">
+                    <a href="https://culture.support" target="_blank" class="text-gray-400 hover:text-emerald-400 transition flex items-center gap-1">
+                        <i class="fa-solid fa-circle-question text-[10px]"></i> culture.support FAQ
+                    </a>
+                    <a href="https://culture.support" target="_blank" class="text-gray-400 hover:text-emerald-400 transition flex items-center gap-1">
+                        <i class="fa-solid fa-circle-nodes text-[10px]"></i> culture.support erlang nettwork
+                    </a>
+                    <a href="https://culture.support" target="_blank" class="text-gray-400 hover:text-emerald-400 transition flex items-center gap-1">
+                        <i class="fa-solid fa-gears text-[10px]"></i> culture.support github workers
+                    </a>
+                </div>
+            </div>
+
+        </div>
+    </footer>
+
+    <!-- Script Logikk -->
+    <script>
+        // Sanntids oppdatering av klokken i mobil statusbar
+        function updateClock() {
+            const now = new Date();
+            const hours = String(now.getHours()).padStart(2, '0');
+            const minutes = String(now.getMinutes()).padStart(2, '0');
+            document.getElementById('currentTime').innerText = `${hours}:${minutes}`;
+        }
+        setInterval(updateClock, 1000);
+        updateClock();
+
+        // Setter node2_mobilen@gnu som aktiv enhets node ID
+        document.getElementById('simulatedNodeId').innerText = `node2_mobilen@gnu`;
+
+        // Telemetridatabase i minnet for sanntidsfluktuasjoner rundt 50 Gbps
+        const telemetryStats = {
+            node1: { name: 'node1_skeidsdalen@gnu', ping: 0.22, procs: 24, speed: 48.90 },
+            node2: { name: 'node2_mobilen@gnu', ping: 0.12, procs: 56, speed: 49.85 },
+            node3: { name: 'node3_terminal@gnu', ping: 0.31, procs: 14, speed: 47.50 },
+            node4: { name: 'node4_raspberry_pi@gnu', ping: 0.45, procs: 32, speed: 49.10 }
+        };
+
+        // Funksjon for å oppdatere det interaktive telemetri-feltet
+        function selectNode(nodeName, ping, procs, speed) {
+            document.getElementById('popNodeName').innerText = `Aktiv Node: ${nodeName}`;
+            document.getElementById('popNodePing').innerText = ping;
+            document.getElementById('popNodeProcs').innerText = procs;
+            document.getElementById('popNodeSpeed').innerText = `${speed} (Tilkoblet)`;
+            
+            // Send telemetri logg til den mobile terminalen
+            appendToTerminal(`telemetry: {connected, '${nodeName}', latency: ${ping}, bandwith: ${speed}}`, 'info');
+        }
+
+        // --- Hastighetsgraf (Live Speed Log Panel) via HTML5 Canvas ---
+        const canvas = document.getElementById('speedChart');
+        const ctx = canvas.getContext('2d');
+        let speedData = Array(30).fill(49.85); // Starter grafen rundt 50 Gbps
+        let isSpeedTesting = false;
+        let testTimer = 0;
+
+        function drawChart() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            // Juster canvas størrelse til beholderen
+            canvas.width = canvas.clientWidth;
+            canvas.height = canvas.clientHeight;
+
+            const width = canvas.width;
+            const height = canvas.height;
+            const padding = 10;
+            const chartHeight = height - padding * 2;
+            const step = width / (speedData.length - 1);
+
+            // Tegn rutenett
+            ctx.strokeStyle = 'rgba(16, 185, 129, 0.05)';
+            ctx.lineWidth = 1;
+            for (let i = 0; i <= 4; i++) {
+                const y = padding + (chartHeight * i) / 4;
+                ctx.beginPath();
+                ctx.moveTo(0, y);
+                ctx.lineTo(width, y);
+                ctx.stroke();
+
+                // Hastighets-etikett til høyre
+                ctx.fillStyle = 'rgba(16, 185, 129, 0.4)';
+                ctx.font = '8px monospace';
+                const speedVal = (50 - (i * 10)).toFixed(0) + "G";
+                ctx.fillText(speedVal, width - 25, y - 2);
+            }
+
+            // Lag gradient fyll under kurven
+            const gradient = ctx.createLinearGradient(0, 0, 0, height);
+            gradient.addColorStop(0, 'rgba(16, 185, 129, 0.25)');
+            gradient.addColorStop(1, 'rgba(16, 185, 129, 0.00)');
+
+            ctx.beginPath();
+            ctx.moveTo(0, height);
+
+            for (let i = 0; i < speedData.length; i++) {
+                // Konverter 0-50 Gbps til Y-koordinat
+                const percentage = speedData[i] / 50;
+                const y = padding + chartHeight * (1 - percentage);
+                const x = i * step;
+                ctx.lineTo(x, y);
+            }
+
+            ctx.lineTo(width, height);
+            ctx.closePath();
+            ctx.fillStyle = gradient;
+            ctx.fill();
+
+            // Tegn selve kurvelinjen
+            ctx.beginPath();
+            for (let i = 0; i < speedData.length; i++) {
+                const percentage = speedData[i] / 50;
+                const y = padding + chartHeight * (1 - percentage);
+                const x = i * step;
+                if (i === 0) ctx.moveTo(x, y);
+                else ctx.lineTo(x, y);
+            }
+            ctx.strokeStyle = '#10b981';
+            ctx.lineWidth = 2.5;
+            ctx.stroke();
+
+            // Siste punkt-puls (neonglød)
+            const lastPercent = speedData[speedData.length - 1] / 50;
+            const lastY = padding + chartHeight * (1 - lastPercent);
+            ctx.beginPath();
+            ctx.arc(width - step, lastY, 4, 0, Math.PI * 2);
+            ctx.fillStyle = '#34d399';
+            ctx.fill();
+        }
+
+        // Simulerer kontinuerlig overføring i sanntid
+        function updateSpeedData() {
+            if (isSpeedTesting) {
+                // Under speedtest svinger grafen vilt opp til maks 50 Gbps
+                testTimer++;
+                let targetSpeed = 49.95 - (Math.random() * 0.4);
+                if (testTimer < 10) {
+                    targetSpeed = 15 + (testTimer * 3.5) + (Math.random() * 5); // Ramp up
+                }
+                speedData.push(Math.min(50.00, targetSpeed));
+                
+                if (testTimer > 35) {
+                    isSpeedTesting = false;
+                    document.getElementById('testIndicator').innerText = "MONITORER AKTIV MESH";
+                    document.getElementById('testIndicator').className = "absolute top-2 right-2 text-[9px] text-emerald-500 font-mono";
+                    appendToTerminal("[speedtest] Test fullført. Gjennomsnittlig mesh-hastighet: 49.82 Gbps.", "success");
+                }
+            } else {
+                // Vanlig telemetri svinger stabilt rundt 49.5 - 49.9 Gbps
+                const fluctuation = (Math.random() * 0.3) - 0.15;
+                const currentVal = Math.min(50.00, Math.max(45.00, speedData[speedData.length - 1] + fluctuation));
+                speedData.push(currentVal);
+            }
+            
+            speedData.shift();
+            drawChart();
+
+            const currentSpeed = speedData[speedData.length - 1].toFixed(2);
+            document.getElementById('liveSpeedText').innerText = `Last: ${currentSpeed} Gbps`;
+        }
+
+        // Start en aktiv 50 Gbps speedtest
+        function startSpeedTest() {
+            if (isSpeedTesting) return;
+            isSpeedTesting = true;
+            testTimer = 0;
+            document.getElementById('testIndicator').innerText = "KJØRER SPEEDTEST (50 Gbps LINK)";
+            document.getElementById('testIndicator').className = "absolute top-2 right-2 text-[9px] text-amber-400 font-mono animate-pulse";
+            
+            appendToTerminal("[speedtest] Starter 50 Gbps flomtest over alle hybrid-linker...", "info");
+            appendToTerminal(`[speedtest] Utfører TCP/UDP parallelle strømmer mot node1_skeidsdalen...`);
+        }
+
+        // Sørg for at grafen tegnes jevnt
+        setInterval(updateSpeedData, 150);
+        window.addEventListener('resize', drawChart);
+
+        // Sanntids loop som genererer telemetriske svingninger for nodene i foteren
+        setInterval(() => {
+            // Tilfeldig endring av ping og kapasitet
+            let sumPing = 0;
+            for (let i = 1; i <= 4; i++) {
+                const nodeKey = 'node' + i;
+                const changePing = (Math.random() * 0.04) - 0.02;
+                
+                telemetryStats[nodeKey].ping = Math.max(0.05, +(telemetryStats[nodeKey].ping + changePing).toFixed(2));
+                telemetryStats[nodeKey].procs = Math.max(5, telemetryStats[nodeKey].procs + Math.floor(Math.random() * 3) - 1);
+                telemetryStats[nodeKey].speed = Math.max(45.00, Math.min(50.00, +(telemetryStats[nodeKey].speed + (Math.random() * 0.2 - 0.1)).toFixed(2)));
+
+                sumPing += telemetryStats[nodeKey].ping;
+
+                // Oppdater HTML-elementer i foteren
+                const pingEl = document.getElementById(`ping_node${i}`);
+                const procEl = document.getElementById(`proc_node${i}`);
+                const memEl = document.getElementById(`mem_node${i}`);
+
+                if (pingEl) pingEl.innerText = telemetryStats[nodeKey].ping + 'ms';
+                if (procEl) procEl.innerText = telemetryStats[nodeKey].procs;
+                if (memEl) memEl.innerText = telemetryStats[nodeKey].speed + ' Gbps';
+            }
+
+            // Oppdater gjennomsnittlig latency i monitoren
+            document.getElementById('avgLatency').innerText = (sumPing / 4).toFixed(2) + ' ms';
+
+            // Oppdater system monitor verdier
+            const totalMemory = (Object.values(telemetryStats).reduce((acc, curr) => acc + curr.speed, 0) / 4).toFixed(1);
+            const totalProcs = Object.values(telemetryStats).reduce((acc, curr) => acc + curr.procs, 0);
+            
+            document.getElementById('totalMemoryUse').innerText = totalMemory + ' Gbps Avg';
+            document.getElementById('totalMemoryBar').style.width = Math.min(100, (totalMemory / 50) * 100) + '%';
+            document.getElementById('activeProcs').innerText = `${totalProcs} / 262144`;
+
+        }, 2000);
+
+        // Håndtering av systemlogg overlay
+        function toggleSystemLog() {
+            const panel = document.getElementById('systemLogPanel');
+            panel.classList.toggle('hidden');
+        }
+
+        // Oppdatering av det redigerbare bash skriptet basert på inputfelt
+        function updateBashScript() {
+            const port = document.getElementById('agentPort').value;
+            const ip = document.getElementById('proxyIp').value;
+            
+            const script = `#!/bin/bash
+# Erlang Mobil Agent Autodeploy (50 Gbps Optimized)
+export ERL_EPMD_PORT=${port}
+export AGENT_PROXY="${ip}"
+curl -fsSL https://gnu.erlang.no/bin/otp_agent.sh | bash -s -- --node node2_mobilen@gnu --speed 50g`;
+            
+            document.getElementById('scriptPreview').innerText = script;
+        }
+
+        // Terminal Logikk
+        const terminalOutput = document.getElementById('terminalOutput');
+        const terminalScreen = document.getElementById('terminalScreen');
+
+        function appendToTerminal(text, type = 'normal') {
+            const p = document.createElement('p');
+            if (type === 'cmd') {
+                p.className = 'text-emerald-400';
+                p.innerHTML = `node2_mobilen@gnu:~ $ ${text}`;
+            } else if (type === 'success') {
+                p.className = 'text-emerald-400 font-bold';
+                p.innerText = text;
+            } else if (type === 'error') {
+                p.className = 'text-red-400 font-semibold';
+                p.innerText = text;
+            } else if (type === 'info') {
+                p.className = 'text-emerald-300';
+                p.innerText = text;
+            } else {
+                p.className = 'text-gray-300';
+                p.innerText = text;
+            }
+            
+            // Sett inn rett før blinkende markør
+            terminalOutput.appendChild(p);
+            
+            // Behold markøren nederst
+            const cursorContainer = document.querySelector('.cursor');
+            if (cursorContainer) {
+                cursorContainer.scrollIntoView({ behavior: 'smooth' });
+            }
+            terminalScreen.scrollTop = terminalScreen.scrollHeight;
+        }
+
+        // Håndter direkte tastetrykk i terminal-input
+        function handleTerminalKey(event) {
+            if (event.key === 'Enter') {
+                submitTerminalInput();
+            }
+        }
+
+        function submitTerminalInput() {
+            const inputField = document.getElementById('terminalInput');
+            const command = inputField.value.trim();
+            if (command === '') return;
+
+            appendToTerminal(command, 'cmd');
+            processCommand(command);
+            inputField.value = '';
+        }
+
+        // Prosesserer taste- og faste kommandoer
+        function processCommand(cmd) {
+            const cleanCmd = cmd.toLowerCase();
+            
+            if (cleanCmd === 'help') {
+                appendToTerminal('--- Tilgjengelige kommandoer ---');
+                appendToTerminal('erl      - Start Erlang Emulator shell');
+                appendToTerminal('nodes    - Sjekk tilkoblet Erlang cluster');
+                appendToTerminal('clear    - Tøm skjermen');
+                appendToTerminal('curl     - Hent programvare (eks: curl erlang, curl cowboy)');
+                appendToTerminal('sysinfo  - Se systemarkitektur & VM status');
+                appendToTerminal('speedtest- Kjør 50 Gbps nettverksgjennomstrømningstest');
+            } else if (cleanCmd === 'clear') {
+                terminalOutput.innerHTML = '<p class="text-emerald-400">node2_mobilen@gnu:~ $ <span class="cursor"></span></p>';
+            } else if (cleanCmd === 'erl') {
+                appendToTerminal('Erlang/OTP 26 [erts-14.2] [source] [64-bit] [smp:4:4] [ds:4:4:10] [async-threads:1]', 'info');
+                appendToTerminal('Eshell V14.2  (press Ctrl+G to abort, q() to exit)', 'info');
+                appendToTerminal('1> _', 'info');
+            } else if (cleanCmd === 'nodes' || cleanCmd === 'nodes()') {
+                appendToTerminal('Sjekker nettverk noder via EPMD...');
+                setTimeout(() => {
+                    appendToTerminal('[node1_skeidsdalen@gnu, node3_terminal@gnu, node4_raspberry_pi@gnu]', 'success');
+                }, 400);
+            } else if (cleanCmd === 'speedtest') {
+                startSpeedTest();
+            } else if (cleanCmd.startsWith('curl')) {
+                const parts = cleanCmd.split(' ');
+                if (parts.length > 1) {
+                    simulateCurl(parts[1]);
+                } else {
+                    appendToTerminal('Bruk: curl [erlang | cowboy | rebar3 | mnesia]', 'error');
+                }
+            } else if (cleanCmd === 'sysinfo') {
+                appendToTerminal('CPU: ARM64 Core v8-Agent');
+                appendToTerminal('Proxy Tunnel: 10.8.0.42:4369 (EPMD)');
+                appendToTerminal('Mnesia State: Fully Synced with Skeidsdalen Backbone');
+            } else {
+                appendToTerminal(`bash: ${cmd}: kommando ikke funnet`, 'error');
+            }
+        }
+
+        // Rask kjøring av knappe-kommandoer
+        function runCommand(command) {
+            appendToTerminal(command, 'cmd');
+            processCommand(command);
+        }
+
+        // Simulering av curl-nedlastinger og installasjon (Kalles fra klikkbare pakker)
+        function simulateCurl(pkg) {
+            const port = document.getElementById('agentPort').value;
+            const ip = document.getElementById('proxyIp').value;
+
+            appendToTerminal(`curl -fsSL https://gnu.erlang.no/install/${pkg}.sh | bash`, 'cmd');
+            
+            setTimeout(() => {
+                appendToTerminal(`% Total    % Received % Xferd  Average Speed   Time    Time     Time  Current`);
+                appendToTerminal(`                             Dload  Upload   Total   Spent    Left  Speed`);
+                appendToTerminal(`100  424k  100  424k    0     0  14.2M      0 --:--:-- --:--:-- --:--:--  50.0G`);
+            }, 300);
+
+            setTimeout(() => {
+                appendToTerminal(`[info] Starter installasjon av ${pkg.toUpperCase()}...`, 'info');
+                appendToTerminal(`[info] Kobler opp kryptert proxy tunnel mot [${ip}:${port}]`);
+            }, 800);
+
+            setTimeout(() => {
+                appendToTerminal(`[compiling] Pakker ut filer og bygger distribusjon...`);
+                appendToTerminal(`[epmd] Registrerer lokal agent node i Erlang Port Mapper Daemon...`);
+            }, 1600);
+
+            setTimeout(() => {
+                appendToTerminal(`[success] ${pkg.toUpperCase()} ble installert over 50 Gbps-linken!`, 'success');
+                appendToTerminal(`[network] Node ${pkg}_node@node2_mobilen@gnu er nå aktiv i nettverks-mesh.`, 'info');
+            }, 2500);
+        }
+    </script>
+</body>
+</html>
+
