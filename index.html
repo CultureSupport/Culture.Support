@@ -1,0 +1,1061 @@
+<html>
+<!DOCTYPE html>
+<html lang="no">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Spider-Man </title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome for ikoner -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Fira+Code:wght=400;500;700&family=Montserrat:wght=400;700;900&display=swap');
+        
+        body {
+            font-family: 'Montserrat', sans-serif;
+        }
+        .mono-font {
+            font-family: 'Fira Code', monospace;
+        }
+        /* Egendefinert rullefelt for terminalen */
+        .custom-scroll::-webkit-scrollbar {
+            width: 6px;
+        }
+        .custom-scroll::-webkit-scrollbar-track {
+            background: #0f172a;
+        }
+        .custom-scroll::-webkit-scrollbar-thumb {
+            background: #ef4444;
+            border-radius: 3px;
+        }
+        /* Spidey farger og glød */
+        .spidey-glow-red {
+            box-shadow: 0 0 15px rgba(239, 68, 68, 0.6);
+        }
+        .spidey-glow-blue {
+            box-shadow: 0 0 15px rgba(59, 130, 246, 0.6);
+        }
+    </style>
+</head>
+<body class="bg-slate-950 text-slate-100 min-h-screen overflow-x-hidden flex flex-col">
+
+    <!-- Topp Meny -->
+    <header class="bg-slate-900 border-b border-red-600/30 sticky top-0 z-50 px-4 py-3">
+        <div class="max-w-7xl mx-auto flex flex-col sm:flex-row justify-between items-center gap-4">
+            <div class="flex items-center gap-3">
+                <div class="bg-red-600 p-2 rounded-full text-white animate-pulse">
+                    <i class="fa-solid fa-spider text-2xl"></i>
+                </div>
+                <div>
+                    <h1 class="text-xl font-black tracking-widest text-red-500 uppercase">Spidey-Net</h1>
+                    <p class="text-xs text-slate-400">Combat Microservice Node #074 &bull; Nettpistol aktiv</p>
+                </div>
+            </div>
+            
+            <div class="flex items-center gap-3 text-sm">
+                <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+                    <span class="w-2 h-2 rounded-full bg-emerald-500 animate-ping"></span>
+                    Tilkoblet Mobil
+                </span>
+                <span class="px-3 py-1.5 rounded-full bg-blue-500/10 text-blue-400 border border-blue-500/20">
+                    Sone: Manhattan
+                </span>
+            </div>
+        </div>
+    </header>
+
+    <!-- Hovedområde -->
+    <main class="flex-grow max-w-7xl w-full mx-auto p-4 grid grid-cols-1 lg:grid-cols-12 gap-6">
+        
+        <!-- Venstre kolonne: Det interaktive klatrespillet -->
+        <section class="lg:col-span-7 flex flex-col gap-4">
+            <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4 flex flex-col h-full relative">
+                <div class="flex justify-between items-center mb-3">
+                    <h2 class="font-bold text-lg flex items-center gap-2 text-red-500">
+                        <i class="fa-solid fa-city"></i> Manhattan Cyber-Catcher
+                    </h2>
+                    <div class="flex gap-4 text-xs font-semibold text-slate-300">
+                        <div>Høyde: <span id="game-height" class="text-red-400">0</span>m</div>
+                        <div>Fanget: <span id="game-captures" class="text-blue-400">0</span> banditter</div>
+                    </div>
+                </div>
+
+                <!-- Spillinstruksjoner -->
+                <div class="bg-slate-950/60 p-2.5 rounded-xl mb-3 text-xs text-slate-300 border border-slate-800 flex justify-between items-center">
+                    <div>
+                        <span class="text-red-400 font-bold">Klatre:</span> Klikk/trykk på bygninger for å svinge.<br>
+                        <span class="text-blue-400 font-bold">Skyte nett:</span> Trykk <kbd class="px-1.5 py-0.5 bg-slate-800 rounded">Mellomrom</kbd> på PC for å skyte nett på skurker!
+                    </div>
+                    <button id="reset-game-btn" class="bg-red-600 hover:bg-red-700 text-white font-bold py-1 px-3 rounded-lg transition text-xs">
+                        Start på nytt
+                    </button>
+                </div>
+
+                <!-- Spillområde med Canvas -->
+                <div class="relative bg-slate-950 rounded-xl overflow-hidden flex-grow flex items-center justify-center border border-slate-800 min-h-[440px]">
+                    <canvas id="climb-game-canvas" class="w-full h-full block cursor-crosshair"></canvas>
+                    
+                    <!-- Game Over / Victory Overlay -->
+                    <div id="game-overlay" class="absolute inset-0 bg-slate-950/90 hidden flex-col items-center justify-center p-6 text-center z-10">
+                        <div class="bg-slate-900 border-2 border-red-500 p-8 rounded-2xl max-w-sm spidey-glow-red">
+                            <i id="overlay-icon" class="fa-solid fa-trophy text-5xl text-yellow-400 mb-4 animate-bounce"></i>
+                            <h3 id="overlay-title" class="text-2xl font-black text-white mb-2">Seier!</h3>
+                            <p id="overlay-desc" class="text-sm text-slate-300 mb-6">Du fanget alle skurkene og bekjempet Green Goblin på toppen av Oscorp-bygget!</p>
+                            <button id="overlay-action-btn" class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-2.5 px-5 rounded-xl transition">
+                                Spill igjen
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Spillkontroller for touch/mus status -->
+                <div class="mt-3 flex justify-between items-center text-xs text-slate-400">
+                    <span id="canvas-status">Sikt og klikk på bygninger for å svinge!</span>
+                    <span class="flex items-center gap-1">
+                        <span class="w-2 h-2 rounded-full bg-red-500 animate-pulse"></span> Kamp-fysikk: Aktiv
+                    </span>
+                </div>
+            </div>
+        </section>
+
+        <!-- Høyre kolonne: Mobiltelefon og Terminal -->
+        <section class="lg:col-span-5 flex flex-col gap-6">
+            
+            <!-- Spider-Man's mobiltelefon UI -->
+            <div class="bg-slate-900 border border-slate-800 rounded-3xl p-5 flex flex-col spidey-glow-blue relative overflow-hidden">
+                <div class="absolute top-0 inset-x-0 h-1 bg-gradient-to-r from-red-600 via-blue-500 to-red-600"></div>
+                
+                <div class="flex justify-between items-center mb-4">
+                    <div class="flex items-center gap-2">
+                        <i class="fa-solid fa-mobile-screen-button text-blue-400 text-lg"></i>
+                        <span class="font-bold text-sm tracking-wide text-slate-200">SPIDEY_OS v10.5</span>
+                    </div>
+                    <div class="flex items-center gap-2 text-xs text-slate-400">
+                        <i class="fa-solid fa-wifi text-blue-500"></i>
+                        <i class="fa-solid fa-battery-three-quarters text-red-500"></i>
+                        <span id="mobile-time">16:42</span>
+                    </div>
+                </div>
+
+                <!-- MobilSkjerm -->
+                <div class="bg-slate-950 rounded-2xl p-4 border border-slate-800 flex flex-col gap-4 text-sm min-h-[300px]">
+                    <div class="text-center py-1.5 border-b border-slate-800">
+                        <div class="text-xs text-slate-400 uppercase tracking-widest">Kriminell aktivitet-skanner</div>
+                        <div class="text-md font-black text-red-500">SPIDEY_TACTICAL_APP</div>
+                    </div>
+
+                    <!-- Sensor / Koordinat visning -->
+                    <div class="grid grid-cols-2 gap-3">
+                        <div class="bg-slate-900/80 p-2.5 rounded-xl border border-slate-800/50">
+                            <span class="text-[10px] text-slate-400 block uppercase">Neste trussel</span>
+                            <span id="threat-level" class="text-xs font-bold text-red-400 tracking-wide">Banditter på tak</span>
+                        </div>
+                        <div class="bg-slate-900/80 p-2.5 rounded-xl border border-slate-800/50">
+                            <span class="text-[10px] text-slate-400 block uppercase">Nett-ammunisjon</span>
+                            <span class="text-xs font-bold text-blue-400">Ubegrenset &infin;</span>
+                        </div>
+                        <div class="bg-slate-900/80 p-2.5 rounded-xl border border-slate-800/50">
+                            <span class="text-[10px] text-slate-400 block uppercase">Akselerometer</span>
+                            <span id="tracker-accel" class="text-xs font-bold text-red-400">0.0 m/s²</span>
+                        </div>
+                        <div class="bg-slate-900/80 p-2.5 rounded-xl border border-slate-800/50">
+                            <span class="text-[10px] text-slate-400 block uppercase">Høydemåler</span>
+                            <span id="tracker-alt" class="text-xs font-bold text-blue-400">0 m</span>
+                        </div>
+                    </div>
+
+                    <!-- Mini Kart visualisering -->
+                    <div class="relative bg-slate-900 h-24 rounded-xl border border-slate-800 overflow-hidden flex items-center justify-center">
+                        <div class="absolute inset-0 opacity-20 bg-[linear-gradient(to_right,#808080_1px,transparent_1px),linear-gradient(to_bottom,#808080_1px,transparent_1px)] bg-[size:20px_20px]"></div>
+                        <!-- Rød pulserende sirkel for Spider-man -->
+                        <div id="map-radar" class="absolute w-4 h-4 bg-red-500 rounded-full flex items-center justify-center">
+                            <div class="absolute w-10 h-10 border-2 border-red-500 rounded-full animate-ping opacity-75"></div>
+                            <i class="fa-solid fa-spider text-[10px] text-white"></i>
+                        </div>
+                        <div class="absolute bottom-1.5 left-2 text-[9px] text-slate-400">Times Square, NYC</div>
+                        <div class="absolute top-1.5 right-2 text-[9px] text-red-400 font-bold animate-pulse">TRUSSEL: FUNNET</div>
+                    </div>
+
+                    <!-- Knapper på mobilen -->
+                    <div class="flex flex-col gap-2">
+                        <!-- Ny knapp spesielt for mobilbrukere til å skyte nett -->
+                        <button id="mobile-shoot-btn" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-extrabold py-3 px-4 rounded-xl border border-blue-500 transition text-sm flex items-center justify-center gap-2 shadow-lg active:scale-95">
+                            <i class="fa-solid fa-bullseye text-lg"></i> SKYTE NETTBALL (MELLOMROM)
+                        </button>
+                        <div class="flex gap-2">
+                            <button id="alert-btn" class="flex-1 bg-red-600/20 hover:bg-red-600/40 text-red-400 font-bold py-2 px-3 rounded-xl border border-red-600/30 transition text-xs flex items-center justify-center gap-2">
+                                <i class="fa-solid fa-volume-high"></i> Spidey-Sens Lyd
+                            </button>
+                            <button id="web-zip-btn" class="flex-1 bg-blue-600/20 hover:bg-blue-600/40 text-blue-400 font-bold py-2 px-3 rounded-xl border border-blue-600/30 transition text-xs flex items-center justify-center gap-2">
+                                <i class="fa-solid fa-bolt"></i> Super Hopp
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Skyterminalen / Loggfiler -->
+            <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4 flex flex-col flex-grow min-h-[220px]">
+                <div class="flex justify-between items-center mb-2">
+                    <h3 class="font-bold text-sm tracking-wide text-slate-300 uppercase flex items-center gap-2">
+                        <i class="fa-solid fa-terminal text-red-500"></i> Cyber-Terminal og Sky-Logg
+                    </h3>
+                    <div class="flex gap-1.5">
+                        <span class="w-2.5 h-2.5 rounded-full bg-red-500"></span>
+                        <span class="w-2.5 h-2.5 rounded-full bg-yellow-500"></span>
+                        <span class="w-2.5 h-2.5 rounded-full bg-green-500"></span>
+                    </div>
+                </div>
+                
+                <!-- Terminal Vindu -->
+                <div class="bg-slate-950 rounded-xl p-3 border border-slate-800/80 flex-grow flex flex-col justify-between">
+                    <div id="terminal-logs" class="mono-font text-[10px] text-emerald-400 space-y-1 h-32 overflow-y-auto custom-scroll pr-1">
+                        <div>[SYSTEM] Starter Spidey-Net Combat Node v3.0...</div>
+                        <div>[SYSTEM] Skanner Manhattan for kriminell aktivitet...</div>
+                        <div>[SYSTEM] Skurker lokalisert på skyskrapere! Skyte-kontroller klar.</div>
+                        <div>[LOG] Trykk MELLOMROM eller bruk taktikknappen for å skyte nettballer!</div>
+                    </div>
+                    
+                    <div class="border-t border-slate-800 mt-2 pt-2 flex items-center gap-2">
+                        <span class="text-red-500 text-xs font-black select-none">spidey@manhattan:~$</span>
+                        <input id="terminal-input" type="text" placeholder="Skriv kommando (f.eks. 'skyt', 'sens', 'clear')..." class="bg-transparent text-xs text-slate-100 focus:outline-none flex-grow mono-font">
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-slate-900/60 border-t border-slate-800/60 py-4 px-6 text-center text-xs text-slate-500 mt-8">
+        <div class="max-w-7xl mx-auto flex flex-col sm:flex-row justify-between items-center gap-4">
+            <p>&copy; 2026 Spidey-Net Corp &bull; Sikker tilkobling via Oscorp Cloud Infrastructure</p>
+            <p class="flex items-center gap-3">
+                <span class="flex items-center gap-1"><i class="fa-solid fa-circle text-emerald-500 text-[8px]"></i> Node-OK</span>
+                <span class="flex items-center gap-1"><i class="fa-solid fa-server"></i> Big-Data Combat Pipeline: Aktiv</span>
+            </p>
+        </div>
+    </footer>
+
+    <!-- Audio Beep Generator for Mobil (Uten eksterne filer) -->
+    <script>
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        function playBeep(freq, type, duration) {
+            try {
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                osc.type = type || 'sine';
+                osc.frequency.setValueAtTime(freq || 440, audioCtx.currentTime);
+                gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + duration);
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+                osc.start();
+                osc.stop(audioCtx.currentTime + duration);
+            } catch (e) {
+                console.log("Lydfeil: Brukeren må interagere først.");
+            }
+        }
+    </script>
+
+    <!-- Spill, mobil og terminal skript -->
+    <script>
+        // DOM Elementer
+        const canvas = document.getElementById('climb-game-canvas');
+        const ctx = canvas.getContext('2d');
+        const gameOverlay = document.getElementById('game-overlay');
+        const overlayIcon = document.getElementById('overlay-icon');
+        const overlayTitle = document.getElementById('overlay-title');
+        const overlayDesc = document.getElementById('overlay-desc');
+        const overlayActionBtn = document.getElementById('overlay-action-btn');
+        const resetGameBtn = document.getElementById('reset-game-btn');
+        
+        const uiHeight = document.getElementById('game-height');
+        const uiCaptures = document.getElementById('game-captures');
+        const uiAccel = document.getElementById('tracker-accel');
+        const uiAlt = document.getElementById('tracker-alt');
+        const mapRadar = document.getElementById('map-radar');
+        const logsContainer = document.getElementById('terminal-logs');
+        const terminalInput = document.getElementById('terminal-input');
+        const canvasStatus = document.getElementById('canvas-status');
+        
+        const alertBtn = document.getElementById('alert-btn');
+        const webZipBtn = document.getElementById('web-zip-btn');
+        const mobileShootBtn = document.getElementById('mobile-shoot-btn');
+        const mobileTime = document.getElementById('mobile-time');
+
+        // Oppdater tid på mobilen
+        function updateMobileTime() {
+            const now = new Date();
+            mobileTime.innerText = now.toTimeString().split(' ')[0].substring(0, 5);
+        }
+        setInterval(updateMobileTime, 1000);
+        updateMobileTime();
+
+        // Terminal Logg Generator
+        function addLog(text, type = 'info') {
+            const div = document.createElement('div');
+            const time = new Date().toLocaleTimeString().split(' ')[0];
+            
+            let colorClass = 'text-emerald-400';
+            if (type === 'warn') colorClass = 'text-yellow-400';
+            if (type === 'error') colorClass = 'text-red-400';
+            if (type === 'success') colorClass = 'text-cyan-400';
+            if (type === 'cmd') colorClass = 'text-slate-300';
+
+            div.className = `${colorClass} mono-font`;
+            div.innerHTML = `<span class="text-slate-500">[${time}]</span> ${text}`;
+            logsContainer.appendChild(div);
+            logsContainer.scrollTop = logsContainer.scrollHeight;
+        }
+
+        // --- SPILLET: COMBAT & CLIMBING SIMULATOR ---
+        
+        // Spilltilstander
+        let gameState = {
+            running: true,
+            hero: {
+                x: 150,
+                y: 500,
+                vx: 0,
+                vy: 0,
+                radius: 13,
+                attached: false,
+                webX: 0,
+                webY: 0,
+                length: 0,
+                facingLeft: false
+            },
+            cameraY: 0,
+            targetCameraY: 0,
+            buildings: [],
+            enemies: [],       // Banditter patruljerer avsatsene
+            boss: null,         // Boss på toppen (Green Goblin)
+            bossProjectiles: [],// Goblin-bomber
+            webProjectiles: [], // Nett som Spider-Man skyter på banditter
+            score: 0,
+            captureCount: 0,    // Hvor mange banditter som er fanget i nett
+            maxHeight: 1200,    // Høyden der Oscorp-bygget slutter og bossen venter
+            currentAltitude: 0,
+            victoryTriggered: false
+        };
+
+        // Tilpasser canvaset til beholderen
+        function resizeCanvas() {
+            const rect = canvas.parentNode.getBoundingClientRect();
+            canvas.width = rect.width;
+            canvas.height = Math.max(480, rect.height);
+        }
+        window.addEventListener('resize', () => {
+            resizeCanvas();
+            initGameWorld();
+        });
+        resizeCanvas();
+
+        // Initialiserer spillverdenen (skurker, banditter, bygninger)
+        function initGameWorld() {
+            gameState.hero.x = canvas.width / 2;
+            gameState.hero.y = canvas.height - 100;
+            gameState.hero.vx = 0;
+            gameState.hero.vy = 0;
+            gameState.hero.attached = false;
+            gameState.cameraY = 0;
+            gameState.targetCameraY = 0;
+            gameState.captureCount = 0;
+            gameState.currentAltitude = 0;
+            gameState.webProjectiles = [];
+            gameState.bossProjectiles = [];
+            gameState.victoryTriggered = false;
+            
+            uiCaptures.innerText = "0";
+            uiHeight.innerText = "0";
+
+            // Bygninger (Manhattan skyline)
+            gameState.buildings = [];
+            const buildColors = ['#1e293b', '#334155', '#475569', '#0f172a'];
+            
+            for (let y = canvas.height + 200; y > -gameState.maxHeight - 400; y -= 160) {
+                // Venstre bygning
+                const leftW = canvas.width * 0.25 + Math.random() * 30;
+                gameState.buildings.push({
+                    x: 0,
+                    y: y,
+                    width: leftW,
+                    height: 100,
+                    color: buildColors[Math.floor(Math.random() * buildColors.length)]
+                });
+                // Høyre bygning
+                const rightW = canvas.width * 0.25 + Math.random() * 30;
+                gameState.buildings.push({
+                    x: canvas.width - rightW,
+                    y: y + 40,
+                    width: rightW,
+                    height: 100,
+                    color: buildColors[Math.floor(Math.random() * buildColors.length)]
+                });
+                // Midt-plattformer
+                if (Math.random() > 0.3) {
+                    gameState.buildings.push({
+                        x: canvas.width * 0.35 + Math.random() * (canvas.width * 0.1),
+                        y: y - 60,
+                        width: 90,
+                        height: 35,
+                        color: '#b91c1c' // Rødt stål
+                    });
+                }
+            }
+
+            // Plasser patruljerende banditter på tak/avsatser
+            gameState.enemies = [];
+            const banditTypes = ['Gjengmedlem', 'Innbruddstyv', 'Oscorp-sabotør'];
+            for (let i = 0; i < gameState.buildings.length; i++) {
+                const b = gameState.buildings[i];
+                // Ikke plasser skurker helt i bunnen eller på toppen
+                if (b.y < canvas.height - 150 && b.y > -gameState.maxHeight) {
+                    if (Math.random() > 0.4) {
+                        gameState.enemies.push({
+                            x: b.x + b.width / 2,
+                            y: b.y - 15,
+                            minX: b.x + 10,
+                            maxX: b.x + b.width - 10,
+                            dx: (Math.random() > 0.5 ? 1 : -1) * 0.8,
+                            captured: false, // Blir true når truffet av nett
+                            captureTime: 0,  // For animasjon av nett-innpakning
+                            type: banditTypes[Math.floor(Math.random() * banditTypes.length)]
+                        });
+                    }
+                }
+            }
+
+            // Bossen (Green Goblin) på toppen av Oscorp Tower
+            gameState.boss = {
+                x: canvas.width / 2,
+                y: -gameState.maxHeight - 150,
+                targetX: canvas.width / 2,
+                width: 60,
+                height: 40,
+                health: 5,       // Må treffes 5 ganger med nettballer
+                shootCooldown: 0,
+                moveTimer: 0,
+                hoverOffset: 0
+            };
+        }
+
+        // Start eller tilbakestill
+        initGameWorld();
+        addLog("[LOG] Nytt Manhattan-oppdrag startet. Gjør nett-skytterne klare!", "success");
+
+        // Fyr av Spider-Man's svingetråd (Web Swing)
+        function fireSwingWeb(clientX, clientY) {
+            if (!gameState.running) return;
+
+            const rect = canvas.getBoundingClientRect();
+            const clickX = clientX - rect.left;
+            const clickY = clientY - rect.top + gameState.cameraY;
+
+            let hit = false;
+            for (let b of gameState.buildings) {
+                if (clickX >= b.x && clickX <= b.x + b.width &&
+                    clickY >= b.y && clickY <= b.y + b.height) {
+                    
+                    gameState.hero.attached = true;
+                    gameState.hero.webX = clickX;
+                    gameState.hero.webY = clickY;
+                    
+                    const dx = clickX - gameState.hero.x;
+                    const dy = clickY - gameState.hero.y;
+                    gameState.hero.length = Math.sqrt(dx*dx + dy*dy) * 0.95;
+                    
+                    hit = true;
+                    playBeep(520, 'triangle', 0.08);
+                    canvasStatus.innerText = "Svinger seg!";
+                    break;
+                }
+            }
+
+            if (!hit && clickY < gameState.hero.y) {
+                gameState.hero.attached = false;
+                playBeep(220, 'sawtooth', 0.1);
+            }
+        }
+
+        // Fyr av en nettball (Web Shoot) for å fange banditter / skurker
+        function fireWebProjectile() {
+            if (!gameState.running) return;
+
+            const h = gameState.hero;
+            // Bestem retningen basert på bevegelsen eller sikte
+            let angle = h.facingLeft ? Math.PI : 0;
+            
+            // Hvis han klatrer/svinger, skyt gjerne mot nærmeste synlige trussel
+            let targetEnemy = null;
+            let minDist = 300;
+            for (let e of gameState.enemies) {
+                if (!e.captured && Math.abs(e.y - h.y) < 250) {
+                    const dist = Math.sqrt((e.x - h.x)**2 + (e.y - h.y)**2);
+                    if (dist < minDist) {
+                        minDist = dist;
+                        targetEnemy = e;
+                    }
+                }
+            }
+
+            // Sikt mot Green Goblin hvis vi er nær toppen
+            if (gameState.boss && Math.abs(gameState.boss.y - h.y) < 400) {
+                targetEnemy = gameState.boss;
+            }
+
+            if (targetEnemy) {
+                angle = Math.atan2(targetEnemy.y - h.y, targetEnemy.x - h.x);
+            }
+
+            // Opprett prosjektil
+            gameState.webProjectiles.push({
+                x: h.x,
+                y: h.y,
+                vx: Math.cos(angle) * 7.5,
+                vy: Math.sin(angle) * 7.5 - 1.5, // Lett oppoverbue
+                radius: 6,
+                active: true
+            });
+
+            playBeep(750, 'sine', 0.09);
+            addLog("[WEB_SHOOTER] Fyrer av klebrig nettball!", "info");
+        }
+
+        // Hendelseslyttere for klikk (Web-svinging)
+        canvas.addEventListener('mousedown', (e) => {
+            fireSwingWeb(e.clientX, e.clientY);
+        });
+
+        canvas.addEventListener('touchstart', (e) => {
+            e.preventDefault();
+            if (e.touches.length > 0) {
+                fireSwingWeb(e.touches[0].clientX, e.touches[0].clientY);
+            }
+        }, { passive: false });
+
+        window.addEventListener('mouseup', () => {
+            gameState.hero.attached = false;
+        });
+        canvas.addEventListener('touchend', () => {
+            gameState.hero.attached = false;
+        });
+
+        // Tastaturkontroller (MELLOMROM for å skyte nettballer)
+        window.addEventListener('keydown', (e) => {
+            if (e.code === 'Space') {
+                e.preventDefault();
+                fireWebProjectile();
+            }
+        });
+
+        // Mobilskjermkontroller (Egen knapp for å skyte nettball)
+        mobileShootBtn.addEventListener('click', () => {
+            fireWebProjectile();
+        });
+
+        // Nullstill knapp
+        resetGameBtn.addEventListener('click', () => {
+            initGameWorld();
+            gameState.running = true;
+            gameOverlay.classList.add('hidden');
+            addLog("[LOG] Bruker restartet spillet manuelt.", "info");
+        });
+
+        // --- HOVEDSPILL-OPPDATERING ---
+        function updateGame() {
+            if (!gameState.running) return;
+
+            const h = gameState.hero;
+
+            // Oppdater ansiktsretning basert på fart
+            if (h.vx < -0.2) h.facingLeft = true;
+            if (h.vx > 0.2) h.facingLeft = false;
+
+            // Fysikk og gravitasjon
+            const gravity = 0.35;
+            if (h.attached) {
+                const dx = h.x - h.webX;
+                const dy = h.y - h.webY;
+                const dist = Math.sqrt(dx*dx + dy*dy);
+
+                if (dist > h.length) {
+                    const angle = Math.atan2(dy, dx);
+                    h.x = h.webX + Math.cos(angle) * h.length;
+                    h.y = h.webY + Math.sin(angle) * h.length;
+
+                    const tangX = -Math.sin(angle);
+                    const tangY = Math.cos(angle);
+                    const speed = h.vx * tangX + h.vy * tangY;
+
+                    h.vx = speed * tangX;
+                    h.vy = speed * tangY;
+                }
+                h.vy -= 0.15; // Klatre-drag oppover tråden
+            } else {
+                h.vy += gravity;
+                h.vx *= 0.99; // Luftmotstand
+            }
+
+            h.x += h.vx;
+            h.y += h.vy;
+
+            // Grensekontroller
+            if (h.x - h.radius < 0) {
+                h.x = h.radius;
+                h.vx = -h.vx * 0.4;
+            }
+            if (h.x + h.radius > canvas.width) {
+                h.x = canvas.width - h.radius;
+                h.vx = -h.vx * 0.4;
+            }
+
+            // Kamerafølging (Låst til Spider-Man's progresjon oppover)
+            if (h.y - gameState.cameraY < canvas.height * 0.45) {
+                gameState.targetCameraY = h.y - canvas.height * 0.45;
+            } else if (h.y - gameState.cameraY > canvas.height * 0.7) {
+                gameState.targetCameraY = h.y - canvas.height * 0.7;
+            }
+            gameState.cameraY += (gameState.targetCameraY - gameState.cameraY) * 0.1;
+
+            // Oppdater høyde-indikatorer i Manhattan
+            const currentAlt = Math.max(0, Math.round((canvas.height - 100 - h.y) / 2));
+            gameState.currentAltitude = currentAlt;
+            uiHeight.innerText = currentAlt;
+            uiAlt.innerText = currentAlt + " m";
+
+            // Akselerometer verdi
+            const speedMagnitude = Math.sqrt(h.vx*h.vx + h.vy*h.vy).toFixed(1);
+            uiAccel.innerText = speedMagnitude + " m/s²";
+
+            // GPS-tracker radarpunkt på mini-mobilkartet
+            const mapPercent = Math.min(100, (currentAlt / (gameState.maxHeight / 2)) * 100);
+            mapRadar.style.transform = `translateY(${-mapPercent * 0.35}px)`;
+
+            // --- OPPDATER BANDITTER OG SKURKER ---
+            for (let e of gameState.enemies) {
+                if (!e.captured) {
+                    // Patruljering
+                    e.x += e.dx;
+                    if (e.x < e.minX || e.x > e.maxX) {
+                        e.dx = -e.dx;
+                    }
+
+                    // Sjekk kollisjon med Spider-Man selv (Han tar skade / blir slått tilbake)
+                    const dist = Math.sqrt((h.x - e.x)**2 + (h.y - e.y)**2);
+                    if (dist < h.radius + 15) {
+                        h.vy = 6; // Spretter nedover
+                        h.vx = (h.x - e.x) * 0.6;
+                        playBeep(150, 'sawtooth', 0.25);
+                        addLog(`[WARN] Banditt angrep Spider-Man ved ${currentAlt}m!`, 'warn');
+                    }
+                }
+            }
+
+            // --- OPPDATER BOSS (GREEN GOBLIN) ---
+            const b = gameState.boss;
+            if (b && currentAlt > 450) {
+                b.hoverOffset = Math.sin(Date.now() / 200) * 12; // Sveving
+                
+                // Beveg bossen sidelengs i jakt på helten
+                b.moveTimer += 0.02;
+                b.x = canvas.width/2 + Math.sin(b.moveTimer) * (canvas.width * 0.3);
+
+                // Goblin kaster bomber
+                b.shootCooldown++;
+                if (b.shootCooldown > 120 && b.health > 0) { // Hvert 2. sekund
+                    gameState.bossProjectiles.push({
+                        x: b.x,
+                        y: b.y + b.hoverOffset + 15,
+                        vy: 4.5,
+                        vx: (h.x - b.x) * 0.015, // Sikt mot helten
+                        radius: 8
+                    });
+                    b.shootCooldown = 0;
+                    playBeep(350, 'sawtooth', 0.15);
+                    addLog(`[VILLAIN] Green Goblin kaster en gresskarbombe!`, 'error');
+                }
+            }
+
+            // --- OPPDATER NETT-PROSJEKTILER (SPIDER-MAN'S SKYTING) ---
+            for (let p of gameState.webProjectiles) {
+                if (p.active) {
+                    p.x += p.vx;
+                    p.y += p.vy;
+
+                    // Sjekk treff på banditter
+                    for (let e of gameState.enemies) {
+                        if (!e.captured) {
+                            const dist = Math.sqrt((p.x - e.x)**2 + (p.y - e.y)**2);
+                            if (dist < p.radius + 15) {
+                                e.captured = true;
+                                p.active = false;
+                                gameState.captureCount++;
+                                uiCaptures.innerText = gameState.captureCount;
+                                playBeep(900, 'sine', 0.2);
+                                addLog(`[COMBAT] Suksess! ${e.type} ble fanget i klebrig nett!`, 'success');
+                            }
+                        }
+                    }
+
+                    // Sjekk treff på Green Goblin (Boss)
+                    if (b && b.health > 0) {
+                        const dist = Math.sqrt((p.x - b.x)**2 + (p.y - (b.y + b.hoverOffset))**2);
+                        if (dist < p.radius + 25) {
+                            b.health--;
+                            p.active = false;
+                            playBeep(950, 'triangle', 0.15);
+                            addLog(`[COMBAT] Direkte treff på Green Goblin! Helse: ${b.health}/5`, 'success');
+                            
+                            if (b.health <= 0) {
+                                addLog(`[SYSTEM] Green Goblin bekjempet! Manhattan er trygg!`, 'success');
+                                triggerGameOver(true);
+                            }
+                        }
+                    }
+
+                    // Deaktiver hvis utenfor skjerm
+                    if (Math.abs(p.y - h.y) > canvas.height) {
+                        p.active = false;
+                    }
+                }
+            }
+
+            // --- OPPDATER GOBLIN-BOMBER ---
+            for (let bomb of gameState.bossProjectiles) {
+                bomb.y += bomb.vy;
+                bomb.x += bomb.vx;
+
+                // Sjekk kollisjon med helten
+                const dist = Math.sqrt((bomb.x - h.x)**2 + (bomb.y - h.y)**2);
+                if (dist < bomb.radius + h.radius) {
+                    // Skade og eksplosjon!
+                    h.vy = 9; // Kraftig fall
+                    h.vx = (h.x - bomb.x) * 0.8;
+                    bomb.y = 9999; // Fjern bombene
+                    playBeep(100, 'sawtooth', 0.45);
+                    addLog(`[WARN] Truffet av gresskarbombe! Mistet høyde!`, 'error');
+                }
+            }
+
+            // Sjekk fall i avgrunnen
+            if (h.y - gameState.cameraY > canvas.height + 250) {
+                playBeep(120, 'sine', 0.4);
+                addLog("[SYSTEM] Spider-Man falt ned! Starter på nytt...", "error");
+                initGameWorld();
+            }
+        }
+
+        // Vinn / Tap Overlays
+        function triggerGameOver(victory) {
+            if (gameState.victoryTriggered) return;
+            gameState.victoryTriggered = true;
+            gameState.running = false;
+            gameOverlay.classList.remove('hidden');
+            
+            overlayIcon.className = "fa-solid fa-mask text-5xl text-red-500 mb-4 animate-bounce";
+            overlayTitle.innerText = "Byen er reddet!";
+            overlayDesc.innerText = `Eksplosiv klatring! Du klatret til toppen, fanget banditter og overmannet Green Goblin med nettskytterne dine. Manhattan feirer deg!`;
+            overlayActionBtn.innerText = "Spill og fang på nytt";
+        }
+
+        overlayActionBtn.addEventListener('click', () => {
+            initGameWorld();
+            gameState.running = true;
+            gameOverlay.classList.add('hidden');
+        });
+
+        // --- RENDERINGSFUNKSJON ---
+        function render() {
+            // Rens canvas (Natthimmel)
+            ctx.fillStyle = '#080d19';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            ctx.save();
+            ctx.translate(0, -gameState.cameraY);
+
+            // Tegn stjerner
+            ctx.fillStyle = 'rgba(255,255,255,0.45)';
+            for (let i = 0; i < 25; i++) {
+                const starY = (gameState.cameraY * 0.4) + (i * 50) % canvas.height;
+                const starX = (i * 85) % canvas.width;
+                ctx.fillRect(starX, starY, 2, 2);
+            }
+
+            // Tegn Manhattan bysilhuetter i bakgrunnen
+            ctx.fillStyle = 'rgba(30, 41, 59, 0.15)';
+            ctx.fillRect(60, -200, 110, 1500);
+            ctx.fillRect(canvas.width - 160, -500, 130, 1800);
+
+            // Tegn alle bygninger
+            for (let b of gameState.buildings) {
+                ctx.fillStyle = b.color;
+                ctx.fillRect(b.x, b.y, b.width, b.height);
+                
+                // Vinduer på skyskraperne
+                ctx.fillStyle = 'rgba(234, 179, 8, 0.35)'; // Gult lys
+                const cols = Math.floor(b.width / 22);
+                const rows = Math.floor(b.height / 25);
+                for (let r = 1; r < rows; r++) {
+                    for (let c = 1; c < cols; c++) {
+                        if ((r + c + Math.floor(b.y)) % 4 === 0) {
+                            ctx.fillRect(b.x + c * 22, b.y + r * 25, 7, 10);
+                        }
+                    }
+                }
+                
+                // Konturer
+                ctx.strokeStyle = '#334155';
+                ctx.lineWidth = 1.5;
+                ctx.strokeRect(b.x, b.y, b.width, b.height);
+            }
+
+            // Tegn mistede nettprosjektiler (Spider-Man's skudd)
+            for (let p of gameState.webProjectiles) {
+                if (p.active) {
+                    ctx.fillStyle = '#ffffff';
+                    ctx.shadowColor = '#60a5fa';
+                    ctx.shadowBlur = 10;
+                    ctx.beginPath();
+                    ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+                    ctx.fill();
+                    ctx.shadowBlur = 0; // Nullstill
+                }
+            }
+
+            // Tegn patruljerende banditter
+            for (let e of gameState.enemies) {
+                ctx.save();
+                ctx.translate(e.x, e.y);
+
+                if (e.captured) {
+                    // Hvis banditten er fanget, tegn ham innpakket i et tykt hvitt spindelvev-kokong
+                    ctx.fillStyle = '#ffffff';
+                    ctx.strokeStyle = '#cbd5e1';
+                    ctx.lineWidth = 2;
+                    ctx.beginPath();
+                    ctx.ellipse(0, 0, 12, 18, 0, 0, Math.PI * 2);
+                    ctx.fill();
+                    ctx.stroke();
+
+                    // Nettlinjer over hele kroppen
+                    ctx.strokeStyle = '#94a3b8';
+                    ctx.lineWidth = 1;
+                    ctx.beginPath();
+                    ctx.moveTo(-10, -5); ctx.lineTo(10, 5);
+                    ctx.moveTo(-10, 5); ctx.lineTo(10, -5);
+                    ctx.moveTo(-12, 0); ctx.lineTo(12, 0);
+                    ctx.stroke();
+                } else {
+                    // Aktiv banditt (Oransje/grå drakt med skurkemaske)
+                    ctx.fillStyle = '#f97316'; // Skurkete oransje
+                    ctx.beginPath();
+                    ctx.arc(0, -6, 9, 0, Math.PI*2);
+                    ctx.fill();
+
+                    // Bandittkropp
+                    ctx.fillStyle = '#475569';
+                    ctx.fillRect(-7, 3, 14, 15);
+
+                    // Svart maske-stripe
+                    ctx.fillStyle = '#000000';
+                    ctx.fillRect(-8, -9, 16, 4);
+
+                    // Onde røde øyne
+                    ctx.fillStyle = '#ef4444';
+                    ctx.fillRect(-5, -8, 2, 2);
+                    ctx.fillRect(3, -8, 2, 2);
+                }
+                ctx.restore();
+            }
+
+            // Tegn svingetråden til Spider-Man
+            const h = gameState.hero;
+            if (h.attached) {
+                ctx.strokeStyle = '#f1f5f9';
+                ctx.lineWidth = 2.5;
+                ctx.shadowColor = '#ffffff';
+                ctx.shadowBlur = 6;
+                ctx.beginPath();
+                ctx.moveTo(h.x, h.y);
+                ctx.lineTo(h.webX, h.webY);
+                ctx.stroke();
+                ctx.shadowBlur = 0;
+            }
+
+            // Tegn Green Goblin (Boss)
+            const b = gameState.boss;
+            if (b && b.health > 0) {
+                ctx.save();
+                ctx.translate(b.x, b.y + b.hoverOffset);
+
+                // Goblinens glider (Mørk lilla/stål metallvinger)
+                ctx.fillStyle = '#475569';
+                ctx.beginPath();
+                ctx.moveTo(-35, 10);
+                ctx.lineTo(35, 10);
+                ctx.lineTo(0, 22);
+                ctx.closePath();
+                ctx.fill();
+
+                // Flammer fra glideren
+                ctx.fillStyle = '#f97316';
+                ctx.fillRect(-22, 11, 6, 8 + Math.random()*8);
+                ctx.fillRect(16, 11, 6, 8 + Math.random()*8);
+
+                // Selve Green Goblin (Grønn rustning, lilla hette)
+                ctx.fillStyle = '#22c55e'; // Grønn
+                ctx.beginPath();
+                ctx.arc(0, -5, 12, 0, Math.PI * 2);
+                ctx.fill();
+
+                // Lilla hette og kappe
+                ctx.fillStyle = '#a855f7';
+                ctx.beginPath();
+                ctx.arc(0, -9, 11, Math.PI, 0);
+                ctx.fill();
+
+                // Glødende gule øyne
+                ctx.fillStyle = '#eab308';
+                ctx.fillRect(-6, -7, 3, 3);
+                ctx.fillRect(3, -7, 3, 3);
+
+                // Helsebar over bossen
+                ctx.fillStyle = '#1e293b';
+                ctx.fillRect(-25, -24, 50, 6);
+                ctx.fillStyle = '#22c55e';
+                ctx.fillRect(-25, -24, (b.health / 5) * 50, 6);
+
+                ctx.restore();
+            }
+
+            // Tegn Goblin-bomber
+            for (let bomb of gameState.bossProjectiles) {
+                ctx.save();
+                ctx.translate(bomb.x, bomb.y);
+                // Gresskarbombe (Oransje sirkel med skummelt fjes)
+                ctx.fillStyle = '#f97316';
+                ctx.beginPath();
+                ctx.arc(0, 0, bomb.radius, 0, Math.PI * 2);
+                ctx.fill();
+
+                // Sorte detaljer på bomben (øyne)
+                ctx.fillStyle = '#000000';
+                ctx.fillRect(-4, -3, 2, 2);
+                ctx.fillRect(2, -3, 2, 2);
+
+                ctx.restore();
+            }
+
+            // Tegn Spider-Man selv
+            ctx.save();
+            ctx.translate(h.x, h.y);
+            
+            ctx.fillStyle = '#2563eb'; // Blå
+            ctx.beginPath();
+            ctx.arc(0, 0, h.radius, 0, Math.PI*2);
+            ctx.fill();
+
+            // Rødt draktdesign
+            ctx.fillStyle = '#dc2626';
+            ctx.beginPath();
+            ctx.arc(0, 0, h.radius, Math.PI * 0.1, Math.PI * 0.9);
+            ctx.fill();
+
+            // Ansiktsmaske-øyne
+            ctx.fillStyle = '#ffffff';
+            ctx.strokeStyle = '#000000';
+            ctx.lineWidth = 1.5;
+
+            const eyeOffset = h.facingLeft ? -2 : 2;
+
+            ctx.beginPath();
+            ctx.moveTo(-5 + eyeOffset, -3);
+            ctx.quadraticCurveTo(-1 + eyeOffset, -7, -1 + eyeOffset, -2);
+            ctx.quadraticCurveTo(-1 + eyeOffset, 2, -5 + eyeOffset, -3);
+            ctx.fill();
+            ctx.stroke();
+
+            ctx.beginPath();
+            ctx.moveTo(5 + eyeOffset, -3);
+            ctx.quadraticCurveTo(1 + eyeOffset, -7, 1 + eyeOffset, -2);
+            ctx.quadraticCurveTo(1 + eyeOffset, 2, 5 + eyeOffset, -3);
+            ctx.fill();
+            ctx.stroke();
+
+            ctx.restore();
+
+            ctx.restore();
+        }
+
+        // Hoved-timer for spillet
+        function gameTick() {
+            updateGame();
+            render();
+            requestAnimationFrame(gameTick);
+        }
+        gameTick();
+
+        // --- MOBIL & MANUELLE KONTROLLER ---
+        alertBtn.addEventListener('click', () => {
+            playBeep(920, 'sawtooth', 0.2);
+            addLog("[CYBER_APP] Sender taktisk Spidey-Sens ping til satellitt!", "warn");
+            mapRadar.classList.add('animate-bounce');
+            setTimeout(() => mapRadar.classList.remove('animate-bounce'), 1000);
+        });
+
+        webZipBtn.addEventListener('click', () => {
+            if (gameState.running) {
+                gameState.hero.vy = -12; // Kaster Spider-Man høyt oppover
+                playBeep(650, 'sine', 0.15);
+                addLog("[CYBER_APP] Signal mottatt: Utfører superhopp-booster!", "success");
+            }
+        });
+
+        // --- CYBER-TERMINAL KOMMANDOER ---
+        terminalInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+                const cmd = terminalInput.value.trim().toLowerCase();
+                terminalInput.value = '';
+                
+                if (cmd === '') return;
+
+                addLog(`&gt; ${cmd}`, 'cmd');
+
+                if (cmd === 'help' || cmd === 'hjelp') {
+                    addLog("--- Kampterminal kommandoer ---", "info");
+                    addLog("skyt   : Skyter en nettball for å fange banditter.", "info");
+                    addLog("hopp   : Utfører et superhopp rett opp.", "info");
+                    addLog("clear  : Rens terminalskjermen.", "info");
+                    addLog("status : Analyserer skurker og kriminell status.", "info");
+                } 
+                else if (cmd === 'skyt') {
+                    fireWebProjectile();
+                } 
+                else if (cmd === 'hopp') {
+                    gameState.hero.vy = -12;
+                    playBeep(700, 'sine', 0.12);
+                    addLog("[SYSTEM] Ekstra drivstoff tilført i trådskyter.", "success");
+                } 
+                else if (cmd === 'clear') {
+                    logsContainer.innerHTML = '';
+                    addLog("Terminal renset.", "info");
+                } 
+                else if (cmd === 'status') {
+                    addLog("--- SIKKERHETSANALYSE ---", "info");
+                    addLog(`Banditter fanget: ${gameState.captureCount}`, "info");
+                    addLog(`Nåværende Spider-høyde: ${gameState.currentAltitude}m`, "info");
+                    if (gameState.boss) {
+                        addLog(`Green Goblin Helse: ${gameState.boss.health}/5`, "warn");
+                    }
+                } 
+                else {
+                    addLog(`Ukjent kommando: '${cmd}'. Skriv 'help' for hjelp.`, 'error');
+                }
+            }
+        });
+    </script>
+</body>
+</html>
+
