@@ -1,0 +1,713 @@
+```html
+<!DOCTYPE html>
+<html lang="no">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dystopia 3D: Valgdagens Undergang</title>
+    <!-- Bootstrap 5 -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/dist/bootstrap.min.css" rel="stylesheet">
+    <!-- Three.js CDN -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <style>
+        :root {
+            --dystopian-red: #8b0000;
+            --neon-glow: #ff3333;
+            --dark-bg: #050608;
+            --card-bg: #0c0e14;
+            --text-gold: #d4af37;
+        }
+
+        body {
+            background-color: var(--dark-bg);
+            color: #e2e8f0;
+            font-family: 'Courier New', Courier, monospace;
+            overflow-x: hidden;
+            user-select: none;
+        }
+
+        .neon-border {
+            border: 2px solid var(--dystopian-red);
+            box-shadow: 0 0 20px rgba(255, 51, 51, 0.25);
+            background-color: var(--card-bg);
+            position: relative;
+        }
+
+        /* 3D Spillområde */
+        #canvas3d-container {
+            width: 100%;
+            height: 500px;
+            position: relative;
+            background: #000;
+            overflow: hidden;
+            border-bottom: 3px solid var(--dystopian-red);
+        }
+
+        /* Indre paranoide stemmer overlay */
+        #inner-voice-overlay {
+            position: absolute;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80%;
+            text-align: center;
+            pointer-events: none;
+            z-index: 10;
+            font-size: 1.2rem;
+            color: #ff3333;
+            text-shadow: 0 0 8px rgba(255, 51, 51, 0.8);
+            font-weight: bold;
+            min-height: 40px;
+            transition: all 0.3s;
+        }
+
+        .ticker-wrap {
+            width: 100%;
+            overflow: hidden;
+            background-color: #020305;
+            border-top: 1px solid var(--dystopian-red);
+            border-bottom: 1px solid var(--dystopian-red);
+            padding: 8px 0;
+        }
+
+        .ticker {
+            display: flex;
+            white-space: nowrap;
+            animation: ticker 28s linear infinite;
+        }
+
+        .ticker-item {
+            display: inline-block;
+            padding: 0 2rem;
+            color: #ff3333;
+            font-weight: bold;
+        }
+
+        @keyframes ticker {
+            0% { transform: translate3d(100%, 0, 0); }
+            100% { transform: translate3d(-100%, 0, 0); }
+        }
+
+        .btn-dystopia {
+            background-color: var(--dystopian-red);
+            color: white;
+            border: 1px solid var(--neon-glow);
+            border-radius: 0;
+            transition: all 0.3s;
+        }
+
+        .btn-dystopia:hover {
+            background-color: #ff3333;
+            box-shadow: 0 0 10px var(--neon-glow);
+            color: white;
+        }
+
+        .support-box {
+            background: rgba(255, 255, 255, 0.02);
+            border-left: 4px solid var(--dystopian-red);
+        }
+
+        /* Overlay for sammenbrudd og omstart */
+        #collapse-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(11, 1, 1, 0.9);
+            z-index: 20;
+            display: none;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .hud-display {
+            background: rgba(5, 5, 8, 0.8);
+            border: 1px solid #333;
+            padding: 8px 15px;
+            font-size: 0.9rem;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container my-4">
+    <!-- Header -->
+    <div class="row justify-content-center text-center mb-3">
+        <div class="col-lg-10">
+            <h1 class="display-5 fw-bold text-uppercase text-danger" style="letter-spacing: 2px;">VALGDAGENS TÅRER</h1>
+            <p class="text-muted small">
+                3D Psykose-simulator: Hold talen din mens du herjes av paranoia og attentatforsøk.
+            </p>
+        </div>
+    </div>
+
+    <!-- Hovedkonsoll -->
+    <div class="row justify-content-center">
+        <div class="col-lg-10">
+            <div class="p-2 rounded neon-border">
+                
+                <!-- Spill HUD -->
+                <div class="d-flex justify-content-between px-3 py-2 small align-items-center">
+                    <div class="hud-display text-warning">
+                        <strong>STATUS:</strong> <span id="game-status">Taler i flomlyset...</span>
+                    </div>
+                    <div class="hud-display text-danger">
+                        <strong>TID TIL ENDELIG UNDERGANG:</strong> <span id="game-timer">03:00</span>
+                    </div>
+                    <div class="hud-display text-info">
+                        <strong>LØGNER SPREDT:</strong> <span id="score-val">0</span>
+                    </div>
+                </div>
+
+                <!-- 3D Skjerm Container -->
+                <div id="canvas3d-container">
+                    <!-- Indre stemme som håper på din undergang -->
+                    <div id="inner-voice-overlay">"Du fortjener ikke denne makten..."</div>
+                    
+                    <!-- Kollaps Overlay (Vises ved game over) -->
+                    <div id="collapse-overlay">
+                        <h2 class="text-danger display-5 fw-bold mb-3">TANKENE HAR STANSET</h2>
+                        <p class="text-light lead mb-4" id="collapse-reason">
+                            Et psykotisk attentat traff deg midt på talerstolen. Du kollapset i gråt foran kameraene på selve valgdagen.
+                        </p>
+                        <button onclick="restartDystopia()" class="btn btn-dystopia btn-lg px-5">START PÅ NYTT</button>
+                    </div>
+                </div>
+
+                <!-- Mobil/Touch-kontroller for å flytte seg på talerstolen -->
+                <div class="d-flex justify-content-between p-2">
+                    <button class="btn btn-dark border-secondary px-4 py-2" id="btn-left">◀ Sidelengs Venstre</button>
+                    <button class="btn btn-danger border-danger px-4 py-2 text-uppercase fw-bold" id="btn-lie">Tving frem løgn (Klikk)</button>
+                    <button class="btn btn-dark border-secondary px-4 py-2" id="btn-right">Sidelengs Høyre ▶</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Nyhetsticker -->
+    <div class="row justify-content-center my-3">
+        <div class="col-lg-10">
+            <div class="ticker-wrap rounded">
+                <div class="ticker" id="ticker-content">
+                    <div class="ticker-item">+++ BREAKING NEWS: KAOTISKE TILSTANDER PÅ VALGDAGEN +++</div>
+                    <div class="ticker-item">POLITIKER OBSERVATION: RAPPORT OM UKONTROLLERT SKJELVING PÅ SCENEN +++</div>
+                    <div class="ticker-item">PARANOIDE VELGERE BEVÆPNER SEG I SENTRUM +++</div>
+                    <div class="ticker-item">STADIGE BOMMESKUDD RAPPORTERT RUNDT TALERSTOLEN +++</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Omsorg og Hjelpelinjer -->
+    <div class="row justify-content-center mt-4">
+        <div class="col-lg-10">
+            <div class="p-4 rounded support-box">
+                <h4 class="text-white mb-2">Trenger du eller noen du kjenner støtte?</h4>
+                <p class="small text-muted">
+                    Dette spillet bruker dramatiske 3D-effekter og mørke metaforer for å skildre psykiske lidelser, paranoia og sammenbrudd. I det virkelige liv skal ingen bære dype nevroser eller tunge dager alene. Det finnes alltid hjelp og noen å snakke med.
+                </p>
+                <div class="row gy-3 mt-2">
+                    <div class="col-md-6">
+                        <h5 class="text-white h6">Gratis og anonyme hjelpetjenester:</h5>
+                        <ul class="list-unstyled small text-muted m-0">
+                            <li class="mb-1">&bull; <strong>Mental Helse Hjelpetelefon:</strong> <span class="text-white">116 123</span></li>
+                            <li class="mb-1">&bull; <strong>Kirkens SOS:</strong> <span class="text-white">22 40 00 40</span></li>
+                            <li>&bull; <strong>Legevakt i hele Norge:</strong> <span class="text-white">116 117</span></li>
+                        </ul>
+                    </div>
+                    <div class="col-md-6 text-md-end text-start align-self-center">
+                        <p class="small text-muted mb-2">Støtt internasjonalt solidaritets- og omsorgsarbeid:</p>
+                        <a href="https://www.kirkensnodhjelp.no/" target="_blank" rel="noopener noreferrer" class="btn btn-dystopia btn-sm px-4">
+                            Kirkens Nødhjelp &rarr;
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// --- 3D SCENE-VARIABLER ---
+let scene, camera, renderer;
+let politicianMesh, podiumMesh, stageMesh;
+let bulletSystem = [];
+let tearSystem = [];
+let lights = [];
+
+// --- SPILLLOGIKK-VARIABLER ---
+let score = 0;
+let timeRemaining = 180; // 3 minutter i sekunder
+let psychosisLevel = 0;
+let isGameOver = false;
+let clockInterval = null;
+let lastShotTime = 0;
+let killerBullet = null;
+let politicianX = 0; // Sidelengs posisjon på talerstolen (-4 til 4)
+
+// Den indre stemmen (saboterende paranoide tanker som ønsker nederlag)
+const innerVoices = [
+    "De vet at du lyver.",
+    "Hør på skuddene... de kommer nærmere.",
+    "Hvorfor gir du ikke bare opp?",
+    "Hele landet vil se deg gråte på direktesendt TV.",
+    "Du er en svindler under masken.",
+    "Stemmen din skjelver. De ser det.",
+    "Ingen av disse syke velgerne stoler på deg.",
+    "Tårene dine er det eneste sanne du har igjen."
+];
+
+// Mus-interaksjon for kamerabevegelse (som beskrevet i instruksjonene)
+let isMouseDown = false;
+let previousMousePosition = { x: 0, y: 0 };
+
+// --- INITIALISERING AV 3D SCENE ---
+window.onload = function() {
+    init3D();
+    setupControls();
+    startGameLoop();
+    startTimer();
+    triggerRandomVoices();
+};
+
+function init3D() {
+    const container = document.getElementById("canvas3d-container");
+    const width = container.clientWidth;
+    const height = container.clientHeight;
+
+    // Opprett Scene
+    scene = new THREE.Scene();
+    scene.background = new THREE.Color(0x05050a);
+    scene.fog = new THREE.FogExp2(0x05050a, 0.04);
+
+    // Opprett Kamera
+    camera = new THREE.PerspectiveCamera(45, width / height, 0.1, 1000);
+    // Sett et dramatisk froskeperspektiv som ser opp mot talerstolen
+    camera.position.set(0, 3, 15);
+    camera.lookAt(0, 2, 0);
+
+    // Opprett Renderer
+    renderer = new THREE.WebGLRenderer({ antialias: true });
+    renderer.setSize(width, height);
+    renderer.shadowMap.enabled = true;
+    container.appendChild(renderer.domElement);
+
+    // --- BYGG 3D MILJØET ---
+    
+    // Scene-gulv (Kald, industriell scene)
+    const stageGeo = new THREE.BoxGeometry(15, 0.5, 10);
+    const stageMat = new THREE.MeshStandardMaterial({ color: 0x111116, roughness: 0.8 });
+    stageMesh = new THREE.Mesh(stageGeo, stageMat);
+    stageMesh.position.set(0, 0, 0);
+    stageMesh.receiveShadow = true;
+    scene.add(stageMesh);
+
+    // Talerstol (Podium)
+    const podiumGeo = new THREE.BoxGeometry(1.6, 2.2, 1.2);
+    const podiumMat = new THREE.MeshStandardMaterial({ color: 0x8b0000, metalness: 0.5, roughness: 0.3 });
+    podiumMesh = new THREE.Mesh(podiumGeo, podiumMat);
+    podiumMesh.position.set(0, 1.1, 1.5);
+    podiumMesh.castShadow = true;
+    podiumMesh.receiveShadow = true;
+    scene.add(podiumMesh);
+
+    // Politiker (Abstrakt, lav-poly figur)
+    // Kropp
+    const bodyGeo = new THREE.CylinderGeometry(0.5, 0.3, 2.2, 8);
+    const bodyMat = new THREE.MeshStandardMaterial({ color: 0x222530, roughness: 0.7 });
+    politicianMesh = new THREE.Group();
+    
+    const bodyMesh = new THREE.Mesh(bodyGeo, bodyMat);
+    bodyMesh.position.y = 1.1;
+    bodyMesh.castShadow = true;
+    politicianMesh.add(bodyMesh);
+
+    // Hode
+    const headGeo = new THREE.SphereGeometry(0.35, 12, 12);
+    const headMat = new THREE.MeshStandardMaterial({ color: 0xe2b697, roughness: 0.6 });
+    const headMesh = new THREE.Mesh(headGeo, headMat);
+    headMesh.position.y = 2.4;
+    headMesh.castShadow = true;
+    politicianMesh.add(headMesh);
+
+    // Paranoide Lysende Øyne
+    const eyeGeo = new THREE.SphereGeometry(0.05, 8, 8);
+    const eyeMat = new THREE.MeshBasicMaterial({ color: 0xff0000 });
+    
+    const leftEye = new THREE.Mesh(eyeGeo, eyeMat);
+    leftEye.position.set(-0.12, 2.45, 0.3);
+    const rightEye = new THREE.Mesh(eyeGeo, eyeMat);
+    rightEye.position.set(0.12, 2.45, 0.3);
+    
+    politicianMesh.add(leftEye);
+    politicianMesh.add(rightEye);
+
+    // Plasser politikeren bak talerstolen
+    politicianMesh.position.set(0, 0.2, 0.5);
+    scene.add(politicianMesh);
+
+    // --- LYSSETTING (Dystopisk Valgkampsflomlys) ---
+    const spotlight = new THREE.SpotLight(0xffffff, 4);
+    spotlight.position.set(0, 10, 8);
+    spotlight.angle = Math.PI / 6;
+    spotlight.penumbra = 0.5;
+    spotlight.castShadow = true;
+    scene.add(spotlight);
+    lights.push(spotlight);
+
+    // Et urovekkende rødt motlys som indikerer fare
+    const backlight = new THREE.DirectionalLight(0xff3333, 1.2);
+    backlight.position.set(0, 2, -10);
+    scene.add(backlight);
+    lights.push(backlight);
+
+    // Ambient lys for svakt fyll
+    const ambientLight = new THREE.AmbientLight(0x0a0a15);
+    scene.add(ambientLight);
+
+    // Event listener for vindus-skalering
+    window.addEventListener('resize', onWindowResize);
+}
+
+// --- INTERAKSJON & KONTROLLER ---
+function setupControls() {
+    const container = document.getElementById("canvas3d-container");
+
+    // Klikk/Skyt løgner på skjermen
+    container.addEventListener("mousedown", (e) => {
+        isMouseDown = true;
+        previousMousePosition = { x: e.clientX, y: e.clientY };
+        fireVrangforestilling();
+    });
+
+    container.addEventListener("mousemove", (e) => {
+        if (isMouseDown) {
+            // Roter kameraet svakt rundt politikeren for en urolig 3D-effekt
+            const deltaX = e.clientX - previousMousePosition.x;
+            camera.position.x += deltaX * 0.02;
+            camera.lookAt(0, 2, 0);
+            previousMousePosition = { x: e.clientX, y: e.clientY };
+        }
+    });
+
+    window.addEventListener("mouseup", () => {
+        isMouseDown = false;
+    });
+
+    // Sidelengs styring med taster
+    window.addEventListener("keydown", (e) => {
+        if (isGameOver) return;
+        if (e.key === "ArrowLeft" || e.key === "a" || e.key === "A") {
+            movePolitician(-1);
+        }
+        if (e.key === "ArrowRight" || e.key === "d" || e.key === "D") {
+            movePolitician(1);
+        }
+    });
+
+    // Mobil-knapper
+    document.getElementById("btn-left").addEventListener("click", () => movePolitician(-1));
+    document.getElementById("btn-right").addEventListener("click", () => movePolitician(1));
+    document.getElementById("btn-lie").addEventListener("click", () => fireVrangforestilling());
+}
+
+function movePolitician(dir) {
+    politicianX += dir * 0.8;
+    // Hold ham innenfor scenens grenser
+    if (politicianX < -4) politicianX = -4;
+    if (politicianX > 4) politicianX = 4;
+}
+
+// Sende ut en visualisert "løgn/vrangforestilling" (lysende hvit barriere/skjold)
+function fireVrangforestilling() {
+    if (isGameOver) return;
+    score++;
+    document.getElementById("score-val").innerText = score;
+
+    // Lag en 3D kule som skytes ut fra talerstolen
+    const geo = new THREE.SphereGeometry(0.15, 8, 8);
+    const mat = new THREE.MeshBasicMaterial({ color: 0xffffff });
+    const pulse = new THREE.Mesh(geo, mat);
+    pulse.position.set(politicianMesh.position.x, 2, 1.8);
+    scene.add(pulse);
+
+    // Bevegelse oppover og utover mot folkemengden
+    const speedY = 0.1;
+    const speedZ = 0.2;
+    
+    function animPulse() {
+        if (isGameOver) {
+            scene.remove(pulse);
+            return;
+        }
+        pulse.position.z += speedZ;
+        pulse.position.y += Math.sin(Date.now() * 0.01) * 0.02;
+        pulse.scale.multiplyScalar(1.02); // Vokser i størrelse som en tåke av løgner
+
+        if (pulse.position.z > 30) {
+            scene.remove(pulse);
+        } else {
+            requestAnimationFrame(animPulse);
+        }
+    }
+    animPulse();
+}
+
+// --- ATTENTATSYSTEM (Syke velgere med pistol) ---
+function spawnPistolShot() {
+    if (isGameOver) return;
+
+    // Startposisjon i mørket (fra publikum)
+    const startX = (Math.random() - 0.5) * 16;
+    const startY = 1 + Math.random() * 2;
+    const startZ = 25;
+
+    // Pistolkule (Lysende rød sylinder)
+    const bulletGeo = new THREE.CylinderGeometry(0.04, 0.04, 0.6, 6);
+    const bulletMat = new THREE.MeshBasicMaterial({ color: 0xff3333 });
+    const bullet = new THREE.Mesh(bulletGeo, bulletMat);
+    bullet.rotation.x = Math.PI / 2;
+    bullet.position.set(startX, startY, startZ);
+    scene.add(bullet);
+
+    // Banen sikter grovt mot politikeren, men bommer alltid litt til siden/over (paranoia-effekt)
+    const targetX = politicianMesh.position.x + (Math.random() > 0.5 ? 1.5 : -1.5) + (Math.random() - 0.5) * 0.5;
+    const targetY = 2.4 + (Math.random() - 0.5) * 0.8; // Hodehøyde
+    const targetZ = politicianMesh.position.z;
+
+    const steps = 60;
+    const dx = (targetX - startX) / steps;
+    const dy = (targetY - startY) / steps;
+    const dz = (targetZ - startZ) / steps;
+
+    bulletSystem.push({
+        mesh: bullet,
+        dx: dx,
+        dy: dy,
+        dz: dz,
+        life: steps
+    });
+}
+
+// --- 3-MINUTTERS ATTENTATSMORD (Syk drapsmann skyter ham) ---
+function spawnTheFinalAssassin() {
+    document.getElementById("game-status").innerText = "SKYTTER BLANT PUBLIKUM!";
+    
+    // Opprett den ultimate syke snikmorderen i 3D
+    const assassinGeo = new THREE.BoxGeometry(0.8, 2, 0.8);
+    const assassinMat = new THREE.MeshBasicMaterial({ color: 0x000000 });
+    const assassin = new THREE.Mesh(assassinGeo, assassinMat);
+    assassin.position.set(0, 1, 18);
+    scene.add(assassin);
+
+    // Avfyr det gylne/svarte dødelige skuddet som ikke bommer
+    const kBulletGeo = new THREE.SphereGeometry(0.2, 12, 12);
+    const kBulletMat = new THREE.MeshBasicMaterial({ color: 0xffaa00 });
+    killerBullet = new THREE.Mesh(kBulletGeo, kBulletMat);
+    killerBullet.position.set(0, 1.8, 17.5);
+    scene.add(killerBullet);
+
+    // Beveg det dødelige skuddet uunngåelig mot politikerens bryst
+    const kSteps = 120; // Rolig og smertefull bevegelse
+    const kTargetX = politicianMesh.position.x;
+    const kTargetY = 1.8; // Brystet
+    const kTargetZ = politicianMesh.position.z;
+
+    const kDx = (kTargetX - killerBullet.position.x) / kSteps;
+    const kDy = (kTargetY - killerBullet.position.y) / kSteps;
+    const kDz = (kTargetZ - killerBullet.position.z) / kSteps;
+
+    let stepCount = 0;
+
+    function moveKillerBullet() {
+        if (!killerBullet) return;
+        killerBullet.position.x += kDx;
+        killerBullet.position.y += kDy;
+        killerBullet.position.z += kDz;
+        stepCount++;
+
+        // Sjekk treff med politikeren
+        if (killerBullet.position.z <= politicianMesh.position.z + 0.5) {
+            triggerFatalHit();
+            scene.remove(killerBullet);
+            scene.remove(assassin);
+            killerBullet = null;
+        } else {
+            requestAnimationFrame(moveKillerBullet);
+        }
+    }
+    moveKillerBullet();
+}
+
+// --- FATAL KOLLAPS (Tåre-partikler og Gråt) ---
+function triggerFatalHit() {
+    isGameOver = true;
+    document.getElementById("game-status").innerText = "NEDKJEMT / SORG";
+    document.getElementById("game-timer").innerText = "00:00";
+    
+    // Slå av det sterke flomlyset, tenn et dystert rødt lys på scenen
+    lights[0].intensity = 0.2;
+    lights[1].intensity = 4.0;
+
+    // Få politikeren til å kollapse sidelengs i 3D
+    politicianMesh.rotation.z = Math.PI / 3;
+    politicianMesh.position.y = 0.5;
+
+    // Generer strømmer av blå tåre-partikler fra hodet
+    const tearGeo = new THREE.SphereGeometry(0.06, 6, 6);
+    const tearMat = new THREE.MeshBasicMaterial({ color: 0x00b0ff });
+
+    for (let i = 0; i < 40; i++) {
+        const tear = new THREE.Mesh(tearGeo, tearMat);
+        // Plasser ved det veltede hodets omtrentlige posisjon
+        tear.position.set(politicianMesh.position.x - 0.8, 1.2, politicianMesh.position.z + 0.3);
+        
+        // Tilfeldig sprengkraft/retning for tåreflommen
+        tear.userData = {
+            vx: (Math.random() - 0.5) * 0.08 - 0.02,
+            vy: Math.random() * 0.05 + 0.05,
+            vz: (Math.random() - 0.5) * 0.08
+        };
+        scene.add(tear);
+        tearSystem.push(tear);
+    }
+
+    // Vis den endelige kollaps-menyen med forklaring
+    document.getElementById("collapse-overlay").style.display = "flex";
+}
+
+// --- TIDSTELLER (3 MINUTTER) ---
+function startTimer() {
+    if (clockInterval) clearInterval(clockInterval);
+    clockInterval = setInterval(() => {
+        if (isGameOver) return;
+        timeRemaining--;
+
+        const mins = Math.floor(timeRemaining / 60);
+        const secs = timeRemaining % 60;
+        document.getElementById("game-timer").innerText = 
+            `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+
+        // Avfyr vanlige bommeskudd med jevne mellomrom
+        if (timeRemaining > 0 && Math.random() < 0.6) {
+            spawnPistolShot();
+        }
+
+        // Etter nøyaktig 3 minutter (eller når timeren når null)
+        if (timeRemaining <= 0) {
+            clearInterval(clockInterval);
+            spawnTheFinalAssassin();
+        }
+    }, 1000);
+}
+
+// --- PARANOIDE INNERSTEMMER ---
+function triggerRandomVoices() {
+    setInterval(() => {
+        if (isGameOver) return;
+        const randomVoice = innerVoices[Math.floor(Math.random() * innerVoices.length)];
+        const textElement = document.getElementById("inner-voice-overlay");
+        
+        // Visuell "glitch"-effekt på teksten
+        textElement.style.opacity = 0;
+        setTimeout(() => {
+            textElement.innerText = `"${randomVoice}"`;
+            textElement.style.opacity = 1;
+            textElement.style.color = Math.random() > 0.5 ? "#ff3333" : "#ff8888";
+        }, 200);
+
+    }, 4500);
+}
+
+// --- RESTART GAME ---
+function restartDystopia() {
+    isGameOver = false;
+    timeRemaining = 180; // Reset til 3 minutter
+    score = 0;
+    document.getElementById("score-val").innerText = "0";
+    document.getElementById("game-timer").innerText = "03:00";
+    document.getElementById("game-status").innerText = "Taler i flomlyset...";
+    document.getElementById("collapse-overlay").style.display = "none";
+
+    // Gjenopprett 3D Lys og Politikerens stilling
+    lights[0].intensity = 4;
+    lights[1].intensity = 1.2;
+    politicianMesh.rotation.z = 0;
+    politicianMesh.position.set(0, 0.2, 0.5);
+    politicianX = 0;
+
+    // Fjern gamle tårepartikler
+    tearSystem.forEach(t => scene.remove(t));
+    tearSystem = [];
+
+    // Fjern ueksploderte kuler
+    bulletSystem.forEach(b => scene.remove(b.mesh));
+    bulletSystem = [];
+
+    startTimer();
+}
+
+// --- GAME LOOP ---
+function startGameLoop() {
+    function animate() {
+        requestAnimationFrame(animate);
+
+        // Rolig svingning for å visualisere mental svimmelhet/psykose i kameraet
+        if (!isGameOver) {
+            camera.position.y = 3 + Math.sin(Date.now() * 0.001) * 0.2;
+            camera.position.x = camera.position.x * 0.95 + (politicianX * 0.1) * 0.05; // Følg politikeren rolig
+            camera.lookAt(politicianMesh.position.x, 2, 0);
+
+            // Flytt politikeren sidelengs basert på styring
+            politicianMesh.position.x = politicianMesh.position.x * 0.9 + politicianX * 0.1;
+        }
+
+        // Oppdater bommeskuddene som flyr fra publikum
+        for (let i = bulletSystem.length - 1; i >= 0; i--) {
+            const b = bulletSystem[i];
+            b.mesh.position.x += b.dx;
+            b.mesh.position.y += b.dy;
+            b.mesh.position.z += b.dz;
+            b.life--;
+
+            // Sjekk om skuddet har flydd forbi
+            if (b.life <= 0) {
+                scene.remove(b.mesh);
+                bulletSystem.splice(i, 1);
+            }
+        }
+
+        // Animer gråtende tårepartikler etter kollaps
+        if (isGameOver && tearSystem.length > 0) {
+            tearSystem.forEach(t => {
+                t.position.x += t.userData.vx;
+                t.position.y += t.userData.vy;
+                t.position.z += t.userData.vz;
+                t.userData.vy -= 0.003; // Gravitasjon for tårene
+            });
+        }
+
+        renderer.render(scene, camera);
+    }
+    animate();
+}
+
+function onWindowResize() {
+    const container = document.getElementById("canvas3d-container");
+    const width = container.clientWidth;
+    const height = container.clientHeight;
+    camera.aspect = width / height;
+    camera.updateProjectionMatrix();
+    renderer.setSize(width, height);
+}
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/dist/bootstrap.bundle.min.js"></script>
+</body>
+</html>
+
+
