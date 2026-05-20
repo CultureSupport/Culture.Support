@@ -1,0 +1,885 @@
+<html>
+<!DOCTYPE html>
+<html lang="no">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Spider Man Terminal</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome for ikoner -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;700&family=Montserrat:wght@400;700;900&display=swap');
+        
+        body {
+            font-family: 'Montserrat', sans-serif;
+        }
+        .mono-font {
+            font-family: 'Fira Code', monospace;
+        }
+        /* Custom scrollbar for terminal */
+        .custom-scroll::-webkit-scrollbar {
+            width: 6px;
+        }
+        .custom-scroll::-webkit-scrollbar-track {
+            background: #0f172a;
+        }
+        .custom-scroll::-webkit-scrollbar-thumb {
+            background: #ef4444;
+            border-radius: 3px;
+        }
+        /* Spidey farger og glød */
+        .spidey-glow-red {
+            box-shadow: 0 0 15px rgba(239, 68, 68, 0.6);
+        }
+        .spidey-glow-blue {
+            box-shadow: 0 0 15px rgba(59, 130, 246, 0.6);
+        }
+    </style>
+</head>
+<body class="bg-slate-950 text-slate-100 min-h-screen overflow-x-hidden flex flex-col">
+
+    <!-- Topp Meny -->
+    <header class="bg-slate-900 border-b border-red-600/30 sticky top-0 z-50 px-4 py-3">
+        <div class="max-w-7xl mx-auto flex flex-col sm:flex-row justify-between items-center gap-4">
+            <div class="flex items-center gap-3">
+                <div class="bg-red-600 p-2 rounded-full text-white animate-pulse">
+                    <i class="fa-solid fa-spider text-2xl"></i>
+                </div>
+                <div>
+                    <h1 class="text-xl font-black tracking-widest text-red-500 uppercase">Spidey-Net</h1>
+                    <p class="text-xs text-slate-400">Microservice Node #049 &bull; Live Mobil Link</p>
+                </div>
+            </div>
+            
+            <div class="flex items-center gap-3 text-sm">
+                <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+                    <span class="w-2 h-2 rounded-full bg-emerald-500 animate-ping"></span>
+                    Tilkoblet Mobil
+                </span>
+                <span class="px-3 py-1.5 rounded-full bg-blue-500/10 text-blue-400 border border-blue-500/20">
+                    Sone: Manhattan
+                </span>
+            </div>
+        </div>
+    </header>
+
+    <!-- Hovedområde -->
+    <main class="flex-grow max-w-7xl w-full mx-auto p-4 grid grid-cols-1 lg:grid-cols-12 gap-6">
+        
+        <!-- Venstre kolonne: Det interaktive klatrespillet (7/12 bredde på stor skjerm) -->
+        <section class="lg:col-span-7 flex flex-col gap-4">
+            <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4 flex flex-col h-full relative">
+                <div class="flex justify-between items-center mb-3">
+                    <h2 class="font-bold text-lg flex items-center gap-2 text-red-500">
+                        <i class="fa-solid fa-city"></i> Manhattan-klatrer (Simulering)
+                    </h2>
+                    <div class="flex gap-4 text-xs font-semibold text-slate-300">
+                        <div>Høyde: <span id="game-height" class="text-red-400">0</span>m</div>
+                        <div>Telefoner: <span id="game-phones" class="text-blue-400">0</span>/5</div>
+                    </div>
+                </div>
+
+                <!-- Spillinstruksjoner -->
+                <div class="bg-slate-950/60 p-2.5 rounded-xl mb-3 text-xs text-slate-300 border border-slate-800 flex justify-between items-center">
+                    <div>
+                        <span class="text-red-400 font-bold">Mobil:</span> Trykk på en bygning for å kaste spindelvev og klatre.<br>
+                        <span class="text-blue-400 font-bold">PC:</span> Klikk for å skyte spindelvev. Hold eller klikk på nytt for å svinge!
+                    </div>
+                    <button id="reset-game-btn" class="bg-red-600 hover:bg-red-700 text-white font-bold py-1 px-3 rounded-lg transition text-xs">
+                        Start på nytt
+                    </button>
+                </div>
+
+                <!-- Spillområde med Canvas -->
+                <div class="relative bg-slate-950 rounded-xl overflow-hidden flex-grow flex items-center justify-center border border-slate-800 min-h-[400px]">
+                    <canvas id="climb-game-canvas" class="w-full h-full block cursor-crosshair"></canvas>
+                    
+                    <!-- Game Over / Victory Overlay -->
+                    <div id="game-overlay" class="absolute inset-0 bg-slate-950/90 hidden flex-col items-center justify-center p-6 text-center z-10">
+                        <div class="bg-slate-900 border-2 border-red-500 p-8 rounded-2xl max-w-sm spidey-glow-red">
+                            <i id="overlay-icon" class="fa-solid fa-trophy text-5xl text-yellow-400 mb-4 animate-bounce"></i>
+                            <h3 id="overlay-title" class="text-2xl font-black text-white mb-2">Seier!</h3>
+                            <p id="overlay-desc" class="text-sm text-slate-300 mb-6">Du fant alle mobilene og klatret trygt til toppen av Oscorp-bygget!</p>
+                            <button id="overlay-action-btn" class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-2.5 px-5 rounded-xl transition">
+                                Spill igjen
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Spillkontroller for touch/mus status -->
+                <div class="mt-3 flex justify-between items-center text-xs text-slate-400">
+                    <span id="canvas-status">Klar til klatring. Klikk for å starte!</span>
+                    <span class="flex items-center gap-1">
+                        <span class="w-2 h-2 rounded-full bg-red-500 animate-pulse"></span> Web-fysikk: Aktiv
+                    </span>
+                </div>
+            </div>
+        </section>
+
+        <!-- Høyre kolonne: Mobiltelefon og Terminal (5/12 bredde) -->
+        <section class="lg:col-span-5 flex flex-col gap-6">
+            
+            <!-- Spider-Man's mobiltelefon UI -->
+            <div class="bg-slate-900 border border-slate-800 rounded-3xl p-5 flex flex-col spidey-glow-blue relative overflow-hidden">
+                <!-- Glødende kanter som mobildesign -->
+                <div class="absolute top-0 inset-x-0 h-1 bg-gradient-to-r from-red-600 via-blue-500 to-red-600"></div>
+                
+                <div class="flex justify-between items-center mb-4">
+                    <div class="flex items-center gap-2">
+                        <i class="fa-solid fa-mobile-screen-button text-blue-400 text-lg"></i>
+                        <span class="font-bold text-sm tracking-wide text-slate-200">SPIDEY_OS v10.4</span>
+                    </div>
+                    <div class="flex items-center gap-2 text-xs text-slate-400">
+                        <i class="fa-solid fa-wifi text-blue-500"></i>
+                        <i class="fa-solid fa-battery-three-quarters text-red-500"></i>
+                        <span id="mobile-time">16:42</span>
+                    </div>
+                </div>
+
+                <!-- MobilSkjerm -->
+                <div class="bg-slate-950 rounded-2xl p-4 border border-slate-800 flex flex-col gap-4 text-sm min-h-[300px]">
+                    <!-- Overskrift -->
+                    <div class="text-center py-2 border-b border-slate-800">
+                        <div class="text-xs text-slate-400 uppercase tracking-widest">Aktiv GPS Tracker</div>
+                        <div class="text-lg font-black text-red-500">SPIDEY_MOBILE_LOC</div>
+                    </div>
+
+                    <!-- Sensor / Koordinat visning -->
+                    <div class="grid grid-cols-2 gap-3">
+                        <div class="bg-slate-900/80 p-3 rounded-xl border border-slate-800/50">
+                            <span class="text-[10px] text-slate-400 block uppercase">Breddegrad</span>
+                            <span id="tracker-lat" class="text-sm font-bold text-slate-200 tracking-wide">40.7580° N</span>
+                        </div>
+                        <div class="bg-slate-900/80 p-3 rounded-xl border border-slate-800/50">
+                            <span class="text-[10px] text-slate-400 block uppercase">Lengdegrad</span>
+                            <span id="tracker-lng" class="text-sm font-bold text-slate-200 tracking-wide">-73.9855° W</span>
+                        </div>
+                        <div class="bg-slate-900/80 p-3 rounded-xl border border-slate-800/50">
+                            <span class="text-[10px] text-slate-400 block uppercase">Akselerometer</span>
+                            <span id="tracker-accel" class="text-sm font-bold text-red-400">0.0 m/s²</span>
+                        </div>
+                        <div class="bg-slate-900/80 p-3 rounded-xl border border-slate-800/50">
+                            <span class="text-[10px] text-slate-400 block uppercase">Høydemåler (m)</span>
+                            <span id="tracker-alt" class="text-sm font-bold text-blue-400">0 m</span>
+                        </div>
+                    </div>
+
+                    <!-- Mini Kart visualisering -->
+                    <div class="relative bg-slate-900 h-28 rounded-xl border border-slate-800 overflow-hidden flex items-center justify-center">
+                        <!-- Enkel geometrisk Manhattan-grid -->
+                        <div class="absolute inset-0 opacity-20 bg-[linear-gradient(to_right,#808080_1px,transparent_1px),linear-gradient(to_bottom,#808080_1px,transparent_1px)] bg-[size:20px_20px]"></div>
+                        <!-- Rød pulserende sirkel for Spider-man -->
+                        <div id="map-radar" class="absolute w-4 h-4 bg-red-500 rounded-full flex items-center justify-center">
+                            <div class="absolute w-12 h-12 border-2 border-red-500 rounded-full animate-ping opacity-75"></div>
+                            <i class="fa-solid fa-spider text-[10px] text-white"></i>
+                        </div>
+                        <!-- Tekst for nabolag -->
+                        <div class="absolute bottom-2 left-2 text-[10px] text-slate-400">Times Square, NYC</div>
+                        <div class="absolute top-2 right-2 text-[10px] text-blue-400 font-bold">GPS: AKTIV</div>
+                    </div>
+
+                    <!-- Knapper på mobilen -->
+                    <div class="flex gap-2">
+                        <button id="alert-btn" class="flex-1 bg-red-600/20 hover:bg-red-600/40 text-red-400 font-bold py-2 px-3 rounded-xl border border-red-600/30 transition text-xs flex items-center justify-center gap-2">
+                            <i class="fa-solid fa-triangle-exclamation"></i> Send signal-lyd
+                        </button>
+                        <button id="web-zip-btn" class="flex-1 bg-blue-600/20 hover:bg-blue-600/40 text-blue-400 font-bold py-2 px-3 rounded-xl border border-blue-600/30 transition text-xs flex items-center justify-center gap-2">
+                            <i class="fa-solid fa-bolt"></i> Speed Boost
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Skyterminalen / Loggfiler -->
+            <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4 flex flex-col flex-grow min-h-[250px]">
+                <div class="flex justify-between items-center mb-2">
+                    <h3 class="font-bold text-sm tracking-wide text-slate-300 uppercase flex items-center gap-2">
+                        <i class="fa-solid fa-terminal text-red-500"></i> Cyber-Terminal og Sky-Logg
+                    </h3>
+                    <div class="flex gap-1.5">
+                        <span class="w-2.5 h-2.5 rounded-full bg-red-500"></span>
+                        <span class="w-2.5 h-2.5 rounded-full bg-yellow-500"></span>
+                        <span class="w-2.5 h-2.5 rounded-full bg-green-500"></span>
+                    </div>
+                </div>
+                
+                <!-- Terminal Vindu -->
+                <div class="bg-slate-950 rounded-xl p-3 border border-slate-800/80 flex-grow flex flex-col justify-between">
+                    <div id="terminal-logs" class="mono-font text-[10px] text-emerald-400 space-y-1 h-36 overflow-y-auto custom-scroll pr-1">
+                        <!-- Loggene legges til her dynamisk av JS -->
+                        <div>[SYSTEM] Starter Spidey-Net Microservice v2.5...</div>
+                        <div>[SYSTEM] Laster kildekoder for sporing... OK</div>
+                        <div>[TERMINAL] Koblet til klatre-akselerometer...</div>
+                        <div>[LOG] Venter på Spider-Mans første hopp...</div>
+                    </div>
+                    
+                    <div class="border-t border-slate-800 mt-2 pt-2 flex items-center gap-2">
+                        <span class="text-red-500 text-xs font-black select-none">spidey@manhattan:~$</span>
+                        <input id="terminal-input" type="text" placeholder="Skriv kommando (f.eks. 'boost', 'track', 'help')..." class="bg-transparent text-xs text-slate-100 focus:outline-none flex-grow mono-font">
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-slate-900/60 border-t border-slate-800/60 py-4 px-6 text-center text-xs text-slate-500 mt-8">
+        <div class="max-w-7xl mx-auto flex flex-col sm:flex-row justify-between items-center gap-4">
+            <p>&copy; 2026 Spidey-Net Corp &bull; Sikker tilkobling via Oscorp Cloud Infrastructure</p>
+            <p class="flex items-center gap-3">
+                <span class="flex items-center gap-1"><i class="fa-solid fa-circle text-emerald-500 text-[8px]"></i> Node-OK</span>
+                <span class="flex items-center gap-1"><i class="fa-solid fa-server"></i> Big-Data Pipeline: Aktiv</span>
+            </p>
+        </div>
+    </footer>
+
+    <!-- Audio Beep Generator for Mobil (Uten eksterne filer) -->
+    <script>
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        function playBeep(freq, type, duration) {
+            try {
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                osc.type = type || 'sine';
+                osc.frequency.setValueAtTime(freq || 440, audioCtx.currentTime);
+                gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + duration);
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+                osc.start();
+                osc.stop(audioCtx.currentTime + duration);
+            } catch (e) {
+                console.log("Lydfeil: Brukeren må interagere først.");
+            }
+        }
+    </script>
+
+    <!-- Spill, mobil og terminal skript -->
+    <script>
+        // DOM Elementer
+        const canvas = document.getElementById('climb-game-canvas');
+        const ctx = canvas.getContext('2d');
+        const gameOverlay = document.getElementById('game-overlay');
+        const overlayIcon = document.getElementById('overlay-icon');
+        const overlayTitle = document.getElementById('overlay-title');
+        const overlayDesc = document.getElementById('overlay-desc');
+        const overlayActionBtn = document.getElementById('overlay-action-btn');
+        const resetGameBtn = document.getElementById('reset-game-btn');
+        
+        const uiHeight = document.getElementById('game-height');
+        const uiPhones = document.getElementById('game-phones');
+        const uiLat = document.getElementById('tracker-lat');
+        const uiLng = document.getElementById('tracker-lng');
+        const uiAccel = document.getElementById('tracker-accel');
+        const uiAlt = document.getElementById('tracker-alt');
+        const mapRadar = document.getElementById('map-radar');
+        const logsContainer = document.getElementById('terminal-logs');
+        const terminalInput = document.getElementById('terminal-input');
+        const canvasStatus = document.getElementById('canvas-status');
+        
+        const alertBtn = document.getElementById('alert-btn');
+        const webZipBtn = document.getElementById('web-zip-btn');
+        const mobileTime = document.getElementById('mobile-time');
+
+        // Oppdater tid på mobilen
+        function updateMobileTime() {
+            const now = new Date();
+            mobileTime.innerText = now.toTimeString().split(' ')[0].substring(0, 5);
+        }
+        setInterval(updateMobileTime, 1000);
+        updateMobileTime();
+
+        // Terminal Logg Generator
+        function addLog(text, type = 'info') {
+            const div = document.createElement('div');
+            const time = new Date().toLocaleTimeString().split(' ')[0];
+            
+            let colorClass = 'text-emerald-400';
+            if (type === 'warn') colorClass = 'text-yellow-400';
+            if (type === 'error') colorClass = 'text-red-400';
+            if (type === 'success') colorClass = 'text-cyan-400';
+            if (type === 'cmd') colorClass = 'text-slate-300';
+
+            div.className = `${colorClass} mono-font`;
+            div.innerHTML = `<span class="text-slate-500">[${time}]</span> ${text}`;
+            logsContainer.appendChild(div);
+            logsContainer.scrollTop = logsContainer.scrollHeight;
+        }
+
+        // --- SPILLET: CLIMBING SIMULATOR ---
+        
+        // Spilltilstander
+        let gameState = {
+            running: true,
+            hero: {
+                x: 150,
+                y: 500,
+                vx: 0,
+                vy: 0,
+                radius: 12,
+                attached: false,
+                webX: 0,
+                webY: 0,
+                length: 0,
+                color: '#ef4444'
+            },
+            cameraY: 0,
+            targetCameraY: 0,
+            buildings: [],
+            phones: [],
+            obstacles: [],
+            phoneCount: 0,
+            score: 0,
+            maxHeight: 1200, // Total klatre-distanse til Oscorp-toppen
+            currentAltitude: 0,
+            windX: 0,
+            boostActive: false
+        };
+
+        // Resizer og tilpasser canvaset
+        function resizeCanvas() {
+            const rect = canvas.parentNode.getBoundingClientRect();
+            canvas.width = rect.width;
+            canvas.height = Math.max(450, rect.height);
+        }
+        window.addEventListener('resize', () => {
+            resizeCanvas();
+            initGameWorld();
+        });
+        resizeCanvas();
+
+        // Generer bygningene, telefonene og hindringene
+        function initGameWorld() {
+            gameState.hero.x = canvas.width / 2;
+            gameState.hero.y = canvas.height - 100;
+            gameState.hero.vx = 0;
+            gameState.hero.vy = 0;
+            gameState.hero.attached = false;
+            gameState.cameraY = 0;
+            gameState.targetCameraY = 0;
+            gameState.phoneCount = 0;
+            gameState.currentAltitude = 0;
+            uiPhones.innerText = "0/5";
+            uiHeight.innerText = "0";
+
+            // Bygninger (Venstre, Høyre, Senter)
+            gameState.buildings = [];
+            const buildColors = ['#1e293b', '#334155', '#475569', '#0f172a'];
+            
+            // Lag en jevn strøm av bygninger oppover til maxHeight
+            for (let y = canvas.height + 200; y > -gameState.maxHeight - 200; y -= 150) {
+                // Venstre bygning
+                gameState.buildings.push({
+                    x: 0,
+                    y: y,
+                    width: canvas.width * 0.25 + Math.random() * 40,
+                    height: 120,
+                    color: buildColors[Math.floor(Math.random() * buildColors.length)]
+                });
+                // Høyre bygning
+                gameState.buildings.push({
+                    x: canvas.width - (canvas.width * 0.25 + Math.random() * 40),
+                    y: y + 50,
+                    width: canvas.width * 0.3,
+                    height: 120,
+                    color: buildColors[Math.floor(Math.random() * buildColors.length)]
+                });
+                // Noen midtbygninger / stillaser
+                if (Math.random() > 0.4) {
+                    gameState.buildings.push({
+                        x: canvas.width * 0.35 + Math.random() * (canvas.width * 0.1),
+                        y: y - 70,
+                        width: 60,
+                        height: 40,
+                        color: '#b91c1c' // Rødt stål
+                    });
+                }
+            }
+
+            // Plasser 5 spredte mobiltelefoner (samleobjekter) som Spider-Man må finne
+            gameState.phones = [];
+            const phoneAltitudes = [200, 400, 650, 900, 1100];
+            for (let i = 0; i < 5; i++) {
+                gameState.phones.push({
+                    x: canvas.width * 0.2 + Math.random() * (canvas.width * 0.6),
+                    y: canvas.height - phoneAltitudes[i],
+                    collected: false,
+                    pulse: 0
+                });
+            }
+
+            // Plasser drone-hindringer
+            gameState.obstacles = [];
+            for (let i = 0; i < 6; i++) {
+                gameState.obstacles.push({
+                    x: canvas.width * 0.15 + Math.random() * (canvas.width * 0.7),
+                    y: canvas.height - (300 + i * 200),
+                    radius: 14,
+                    dx: (Math.random() > 0.5 ? 1 : -1) * 1.5,
+                    angle: 0
+                });
+            }
+        }
+
+        // Start eller tilbakestill
+        initGameWorld();
+        addLog("[LOG] Ny klatre-sesjon startet i Manhattan Sone 4.", "success");
+
+        // Skyt spindelvev ved klikk/berøring
+        function fireWeb(clientX, clientY) {
+            if (!gameState.running) return;
+
+            const rect = canvas.getBoundingClientRect();
+            const clickX = clientX - rect.left;
+            const clickY = clientY - rect.top + gameState.cameraY;
+
+            // Finn ut om klikket traff en struktur/bygning
+            let hit = false;
+            for (let b of gameState.buildings) {
+                if (clickX >= b.x && clickX <= b.x + b.width &&
+                    clickY >= b.y && clickY <= b.y + b.height) {
+                    
+                    gameState.hero.attached = true;
+                    gameState.hero.webX = clickX;
+                    gameState.hero.webY = clickY;
+                    
+                    // Beregn lengden på tråden
+                    const dx = clickX - gameState.hero.x;
+                    const dy = clickY - gameState.hero.y;
+                    gameState.hero.length = Math.sqrt(dx*dx + dy*dy) * 0.95; // Litt strammere
+                    
+                    hit = true;
+                    playBeep(600, 'triangle', 0.08);
+                    addLog(`[CYBER_WEB] Tråd festet på koordinat: (${Math.round(clickX)}, ${Math.round(clickY)})`, 'success');
+                    canvasStatus.innerText = "Svinger seg oppover!";
+                    break;
+                }
+            }
+
+            if (!hit) {
+                // Bommet på bygninger
+                gameState.hero.attached = false;
+                playBeep(250, 'sawtooth', 0.15);
+                addLog("[CYBER_WEB] Bom! Ingen strukturer funnet i nærheten.", "warn");
+                canvasStatus.innerText = "Tråden feilet - sikt på bygningene!";
+            }
+        }
+
+        // Klikk på canvas
+        canvas.addEventListener('mousedown', (e) => {
+            fireWeb(e.clientX, e.clientY);
+        });
+
+        // Touch på mobiltelefoner
+        canvas.addEventListener('touchstart', (e) => {
+            e.preventDefault();
+            if (e.touches.length > 0) {
+                fireWeb(e.touches[0].clientX, e.touches[0].clientY);
+            }
+        }, { passive: false });
+
+        // Slipp spindelvev
+        window.addEventListener('mouseup', () => {
+            if (gameState.hero.attached) {
+                gameState.hero.attached = false;
+                addLog("[CYBER_WEB] Tråden sluppet.", "info");
+            }
+        });
+        canvas.addEventListener('touchend', () => {
+            if (gameState.hero.attached) {
+                gameState.hero.attached = false;
+            }
+        });
+
+        // Nullstill knapp
+        resetGameBtn.addEventListener('click', () => {
+            initGameWorld();
+            gameState.running = true;
+            gameOverlay.classList.add('hidden');
+            addLog("[LOG] Bruker restartet simulatoren manuelt.", "info");
+        });
+
+        // --- HOVEDSPILL-LØKKE ---
+        function updateGame() {
+            if (!gameState.running) return;
+
+            const h = gameState.hero;
+
+            // Fysikk / Gravitasjon
+            const gravity = 0.35;
+            let wind = Math.sin(Date.now() / 1000) * 0.1; // Lett vind
+            
+            if (h.attached) {
+                // Pendel-fysikk / Svinging
+                const dx = h.x - h.webX;
+                const dy = h.y - h.webY;
+                const dist = Math.sqrt(dx*dx + dy*dy);
+
+                if (dist > h.length) {
+                    // Stram vevet opp
+                    const angle = Math.atan2(dy, dx);
+                    h.x = h.webX + Math.cos(angle) * h.length;
+                    h.y = h.webY + Math.sin(angle) * h.length;
+
+                    // Projiser fart til tangentiell bane
+                    const tangX = -Math.sin(angle);
+                    const tangY = Math.cos(angle);
+                    const speed = h.vx * tangX + h.vy * tangY;
+
+                    h.vx = speed * tangX + wind;
+                    h.vy = speed * tangY;
+                }
+                
+                // Legg til litt klatrekraft oppover tråden hvis man holder fast
+                h.vy -= 0.15;
+            } else {
+                // Vanlig fall
+                h.vy += gravity;
+                h.vx *= 0.99; // Luftmotstand
+            }
+
+            // Påfør fart
+            h.x += h.vx;
+            h.y += h.vy;
+
+            // Rammer på siden (sprett tilbake)
+            if (h.x - h.radius < 0) {
+                h.x = h.radius;
+                h.vx = -h.vx * 0.5;
+            }
+            if (h.x + h.radius > canvas.width) {
+                h.x = canvas.width - h.radius;
+                h.vx = -h.vx * 0.5;
+            }
+
+            // Kamera-fokus (Følger Spider-Man oppover)
+            if (h.y - gameState.cameraY < canvas.height * 0.4) {
+                gameState.targetCameraY = h.y - canvas.height * 0.4;
+            } else if (h.y - gameState.cameraY > canvas.height * 0.7) {
+                gameState.targetCameraY = h.y - canvas.height * 0.7;
+            }
+            // Glatt kamerabevegelse
+            gameState.cameraY += (gameState.targetCameraY - gameState.cameraY) * 0.1;
+
+            // Beregn høyde i meter
+            const currentAlt = Math.max(0, Math.round((canvas.height - 100 - h.y) / 2));
+            gameState.currentAltitude = currentAlt;
+            uiHeight.innerText = currentAlt;
+            uiAlt.innerText = currentAlt + " m";
+
+            // Oppdater mobil-accelerometer UI basert på farten
+            const speedMagnitude = Math.sqrt(h.vx*h.vx + h.vy*h.vy).toFixed(1);
+            uiAccel.innerText = speedMagnitude + " m/s²";
+
+            // GPS-tracker simulering på kartet
+            const mapPercent = Math.min(100, (currentAlt / (gameState.maxHeight / 2)) * 100);
+            mapRadar.style.transform = `translateY(${-mapPercent * 0.4}px)`;
+
+            // Sjekk kollisjon med mobiltelefoner
+            for (let p of gameState.phones) {
+                if (!p.collected) {
+                    const dx = h.x - p.x;
+                    const dy = h.y - p.y;
+                    const dist = Math.sqrt(dx*dx + dy*dy);
+                    if (dist < h.radius + 15) {
+                        p.collected = true;
+                        gameState.phoneCount++;
+                        uiPhones.innerText = `${gameState.phoneCount}/5`;
+                        playBeep(880, 'sine', 0.2);
+                        addLog(`[CLOUDSYNC] Fant og lastet opp Spider-Man Mobiltelefon #${gameState.phoneCount}!`, 'success');
+                    }
+                }
+            }
+
+            // Sjekk kollisjon med droner / hindringer
+            for (let obs of gameState.obstacles) {
+                // Beveg dronen frem og tilbake
+                obs.x += obs.dx;
+                if (obs.x < canvas.width * 0.1 || obs.x > canvas.width * 0.9) {
+                    obs.dx = -obs.dx;
+                }
+                obs.angle += 0.05;
+
+                const dx = h.x - obs.x;
+                const dy = h.y - obs.y;
+                const dist = Math.sqrt(dx*dx + dy*dy);
+                if (dist < h.radius + obs.radius) {
+                    // Kollisjon med hindring! Gi han et støt nedover
+                    h.vy = 8;
+                    h.vx = (h.x - obs.x) * 0.5;
+                    playBeep(180, 'sawtooth', 0.3);
+                    addLog(`[WARN] Krasjet med patruljedrone! GPS mistet signal midlertidig.`, 'warn');
+                }
+            }
+
+            // Sjekk fall ut av bunnen (Død / Omstart)
+            if (h.y - gameState.cameraY > canvas.height + 200) {
+                // Fallt ned! Omstart
+                playBeep(150, 'sine', 0.4);
+                addLog("[SYSTEM] GPS signal borte! Prøver å lokalisere Spider-Man...", "error");
+                initGameWorld();
+            }
+
+            // Sjekk seier (Nådd toppen og samlet alt)
+            if (currentAlt >= 500 && gameState.phoneCount >= 5) {
+                triggerGameOver(true);
+            } else if (currentAlt >= 500 && gameState.phoneCount < 5) {
+                canvasStatus.innerText = "Nådde toppen, men du mangler de tapte mobilene!";
+            }
+        }
+
+        // Vinn/Tap Overlays
+        function triggerGameOver(victory) {
+            gameState.running = false;
+            gameOverlay.classList.remove('hidden');
+            if (victory) {
+                overlayIcon.className = "fa-solid fa-trophy text-5xl text-yellow-400 mb-4 animate-bounce";
+                overlayTitle.innerText = "Simulering Fullført!";
+                overlayDesc.innerText = `Gratulerer! Du reddet alle 5 mobilene og sporet Spider-Mans klatring opp til 500 meter over bakken! Spidey-Net microservicen er fullt oppdatert.`;
+                overlayActionBtn.innerText = "Klatre igjen";
+                addLog("[SYSTEM] Mission accomplished. Alle mobilsensorer er synkronisert mot skyen.", "success");
+            }
+        }
+
+        overlayActionBtn.addEventListener('click', () => {
+            initGameWorld();
+            gameState.running = true;
+            gameOverlay.classList.add('hidden');
+        });
+
+        // --- RENDERINGSFUNKSJON ---
+        function render() {
+            // Rens canvas
+            ctx.fillStyle = '#090d16'; // Mørk lilla/blå natt-himmel
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            ctx.save();
+            // Flytt kamera
+            ctx.translate(0, -gameState.cameraY);
+
+            // Tegn stjerner på himmelen
+            ctx.fillStyle = 'rgba(255,255,255,0.4)';
+            for (let i = 0; i < 30; i++) {
+                const starY = (gameState.cameraY * 0.5) + (i * 45) % canvas.height;
+                const starX = (i * 77) % canvas.width;
+                ctx.fillRect(starX, starY, 1.5, 1.5);
+            }
+
+            // Tegn bakgrunn (måne og fjerne silhuetter)
+            ctx.fillStyle = 'rgba(30, 41, 59, 0.2)';
+            ctx.fillRect(50, -200, 120, 1000);
+            ctx.fillRect(canvas.width - 150, -400, 100, 1200);
+
+            // Tegn bygningene i forgrunnen
+            for (let b of gameState.buildings) {
+                ctx.fillStyle = b.color;
+                ctx.fillRect(b.x, b.y, b.width, b.height);
+                
+                // Tegn vinduer på bygningene
+                ctx.fillStyle = 'rgba(250, 204, 21, 0.4)'; // Gult lys
+                const windowCols = Math.floor(b.width / 25);
+                const windowRows = Math.floor(b.height / 30);
+                for (let r = 1; r < windowRows; r++) {
+                    for (let c = 1; c < windowCols; c++) {
+                        // Bare noen vinduer er opplyst
+                        if ((r + c + Math.floor(b.y)) % 3 === 0) {
+                            ctx.fillRect(b.x + c * 25, b.y + r * 30, 8, 12);
+                        }
+                    }
+                }
+                
+                // Bygnings-konturer
+                ctx.strokeStyle = '#334155';
+                ctx.lineWidth = 1.5;
+                ctx.strokeRect(b.x, b.y, b.width, b.height);
+            }
+
+            // Tegn droner / hindringer
+            for (let obs of gameState.obstacles) {
+                ctx.save();
+                ctx.translate(obs.x, obs.y);
+                ctx.rotate(obs.angle);
+                
+                // Drone-kropp
+                ctx.fillStyle = '#ef4444';
+                ctx.beginPath();
+                ctx.arc(0, 0, obs.radius, 0, Math.PI * 2);
+                ctx.fill();
+
+                // Blader/Propeller
+                ctx.strokeStyle = '#ffffff';
+                ctx.lineWidth = 2;
+                ctx.beginPath();
+                ctx.moveTo(-20, 0);
+                ctx.lineTo(20, 0);
+                ctx.stroke();
+
+                // Blinkende senter-lys
+                ctx.fillStyle = (Date.now() % 500 > 250) ? '#ffffff' : '#000000';
+                ctx.beginPath();
+                ctx.arc(0, 0, 4, 0, Math.PI * 2);
+                ctx.fill();
+
+                ctx.restore();
+            }
+
+            // Tegn mistede mobiltelefoner som skal samles
+            for (let p of gameState.phones) {
+                if (!p.collected) {
+                    p.pulse += 0.1;
+                    const pulseRadius = 15 + Math.sin(p.pulse) * 4;
+
+                    // Glødende ring
+                    ctx.strokeStyle = 'rgba(59, 130, 246, 0.6)';
+                    ctx.lineWidth = 2;
+                    ctx.beginPath();
+                    ctx.arc(p.x, p.y, pulseRadius, 0, Math.PI * 2);
+                    ctx.stroke();
+
+                    // Selve telefonen (enkel rektangel)
+                    ctx.fillStyle = '#60a5fa';
+                    ctx.fillRect(p.x - 6, p.y - 10, 12, 20);
+                    
+                    // Skjerm-detalj
+                    ctx.fillStyle = '#ffffff';
+                    ctx.fillRect(p.x - 4, p.y - 8, 8, 14);
+                }
+            }
+
+            // Tegn spindelvev-tråden hvis Spider-Man har festet en
+            const h = gameState.hero;
+            if (h.attached) {
+                ctx.strokeStyle = '#ffffff';
+                ctx.lineWidth = 2.5;
+                ctx.shadowColor = '#ffffff';
+                ctx.shadowBlur = 8;
+                
+                ctx.beginPath();
+                ctx.moveTo(h.x, h.y);
+                ctx.lineTo(h.webX, h.webY);
+                ctx.stroke();
+                
+                // Nullstill skygger for ytelse
+                ctx.shadowBlur = 0;
+            }
+
+            // Tegn Spider-Man (Karakteren)
+            ctx.save();
+            ctx.translate(h.x, h.y);
+            
+            // Kropp / Drakt (Rød/Blå sirkel)
+            ctx.fillStyle = '#3b82f6'; // Blå base
+            ctx.beginPath();
+            ctx.arc(0, 0, h.radius, 0, Math.PI*2);
+            ctx.fill();
+
+            // Rød Spidey-vest
+            ctx.fillStyle = '#ef4444';
+            ctx.beginPath();
+            ctx.arc(0, 0, h.radius, Math.PI * 0.1, Math.PI * 0.9);
+            ctx.fill();
+
+            // Edderkopp-maske øyne (hvit med mørk ramme)
+            ctx.fillStyle = '#ffffff';
+            ctx.strokeStyle = '#000000';
+            ctx.lineWidth = 1.5;
+
+            // Venstre øye
+            ctx.beginPath();
+            ctx.moveTo(-6, -3);
+            ctx.quadraticCurveTo(-1, -7, -1, -2);
+            ctx.quadraticCurveTo(-1, 2, -6, -3);
+            ctx.fill();
+            ctx.stroke();
+
+            // Høyre øye
+            ctx.beginPath();
+            ctx.moveTo(6, -3);
+            ctx.quadraticCurveTo(1, -7, 1, -2);
+            ctx.quadraticCurveTo(1, 2, 6, -3);
+            ctx.fill();
+            ctx.stroke();
+
+            ctx.restore();
+
+            ctx.restore();
+        }
+
+        // Spill-loop
+        function gameTick() {
+            updateGame();
+            render();
+            requestAnimationFrame(gameTick);
+        }
+        gameTick();
+
+        // --- MANUELT INTERKONTROLL FRA MOBIL ---
+        alertBtn.addEventListener('click', () => {
+            playBeep(987.77, 'sawtooth', 0.2); // Høy Spidey-sens beep
+            addLog("[CYBER_APP] Sender panikk-signal til Manhattan Tracker-grid!", "warn");
+            // Rist på radaren
+            mapRadar.classList.add('animate-bounce');
+            setTimeout(() => mapRadar.classList.remove('animate-bounce'), 1000);
+        });
+
+        webZipBtn.addEventListener('click', () => {
+            // Gi Spider-Man et ekstra dytt oppover
+            if (gameState.running) {
+                gameState.hero.vy = -11; // Skyt oppover
+                playBeep(700, 'sine', 0.15);
+                addLog("[CYBER_APP] Signal mottatt: Utfører Spider-Boost!", "success");
+            }
+        });
+
+        // --- CYBER TERMINAL INTERAKSJON ---
+        terminalInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+                const cmd = terminalInput.value.trim().toLowerCase();
+                terminalInput.value = '';
+                
+                if (cmd === '') return;
+
+                addLog(`&gt; ${cmd}`, 'cmd');
+
+                // Behandle terminal-kommandoer
+                if (cmd === 'help' || cmd === 'hjelp') {
+                    addLog("--- Tilgjengelige kommandoer ---", "info");
+                    addLog("boost  : Gir Spider-Man et klatre-boost oppover.", "info");
+                    addLog("track  : Resetter tracker GPS mot satellitter.", "info");
+                    addLog("clear  : Rens terminal-skjermen.", "info");
+                    addLog("status : Viser sky- og sensorstatus.", "info");
+                } 
+                else if (cmd === 'boost') {
+                    gameState.hero.vy = -12;
+                    playBeep(800, 'sine', 0.15);
+                    addLog("[SYSTEM] Akselererer Spider-Man via cyber-fartskomprimering.", "success");
+                } 
+                else if (cmd === 'track') {
+                    playBeep(523, 'sine', 0.1);
+                    addLog("[SYSTEM] Resetter Manhattan GPS-koordinater...", "info");
+                    uiLat.innerText = (40.75 + Math.random()*0.01).toFixed(4) + "° N";
+                    uiLng.innerText = (-73.98 - Math.random()*0.01).toFixed(4) + "° W";
+                    addLog("[SYSTEM] GPS-Grid re-kalibrert mot satellitt-node #291.", "success");
+                } 
+                else if (cmd === 'clear') {
+                    logsContainer.innerHTML = '';
+                    addLog("Terminal renset.", "info");
+                } 
+                else if (cmd === 'status') {
+                    addLog("--- SYSTEM STATUS ---", "info");
+                    addLog(`Droner: 6 Aktiv | Cloud Server: OK`, "info");
+                    addLog(`Spider-Man Altitude: ${gameState.currentAltitude}m`, "info");
+                    addLog(`Hentet mobiler: ${gameState.phoneCount}/5`, "info");
+                } 
+                else {
+                    addLog(`Ukjent kommando: '${cmd}'. Skriv 'help' for hjelp.`, 'error');
+                }
+            }
+        });
+    </script>
+</body>
+</html>
+
