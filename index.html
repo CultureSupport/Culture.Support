@@ -1,589 +1,423 @@
-<!DOCTYPE html>
-<html lang="en">
+<!DOCTYPE html><html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Telemetry Space Shell</title>
-
-<!-- Bootstrap 5 -->
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-
-<!-- Bootstrap Icons -->
-<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
-
-<style>
-
-:root{
-  --bg:#050816;
-  --card:rgba(17,25,40,.75);
-  --line:#00ffe1;
-  --text:#d7ffff;
-  --accent:#00b7ff;
-  --pink:#ff00d4;
-}
-
-body{
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Moon Satellite Network Control</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #050816;
+      --panel: rgba(18, 25, 48, 0.82);
+      --line: rgba(125, 211, 252, 0.25);
+      --cyan: #7dd3fc;
+      --violet: #8b5cf6;
+      --green: #34d399;
+      --orange: #fb923c;
+      --text: #e2e8f0;
+    }body {
   background:
-    radial-gradient(circle at top,#0f1c44 0%,#050816 50%),
-    #050816;
-  overflow-x:hidden;
-  color:var(--text);
-  font-family:Consolas,monospace;
-  min-height:100vh;
+    radial-gradient(circle at top left, rgba(99,102,241,0.18), transparent 30%),
+    radial-gradient(circle at bottom right, rgba(14,165,233,0.18), transparent 35%),
+    linear-gradient(180deg, #020617, #071124 55%, #030712);
+  color: var(--text);
+  min-height: 100vh;
+  overflow-x: hidden;
+  font-family: Inter, sans-serif;
 }
 
-/* STARFIELD */
-
-.stars{
-  position:fixed;
-  width:100%;
-  height:100%;
-  top:0;
-  left:0;
-  overflow:hidden;
-  z-index:-1;
+.space-grid::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px);
+  background-size: 50px 50px;
+  pointer-events: none;
 }
 
-.star{
-  position:absolute;
-  width:2px;
-  height:2px;
-  background:white;
-  animation:twinkle 5s linear infinite;
+.glass {
+  background: var(--panel);
+  border: 1px solid var(--line);
+  backdrop-filter: blur(18px);
+  border-radius: 28px;
+  box-shadow: 0 0 25px rgba(0,0,0,0.45);
 }
 
-@keyframes twinkle{
-  0%{opacity:.1;transform:translateY(0px);}
-  50%{opacity:1;}
-  100%{opacity:.1;transform:translateY(-100px);}
+.hero {
+  position: relative;
+  overflow: hidden;
 }
 
-/* GLASS */
-
-.glass{
-  background:rgba(255,255,255,.04);
-  backdrop-filter:blur(16px);
-  border:1px solid rgba(255,255,255,.08);
-  border-radius:24px;
-  box-shadow:0 0 25px rgba(0,255,255,.15);
+.hero::after {
+  content: "";
+  position: absolute;
+  width: 400px;
+  height: 400px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(139,92,246,0.28), transparent 70%);
+  top: -120px;
+  right: -100px;
 }
 
-/* HEADER */
-
-.topbar{
-  padding:16px;
+.orbit-map {
+  position: relative;
+  height: 520px;
+  border-radius: 30px;
+  overflow: hidden;
+  background:
+    radial-gradient(circle at center, rgba(56,189,248,0.12), transparent 40%),
+    #020617;
 }
 
-.logo-core{
-  width:70px;
-  height:70px;
-  border-radius:50%;
-  background:linear-gradient(45deg,#00b7ff,#00ffe1);
-  animation:spin 10s linear infinite;
-  box-shadow:0 0 30px cyan;
+.earth {
+  position: absolute;
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 30% 30%, #4ade80, #1e3a8a 70%);
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  box-shadow: 0 0 40px rgba(34,197,94,0.5);
+  z-index: 3;
 }
 
-@keyframes spin{
-  from{transform:rotate(0deg);}
-  to{transform:rotate(360deg);}
+.moon {
+  position: absolute;
+  width: 70px;
+  height: 70px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 30% 30%, #f8fafc, #94a3b8 70%);
+  top: 16%;
+  right: 14%;
+  box-shadow: 0 0 25px rgba(255,255,255,0.25);
+  z-index: 3;
 }
 
-/* TERMINAL */
-
-.terminal{
-  background:#000;
-  border-radius:20px;
-  min-height:280px;
-  padding:16px;
-  color:#00ff8c;
-  overflow:auto;
-  position:relative;
+.orbit {
+  position: absolute;
+  border: 1px dashed rgba(125,211,252,0.18);
+  border-radius: 50%;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
 }
 
-.terminal::before{
-  content:"SPACE TELEMETRY SHELL";
-  position:absolute;
-  top:10px;
-  right:16px;
-  color:#00ffe1;
-  font-size:12px;
+.orbit.one { width: 240px; height: 240px; }
+.orbit.two { width: 360px; height: 360px; }
+.orbit.three { width: 500px; height: 500px; }
+
+.satellite {
+  position: absolute;
+  width: 18px;
+  height: 18px;
+  background: var(--cyan);
+  border-radius: 50%;
+  box-shadow: 0 0 14px var(--cyan);
+  animation: orbitMove linear infinite;
 }
 
-.line{
-  animation:type 3s infinite;
+.satellite::before {
+  content: "🛰";
+  position: absolute;
+  top: -12px;
+  left: -6px;
+  font-size: 1rem;
 }
 
-@keyframes type{
-  0%{opacity:0;}
-  100%{opacity:1;}
+.satellite.s1 {
+  animation-duration: 9s;
 }
 
-/* FLOATING BINARY */
-
-.binary{
-  position:fixed;
-  color:rgba(0,255,170,.25);
-  font-size:14px;
-  animation:floatBinary linear infinite;
-  pointer-events:none;
+.satellite.s2 {
+  animation-duration: 14s;
 }
 
-@keyframes floatBinary{
-  from{
-    transform:translateY(100vh);
+.satellite.s3 {
+  animation-duration: 18s;
+}
+
+@keyframes orbitMove {
+  0% {
+    transform: rotate(0deg) translateX(180px) rotate(0deg);
   }
-  to{
-    transform:translateY(-120vh);
+  100% {
+    transform: rotate(360deg) translateX(180px) rotate(-360deg);
   }
 }
 
-/* RADAR */
-
-.radar{
-  width:220px;
-  height:220px;
-  border-radius:50%;
-  border:2px solid #00ffe1;
-  margin:auto;
-  position:relative;
-  overflow:hidden;
+.terminal {
+  background: #020617;
+  border-radius: 24px;
+  border: 1px solid rgba(74,222,128,0.2);
+  overflow: hidden;
 }
 
-.radar::before{
-  content:'';
-  position:absolute;
-  width:50%;
-  height:2px;
-  background:#00ffe1;
-  top:50%;
-  left:50%;
-  transform-origin:left;
-  animation:radar 3s linear infinite;
+.terminal-header {
+  background: rgba(15,23,42,0.95);
+  padding: 12px 18px;
+  border-bottom: 1px solid rgba(74,222,128,0.12);
 }
 
-@keyframes radar{
-  from{transform:rotate(0deg);}
-  to{transform:rotate(360deg);}
+.terminal-body {
+  font-family: "Courier New", monospace;
+  color: #4ade80;
+  min-height: 280px;
+  padding: 20px;
+  line-height: 1.7;
 }
 
-/* TELEMETRY CARDS */
-
-.telemetry-card{
-  min-height:170px;
-  position:relative;
-  overflow:hidden;
+.cmd::before {
+  content: "root@moon-net:~# ";
+  color: #7dd3fc;
 }
 
-.telemetry-card::after{
-  content:'';
-  position:absolute;
-  width:150%;
-  height:2px;
-  background:linear-gradient(to right,transparent,#00ffe1,transparent);
-  top:50%;
-  left:-20%;
-  animation:scan 4s linear infinite;
+.telemetry-card {
+  transition: 0.3s ease;
 }
 
-@keyframes scan{
-  0%{transform:translateX(-100%);}
-  100%{transform:translateX(100%);}
+.telemetry-card:hover {
+  transform: translateY(-5px) scale(1.02);
+  border-color: rgba(125,211,252,0.5);
 }
 
-/* GRAPH */
-
-.graph{
-  height:100px;
-  display:flex;
-  align-items:flex-end;
-  gap:4px;
+.signal {
+  height: 10px;
+  border-radius: 30px;
+  overflow: hidden;
+  background: rgba(255,255,255,0.08);
 }
 
-.bar{
-  width:10px;
-  background:#00ffe1;
-  animation:bars 1.2s infinite alternate;
+.signal span {
+  display: block;
+  height: 100%;
+  border-radius: 30px;
+  background: linear-gradient(90deg, #06b6d4, #8b5cf6);
+  animation: pulse 2s infinite;
 }
 
-@keyframes bars{
-  from{height:20px;}
-  to{height:100px;}
+@keyframes pulse {
+  0%, 100% { opacity: 0.6; }
+  50% { opacity: 1; }
 }
 
-/* SATELLITE */
-
-.satellite{
-  position:absolute;
-  width:70px;
-  height:70px;
-  border:2px solid cyan;
-  border-radius:50%;
-  top:20px;
-  right:20px;
-  animation:orbit 10s linear infinite;
+.moon-transfer {
+  position: absolute;
+  width: 260px;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, #7dd3fc, transparent);
+  top: 34%;
+  left: 52%;
+  transform: rotate(-30deg);
+  animation: transfer 3s infinite;
 }
 
-@keyframes orbit{
-  from{transform:rotate(0deg) translateX(20px);}
-  to{transform:rotate(360deg) translateX(20px);}
+@keyframes transfer {
+  0% { opacity: 0.2; }
+  50% { opacity: 1; }
+  100% { opacity: 0.2; }
 }
 
-/* SIGNAL WAVE */
-
-.signal-wave{
-  height:70px;
-  display:flex;
-  align-items:center;
-  gap:4px;
+.btn-space {
+  background: linear-gradient(135deg, #0ea5e9, #8b5cf6);
+  border: none;
+  color: white;
+  border-radius: 16px;
+  padding: 12px 22px;
+  font-weight: 600;
+  box-shadow: 0 0 18px rgba(14,165,233,0.35);
 }
 
-.wave{
-  width:4px;
-  background:#ff00d4;
-  border-radius:20px;
-  animation:wave 1s infinite alternate;
+.btn-space:hover {
+  transform: translateY(-2px);
+  color: white;
 }
 
-@keyframes wave{
-  from{height:10px;}
-  to{height:70px;}
-}
-
-/* MOBILE NAV */
-
-.mobile-nav{
-  position:fixed;
-  bottom:10px;
-  left:10px;
-  right:10px;
-  z-index:100;
-  border-radius:30px;
-  padding:12px;
-}
-
-/* BUTTONS */
-
-.shell-btn{
-  border:none;
-  background:linear-gradient(45deg,#00ffe1,#00b7ff);
-  color:black;
-  font-weight:bold;
-  border-radius:50px;
-  padding:12px 18px;
-  box-shadow:0 0 20px cyan;
-}
-
-/* SCROLLBAR */
-
-::-webkit-scrollbar{
-  width:6px;
-}
-
-::-webkit-scrollbar-thumb{
-  background:#00ffe1;
-  border-radius:10px;
-}
-
-</style>
+  </style>
 </head>
+<body class="space-grid"><div class="container-fluid py-4 px-3 px-lg-5">  <div class="glass hero p-4 p-lg-5 mb-4">
+    <div class="row align-items-center">
+      <div class="col-lg-7">
+        <span class="badge rounded-pill text-bg-info mb-3 px-3 py-2">
+          SATELLITE SYSTEMCTL NETWORK
+        </span><h1 class="display-4 fw-bold mb-3">
+      Moon Orbit Command Matrix
+    </h1>
 
-<body>
+    <p class="lead text-light opacity-75 mb-4">
+      Autonomous orbital routing for deep-space telemetry, satellite migration,
+      lunar relay synchronization, and network propulsion systems.
+    </p>
 
-<!-- STARFIELD -->
-<div class="stars" id="stars"></div>
+    <div class="d-flex flex-wrap gap-3">
+      <button class="btn btn-space">
+        <i class="fa-solid fa-rocket me-2"></i>
+        Launch Moon Transfer
+      </button>
 
-<!-- FLOATING BINARY -->
-<div id="binary-container"></div>
+      <button class="btn btn-outline-light rounded-4 px-4">
+        <i class="fa-solid fa-satellite me-2"></i>
+        Sync Orbit Grid
+      </button>
+    </div>
+  </div>
 
-<div class="container-fluid py-3">
+  <div class="col-lg-5 mt-4 mt-lg-0">
+    <div class="orbit-map glass p-3">
+      <div class="earth"></div>
+      <div class="moon"></div>
 
-  <!-- HEADER -->
-  <div class="glass topbar mb-3">
+      <div class="orbit one"></div>
+      <div class="orbit two"></div>
+      <div class="orbit three"></div>
 
-    <div class="d-flex align-items-center justify-content-between">
+      <div class="moon-transfer"></div>
 
+      <div class="satellite s1"></div>
+      <div class="satellite s2"></div>
+      <div class="satellite s3"></div>
+    </div>
+  </div>
+</div>
+
+  </div>  <div class="row g-4 mb-4"><div class="col-md-6 col-xl-3">
+  <div class="glass telemetry-card p-4 h-100">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+      <h5>Satellite Relay</h5>
+      <i class="fa-solid fa-satellite text-info fs-3"></i>
+    </div>
+    <h2 class="fw-bold">42</h2>
+    <div class="signal mt-3"><span style="width: 92%"></span></div>
+    <small class="text-secondary">Moon-linked orbital nodes</small>
+  </div>
+</div>
+
+<div class="col-md-6 col-xl-3">
+  <div class="glass telemetry-card p-4 h-100">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+      <h5>Telemetry</h5>
+      <i class="fa-solid fa-wave-square text-success fs-3"></i>
+    </div>
+    <h2 class="fw-bold">98%</h2>
+    <div class="signal mt-3"><span style="width: 98%"></span></div>
+    <small class="text-secondary">Signal stabilization layer</small>
+  </div>
+</div>
+
+<div class="col-md-6 col-xl-3">
+  <div class="glass telemetry-card p-4 h-100">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+      <h5>Moon Gateways</h5>
+      <i class="fa-solid fa-moon text-warning fs-3"></i>
+    </div>
+    <h2 class="fw-bold">12</h2>
+    <div class="signal mt-3"><span style="width: 74%"></span></div>
+    <small class="text-secondary">Lunar transfer endpoints</small>
+  </div>
+</div>
+
+<div class="col-md-6 col-xl-3">
+  <div class="glass telemetry-card p-4 h-100">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+      <h5>AI Agents</h5>
+      <i class="fa-solid fa-robot text-primary fs-3"></i>
+    </div>
+    <h2 class="fw-bold">128</h2>
+    <div class="signal mt-3"><span style="width: 86%"></span></div>
+    <small class="text-secondary">Autonomous systemctl daemons</small>
+  </div>
+</div>
+
+  </div>  <div class="row g-4"><div class="col-xl-7">
+  <div class="terminal">
+
+    <div class="terminal-header d-flex align-items-center justify-content-between">
+      <div class="d-flex gap-2">
+        <span class="bg-danger rounded-circle" style="width:12px;height:12px"></span>
+        <span class="bg-warning rounded-circle" style="width:12px;height:12px"></span>
+        <span class="bg-success rounded-circle" style="width:12px;height:12px"></span>
+      </div>
+      <span class="text-secondary small">
+        lunar-orbit-systemctl.sh
+      </span>
+    </div>
+
+    <div class="terminal-body">
+      <div class="cmd">systemctl start moon-orbit-network.service</div>
+      <div>[ OK ] Initializing lunar telemetry relays...</div>
+      <br>
+
+      <div class="cmd">systemctl enable satellite-migration.service</div>
+      <div>[ OK ] Earth satellites queued for moon transfer orbit.</div>
+      <br>
+
+      <div class="cmd">journalctl -u moon-orbit-network.service</div>
       <div>
-        <h3 class="fw-bold">
-          TELEMETRIC SPACE SHELL
-        </h3>
-
-        <small>
-          orbital telemetry • signal relay • satellite command
-        </small>
+        Satellite relay alpha-7 connected.<br>
+        Deep space packet bridge online.<br>
+        Moon gateway synchronized at 14.2GHz.<br>
+        AI orbital daemon active.<br>
       </div>
+      <br>
 
-      <div class="logo-core"></div>
-
+      <div class="cmd">bash deploy-lunar-grid.sh</div>
+      <div>
+        Launching autonomous orbit engines...<br>
+        Building mesh satellites...<br>
+        Routing Earth nodes to lunar network...<br>
+        Mission status: ACTIVE 🚀
+      </div>
     </div>
-
   </div>
-
-  <!-- MAIN GRID -->
-
-  <div class="row g-3">
-
-    <!-- TERMINAL -->
-    <div class="col-12">
-
-      <div class="glass p-3">
-
-        <div class="terminal">
-
-<div class="line">root@telemetry:~$ boot satellite uplink</div>
-<div class="line">root@telemetry:~$ initializing orbital systems</div>
-<div class="line">root@telemetry:~$ scanning packet frequencies</div>
-<div class="line">root@telemetry:~$ curl swarm online</div>
-<div class="line">root@telemetry:~$ radio telemetry active</div>
-<div class="line">root@telemetry:~$ cpu thermal graph sync</div>
-<div class="line">root@telemetry:~$ websocket relay stable</div>
-<div class="line">root@telemetry:~$ launching autonomous shell agents</div>
-<div class="line">root@telemetry:~$ packet matrix synchronized</div>
-
-        </div>
-
-      </div>
-
-    </div>
-
-    <!-- CPU -->
-    <div class="col-6">
-
-      <div class="glass telemetry-card p-3">
-
-        <h6>
-          CPU THERMAL TELEMETRY
-        </h6>
-
-        <div class="graph">
-
-          <div class="bar" style="animation-delay:.1s"></div>
-          <div class="bar" style="animation-delay:.2s"></div>
-          <div class="bar" style="animation-delay:.3s"></div>
-          <div class="bar" style="animation-delay:.4s"></div>
-          <div class="bar" style="animation-delay:.5s"></div>
-          <div class="bar" style="animation-delay:.6s"></div>
-          <div class="bar" style="animation-delay:.7s"></div>
-          <div class="bar" style="animation-delay:.8s"></div>
-
-        </div>
-
-      </div>
-
-    </div>
-
-    <!-- SIGNAL -->
-    <div class="col-6">
-
-      <div class="glass telemetry-card p-3">
-
-        <h6>RADIO SIGNAL GRAPH</h6>
-
-        <div class="signal-wave">
-
-          <div class="wave"></div>
-          <div class="wave"></div>
-          <div class="wave"></div>
-          <div class="wave"></div>
-          <div class="wave"></div>
-          <div class="wave"></div>
-          <div class="wave"></div>
-
-        </div>
-
-      </div>
-
-    </div>
-
-    <!-- RADAR -->
-    <div class="col-12">
-
-      <div class="glass p-4 text-center position-relative">
-
-        <h5 class="mb-3">
-          SATELLITE UPLINK MONITOR
-        </h5>
-
-        <div class="radar"></div>
-
-        <div class="satellite"></div>
-
-      </div>
-
-    </div>
-
-    <!-- NETWORK -->
-    <div class="col-12">
-
-      <div class="glass p-3">
-
-        <h5>
-          NETWORK BANDWIDTH TUNNELS
-        </h5>
-
-<pre class="text-info">
-╔══════════════════════════════════╗
-║  PACKET RELAY NODE ACTIVE       ║
-║  SIGNAL STRENGTH    98%         ║
-║  TV FREQUENCY       STABLE      ║
-║  RADIO UPLINK       ONLINE      ║
-║  SATELLITE LATENCY   2ms        ║
-╚══════════════════════════════════╝
-</pre>
-
-      </div>
-
-    </div>
-
-    <!-- BINARY DB -->
-    <div class="col-12">
-
-      <div class="glass p-3">
-
-        <h5>
-          BINARY PACKET DATABASE
-        </h5>
-
-<pre class="text-success">
-01010100101010101010101010101010
-11010100101010101010100101010010
-01010101010101010101010100101010
-11101010100101010101010101010101
-00101010101010101010101010101010
-</pre>
-
-      </div>
-
-    </div>
-
-    <!-- CURL SWARM -->
-    <div class="col-12">
-
-      <div class="glass p-3">
-
-        <h5>
-          AUTONOMOUS CURL SWARM
-        </h5>
-
-<pre class="text-warning">
-for i in {1..30}
-do
- curl https://packet-$i.space &
-done
-wait
-</pre>
-
-      </div>
-
-    </div>
-
-  </div>
-
 </div>
 
-<!-- MOBILE NAV -->
+<div class="col-xl-5">
+  <div class="glass p-4 h-100">
+    <h3 class="fw-bold mb-4">
+      Mission Controls
+    </h3>
 
-<div class="mobile-nav glass">
+    <div class="d-grid gap-3">
+      <button class="btn btn-space text-start">
+        <i class="fa-solid fa-globe me-2"></i>
+        Route Earth Orbit to Moon
+      </button>
 
-  <div class="d-flex justify-content-around">
+      <button class="btn btn-outline-info rounded-4 text-start py-3">
+        <i class="fa-solid fa-network-wired me-2"></i>
+        Enable Mesh Telemetry Network
+      </button>
 
-    <button class="shell-btn">
-      <i class="bi bi-terminal"></i>
-    </button>
+      <button class="btn btn-outline-success rounded-4 text-start py-3">
+        <i class="fa-solid fa-terminal me-2"></i>
+        Open Autonomous Agent Console
+      </button>
 
-    <button class="shell-btn">
-      <i class="bi bi-cpu"></i>
-    </button>
+      <button class="btn btn-outline-warning rounded-4 text-start py-3">
+        <i class="fa-solid fa-shuttle-space me-2"></i>
+        Deploy Satellite Transfer Pods
+      </button>
+    </div>
 
-    <button class="shell-btn">
-      <i class="bi bi-broadcast"></i>
-    </button>
+    <hr class="border-secondary my-4">
 
-    <button class="shell-btn">
-      <i class="bi bi-hdd-network"></i>
-    </button>
+    <h5 class="mb-3">Moon Orbit Transfer Script</h5>
 
-  </div>
+<pre class="bg-dark text-success p-3 rounded-4 small overflow-auto"><code>#!/bin/bash
 
+systemctl daemon-reload
+systemctl start moon-relay.service
+systemctl enable moon-relay.service
+
+satellitectl --transfer earth-orbit moon-orbit
+satellitectl --sync lunar-gateway
+satellitectl --enable telemetry-grid
+
+journalctl -fu moon-relay.service
+</code></pre></div>
 </div>
 
-<script>
-
-/* STARS */
-
-const stars = document.getElementById('stars');
-
-for(let i=0;i<200;i++){
-
-  const star=document.createElement('div');
-
-  star.className='star';
-
-  star.style.left=Math.random()*100+'%';
-
-  star.style.top=Math.random()*100+'%';
-
-  star.style.animationDuration=(Math.random()*5+3)+'s';
-
-  stars.appendChild(star);
-
-}
-
-/* FLOATING BINARY */
-
-const binaryContainer=document.getElementById('binary-container');
-
-for(let i=0;i<120;i++){
-
-  const bin=document.createElement('div');
-
-  bin.className='binary';
-
-  bin.innerText=Math.random() > .5 ? '101010101' : '010101010';
-
-  bin.style.left=Math.random()*100+'%';
-
-  bin.style.animationDuration=(Math.random()*20+10)+'s';
-
-  bin.style.fontSize=(Math.random()*14+10)+'px';
-
-  binaryContainer.appendChild(bin);
-
-}
-
-/* RANDOM TERMINAL OUTPUT */
-
-const terminal=document.querySelector('.terminal');
-
-const commands=[
-'starting telemetry daemon',
-'packet synchronization stable',
-'launching orbital graph engine',
-'tracking satellite frequencies',
-'rdp tunnel online',
-'thermal telemetry active',
-'telemetry websocket active',
-'frequency analyzer stable',
-'telemetry packets downloading',
-'quantum shell bridge linked'
-];
-
-setInterval(()=>{
-
-  const div=document.createElement('div');
-
-  div.className='line';
-
-  div.innerText=
-  'root@space-shell:~$ '+
-  commands[Math.floor(Math.random()*commands.length)];
-
-  terminal.appendChild(div);
-
-  terminal.scrollTop=terminal.scrollHeight;
-
-},1500);
-
-</script>
-
-</body>
+  </div></div><script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script></body>
 </html>
