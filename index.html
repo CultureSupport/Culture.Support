@@ -1,589 +1,588 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>Cyber Tech Mobile Shell</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Telemetry Space Shell</title>
 
+<!-- Bootstrap 5 -->
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 
+<!-- Bootstrap Icons -->
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Fira+Code:wght@300;400;500&display=swap');
 
 :root{
-    --bg:#060816;
-    --panel:rgba(14,20,40,0.55);
-    --line:#2df2ff;
-    --text:#d7f8ff;
-    --purple:#8a5cff;
-    --green:#45ff9f;
-}
-
-*{
-    margin:0;
-    padding:0;
-    box-sizing:border-box;
+  --bg:#050816;
+  --card:rgba(17,25,40,.75);
+  --line:#00ffe1;
+  --text:#d7ffff;
+  --accent:#00b7ff;
+  --pink:#ff00d4;
 }
 
 body{
-    background:
-    radial-gradient(circle at top left,#16203d 0%,transparent 25%),
-    radial-gradient(circle at bottom right,#0e3d33 0%,transparent 30%),
-    #05070f;
-    color:var(--text);
-    overflow-x:hidden;
-    font-family:'Orbitron',sans-serif;
-    min-height:100vh;
+  background:
+    radial-gradient(circle at top,#0f1c44 0%,#050816 50%),
+    #050816;
+  overflow-x:hidden;
+  color:var(--text);
+  font-family:Consolas,monospace;
+  min-height:100vh;
 }
 
 /* STARFIELD */
 
 .stars{
-    position:fixed;
-    inset:0;
-    overflow:hidden;
-    z-index:-1;
+  position:fixed;
+  width:100%;
+  height:100%;
+  top:0;
+  left:0;
+  overflow:hidden;
+  z-index:-1;
 }
 
 .star{
-    position:absolute;
-    width:2px;
-    height:2px;
-    background:white;
-    border-radius:50%;
-    animation:blink linear infinite;
+  position:absolute;
+  width:2px;
+  height:2px;
+  background:white;
+  animation:twinkle 5s linear infinite;
 }
 
-@keyframes blink{
-    0%{opacity:.2;transform:scale(.8);}
-    50%{opacity:1;transform:scale(1.8);}
-    100%{opacity:.2;transform:scale(.8);}
+@keyframes twinkle{
+  0%{opacity:.1;transform:translateY(0px);}
+  50%{opacity:1;}
+  100%{opacity:.1;transform:translateY(-100px);}
 }
 
 /* GLASS */
 
 .glass{
-    background:rgba(255,255,255,0.06);
-    backdrop-filter:blur(18px);
-    border:1px solid rgba(255,255,255,0.08);
-    box-shadow:
-    0 0 25px rgba(0,255,255,.08),
-    inset 0 0 20px rgba(255,255,255,.02);
-}
-
-/* NAV */
-
-.cyber-nav{
-    border-bottom:1px solid rgba(0,255,255,.15);
-    background:rgba(0,0,0,.35);
-    backdrop-filter:blur(20px);
-}
-
-.brand-glow{
-    color:#77f7ff;
-    text-shadow:0 0 12px #00f0ff;
-    font-weight:700;
-    letter-spacing:2px;
+  background:rgba(255,255,255,.04);
+  backdrop-filter:blur(16px);
+  border:1px solid rgba(255,255,255,.08);
+  border-radius:24px;
+  box-shadow:0 0 25px rgba(0,255,255,.15);
 }
 
 /* HEADER */
 
-.hero-card{
-    border-radius:28px;
-    padding:2rem;
-    position:relative;
-    overflow:hidden;
+.topbar{
+  padding:16px;
 }
 
-.hero-card::before{
-    content:"";
-    position:absolute;
-    inset:0;
-    background:
-    linear-gradient(130deg,
-    rgba(0,255,255,.08),
-    transparent,
-    rgba(138,92,255,.12));
-    pointer-events:none;
+.logo-core{
+  width:70px;
+  height:70px;
+  border-radius:50%;
+  background:linear-gradient(45deg,#00b7ff,#00ffe1);
+  animation:spin 10s linear infinite;
+  box-shadow:0 0 30px cyan;
 }
 
-.hero-title{
-    font-size:2rem;
-    font-weight:700;
-    line-height:1.2;
-}
-
-.cyber-badge{
-    display:inline-block;
-    padding:.5rem 1rem;
-    border-radius:999px;
-    background:rgba(45,242,255,.1);
-    border:1px solid rgba(45,242,255,.3);
-    color:#7cf6ff;
-    margin-bottom:1rem;
-    animation:pulse 3s infinite;
-}
-
-@keyframes pulse{
-    0%{box-shadow:0 0 0 rgba(45,242,255,.2);}
-    50%{box-shadow:0 0 30px rgba(45,242,255,.4);}
-    100%{box-shadow:0 0 0 rgba(45,242,255,.2);}
-}
-
-/* NETWORK GRID */
-
-.network{
-    position:absolute;
-    inset:0;
-    overflow:hidden;
-    pointer-events:none;
-}
-
-.node{
-    position:absolute;
-    width:6px;
-    height:6px;
-    background:#00fff7;
-    border-radius:50%;
-    box-shadow:0 0 12px #00fff7;
-    animation:floatNode 5s infinite alternate;
-}
-
-.line{
-    position:absolute;
-    height:1px;
-    background:linear-gradient(90deg,transparent,#00fff7,transparent);
-    opacity:.5;
-    animation:flash 3s infinite;
-}
-
-@keyframes flash{
-    0%{opacity:.1;}
-    50%{opacity:1;}
-    100%{opacity:.1;}
-}
-
-@keyframes floatNode{
-    from{transform:translateY(0px);}
-    to{transform:translateY(-20px);}
-}
-
-/* EDITOR */
-
-.editor-shell{
-    border-radius:28px;
-    overflow:hidden;
-}
-
-.editor-top{
-    background:rgba(255,255,255,.06);
-    border-bottom:1px solid rgba(255,255,255,.08);
-    padding:1rem;
-}
-
-.editor-dot{
-    width:12px;
-    height:12px;
-    border-radius:50%;
-    display:inline-block;
-    margin-right:8px;
-}
-
-.dot-red{background:#ff5f57;}
-.dot-yellow{background:#fdbc2e;}
-.dot-green{background:#28c840;}
-
-.code-area{
-    background:#151822;
-    color:#8be9fd;
-    font-family:'Fira Code',monospace;
-    min-height:350px;
-    padding:1.5rem;
-    font-size:.92rem;
-    overflow:auto;
+@keyframes spin{
+  from{transform:rotate(0deg);}
+  to{transform:rotate(360deg);}
 }
 
 /* TERMINAL */
 
 .terminal{
-    background:#050505;
-    border-radius:24px;
-    padding:1rem;
-    font-family:'Fira Code',monospace;
-    position:relative;
-    overflow:hidden;
+  background:#000;
+  border-radius:20px;
+  min-height:280px;
+  padding:16px;
+  color:#00ff8c;
+  overflow:auto;
+  position:relative;
 }
 
-.terminal::after{
-    content:"";
-    position:absolute;
-    inset:0;
-    background:linear-gradient(
-        transparent 50%,
-        rgba(0,255,120,.03) 50%
-    );
-    background-size:100% 4px;
-    pointer-events:none;
+.terminal::before{
+  content:"SPACE TELEMETRY SHELL";
+  position:absolute;
+  top:10px;
+  right:16px;
+  color:#00ffe1;
+  font-size:12px;
 }
 
-.term-line{
-    color:#45ff9f;
-    margin-bottom:.4rem;
-    animation:type 4s steps(60,end);
-    white-space:nowrap;
-    overflow:hidden;
+.line{
+  animation:type 3s infinite;
 }
 
 @keyframes type{
-    from{width:0;}
-    to{width:100%;}
+  0%{opacity:0;}
+  100%{opacity:1;}
 }
 
-/* FLOAT BUTTONS */
+/* FLOATING BINARY */
 
-.float-btn{
-    position:fixed;
-    width:58px;
-    height:58px;
-    border-radius:50%;
-    background:rgba(0,255,255,.12);
-    border:1px solid rgba(0,255,255,.4);
-    backdrop-filter:blur(10px);
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    color:white;
-    font-size:1.2rem;
-    animation:orbit 5s infinite alternate;
-    box-shadow:0 0 25px rgba(0,255,255,.2);
+.binary{
+  position:fixed;
+  color:rgba(0,255,170,.25);
+  font-size:14px;
+  animation:floatBinary linear infinite;
+  pointer-events:none;
 }
 
-.float-1{
-    right:25px;
-    bottom:120px;
+@keyframes floatBinary{
+  from{
+    transform:translateY(100vh);
+  }
+  to{
+    transform:translateY(-120vh);
+  }
 }
 
-.float-2{
-    left:18px;
-    bottom:80px;
-    animation-duration:7s;
+/* RADAR */
+
+.radar{
+  width:220px;
+  height:220px;
+  border-radius:50%;
+  border:2px solid #00ffe1;
+  margin:auto;
+  position:relative;
+  overflow:hidden;
+}
+
+.radar::before{
+  content:'';
+  position:absolute;
+  width:50%;
+  height:2px;
+  background:#00ffe1;
+  top:50%;
+  left:50%;
+  transform-origin:left;
+  animation:radar 3s linear infinite;
+}
+
+@keyframes radar{
+  from{transform:rotate(0deg);}
+  to{transform:rotate(360deg);}
+}
+
+/* TELEMETRY CARDS */
+
+.telemetry-card{
+  min-height:170px;
+  position:relative;
+  overflow:hidden;
+}
+
+.telemetry-card::after{
+  content:'';
+  position:absolute;
+  width:150%;
+  height:2px;
+  background:linear-gradient(to right,transparent,#00ffe1,transparent);
+  top:50%;
+  left:-20%;
+  animation:scan 4s linear infinite;
+}
+
+@keyframes scan{
+  0%{transform:translateX(-100%);}
+  100%{transform:translateX(100%);}
+}
+
+/* GRAPH */
+
+.graph{
+  height:100px;
+  display:flex;
+  align-items:flex-end;
+  gap:4px;
+}
+
+.bar{
+  width:10px;
+  background:#00ffe1;
+  animation:bars 1.2s infinite alternate;
+}
+
+@keyframes bars{
+  from{height:20px;}
+  to{height:100px;}
+}
+
+/* SATELLITE */
+
+.satellite{
+  position:absolute;
+  width:70px;
+  height:70px;
+  border:2px solid cyan;
+  border-radius:50%;
+  top:20px;
+  right:20px;
+  animation:orbit 10s linear infinite;
 }
 
 @keyframes orbit{
-    from{
-        transform:translateY(0px) rotate(0deg);
-    }
-    to{
-        transform:translateY(-18px) rotate(15deg);
-    }
+  from{transform:rotate(0deg) translateX(20px);}
+  to{transform:rotate(360deg) translateX(20px);}
 }
 
-/* WEBSOCKET STATUS */
+/* SIGNAL WAVE */
 
-.status-light{
-    width:10px;
-    height:10px;
-    border-radius:50%;
-    background:#00ff95;
-    box-shadow:0 0 14px #00ff95;
-    animation:blinkLight 1s infinite;
+.signal-wave{
+  height:70px;
+  display:flex;
+  align-items:center;
+  gap:4px;
 }
 
-@keyframes blinkLight{
-    0%{opacity:.4;}
-    50%{opacity:1;}
-    100%{opacity:.4;}
+.wave{
+  width:4px;
+  background:#ff00d4;
+  border-radius:20px;
+  animation:wave 1s infinite alternate;
 }
 
-.packet{
-    color:#6efcc6;
+@keyframes wave{
+  from{height:10px;}
+  to{height:70px;}
 }
 
-/* MOBILE */
+/* MOBILE NAV */
 
-@media(max-width:768px){
-
-    .hero-title{
-        font-size:1.45rem;
-    }
-
-    .code-area{
-        min-height:260px;
-    }
-
+.mobile-nav{
+  position:fixed;
+  bottom:10px;
+  left:10px;
+  right:10px;
+  z-index:100;
+  border-radius:30px;
+  padding:12px;
 }
+
+/* BUTTONS */
+
+.shell-btn{
+  border:none;
+  background:linear-gradient(45deg,#00ffe1,#00b7ff);
+  color:black;
+  font-weight:bold;
+  border-radius:50px;
+  padding:12px 18px;
+  box-shadow:0 0 20px cyan;
+}
+
+/* SCROLLBAR */
+
+::-webkit-scrollbar{
+  width:6px;
+}
+
+::-webkit-scrollbar-thumb{
+  background:#00ffe1;
+  border-radius:10px;
+}
+
 </style>
 </head>
+
 <body>
 
+<!-- STARFIELD -->
 <div class="stars" id="stars"></div>
 
-<nav class="navbar navbar-expand-lg cyber-nav px-3">
-    <div class="container-fluid">
-        <span class="navbar-brand brand-glow">
-            CYBER SHELL GRID
-        </span>
+<!-- FLOATING BINARY -->
+<div id="binary-container"></div>
 
-        <div class="d-flex align-items-center gap-2">
-            <div class="status-light"></div>
-            <small>WEBSOCKET ONLINE</small>
-        </div>
-    </div>
-</nav>
+<div class="container-fluid py-3">
 
-<div class="container py-4">
+  <!-- HEADER -->
+  <div class="glass topbar mb-3">
 
-    <!-- HERO -->
+    <div class="d-flex align-items-center justify-content-between">
 
-    <div class="hero-card glass mb-4">
+      <div>
+        <h3 class="fw-bold">
+          TELEMETRIC SPACE SHELL
+        </h3>
 
-        <div class="network">
+        <small>
+          orbital telemetry • signal relay • satellite command
+        </small>
+      </div>
 
-            <div class="node" style="top:20%;left:10%;"></div>
-            <div class="node" style="top:50%;left:35%;animation-delay:1s;"></div>
-            <div class="node" style="top:30%;left:70%;animation-delay:2s;"></div>
-            <div class="node" style="top:75%;left:85%;animation-delay:3s;"></div>
-
-            <div class="line" style="top:22%;left:10%;width:200px;transform:rotate(12deg);"></div>
-            <div class="line" style="top:55%;left:35%;width:320px;transform:rotate(-8deg);"></div>
-
-        </div>
-
-        <div class="row align-items-center">
-
-            <div class="col-lg-7">
-
-                <div class="cyber-badge">
-                    TELEMETRIC CYBER COMMAND
-                </div>
-
-                <h1 class="hero-title">
-                    Ole Olessiall Building
-                    Mobile Cyber Tech Shells,
-                    Autonomous Device Editors
-                    & Galactic Telemetry Systems
-                </h1>
-
-                <p class="mt-3 text-info">
-                    Localhost packet streams • network arpeggiation •
-                    hyperspace telemetry • websocket cloud relays
-                </p>
-
-                <div class="d-flex gap-3 mt-4 flex-wrap">
-
-                    <button class="btn btn-info rounded-pill px-4">
-                        Launch Shell
-                    </button>
-
-                    <button class="btn btn-outline-light rounded-pill px-4">
-                        Connect Node
-                    </button>
-
-                </div>
-
-            </div>
-
-            <div class="col-lg-5 mt-4 mt-lg-0">
-
-                <div class="terminal glass">
-
-                    <div class="term-line">
-                        root@telemetry: websocket://localhost:9000
-                    </div>
-
-                    <div class="term-line">
-                        scanning cyber lanes...
-                    </div>
-
-                    <div class="term-line">
-                        packet stream initialized...
-                    </div>
-
-                    <div class="term-line">
-                        syncing orbital network nodes...
-                    </div>
-
-                    <div class="term-line">
-                        STARGRID interface online...
-                    </div>
-
-                </div>
-
-            </div>
-
-        </div>
+      <div class="logo-core"></div>
 
     </div>
 
-    <!-- EDITOR -->
+  </div>
 
-    <div class="editor-shell glass mb-4">
+  <!-- MAIN GRID -->
 
-        <div class="editor-top d-flex justify-content-between align-items-center">
+  <div class="row g-3">
 
-            <div>
-                <span class="editor-dot dot-red"></span>
-                <span class="editor-dot dot-yellow"></span>
-                <span class="editor-dot dot-green"></span>
-            </div>
+    <!-- TERMINAL -->
+    <div class="col-12">
 
-            <div class="text-info small">
-                mobile-shell.js
-            </div>
+      <div class="glass p-3">
+
+        <div class="terminal">
+
+<div class="line">root@telemetry:~$ boot satellite uplink</div>
+<div class="line">root@telemetry:~$ initializing orbital systems</div>
+<div class="line">root@telemetry:~$ scanning packet frequencies</div>
+<div class="line">root@telemetry:~$ curl swarm online</div>
+<div class="line">root@telemetry:~$ radio telemetry active</div>
+<div class="line">root@telemetry:~$ cpu thermal graph sync</div>
+<div class="line">root@telemetry:~$ websocket relay stable</div>
+<div class="line">root@telemetry:~$ launching autonomous shell agents</div>
+<div class="line">root@telemetry:~$ packet matrix synchronized</div>
 
         </div>
 
-<div class="code-area" id="editor">
-<span style="color:#ff79c6;">const</span> websocket = new WebSocket(
-<span style="color:#f1fa8c;">"ws://localhost:8080"</span>
-);
-
-websocket.onopen = () => {
-
-    console.log(
-        <span style="color:#f1fa8c;">"CYBER GRID CONNECTED"</span>
-    );
-
-    initializeTelemetry();
-    launchPacketScanner();
-
-};
-
-function initializeTelemetry(){
-
-    const telemetry = {
-        shell : <span style="color:#f1fa8c;">"Mobile Device Editor"</span>,
-        mode  : <span style="color:#f1fa8c;">"Glassmorphic Cyber UI"</span>,
-        packets : 4096,
-        gateway : <span style="color:#f1fa8c;">"localhost-node"</span>
-    };
-
-    console.log(telemetry);
-
-}
-
-function launchPacketScanner(){
-
-    setInterval(() => {
-
-        const packet = {
-            id: Math.random().toString(16),
-            signal: Math.random() * 100
-        };
-
-        renderPacket(packet);
-
-    },1200);
-
-}
-
-function renderPacket(packet){
-
-    const terminal =
-    document.getElementById("packet-feed");
-
-    terminal.innerHTML += `
-        &lt;div class="packet"&gt;
-        PACKET ${packet.id}
-        :: SIGNAL ${packet.signal.toFixed(2)}
-        &lt;/div&gt;
-    `;
-
-}
-</div>
+      </div>
 
     </div>
 
-    <!-- PACKET TERMINAL -->
+    <!-- CPU -->
+    <div class="col-6">
 
-    <div class="terminal glass" id="packet-feed">
+      <div class="glass telemetry-card p-3">
 
-        <div class="packet">
-            PACKET 0xAA91 :: SIGNAL 94.23
+        <h6>
+          CPU THERMAL TELEMETRY
+        </h6>
+
+        <div class="graph">
+
+          <div class="bar" style="animation-delay:.1s"></div>
+          <div class="bar" style="animation-delay:.2s"></div>
+          <div class="bar" style="animation-delay:.3s"></div>
+          <div class="bar" style="animation-delay:.4s"></div>
+          <div class="bar" style="animation-delay:.5s"></div>
+          <div class="bar" style="animation-delay:.6s"></div>
+          <div class="bar" style="animation-delay:.7s"></div>
+          <div class="bar" style="animation-delay:.8s"></div>
+
         </div>
 
-        <div class="packet">
-            PACKET 0xBB82 :: SIGNAL 88.41
-        </div>
-
-        <div class="packet">
-            PACKET 0xF991 :: SIGNAL 99.01
-        </div>
+      </div>
 
     </div>
+
+    <!-- SIGNAL -->
+    <div class="col-6">
+
+      <div class="glass telemetry-card p-3">
+
+        <h6>RADIO SIGNAL GRAPH</h6>
+
+        <div class="signal-wave">
+
+          <div class="wave"></div>
+          <div class="wave"></div>
+          <div class="wave"></div>
+          <div class="wave"></div>
+          <div class="wave"></div>
+          <div class="wave"></div>
+          <div class="wave"></div>
+
+        </div>
+
+      </div>
+
+    </div>
+
+    <!-- RADAR -->
+    <div class="col-12">
+
+      <div class="glass p-4 text-center position-relative">
+
+        <h5 class="mb-3">
+          SATELLITE UPLINK MONITOR
+        </h5>
+
+        <div class="radar"></div>
+
+        <div class="satellite"></div>
+
+      </div>
+
+    </div>
+
+    <!-- NETWORK -->
+    <div class="col-12">
+
+      <div class="glass p-3">
+
+        <h5>
+          NETWORK BANDWIDTH TUNNELS
+        </h5>
+
+<pre class="text-info">
+╔══════════════════════════════════╗
+║  PACKET RELAY NODE ACTIVE       ║
+║  SIGNAL STRENGTH    98%         ║
+║  TV FREQUENCY       STABLE      ║
+║  RADIO UPLINK       ONLINE      ║
+║  SATELLITE LATENCY   2ms        ║
+╚══════════════════════════════════╝
+</pre>
+
+      </div>
+
+    </div>
+
+    <!-- BINARY DB -->
+    <div class="col-12">
+
+      <div class="glass p-3">
+
+        <h5>
+          BINARY PACKET DATABASE
+        </h5>
+
+<pre class="text-success">
+01010100101010101010101010101010
+11010100101010101010100101010010
+01010101010101010101010100101010
+11101010100101010101010101010101
+00101010101010101010101010101010
+</pre>
+
+      </div>
+
+    </div>
+
+    <!-- CURL SWARM -->
+    <div class="col-12">
+
+      <div class="glass p-3">
+
+        <h5>
+          AUTONOMOUS CURL SWARM
+        </h5>
+
+<pre class="text-warning">
+for i in {1..30}
+do
+ curl https://packet-$i.space &
+done
+wait
+</pre>
+
+      </div>
+
+    </div>
+
+  </div>
 
 </div>
 
-<!-- FLOATING BUTTONS -->
+<!-- MOBILE NAV -->
 
-<div class="float-btn float-1">
-    ⚡
-</div>
+<div class="mobile-nav glass">
 
-<div class="float-btn float-2">
-    ◉
+  <div class="d-flex justify-content-around">
+
+    <button class="shell-btn">
+      <i class="bi bi-terminal"></i>
+    </button>
+
+    <button class="shell-btn">
+      <i class="bi bi-cpu"></i>
+    </button>
+
+    <button class="shell-btn">
+      <i class="bi bi-broadcast"></i>
+    </button>
+
+    <button class="shell-btn">
+      <i class="bi bi-hdd-network"></i>
+    </button>
+
+  </div>
+
 </div>
 
 <script>
+
 /* STARS */
 
-const starsContainer =
-document.getElementById('stars');
+const stars = document.getElementById('stars');
 
-for(let i=0;i<140;i++){
+for(let i=0;i<200;i++){
 
-    const star =
-    document.createElement('div');
+  const star=document.createElement('div');
 
-    star.classList.add('star');
+  star.className='star';
 
-    star.style.left =
-    Math.random()*100 + '%';
+  star.style.left=Math.random()*100+'%';
 
-    star.style.top =
-    Math.random()*100 + '%';
+  star.style.top=Math.random()*100+'%';
 
-    star.style.animationDuration =
-    (Math.random()*5 + 2) + 's';
+  star.style.animationDuration=(Math.random()*5+3)+'s';
 
-    starsContainer.appendChild(star);
+  stars.appendChild(star);
 
 }
 
-/* WEBSOCKET MOCK */
+/* FLOATING BINARY */
 
-const terminal =
-document.getElementById("packet-feed");
+const binaryContainer=document.getElementById('binary-container');
+
+for(let i=0;i<120;i++){
+
+  const bin=document.createElement('div');
+
+  bin.className='binary';
+
+  bin.innerText=Math.random() > .5 ? '101010101' : '010101010';
+
+  bin.style.left=Math.random()*100+'%';
+
+  bin.style.animationDuration=(Math.random()*20+10)+'s';
+
+  bin.style.fontSize=(Math.random()*14+10)+'px';
+
+  binaryContainer.appendChild(bin);
+
+}
+
+/* RANDOM TERMINAL OUTPUT */
+
+const terminal=document.querySelector('.terminal');
+
+const commands=[
+'starting telemetry daemon',
+'packet synchronization stable',
+'launching orbital graph engine',
+'tracking satellite frequencies',
+'rdp tunnel online',
+'thermal telemetry active',
+'telemetry websocket active',
+'frequency analyzer stable',
+'telemetry packets downloading',
+'quantum shell bridge linked'
+];
 
 setInterval(()=>{
 
-    const packetId =
-    Math.random()
-    .toString(16)
-    .substring(2,8);
+  const div=document.createElement('div');
 
-    const signal =
-    (Math.random()*100)
-    .toFixed(2);
+  div.className='line';
 
-    const div =
-    document.createElement("div");
+  div.innerText=
+  'root@space-shell:~$ '+
+  commands[Math.floor(Math.random()*commands.length)];
 
-    div.className = "packet";
+  terminal.appendChild(div);
 
-    div.innerHTML =
-    `PACKET 0x${packetId}
-     :: SIGNAL ${signal}`;
+  terminal.scrollTop=terminal.scrollHeight;
 
-    terminal.prepend(div);
+},1500);
 
-    if(terminal.children.length > 14){
-        terminal.removeChild(
-            terminal.lastChild
-        );
-    }
-
-},1400);
 </script>
 
 </body>
