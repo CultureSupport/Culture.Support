@@ -3,27 +3,20 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-
-<title>Culture.Support</title>
+<title>Cyber Tech Mobile Shell</title>
 
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-
-<link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@300;400;500;700&display=swap" rel="stylesheet">
 
 <style>
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Fira+Code:wght@300;400;500&display=swap');
 
 :root{
-    --bg:#0d0f14;
-    --panel:#1e1f1c;
-    --panel2:#272822;
-    --green:#a6e22e;
-    --yellow:#e6db74;
-    --orange:#fd971f;
-    --pink:#f92672;
-    --blue:#66d9ef;
-    --purple:#ae81ff;
-    --text:#f8f8f2;
+    --bg:#060816;
+    --panel:rgba(14,20,40,0.55);
+    --line:#2df2ff;
+    --text:#d7f8ff;
+    --purple:#8a5cff;
+    --green:#45ff9f;
 }
 
 *{
@@ -33,751 +26,565 @@
 }
 
 body{
-    background:var(--bg);
-    color:var(--text);
-    font-family:'Fira Code', monospace;
-    overflow-x:hidden;
-}
-
-/* =========================================
-BACKGROUND
-========================================= */
-
-.bg-grid{
-    position:fixed;
-    inset:0;
-    z-index:-3;
     background:
-    radial-gradient(circle at top left,#17203a 0%,transparent 40%),
-    radial-gradient(circle at bottom right,#2b1042 0%,transparent 40%),
-    #090b11;
+    radial-gradient(circle at top left,#16203d 0%,transparent 25%),
+    radial-gradient(circle at bottom right,#0e3d33 0%,transparent 30%),
+    #05070f;
+    color:var(--text);
+    overflow-x:hidden;
+    font-family:'Orbitron',sans-serif;
+    min-height:100vh;
 }
 
-.grid{
+/* STARFIELD */
+
+.stars{
     position:fixed;
     inset:0;
-    z-index:-2;
-    background-image:
-    linear-gradient(rgba(255,255,255,.03) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255,255,255,.03) 1px, transparent 1px);
-    background-size:40px 40px;
-    animation:gridMove 12s linear infinite;
-}
-
-@keyframes gridMove{
-    from{
-        transform:translateY(0px);
-    }
-    to{
-        transform:translateY(40px);
-    }
-}
-
-svg{
-    position:fixed;
-    inset:0;
-    width:100%;
-    height:100%;
+    overflow:hidden;
     z-index:-1;
-    opacity:.3;
 }
 
-.path{
-    fill:none;
-    stroke:var(--blue);
-    stroke-width:2;
-    stroke-dasharray:8;
-    animation:dash 8s linear infinite;
-}
-
-@keyframes dash{
-    to{
-        stroke-dashoffset:-1000;
-    }
-}
-
-/* =========================================
-NAVBAR
-========================================= */
-
-.navbar{
-    backdrop-filter:blur(14px);
-    background:rgba(0,0,0,.4)!important;
-}
-
-/* =========================================
-PROFILE CARD
-========================================= */
-
-.profile-card{
-    background:rgba(39,40,34,.9);
-    border:1px solid rgba(255,255,255,.06);
-    border-radius:24px;
-    padding:30px;
-    box-shadow:0 0 50px rgba(102,217,239,.12);
-    animation:float 5s ease-in-out infinite;
-}
-
-@keyframes float{
-    0%,100%{
-        transform:translateY(0px);
-    }
-    50%{
-        transform:translateY(-10px);
-    }
-}
-
-.avatar{
-    width:130px;
-    height:130px;
-    margin:auto;
-    border-radius:50%;
-    background:linear-gradient(135deg,var(--blue),var(--purple));
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    font-size:58px;
-    animation:pulse 4s infinite;
-}
-
-@keyframes pulse{
-    0%{
-        box-shadow:0 0 15px var(--blue);
-    }
-    50%{
-        box-shadow:0 0 40px var(--purple);
-    }
-    100%{
-        box-shadow:0 0 15px var(--blue);
-    }
-}
-
-.tech-icons{
-    display:flex;
-    flex-wrap:wrap;
-    gap:16px;
-    justify-content:center;
-    margin-top:25px;
-}
-
-.tech-icons i{
-    font-size:30px;
-    animation:bounce 2s infinite;
-}
-
-.tech-icons i:nth-child(2){animation-delay:.2s;}
-.tech-icons i:nth-child(3){animation-delay:.4s;}
-.tech-icons i:nth-child(4){animation-delay:.6s;}
-.tech-icons i:nth-child(5){animation-delay:.8s;}
-.tech-icons i:nth-child(6){animation-delay:1s;}
-
-@keyframes bounce{
-    0%,100%{
-        transform:translateY(0px);
-    }
-    50%{
-        transform:translateY(-8px);
-    }
-}
-
-/* =========================================
-SKILLS
-========================================= */
-
-.skill{
-    margin-bottom:18px;
-}
-
-.progress{
-    background:#111;
-    height:14px;
-    overflow:hidden;
-    border-radius:30px;
-}
-
-.progress-bar{
-    position:relative;
-    animation:loadBar 2s ease forwards;
-}
-
-.progress-bar::after{
-    content:'';
+.star{
     position:absolute;
-    inset:0;
-    background:linear-gradient(
-        90deg,
-        transparent,
-        rgba(255,255,255,.4),
-        transparent
-    );
-    animation:shine 2s infinite;
-}
-
-@keyframes shine{
-    from{
-        transform:translateX(-100%);
-    }
-    to{
-        transform:translateX(100%);
-    }
-}
-
-@keyframes loadBar{
-    from{
-        width:0%;
-    }
-}
-
-/* =========================================
-MONOKAI IDE
-========================================= */
-
-.ide{
-    margin-top:70px;
-    background:var(--panel);
-    border-radius:22px;
-    overflow:hidden;
-    border:1px solid rgba(255,255,255,.06);
-    box-shadow:0 0 60px rgba(0,0,0,.5);
-}
-
-.ide-top{
-    background:#111;
-    padding:14px 18px;
-    display:flex;
-    align-items:center;
-}
-
-.dot{
-    width:12px;
-    height:12px;
+    width:2px;
+    height:2px;
+    background:white;
     border-radius:50%;
-    margin-right:8px;
-}
-
-.red{background:#ff5f56;}
-.yellow{background:#ffbd2e;}
-.green{background:#27c93f;}
-
-.ide-body{
-    display:flex;
-    min-height:500px;
-}
-
-/* FILE EXPLORER */
-
-.sidebar{
-    width:260px;
-    background:#171812;
-    border-right:1px solid rgba(255,255,255,.05);
-    padding:20px;
-}
-
-.sidebar h6{
-    color:#888;
-    margin-bottom:20px;
-}
-
-.file{
-    padding:10px;
-    border-radius:10px;
-    margin-bottom:8px;
-    transition:.3s;
-    cursor:pointer;
-}
-
-.file:hover{
-    background:rgba(255,255,255,.05);
-    transform:translateX(5px);
-}
-
-.file i{
-    margin-right:10px;
-}
-
-/* CODE */
-
-.editor{
-    flex:1;
-    padding:25px;
-    overflow:auto;
-}
-
-.code{
-    color:#f8f8f2;
-    font-size:14px;
-    line-height:1.8;
-    white-space:pre-wrap;
-}
-
-.keyword{color:var(--pink);}
-.string{color:var(--yellow);}
-.func{color:var(--green);}
-.variable{color:var(--blue);}
-.comment{color:#75715e;}
-
-.typing{
-    border-right:3px solid var(--green);
-    animation:blink .8s infinite;
+    animation:blink linear infinite;
 }
 
 @keyframes blink{
-    50%{
-        border-color:transparent;
-    }
+    0%{opacity:.2;transform:scale(.8);}
+    50%{opacity:1;transform:scale(1.8);}
+    100%{opacity:.2;transform:scale(.8);}
 }
 
-/* =========================================
-TERMINAL
-========================================= */
+/* GLASS */
+
+.glass{
+    background:rgba(255,255,255,0.06);
+    backdrop-filter:blur(18px);
+    border:1px solid rgba(255,255,255,0.08);
+    box-shadow:
+    0 0 25px rgba(0,255,255,.08),
+    inset 0 0 20px rgba(255,255,255,.02);
+}
+
+/* NAV */
+
+.cyber-nav{
+    border-bottom:1px solid rgba(0,255,255,.15);
+    background:rgba(0,0,0,.35);
+    backdrop-filter:blur(20px);
+}
+
+.brand-glow{
+    color:#77f7ff;
+    text-shadow:0 0 12px #00f0ff;
+    font-weight:700;
+    letter-spacing:2px;
+}
+
+/* HEADER */
+
+.hero-card{
+    border-radius:28px;
+    padding:2rem;
+    position:relative;
+    overflow:hidden;
+}
+
+.hero-card::before{
+    content:"";
+    position:absolute;
+    inset:0;
+    background:
+    linear-gradient(130deg,
+    rgba(0,255,255,.08),
+    transparent,
+    rgba(138,92,255,.12));
+    pointer-events:none;
+}
+
+.hero-title{
+    font-size:2rem;
+    font-weight:700;
+    line-height:1.2;
+}
+
+.cyber-badge{
+    display:inline-block;
+    padding:.5rem 1rem;
+    border-radius:999px;
+    background:rgba(45,242,255,.1);
+    border:1px solid rgba(45,242,255,.3);
+    color:#7cf6ff;
+    margin-bottom:1rem;
+    animation:pulse 3s infinite;
+}
+
+@keyframes pulse{
+    0%{box-shadow:0 0 0 rgba(45,242,255,.2);}
+    50%{box-shadow:0 0 30px rgba(45,242,255,.4);}
+    100%{box-shadow:0 0 0 rgba(45,242,255,.2);}
+}
+
+/* NETWORK GRID */
+
+.network{
+    position:absolute;
+    inset:0;
+    overflow:hidden;
+    pointer-events:none;
+}
+
+.node{
+    position:absolute;
+    width:6px;
+    height:6px;
+    background:#00fff7;
+    border-radius:50%;
+    box-shadow:0 0 12px #00fff7;
+    animation:floatNode 5s infinite alternate;
+}
+
+.line{
+    position:absolute;
+    height:1px;
+    background:linear-gradient(90deg,transparent,#00fff7,transparent);
+    opacity:.5;
+    animation:flash 3s infinite;
+}
+
+@keyframes flash{
+    0%{opacity:.1;}
+    50%{opacity:1;}
+    100%{opacity:.1;}
+}
+
+@keyframes floatNode{
+    from{transform:translateY(0px);}
+    to{transform:translateY(-20px);}
+}
+
+/* EDITOR */
+
+.editor-shell{
+    border-radius:28px;
+    overflow:hidden;
+}
+
+.editor-top{
+    background:rgba(255,255,255,.06);
+    border-bottom:1px solid rgba(255,255,255,.08);
+    padding:1rem;
+}
+
+.editor-dot{
+    width:12px;
+    height:12px;
+    border-radius:50%;
+    display:inline-block;
+    margin-right:8px;
+}
+
+.dot-red{background:#ff5f57;}
+.dot-yellow{background:#fdbc2e;}
+.dot-green{background:#28c840;}
+
+.code-area{
+    background:#151822;
+    color:#8be9fd;
+    font-family:'Fira Code',monospace;
+    min-height:350px;
+    padding:1.5rem;
+    font-size:.92rem;
+    overflow:auto;
+}
+
+/* TERMINAL */
 
 .terminal{
-    margin-top:40px;
-    background:#000;
-    border-radius:18px;
-    overflow:hidden;
-    border:1px solid rgba(255,255,255,.08);
-}
-
-.terminal-header{
-    background:#111;
-    padding:12px 16px;
-}
-
-.terminal-body{
-    padding:25px;
-    color:#00ff88;
-    min-height:380px;
-    position:relative;
-}
-
-.prompt::before{
-    content:"skandalene@bash:~$ ";
-    color:#66d9ef;
-}
-
-.typeline{
-    overflow:hidden;
-    white-space:nowrap;
-    width:0;
-    animation:typing 7s steps(120,end) forwards;
-}
-
-@keyframes typing{
-    to{
-        width:100%;
-    }
-}
-
-/* =========================================
-FOOTER
-========================================= */
-
-.footer{
-    margin-top:80px;
-    padding:50px 20px;
-    text-align:center;
+    background:#050505;
+    border-radius:24px;
+    padding:1rem;
+    font-family:'Fira Code',monospace;
     position:relative;
     overflow:hidden;
 }
 
-.footer::before{
-    content:'';
+.terminal::after{
+    content:"";
     position:absolute;
-    top:0;
-    left:-50%;
-    width:200%;
-    height:3px;
+    inset:0;
     background:linear-gradient(
-        90deg,
-        transparent,
-        var(--blue),
-        var(--purple),
-        transparent
+        transparent 50%,
+        rgba(0,255,120,.03) 50%
     );
-    animation:footerAnim 7s linear infinite;
+    background-size:100% 4px;
+    pointer-events:none;
 }
 
-@keyframes footerAnim{
+.term-line{
+    color:#45ff9f;
+    margin-bottom:.4rem;
+    animation:type 4s steps(60,end);
+    white-space:nowrap;
+    overflow:hidden;
+}
+
+@keyframes type{
+    from{width:0;}
+    to{width:100%;}
+}
+
+/* FLOAT BUTTONS */
+
+.float-btn{
+    position:fixed;
+    width:58px;
+    height:58px;
+    border-radius:50%;
+    background:rgba(0,255,255,.12);
+    border:1px solid rgba(0,255,255,.4);
+    backdrop-filter:blur(10px);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    color:white;
+    font-size:1.2rem;
+    animation:orbit 5s infinite alternate;
+    box-shadow:0 0 25px rgba(0,255,255,.2);
+}
+
+.float-1{
+    right:25px;
+    bottom:120px;
+}
+
+.float-2{
+    left:18px;
+    bottom:80px;
+    animation-duration:7s;
+}
+
+@keyframes orbit{
     from{
-        transform:translateX(-30%);
+        transform:translateY(0px) rotate(0deg);
     }
     to{
-        transform:translateX(30%);
+        transform:translateY(-18px) rotate(15deg);
     }
 }
 
-.footer-icons i{
-    font-size:28px;
-    margin:0 14px;
-    animation:spin 6s linear infinite;
+/* WEBSOCKET STATUS */
+
+.status-light{
+    width:10px;
+    height:10px;
+    border-radius:50%;
+    background:#00ff95;
+    box-shadow:0 0 14px #00ff95;
+    animation:blinkLight 1s infinite;
 }
 
-@keyframes spin{
-    from{
-        transform:rotate(0deg);
-    }
-    to{
-        transform:rotate(360deg);
-    }
+@keyframes blinkLight{
+    0%{opacity:.4;}
+    50%{opacity:1;}
+    100%{opacity:.4;}
 }
 
-/* =========================================
-MOBILE
-========================================= */
-
-@media(max-width:992px){
-
-    .ide-body{
-        flex-direction:column;
-    }
-
-    .sidebar{
-        width:100%;
-        border-right:none;
-        border-bottom:1px solid rgba(255,255,255,.05);
-    }
-
-    .editor{
-        padding:18px;
-    }
-
-    .code{
-        font-size:12px;
-    }
-
-    .terminal-body{
-        font-size:12px;
-    }
+.packet{
+    color:#6efcc6;
 }
 
+/* MOBILE */
+
+@media(max-width:768px){
+
+    .hero-title{
+        font-size:1.45rem;
+    }
+
+    .code-area{
+        min-height:260px;
+    }
+
+}
 </style>
 </head>
-
 <body>
 
-<div class="bg-grid"></div>
-<div class="grid"></div>
+<div class="stars" id="stars"></div>
 
-<!-- SVG -->
-<svg>
-    <path class="path" d="M0 140 Q 500 0 1000 140 T 2000 140"/>
-    <path class="path" d="M0 320 Q 600 200 1200 360 T 2000 320"/>
-    <path class="path" d="M0 560 Q 700 420 1400 560 T 2200 520"/>
-</svg>
+<nav class="navbar navbar-expand-lg cyber-nav px-3">
+    <div class="container-fluid">
+        <span class="navbar-brand brand-glow">
+            CYBER SHELL GRID
+        </span>
 
-<!-- NAVBAR -->
-<nav class="navbar navbar-dark navbar-expand-lg py-3">
-    <div class="container">
-        <a class="navbar-brand fw-bold" href="#">
-            &lt; Ole Olessiall /&gt;
-        </a>
+        <div class="d-flex align-items-center gap-2">
+            <div class="status-light"></div>
+            <small>WEBSOCKET ONLINE</small>
+        </div>
     </div>
 </nav>
 
-<!-- MAIN -->
-<section class="container py-5">
+<div class="container py-4">
 
-<div class="row g-5 align-items-center">
+    <!-- HERO -->
 
-<!-- PROFILE -->
-<div class="col-lg-5">
+    <div class="hero-card glass mb-4">
 
-<div class="profile-card text-center">
+        <div class="network">
 
-<div class="avatar mb-4">
-<i class="bi bi-cpu"></i>
-</div>
+            <div class="node" style="top:20%;left:10%;"></div>
+            <div class="node" style="top:50%;left:35%;animation-delay:1s;"></div>
+            <div class="node" style="top:30%;left:70%;animation-delay:2s;"></div>
+            <div class="node" style="top:75%;left:85%;animation-delay:3s;"></div>
 
-<h1 class="fw-bold">
-Ole <span style="color:#66d9ef;">Olessiall</span>
-</h1>
+            <div class="line" style="top:22%;left:10%;width:200px;transform:rotate(12deg);"></div>
+            <div class="line" style="top:55%;left:35%;width:320px;transform:rotate(-8deg);"></div>
 
-<p class="text-secondary mt-3">
-Cloud Native • CUDA • Phoenix • JVM • Distributed Systems
-</p>
+        </div>
 
-<div class="tech-icons">
-<i class="bi bi-filetype-html text-info"></i>
-<i class="bi bi-filetype-py text-warning"></i>
-<i class="bi bi-lightning-charge text-danger"></i>
-<i class="bi bi-cpu text-success"></i>
-<i class="bi bi-git text-danger"></i>
-<i class="bi bi-code-slash text-primary"></i>
-</div>
+        <div class="row align-items-center">
 
-</div>
-</div>
+            <div class="col-lg-7">
 
-<!-- SKILLS -->
-<div class="col-lg-7">
+                <div class="cyber-badge">
+                    TELEMETRIC CYBER COMMAND
+                </div>
 
-<h2 class="mb-4 fw-bold">
-Developer Stack
-</h2>
+                <h1 class="hero-title">
+                    Ole Olessiall Building
+                    Mobile Cyber Tech Shells,
+                    Autonomous Device Editors
+                    & Galactic Telemetry Systems
+                </h1>
 
-<div class="skill">
-<div class="d-flex justify-content-between mb-2">
-<span>HTML</span>
-<span>96%</span>
-</div>
-<div class="progress">
-<div class="progress-bar bg-info" style="width:96%"></div>
-</div>
-</div>
+                <p class="mt-3 text-info">
+                    Localhost packet streams • network arpeggiation •
+                    hyperspace telemetry • websocket cloud relays
+                </p>
 
-<div class="skill">
-<div class="d-flex justify-content-between mb-2">
-<span>Python</span>
-<span>93%</span>
-</div>
-<div class="progress">
-<div class="progress-bar bg-warning" style="width:93%"></div>
-</div>
-</div>
+                <div class="d-flex gap-3 mt-4 flex-wrap">
 
-<div class="skill">
-<div class="d-flex justify-content-between mb-2">
-<span>Elixir / Phoenix</span>
-<span>90%</span>
-</div>
-<div class="progress">
-<div class="progress-bar bg-danger" style="width:90%"></div>
-</div>
-</div>
+                    <button class="btn btn-info rounded-pill px-4">
+                        Launch Shell
+                    </button>
 
-<div class="skill">
-<div class="d-flex justify-content-between mb-2">
-<span>CUDA</span>
-<span>88%</span>
-</div>
-<div class="progress">
-<div class="progress-bar bg-success" style="width:88%"></div>
-</div>
-</div>
+                    <button class="btn btn-outline-light rounded-pill px-4">
+                        Connect Node
+                    </button>
 
-<div class="skill">
-<div class="d-flex justify-content-between mb-2">
-<span>Julia</span>
-<span>86%</span>
-</div>
-<div class="progress">
-<div class="progress-bar bg-secondary" style="width:86%"></div>
-</div>
-</div>
+                </div>
 
-<div class="skill">
-<div class="d-flex justify-content-between mb-2">
-<span>Kotlin / JVM</span>
-<span>89%</span>
-</div>
-<div class="progress">
-<div class="progress-bar bg-primary" style="width:89%"></div>
-</div>
-</div>
+            </div>
 
-<div class="skill">
-<div class="d-flex justify-content-between mb-2">
-<span>Lua</span>
-<span>80%</span>
-</div>
-<div class="progress">
-<div class="progress-bar bg-dark" style="width:80%"></div>
-</div>
-</div>
+            <div class="col-lg-5 mt-4 mt-lg-0">
 
-<div class="skill">
-<div class="d-flex justify-content-between mb-2">
-<span>C# / C++</span>
-<span>91%</span>
-</div>
-<div class="progress">
-<div class="progress-bar bg-light text-dark" style="width:91%"></div>
-</div>
-</div>
+                <div class="terminal glass">
 
-</div>
-</div>
+                    <div class="term-line">
+                        root@telemetry: websocket://localhost:9000
+                    </div>
 
-<!-- IDE -->
-<div class="ide">
+                    <div class="term-line">
+                        scanning cyber lanes...
+                    </div>
 
-<div class="ide-top">
-<div class="dot red"></div>
-<div class="dot yellow"></div>
-<div class="dot green"></div>
+                    <div class="term-line">
+                        packet stream initialized...
+                    </div>
 
-<span class="ms-3 text-secondary">
-monokai-terminal-editor
-</span>
-</div>
+                    <div class="term-line">
+                        syncing orbital network nodes...
+                    </div>
 
-<div class="ide-body">
+                    <div class="term-line">
+                        STARGRID interface online...
+                    </div>
 
-<!-- FILES -->
-<div class="sidebar">
+                </div>
 
-<h6>EXPLORER</h6>
+            </div>
 
-<div class="file">
-<i class="bi bi-filetype-html text-info"></i>
-index.html
-</div>
+        </div>
 
-<div class="file">
-<i class="bi bi-filetype-py text-warning"></i>
-engine.py
-</div>
+    </div>
 
-<div class="file">
-<i class="bi bi-lightning-charge text-danger"></i>
-socket.ex
-</div>
+    <!-- EDITOR -->
 
-<div class="file">
-<i class="bi bi-cpu text-success"></i>
-kernel.cu
-</div>
+    <div class="editor-shell glass mb-4">
 
-<div class="file">
-<i class="bi bi-filetype-java text-primary"></i>
-Main.kt
-</div>
+        <div class="editor-top d-flex justify-content-between align-items-center">
 
-<div class="file">
-<i class="bi bi-braces text-warning"></i>
-pipeline.jl
-</div>
+            <div>
+                <span class="editor-dot dot-red"></span>
+                <span class="editor-dot dot-yellow"></span>
+                <span class="editor-dot dot-green"></span>
+            </div>
 
-<div class="file">
-<i class="bi bi-code-square text-info"></i>
-server.cs
-</div>
+            <div class="text-info small">
+                mobile-shell.js
+            </div>
 
-<div class="file">
-<i class="bi bi-terminal text-light"></i>
-engine.cpp
-</div>
+        </div>
 
-<div class="file">
-<i class="bi bi-filetype-lua text-primary"></i>
-game.lua
-</div>
+<div class="code-area" id="editor">
+<span style="color:#ff79c6;">const</span> websocket = new WebSocket(
+<span style="color:#f1fa8c;">"ws://localhost:8080"</span>
+);
 
-</div>
+websocket.onopen = () => {
 
-<!-- EDITOR -->
-<div class="editor">
+    console.log(
+        <span style="color:#f1fa8c;">"CYBER GRID CONNECTED"</span>
+    );
 
-<pre class="code typing">
-<span class="comment">// Developer Runtime</span>
+    initializeTelemetry();
+    launchPacketScanner();
 
-<span class="keyword">const</span> <span class="variable">developer</span> = {
+};
 
-    <span class="variable">name</span>: <span class="string">"Ole Olessiall"</span>,
+function initializeTelemetry(){
 
-    <span class="variable">languages</span>: [
+    const telemetry = {
+        shell : <span style="color:#f1fa8c;">"Mobile Device Editor"</span>,
+        mode  : <span style="color:#f1fa8c;">"Glassmorphic Cyber UI"</span>,
+        packets : 4096,
+        gateway : <span style="color:#f1fa8c;">"localhost-node"</span>
+    };
 
-        <span class="string">"Python"</span>,
-        <span class="string">"Elixir"</span>,
-        <span class="string">"Phoenix"</span>,
-        <span class="string">"CUDA"</span>,
-        <span class="string">"Julia"</span>,
-        <span class="string">"Kotlin"</span>,
-        <span class="string">"Lua"</span>,
-        <span class="string">"C#"</span>,
-        <span class="string">"C++"</span>
-
-    ],
-
-    <span class="func">buildFuture</span>: () => {
-
-        <span class="keyword">return</span> <span class="string">"Designing high performance systems"</span>
-
-    }
+    console.log(telemetry);
 
 }
 
-console.log(developer.buildFuture())
-</pre>
+function launchPacketScanner(){
 
-</div>
-</div>
-</div>
+    setInterval(() => {
 
-<!-- TERMINAL -->
-<div class="terminal">
+        const packet = {
+            id: Math.random().toString(16),
+            signal: Math.random() * 100
+        };
 
-<div class="terminal-header">
-<div class="d-flex">
-<div class="dot red"></div>
-<div class="dot yellow"></div>
-<div class="dot green"></div>
-</div>
-</div>
+        renderPacket(packet);
 
-<div class="terminal-body">
+    },1200);
 
-<div class="prompt typeline">
-git init developer-history
-</div>
+}
 
-<br>
+function renderPacket(packet){
 
-<div class="prompt typeline" style="animation-delay:2s;">
-git commit -m "Started building distributed systems with Python and CUDA"
-</div>
+    const terminal =
+    document.getElementById("packet-feed");
 
-<br>
+    terminal.innerHTML += `
+        &lt;div class="packet"&gt;
+        PACKET ${packet.id}
+        :: SIGNAL ${packet.signal.toFixed(2)}
+        &lt;/div&gt;
+    `;
 
-<div class="prompt typeline" style="animation-delay:4s;">
-git commit -m "Created Phoenix realtime infrastructure for scalable platforms"
+}
 </div>
 
-<br>
+    </div>
 
-<div class="prompt typeline" style="animation-delay:6s;">
-git commit -m "Integrated JVM, Kotlin and Julia into analytics runtime"
+    <!-- PACKET TERMINAL -->
+
+    <div class="terminal glass" id="packet-feed">
+
+        <div class="packet">
+            PACKET 0xAA91 :: SIGNAL 94.23
+        </div>
+
+        <div class="packet">
+            PACKET 0xBB82 :: SIGNAL 88.41
+        </div>
+
+        <div class="packet">
+            PACKET 0xF991 :: SIGNAL 99.01
+        </div>
+
+    </div>
+
 </div>
 
-<br><br>
+<!-- FLOATING BUTTONS -->
 
-<div class="text-success">
-
-Ole Olessiall is a developer focused on modern high performance software systems, cloud native architecture, and advanced runtime engineering. His development journey started with low level experimentation in C++ and evolved into distributed platforms powered by Python, Elixir Phoenix, CUDA acceleration, Kotlin JVM services, Lua scripting systems, and scalable backend pipelines. 
-
-Over time he built terminal inspired workflows, realtime infrastructures, GPU accelerated engines, and elegant user interfaces inspired by futuristic operating systems. His work combines performance engineering with visual creativity, blending animated developer environments, interactive frontend systems, and scalable backend orchestration.
-
-Git history reflects years of continuous iteration, experimentation, and architecture refinement across multiple technology stacks. From analytics systems written in Julia to Phoenix websocket infrastructures and CUDA accelerated compute layers, every project represents a deeper understanding of modern software ecosystems.
-
-Today Ole Olessiall continues building immersive developer experiences, advanced cloud platforms, and visually dynamic interfaces inspired by cyberpunk terminals, Monokai editors, and modern engineering culture.
+<div class="float-btn float-1">
+    ⚡
 </div>
 
-</div>
-</div>
-
-</section>
-
-<!-- FOOTER -->
-<footer class="footer">
-
-<h3 class="fw-bold">
-Built By <span style="color:#66d9ef;">Ole Olessiall</span>
-</h3>
-
-<p class="text-secondary mt-3">
-Animated SVG • Monokai IDE • Terminal CLI • Cloud Native Developer
-</p>
-
-<div class="footer-icons mt-4">
-<i class="bi bi-github"></i>
-<i class="bi bi-terminal"></i>
-<i class="bi bi-cpu"></i>
-<i class="bi bi-code-slash"></i>
-<i class="bi bi-lightning-charge"></i>
+<div class="float-btn float-2">
+    ◉
 </div>
 
-</footer>
+<script>
+/* STARS */
+
+const starsContainer =
+document.getElementById('stars');
+
+for(let i=0;i<140;i++){
+
+    const star =
+    document.createElement('div');
+
+    star.classList.add('star');
+
+    star.style.left =
+    Math.random()*100 + '%';
+
+    star.style.top =
+    Math.random()*100 + '%';
+
+    star.style.animationDuration =
+    (Math.random()*5 + 2) + 's';
+
+    starsContainer.appendChild(star);
+
+}
+
+/* WEBSOCKET MOCK */
+
+const terminal =
+document.getElementById("packet-feed");
+
+setInterval(()=>{
+
+    const packetId =
+    Math.random()
+    .toString(16)
+    .substring(2,8);
+
+    const signal =
+    (Math.random()*100)
+    .toFixed(2);
+
+    const div =
+    document.createElement("div");
+
+    div.className = "packet";
+
+    div.innerHTML =
+    `PACKET 0x${packetId}
+     :: SIGNAL ${signal}`;
+
+    terminal.prepend(div);
+
+    if(terminal.children.length > 14){
+        terminal.removeChild(
+            terminal.lastChild
+        );
+    }
+
+},1400);
+</script>
 
 </body>
 </html>
