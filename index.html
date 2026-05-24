@@ -44,7 +44,6 @@
         justify-content: center;
     }
 
-    /* Ytre ring som kan ses som 360° GUI */
     .clock-ring {
         position: absolute;
         width: 230px;
@@ -75,7 +74,7 @@
     /* AUKSJONSBOKS */
     .auction-box {
         margin: 20px auto;
-        width: 340px;
+        width: 360px;
         padding: 18px 20px;
         background: #0b1220;
         border-radius: 14px;
@@ -141,7 +140,7 @@
 
     .bash-line {
         white-space: pre;
-        animation: typing 5s steps(60) infinite;
+        animation: typing 5s steps(70) infinite;
         overflow: hidden;
         border-right: 2px solid #00ff00;
         width: 100%;
@@ -183,8 +182,9 @@
         Auksjon: Utviklings‑app for Nettsiden med Smartklokke‑GUI
     </div>
     <div class="auction-desc">
-        Auksjonen drifter en utviklings‑app av denne nettsiden med klokke‑GUI og teknologi‑innhold.
-        Vinner: <strong>Culture.Support</strong> for å utvikle tjenesten med bash‑scripts og hex‑konverteringsfunksjoner.
+        Auksjonsfeltet drifter en utviklings‑app av nettsiden med klokke‑GUI og auksjon.
+        Vinnes av <strong>Culture.Support</strong> for å utvikle tjenesten med bash‑script,
+        teknologi‑innhold og hex‑konverteringsfunksjoner.
     </div>
 
     <div class="auction-price">
@@ -192,7 +192,7 @@
     </div>
 
     <div class="auction-status" ng-if="!vm.locked">
-        Pris svinger tilfeldig mellom 300 kr og 4000 kr.<br>
+        Pris svinger tilfeldig mellom 300 kr og 24&nbsp;000 kr.<br>
         Hvert 4. sekund går prisen ned, deretter opp etter nye 4 sekunder.<br>
         Hvert 3. minutt får prisen et ekstra hopp opp eller ned.
     </div>
@@ -209,7 +209,7 @@
 <!-- FOOTER -->
 <footer>
     <div class="bash-line">
-$ copyright © All Rights Reserved — Culture.Support — Bash Scripts — hex convertering funksjoner
+$ copyright © All Rights Reserved — Culture.Support — Bash Scripts — teknologi innhold — hex convertering funksjoner
     </div>
 </footer>
 
@@ -259,17 +259,17 @@ angular.module("clockApp", [])
     /* -------------------------
        AUKSJON SYSTEM
     --------------------------*/
-    // Startpris mellom 300 og 4000
-    vm.price   = 300 + Math.floor(Math.random() * (135000 - 300 + 1));
-    vm.locked  = false;
+    // Startpris mellom 300 og 24 000
+    vm.price    = 300 + Math.floor(Math.random() * (24000 - 300 + 1));
+    vm.locked   = false;
     vm.exploded = false;
 
-    var cycleSeconds      = 0;   // 0–15, loop hvert 16 sek
-    var threeMinuteSec    = 0;   // teller opp til 180 sek (3 min)
+    var cycleSeconds   = 0;   // 0–15, loop hvert 16. sekund
+    var threeMinuteSec = 0;   // teller opp til 180 sek (3 min)
 
     function clampPrice() {
-        if (vm.price < 300)  vm.price = 300;
-        if (vm.price > 4000) vm.price = 135000;
+        if (vm.price < 300)   vm.price = 300;
+        if (vm.price > 24000) vm.price = 24000;
     }
 
     function updateAuction() {
@@ -280,13 +280,13 @@ angular.module("clockApp", [])
 
         // Hvert 4. sekund: pris ned
         if (cycleSeconds % 8 === 4) {
-            var down = Math.floor(Math.random() * 250) + 20; // 20–270
+            var down = Math.floor(Math.random() * 1500) + 100; // 100–1599
             vm.price -= down;
         }
 
         // Hvert 8. sekund: pris opp
         if (cycleSeconds % 8 === 0) {
-            var up = Math.floor(Math.random() * 280) + 30; // 30–309
+            var up = Math.floor(Math.random() * 1800) + 150; // 150–1949
             vm.price += up;
         }
 
@@ -297,7 +297,7 @@ angular.module("clockApp", [])
 
         // Hvert 3. minutt: større hopp opp/ned
         if (threeMinuteSec >= 180) {
-            var delta = Math.floor(Math.random() * 600) - 300; // -300 til +300
+            var delta = Math.floor(Math.random() * 6000) - 3000; // -3000 til +3000
             vm.price += delta;
             threeMinuteSec = 0;
         }
