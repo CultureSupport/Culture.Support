@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="no" ng-app="downApp">
+<html lang="no" ng-app="clockApp">
 <head>
 <meta charset="UTF-8">
 <title>404 – Ute av drift</title>
@@ -8,7 +8,7 @@
 <style>
     body {
         margin: 0;
-        background: radial-gradient(circle at top, #1a1a2e, #0f0f1a 70%, #000);
+        background: #050712;
         color: #f5f5f5;
         font-family: "Segoe UI", sans-serif;
         display: flex;
@@ -25,122 +25,110 @@
     }
 
     .sub {
-        font-size: 1.2rem;
-        opacity: 0.85;
+        font-size: 1.1rem;
+        opacity: 0.9;
         margin-bottom: 30px;
     }
 
-    .layout {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        gap: 50px;
-        flex-wrap: wrap;
-        margin-top: 20px;
-    }
-
-    /* Meditasjonsfigur */
-    .meditation {
+    /* SMARTKLOKKE 360° SIRKEL */
+    .clock-wrapper {
+        margin: 30px auto 10px;
         width: 260px;
         height: 260px;
         border-radius: 50%;
-        background: radial-gradient(circle, #3b1f5f, #12081f 60%, #05030a);
-        box-shadow: 0 0 40px rgba(180, 90, 255, 0.6);
-        animation: pulse 4s infinite ease-in-out;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-    }
-
-    @keyframes pulse {
-        0% { box-shadow: 0 0 20px rgba(180, 90, 255, 0.4); }
-        50% { box-shadow: 0 0 60px rgba(255, 160, 255, 0.9); }
-        100% { box-shadow: 0 0 20px rgba(180, 90, 255, 0.4); }
-    }
-
-    .figure {
-        width: 150px;
-        height: 200px;
+        background: radial-gradient(circle at 30% 20%, #1f2937, #020617 70%);
+        box-shadow: 0 0 40px rgba(0, 255, 255, 0.6);
         position: relative;
+        display: flex;
+        align-items: center;
+        justify-content: center;
     }
 
-    .head {
-        width: 60px;
-        height: 60px;
-        background: #ffd9b3;
+    /* Ytre ring som kan ses som 360° GUI */
+    .clock-ring {
+        position: absolute;
+        width: 230px;
+        height: 230px;
         border-radius: 50%;
-        position: absolute;
-        top: 0;
-        left: 50%;
-        transform: translateX(-50%);
+        border: 6px solid rgba(148, 163, 184, 0.4);
+        box-shadow: 0 0 20px rgba(148, 163, 184, 0.6) inset;
     }
 
-    .body {
-        width: 110px;
-        height: 120px;
-        background: linear-gradient(180deg, #ff9a76, #ff6f61, #c44569);
-        border-radius: 60px;
-        position: absolute;
-        top: 60px;
-        left: 50%;
-        transform: translateX(-50%);
+    .clock-center {
+        position: relative;
+        z-index: 2;
+        text-align: center;
     }
 
-    .watch {
-        width: 70px;
-        height: 70px;
-        background: radial-gradient(circle, #d1f3ff, #1b2735);
-        border-radius: 20px;
-        position: absolute;
-        top: 95px;
-        left: 50%;
-        transform: translateX(-50%);
-        box-shadow: 0 0 20px cyan;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        animation: glow 2s infinite ease-in-out;
-    }
-
-    @keyframes glow {
-        0% { box-shadow: 0 0 10px cyan; }
-        50% { box-shadow: 0 0 30px cyan; }
-        100% { box-shadow: 0 0 10px cyan; }
-    }
-
-    .watch-screen {
-        width: 55px;
-        height: 55px;
-        background: #020617;
-        border-radius: 12px;
-        border: 2px solid #9be7ff;
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        align-items: center;
-        font-size: 0.7rem;
-    }
-
-    .watch-time {
-        font-size: 1rem;
-        font-weight: bold;
-        color: #7bed9f;
-    }
-
-    /* Info panel */
-    .info {
-        max-width: 350px;
-        text-align: left;
-    }
-
-    .timer {
-        font-size: 2rem;
+    .clock-time {
+        font-size: 2.1rem;
         font-weight: bold;
         color: #7bed9f;
         text-shadow: 0 0 10px #7bed9f;
     }
 
-    /* Footer bash terminal */
+    .clock-sub {
+        font-size: 0.9rem;
+        opacity: 0.8;
+    }
+
+    /* AUKSJONSBOKS */
+    .auction-box {
+        margin: 20px auto;
+        width: 340px;
+        padding: 18px 20px;
+        background: #0b1220;
+        border-radius: 14px;
+        box-shadow: 0 0 20px rgba(0, 255, 255, 0.35);
+        transition: transform 0.3s ease, box-shadow 0.3s ease, opacity 0.3s ease;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .auction-title {
+        font-size: 1rem;
+        margin-bottom: 6px;
+        color: #e5e7eb;
+    }
+
+    .auction-desc {
+        font-size: 0.85rem;
+        opacity: 0.8;
+        margin-bottom: 10px;
+    }
+
+    .auction-price {
+        font-size: 2.1rem;
+        font-weight: bold;
+        color: #ffd369;
+        text-shadow: 0 0 10px #ffd369;
+        margin-bottom: 6px;
+    }
+
+    .auction-status {
+        font-size: 0.9rem;
+        opacity: 0.85;
+    }
+
+    .auction-locked {
+        color: #ff6b6b;
+        font-weight: 600;
+        margin-top: 6px;
+    }
+
+    /* Eksplosjon animasjon */
+    @keyframes explode {
+        0%   { transform: scale(1);   opacity: 1;   box-shadow: 0 0 20px rgba(255, 255, 255, 0.4); }
+        40%  { transform: scale(1.8); opacity: 0.8; box-shadow: 0 0 60px rgba(255, 80, 80, 0.9); }
+        70%  { transform: scale(2.4); opacity: 0.4; box-shadow: 0 0 90px rgba(255, 200, 80, 1); }
+        100% { transform: scale(0);   opacity: 0;   box-shadow: 0 0 0 rgba(0, 0, 0, 0); }
+    }
+
+    .explode {
+        animation: explode 1.4s forwards ease-out;
+    }
+
+    /* FOOTER BASH TERMINAL */
     footer {
         margin-top: auto;
         background: #000;
@@ -153,74 +141,86 @@
 
     .bash-line {
         white-space: pre;
-        animation: typing 4s steps(40) infinite;
+        animation: typing 5s steps(60) infinite;
         overflow: hidden;
         border-right: 2px solid #00ff00;
         width: 100%;
     }
 
     @keyframes typing {
-        0% { width: 0 }
-        50% { width: 100% }
+        0%   { width: 0 }
+        50%  { width: 100% }
         100% { width: 0 }
     }
 </style>
 </head>
 
-<body ng-controller="DownCtrl as vm">
+<body ng-controller="ClockCtrl as vm">
 
 <h1>404 – Ute av drift</h1>
 <div class="sub">
     Vi er ikke tilgjengelig for besøk akkurat nå.<br>
-    Innholdet er under modifikasjon og tar lengre tid enn forventet.<br>
-    Nedtiden varer til <strong>22:18 CET</strong>.
+    Innholdet er under modifikasjon og tar lengre tid enn før.<br>
+    Vedlikeholdet varer til <strong>22:18 CET</strong>.
 </div>
 
-<div class="layout">
-
-    <!-- Meditasjonsfigur + klokke -->
-    <div class="meditation">
-        <div class="figure">
-            <div class="head"></div>
-            <div class="body"></div>
-
-            <div class="watch">
-                <div class="watch-screen">
-                    <div>Nedtelling</div>
-                    <div class="watch-time">
-                        {{ vm.timeLeft.hours | number:2 }}:{{ vm.timeLeft.minutes | number:2 }}
-                    </div>
-                    <div>{{ vm.timeLeft.seconds | number:2 }} sek</div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Info panel -->
-    <div class="info">
-        <div>Gjenstående tid:</div>
-        <div class="timer">
+<!-- SMARTKLOKKE 360° GUI -->
+<div class="clock-wrapper">
+    <div class="clock-ring"></div>
+    <div class="clock-center">
+        <div class="clock-time">
             {{ vm.timeLeft.hours | number:2 }}:
             {{ vm.timeLeft.minutes | number:2 }}:
             {{ vm.timeLeft.seconds | number:2 }}
         </div>
-        <p>Planlagt vedlikeholdsvindu: <strong>nå</strong> → <strong>22:18 CET</strong></p>
+        <div class="clock-sub">Nedtelling til 22:18 CET</div>
     </div>
-
 </div>
 
-<!-- Footer med bash terminal -->
+<!-- AUKSJONSBOKS -->
+<div class="auction-box" ng-class="{explode: vm.exploded}">
+    <div class="auction-title">
+        Auksjon: Utviklings‑app for Nettsiden med Smartklokke‑GUI
+    </div>
+    <div class="auction-desc">
+        Auksjonen drifter en utviklings‑app av denne nettsiden med klokke‑GUI og teknologi‑innhold.
+        Vinner: <strong>Culture.Support</strong> for å utvikle tjenesten med bash‑scripts og hex‑konverteringsfunksjoner.
+    </div>
+
+    <div class="auction-price">
+        {{ vm.price | currency:'kr ':0 }}
+    </div>
+
+    <div class="auction-status" ng-if="!vm.locked">
+        Pris svinger tilfeldig mellom 300 kr og 4000 kr.<br>
+        Hvert 4. sekund går prisen ned, deretter opp etter nye 4 sekunder.<br>
+        Hvert 3. minutt får prisen et ekstra hopp opp eller ned.
+    </div>
+
+    <div class="auction-locked" ng-if="vm.locked && !vm.exploded">
+        Auksjonen er låst – siste konkurransebud de siste 30 sekundene!
+    </div>
+
+    <div class="auction-locked" ng-if="vm.exploded">
+        Auksjonen er avsluttet – siste bud er registrert.
+    </div>
+</div>
+
+<!-- FOOTER -->
 <footer>
     <div class="bash-line">
-$ copyright © All Rights Reserved — Culture.Support — Bash Scripts
+$ copyright © All Rights Reserved — Culture.Support — Bash Scripts — hex convertering funksjoner
     </div>
 </footer>
 
 <script>
-angular.module("downApp", [])
-.controller("DownCtrl", ["$interval", function($interval) {
+angular.module("clockApp", [])
+.controller("ClockCtrl", ["$interval", function($interval) {
     var vm = this;
 
+    /* -------------------------
+       NEDTELLING TIL 22:18 CET
+    --------------------------*/
     function getTargetTime() {
         var now = new Date();
         var target = new Date();
@@ -233,22 +233,84 @@ angular.module("downApp", [])
 
     var targetTime = getTargetTime();
 
-    function update() {
+    function updateCountdown() {
         var now = new Date();
         var diff = targetTime - now;
-
-        if (diff <= 0) diff = 0;
+        if (diff < 0) diff = 0;
 
         var sec = Math.floor(diff / 1000);
         vm.timeLeft = {
-            hours: Math.floor(sec / 3600),
+            hours:   Math.floor(sec / 3600),
             minutes: Math.floor((sec % 3600) / 60),
             seconds: sec % 60
         };
+
+        // Lås auksjon ved 30 sekunder
+        if (sec <= 30 && !vm.locked) {
+            vm.locked = true;
+        }
+
+        // Eksploder når tiden er ute
+        if (sec === 0 && !vm.exploded) {
+            vm.exploded = true;
+        }
     }
 
-    update();
-    $interval(update, 1000);
+    /* -------------------------
+       AUKSJON SYSTEM
+    --------------------------*/
+    // Startpris mellom 300 og 4000
+    vm.price   = 300 + Math.floor(Math.random() * (135000 - 300 + 1));
+    vm.locked  = false;
+    vm.exploded = false;
+
+    var cycleSeconds      = 0;   // 0–15, loop hvert 16 sek
+    var threeMinuteSec    = 0;   // teller opp til 180 sek (3 min)
+
+    function clampPrice() {
+        if (vm.price < 300)  vm.price = 300;
+        if (vm.price > 4000) vm.price = 135000;
+    }
+
+    function updateAuction() {
+        if (vm.locked) return; // ingen endring etter låsing
+
+        cycleSeconds++;
+        threeMinuteSec++;
+
+        // Hvert 4. sekund: pris ned
+        if (cycleSeconds % 8 === 4) {
+            var down = Math.floor(Math.random() * 250) + 20; // 20–270
+            vm.price -= down;
+        }
+
+        // Hvert 8. sekund: pris opp
+        if (cycleSeconds % 8 === 0) {
+            var up = Math.floor(Math.random() * 280) + 30; // 30–309
+            vm.price += up;
+        }
+
+        // Loop hvert 16. sekund
+        if (cycleSeconds >= 16) {
+            cycleSeconds = 0;
+        }
+
+        // Hvert 3. minutt: større hopp opp/ned
+        if (threeMinuteSec >= 180) {
+            var delta = Math.floor(Math.random() * 600) - 300; // -300 til +300
+            vm.price += delta;
+            threeMinuteSec = 0;
+        }
+
+        clampPrice();
+    }
+
+    /* -------------------------
+       INTERVALLER
+    --------------------------*/
+    updateCountdown();
+    $interval(updateCountdown, 1000);  // nedtelling hvert sekund
+    $interval(updateAuction,   1000);  // auksjonslogikk hvert sekund
 }]);
 </script>
 
