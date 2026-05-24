@@ -1,1 +1,444 @@
-lukket nettsiden for 4 timer fremover
+<!DOCTYPE html>
+<html lang="no" ng-app="downApp">
+<head>
+  <meta charset="UTF-8" />
+  <title>404 – Ute av drift</title>
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular.min.js"></script>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: "Segoe UI", system-ui, -apple-system, sans-serif;
+    }
+
+    body {
+      background: radial-gradient(circle at top, #1b1f3b 0, #050814 55%, #000 100%);
+      color: #f5f5f5;
+      height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .container {
+      text-align: center;
+      max-width: 900px;
+      padding: 20px;
+    }
+
+    .error-code {
+      font-size: 5rem;
+      font-weight: 700;
+      letter-spacing: 0.2rem;
+      color: #ff6b6b;
+      text-shadow: 0 0 20px rgba(255, 107, 107, 0.7);
+      margin-bottom: 10px;
+    }
+
+    .headline {
+      font-size: 1.8rem;
+      margin-bottom: 10px;
+    }
+
+    .subtext {
+      font-size: 1rem;
+      opacity: 0.85;
+      margin-bottom: 25px;
+    }
+
+    .layout {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: center;
+      gap: 40px;
+    }
+
+    /* Meditasjonsfigur */
+    .meditation-wrapper {
+      position: relative;
+      width: 260px;
+      height: 260px;
+      border-radius: 50%;
+      background: radial-gradient(circle, #3b1f5f 0, #12081f 60%, #05030a 100%);
+      box-shadow:
+        0 0 25px rgba(255, 140, 0, 0.4),
+        0 0 60px rgba(138, 43, 226, 0.5);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      animation: auraPulse 4s ease-in-out infinite;
+    }
+
+    @keyframes auraPulse {
+      0% {
+        box-shadow:
+          0 0 15px rgba(255, 140, 0, 0.3),
+          0 0 40px rgba(138, 43, 226, 0.4);
+      }
+      50% {
+        box-shadow:
+          0 0 35px rgba(255, 200, 120, 0.7),
+          0 0 80px rgba(186, 85, 211, 0.8);
+      }
+      100% {
+        box-shadow:
+          0 0 15px rgba(255, 140, 0, 0.3),
+          0 0 40px rgba(138, 43, 226, 0.4);
+      }
+    }
+
+    .meditation-figure {
+      position: relative;
+      width: 160px;
+      height: 200px;
+    }
+
+    /* Enkel stilisert kvinne i meditasjon */
+    .head {
+      position: absolute;
+      top: 10px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 60px;
+      height: 60px;
+      background: radial-gradient(circle at 30% 30%, #ffd9b3 0, #f0a870 60%, #c97a4a 100%);
+      border-radius: 50%;
+      box-shadow: 0 0 10px rgba(255, 223, 186, 0.7);
+    }
+
+    .hair {
+      position: absolute;
+      top: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 80px;
+      height: 70px;
+      background: #2b1a33;
+      border-bottom-left-radius: 60px;
+      border-bottom-right-radius: 60px;
+      border-top-left-radius: 40px;
+      border-top-right-radius: 40px;
+      box-shadow: 0 0 15px rgba(0, 0, 0, 0.6);
+    }
+
+    .body {
+      position: absolute;
+      top: 60px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 110px;
+      height: 120px;
+      background: linear-gradient(180deg, #ff9a76 0, #ff6f61 40%, #c44569 100%);
+      border-radius: 60px 60px 80px 80px;
+      box-shadow: 0 0 20px rgba(255, 160, 122, 0.7);
+    }
+
+    .legs {
+      position: absolute;
+      bottom: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 140px;
+      height: 60px;
+      background: radial-gradient(circle at top, #2f3640 0, #14171c 60%, #050608 100%);
+      border-radius: 80px 80px 40px 40px;
+    }
+
+    /* Armer som holder smartklokke */
+    .arm-left,
+    .arm-right {
+      position: absolute;
+      top: 90px;
+      width: 60px;
+      height: 20px;
+      background: linear-gradient(90deg, #f0a870 0, #ffd9b3 100%);
+      border-radius: 20px;
+      box-shadow: 0 0 10px rgba(255, 223, 186, 0.7);
+    }
+
+    .arm-left {
+      left: 5px;
+      transform: rotate(20deg);
+      transform-origin: left center;
+    }
+
+    .arm-right {
+      right: 5px;
+      transform: rotate(-20deg);
+      transform-origin: right center;
+    }
+
+    .watch {
+      position: absolute;
+      top: 95px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 70px;
+      height: 70px;
+      border-radius: 20px;
+      background: radial-gradient(circle at 30% 20%, #ffffff 0, #d1f3ff 30%, #1b2735 100%);
+      box-shadow:
+        0 0 15px rgba(0, 255, 255, 0.7),
+        0 0 30px rgba(0, 191, 255, 0.8);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      animation: watchGlow 2.5s ease-in-out infinite;
+    }
+
+    @keyframes watchGlow {
+      0% {
+        box-shadow:
+          0 0 10px rgba(0, 255, 255, 0.5),
+          0 0 20px rgba(0, 191, 255, 0.6);
+      }
+      50% {
+        box-shadow:
+          0 0 25px rgba(0, 255, 255, 0.9),
+          0 0 45px rgba(0, 191, 255, 1);
+      }
+      100% {
+        box-shadow:
+          0 0 10px rgba(0, 255, 255, 0.5),
+          0 0 20px rgba(0, 191, 255, 0.6);
+      }
+    }
+
+    /* Smartklokke GUI */
+    .watch-screen {
+      width: 58px;
+      height: 58px;
+      border-radius: 16px;
+      background: radial-gradient(circle at top, #0f172a 0, #020617 70%);
+      border: 2px solid rgba(173, 216, 230, 0.7);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      color: #e0faff;
+      font-size: 0.55rem;
+      text-align: center;
+      padding: 4px;
+    }
+
+    .watch-label {
+      font-size: 0.45rem;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      opacity: 0.8;
+      margin-bottom: 2px;
+    }
+
+    .watch-time {
+      font-size: 0.9rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      margin-bottom: 2px;
+    }
+
+    .watch-sub {
+      font-size: 0.45rem;
+      opacity: 0.7;
+    }
+
+    /* Info / tekstside */
+    .info-panel {
+      max-width: 420px;
+      text-align: left;
+    }
+
+    .timer-label {
+      font-size: 0.9rem;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      opacity: 0.8;
+      margin-bottom: 6px;
+    }
+
+    .timer-value {
+      font-size: 2.2rem;
+      font-weight: 600;
+      letter-spacing: 0.12em;
+      margin-bottom: 10px;
+      color: #7bed9f;
+      text-shadow: 0 0 15px rgba(126, 214, 223, 0.8);
+    }
+
+    .timer-bar {
+      position: relative;
+      width: 100%;
+      height: 8px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.08);
+      overflow: hidden;
+      margin-bottom: 14px;
+    }
+
+    .timer-bar-fill {
+      position: absolute;
+      top: 0;
+      left: 0;
+      height: 100%;
+      background: linear-gradient(90deg, #7bed9f, #70a1ff, #ff6b81);
+      box-shadow: 0 0 12px rgba(126, 214, 223, 0.9);
+      transition: width 0.5s linear;
+    }
+
+    .time-window {
+      font-size: 0.85rem;
+      opacity: 0.8;
+      margin-bottom: 6px;
+    }
+
+    .hint {
+      font-size: 0.8rem;
+      opacity: 0.7;
+    }
+
+    .hint span {
+      color: #ffdd59;
+    }
+
+    @media (max-width: 768px) {
+      .layout {
+        flex-direction: column;
+      }
+      .info-panel {
+        text-align: center;
+      }
+    }
+  </style>
+</head>
+<body ng-controller="DownCtrl as vm">
+  <div class="container">
+    <div class="error-code">404</div>
+    <div class="headline">Nettsiden er ute av drift</div>
+    <div class="subtext">
+      Vi utfører vedlikehold akkurat nå. Tjenesten er utilgjengelig i en periode på 4 timer.
+    </div>
+
+    <div class="layout">
+      <!-- Meditasjon + smartklokke -->
+      <div class="meditation-wrapper">
+        <div class="meditation-figure">
+          <div class="hair"></div>
+          <div class="head"></div>
+          <div class="body"></div>
+          <div class="legs"></div>
+          <div class="arm-left"></div>
+          <div class="arm-right"></div>
+
+          <div class="watch">
+            <div class="watch-screen">
+              <div class="watch-label">Nedtelling</div>
+              <div class="watch-time">
+                {{ vm.timeLeft.hours | number:2 }}:{{ vm.timeLeft.minutes | number:2 }}
+              </div>
+              <div class="watch-sub">
+                {{ vm.timeLeft.seconds | number:2 }} sek
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Info / tekst -->
+      <div class="info-panel">
+        <div class="timer-label">Estimert nedetid</div>
+        <div class="timer-value">
+          {{ vm.timeLeft.hours | number:2 }}:{{ vm.timeLeft.minutes | number:2 }}:{{ vm.timeLeft.seconds | number:2 }}
+        </div>
+
+        <div class="timer-bar">
+          <div class="timer-bar-fill" ng-style="{ width: vm.progress + '%' }"></div>
+        </div>
+
+        <div class="time-window">
+          Planlagt vindu: <strong>18:18 CET</strong> → <strong>22:18 CET</strong>
+        </div>
+        <div class="time-window" ng-if="vm.isFinished">
+          Vedlikeholdsvinduet er fullført. Prøv å laste siden på nytt.
+        </div>
+        <div class="hint" ng-if="!vm.isFinished">
+          Ta et øyeblikk til å puste, strekke deg og kanskje <span>meditere</span> mens du venter.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      'use strict';
+
+      angular.module('downApp', [])
+        .controller('DownCtrl', ['$interval', function ($interval) {
+          var vm = this;
+
+          // Start- og sluttid (lokal tid, antar CET/CEST)
+          var now = new Date();
+          var start = new Date(
+            now.getFullYear(),
+            now.getMonth(),
+            now.getDate(),
+            18, 18, 0, 0
+          );
+          var end = new Date(
+            now.getFullYear(),
+            now.getMonth(),
+            now.getDate(),
+            22, 18, 0, 0
+          );
+
+          // Hvis vi allerede er etter sluttid, sett til neste dag (valgfritt)
+          if (now > end) {
+            // flytt vinduet til neste dag
+            start.setDate(start.getDate() + 1);
+            end.setDate(end.getDate() + 1);
+          }
+
+          var totalMs = end - start;
+          if (totalMs <= 0) {
+            totalMs = 4 * 60 * 60 * 1000; // fallback 4 timer
+          }
+
+          vm.timeLeft = { hours: 0, minutes: 0, seconds: 0 };
+          vm.progress = 0;
+          vm.isFinished = false;
+
+          function updateCountdown() {
+            var current = new Date();
+            var remaining = end - current;
+
+            if (remaining <= 0) {
+              vm.timeLeft.hours = 0;
+              vm.timeLeft.minutes = 0;
+              vm.timeLeft.seconds = 0;
+              vm.progress = 100;
+              vm.isFinished = true;
+              return;
+            }
+
+            var seconds = Math.floor(remaining / 1000);
+            var hours = Math.floor(seconds / 3600);
+            seconds -= hours * 3600;
+            var minutes = Math.floor(seconds / 60);
+            seconds -= minutes * 60;
+
+            vm.timeLeft.hours = hours;
+            vm.timeLeft.minutes = minutes;
+            vm.timeLeft.seconds = seconds;
+
+            var elapsed = totalMs - remaining;
+            vm.progress = Math.max(0, Math.min(100, (elapsed / totalMs) * 100));
+          }
+
+          // Init og intervall
+          updateCountdown();
+          $interval(updateCountdown, 1000);
+        }]);
+    })();
+  </script>
+</body>
+</html>
