@@ -74,7 +74,8 @@
     /* AUKSJONSBOKS */
     .auction-box {
         margin: 20px auto;
-        width: 380px;
+        width: 400px;
+        max-width: 90vw;
         padding: 18px 20px;
         background: #0b1220;
         border-radius: 14px;
@@ -102,6 +103,7 @@
         color: #ffd369;
         text-shadow: 0 0 10px #ffd369;
         margin-bottom: 6px;
+        word-break: break-all;
     }
 
     .auction-status {
@@ -188,11 +190,11 @@
     </div>
 
     <div class="auction-price">
-        {{ vm.price | currency:'kr ':0 }}
+        {{ vm.price | currency:'$':0 }}
     </div>
 
     <div class="auction-status" ng-if="!vm.locked">
-        Pris svinger tilfeldig mellom 300 kr og 550&nbsp;000 kr.<br>
+        Pris svinger tilfeldig mellom 300 $ og 1&nbsp;860&nbsp;000 $.<br>
         Hvert 4. sekund går prisen ned, deretter opp etter nye 4 sekunder.<br>
         Hvert 3. minutt får prisen et ekstra hopp opp eller ned.
     </div>
@@ -243,17 +245,22 @@ angular.module("clockApp", [])
             seconds: sec % 60
         };
 
+        // Lås auksjon ved 30 sekunder
         if (sec <= 30 && !vm.locked) {
             vm.locked = true;
         }
 
+        // Eksploder når tiden er ute
         if (sec === 0 && !vm.exploded) {
             vm.exploded = true;
         }
     }
 
     /* AUKSJON SYSTEM */
-    vm.price    = 300 + Math.floor(Math.random() * (550000 - 300 + 1)); // 300–550000
+    var MIN_PRICE = 300;
+    var MAX_PRICE = 1860000;
+
+    vm.price    = MIN_PRICE + Math.floor(Math.random() * (MAX_PRICE - MIN_PRICE + 1));
     vm.locked   = false;
     vm.exploded = false;
 
@@ -261,8 +268,8 @@ angular.module("clockApp", [])
     var threeMinuteSec = 0;   // teller opp til 180 sek (3 min)
 
     function clampPrice() {
-        if (vm.price < 300)    vm.price = 300;
-        if (vm.price > 550000) vm.price = 550000;
+        if (vm.price < MIN_PRICE) vm.price = MIN_PRICE;
+        if (vm.price > MAX_PRICE) vm.price = MAX_PRICE;
     }
 
     function updateAuction() {
@@ -273,13 +280,13 @@ angular.module("clockApp", [])
 
         // Hvert 4. sekund: pris ned
         if (cycleSeconds % 8 === 4) {
-            var down = Math.floor(Math.random() * 25000) + 500; // 500–25499
+            var down = Math.floor(Math.random() * 60000) + 1000; // 1k–60 999
             vm.price -= down;
         }
 
         // Hvert 8. sekund: pris opp
         if (cycleSeconds % 8 === 0) {
-            var up = Math.floor(Math.random() * 30000) + 800; // 800–30799
+            var up = Math.floor(Math.random() * 70000) + 1500; // 1.5k–71 499
             vm.price += up;
         }
 
@@ -290,7 +297,7 @@ angular.module("clockApp", [])
 
         // Hvert 3. minutt: større hopp opp/ned
         if (threeMinuteSec >= 180) {
-            var delta = Math.floor(Math.random() * 120000) - 60000; // -60000 til +60000
+            var delta = Math.floor(Math.random() * 300000) - 150000; // -150k til +150k
             vm.price += delta;
             threeMinuteSec = 0;
         }
