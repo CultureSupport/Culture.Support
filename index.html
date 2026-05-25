@@ -6,16 +6,146 @@
 
     <title>Dangerous Minds</title>
 
-    <!-- Bootstrap 5 CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-
+ <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    
   </head>
+
+   <style>
+    /* Page base */
+    body {
+      min-height: 100vh;
+      margin: 0;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      color: #f8f9fa;
+      background: radial-gradient(circle at top, #1b2a4a 0, #050816 55%, #02030a 100%);
+      overflow-x: hidden;
+    }
+
+    /* Animated background container */
+    .space-bg {
+      position: fixed;
+      inset: 0;
+      overflow: hidden;
+      z-index: -1;
+    }
+
+    .astronaut {
+      position: absolute;
+      width: 80px;
+      height: 80px;
+      background: url("https://cdn-icons-png.flaticon.com/512/3212/3212608.png")
+        no-repeat center/contain;
+      opacity: 0.8;
+      animation: floatUp linear infinite;
+    }
+
+    /* Different sizes / speeds / delays for variety */
+    .astronaut:nth-child(1) {
+      left: 5%;
+      animation-duration: 26s;
+      animation-delay: -4s;
+      transform: scale(0.7);
+    }
+    .astronaut:nth-child(2) {
+      left: 25%;
+      animation-duration: 32s;
+      animation-delay: -10s;
+      transform: scale(0.9);
+    }
+    .astronaut:nth-child(3) {
+      left: 50%;
+      animation-duration: 22s;
+      animation-delay: -2s;
+      transform: scale(1.1);
+    }
+    .astronaut:nth-child(4) {
+      left: 70%;
+      animation-duration: 30s;
+      animation-delay: -15s;
+      transform: scale(0.8);
+    }
+    .astronaut:nth-child(5) {
+      left: 90%;
+      animation-duration: 28s;
+      animation-delay: -7s;
+      transform: scale(1.2);
+    }
+
+    @keyframes floatUp {
+      0% {
+        top: 110%;
+        transform: translateX(0) rotate(0deg);
+      }
+      50% {
+        transform: translateX(-20px) rotate(10deg);
+      }
+      100% {
+        top: -20%;
+        transform: translateX(20px) rotate(-10deg);
+      }
+    }
+
+    /* Optional: subtle stars */
+    .stars {
+      position: absolute;
+      inset: 0;
+      background-image:
+        radial-gradient(2px 2px at 10% 20%, rgba(255,255,255,0.8) 0, transparent 50%),
+        radial-gradient(2px 2px at 80% 30%, rgba(255,255,255,0.7) 0, transparent 50%),
+        radial-gradient(2px 2px at 30% 80%, rgba(255,255,255,0.6) 0, transparent 50%),
+        radial-gradient(1px 1px at 60% 60%, rgba(255,255,255,0.5) 0, transparent 50%);
+      opacity: 0.4;
+      z-index: -2;
+    }
+
+    /* Blog content card */
+    .blog-wrapper {
+      position: relative;
+      padding-top: 4rem;
+      padding-bottom: 4rem;
+    }
+
+    .blog-card {
+      background: rgba(10, 15, 35, 0.9);
+      border-radius: 1rem;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      backdrop-filter: blur(10px);
+    }
+
+    .blog-card h1,
+    .blog-card h2 {
+      color: #ffffff;
+    }
+
+    .blog-meta {
+      font-size: 0.9rem;
+      color: #adb5bd;
+    }
+
+    a.blog-link {
+      color: #61dafb;
+      text-decoration: none;
+    }
+    a.blog-link:hover {
+      text-decoration: underline;
+    }
+  </style>
+  
   <body>
 
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
       <div class="container">
 
-
+  <div class="space-bg">
+    <div class="stars"></div>
+    <div class="astronaut"></div>
+    <div class="astronaut"></div>
+    <div class="astronaut"></div>
+    <div class="astronaut"></div>
+    <div class="astronaut"></div>
+  </div>
 
 <div class="toast" role="alert" aria-live="assertive" aria-atomic="true">
   <div class="toast-header">
