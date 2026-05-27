@@ -1,376 +1,648 @@
-<!doctype html>
-<html lang="en">
-  <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+<!DOCTYPE html>
+<html lang="no">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Ole Olessiall • Monokai LLM Terminal</title>
 
-    <title>Dangerous Minds</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;700&display=swap" rel="stylesheet">
 
- <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
-    
-  </head>
+<style>
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
 
-   <style>
-    /* Page base */
-    body {
-      min-height: 100vh;
-      margin: 0;
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      color: #f8f9fa;
-      background: radial-gradient(circle at top, #1b2a4a 0, #050816 55%, #02030a 100%);
-      overflow-x: hidden;
-    }
+:root{
+    --bg:#101010;
+    --panel:#171717;
+    --soft:#202020;
+    --green:#A6E22E;
+    --cyan:#66D9EF;
+    --orange:#FD971F;
+    --pink:#F92672;
+    --purple:#AE81FF;
+    --white:#F8F8F2;
+    --gray:#75715E;
+}
 
-    /* Animated background container */
-    .space-bg {
-      position: fixed;
-      inset: 0;
-      overflow: hidden;
-      z-index: -1;
-    }
+body{
+    background:linear-gradient(180deg,#0b0b0b,#131313,#080808);
+    color:var(--white);
+    font-family:'JetBrains Mono', monospace;
+    overflow-x:hidden;
+}
 
-    .astronaut {
-      position: absolute;
-      width: 80px;
-      height: 80px;
-      background: url("https://cdn-icons-png.flaticon.com/512/3212/3212608.png")
-        no-repeat center/contain;
-      opacity: 0.8;
-      animation: floatUp linear infinite;
-    }
+/* BACKGROUND STREAMS */
 
-    /* Different sizes / speeds / delays for variety */
-    .astronaut:nth-child(1) {
-      left: 5%;
-      animation-duration: 26s;
-      animation-delay: -4s;
-      transform: scale(0.7);
-    }
-    .astronaut:nth-child(2) {
-      left: 25%;
-      animation-duration: 32s;
-      animation-delay: -10s;
-      transform: scale(0.9);
-    }
-    .astronaut:nth-child(3) {
-      left: 50%;
-      animation-duration: 22s;
-      animation-delay: -2s;
-      transform: scale(1.1);
-    }
-    .astronaut:nth-child(4) {
-      left: 70%;
-      animation-duration: 30s;
-      animation-delay: -15s;
-      transform: scale(0.8);
-    }
-    .astronaut:nth-child(5) {
-      left: 90%;
-      animation-duration: 28s;
-      animation-delay: -7s;
-      transform: scale(1.2);
-    }
+.bg-grid{
+    position:fixed;
+    inset:0;
+    background-image:
+    linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px);
+    background-size:40px 40px;
+    animation:gridMove 20s linear infinite;
+    z-index:-3;
+}
 
-    @keyframes floatUp {
-      0% {
-        top: 110%;
-        transform: translateX(0) rotate(0deg);
-      }
-      50% {
-        transform: translateX(-20px) rotate(10deg);
-      }
-      100% {
-        top: -20%;
-        transform: translateX(20px) rotate(-10deg);
-      }
+@keyframes gridMove{
+    from{transform:translateY(0);}
+    to{transform:translateY(40px);}
+}
+
+/* FLOATERS */
+
+.flyer{
+    position:fixed;
+    width:120px;
+    opacity:0.15;
+    z-index:-2;
+    animation:floater linear infinite;
+}
+
+.fly1{
+    top:10%;
+    left:-10%;
+    animation-duration:35s;
+}
+
+.fly2{
+    top:55%;
+    left:-15%;
+    animation-duration:50s;
+}
+
+.fly3{
+    top:80%;
+    left:-12%;
+    animation-duration:42s;
+}
+
+@keyframes floater{
+    from{
+        transform:translateX(0) translateY(0) rotate(0deg);
     }
-
-    /* Optional: subtle stars */
-    .stars {
-      position: absolute;
-      inset: 0;
-      background-image:
-        radial-gradient(2px 2px at 10% 20%, rgba(255,255,255,0.8) 0, transparent 50%),
-        radial-gradient(2px 2px at 80% 30%, rgba(255,255,255,0.7) 0, transparent 50%),
-        radial-gradient(2px 2px at 30% 80%, rgba(255,255,255,0.6) 0, transparent 50%),
-        radial-gradient(1px 1px at 60% 60%, rgba(255,255,255,0.5) 0, transparent 50%);
-      opacity: 0.4;
-      z-index: -2;
+    to{
+        transform:translateX(140vw) translateY(-40px) rotate(360deg);
     }
+}
 
-    /* Blog content card */
-    .blog-wrapper {
-      position: relative;
-      padding-top: 4rem;
-      padding-bottom: 4rem;
+/* CODE STREAMS */
+
+.stream{
+    position:fixed;
+    color:rgba(166,226,46,0.08);
+    font-size:12px;
+    white-space:nowrap;
+    z-index:-1;
+    animation:streamMove linear infinite;
+}
+
+.s1{
+    top:12%;
+    animation-duration:18s;
+}
+
+.s2{
+    top:44%;
+    animation-duration:25s;
+}
+
+.s3{
+    top:72%;
+    animation-duration:20s;
+}
+
+@keyframes streamMove{
+    from{
+        transform:translateX(-100%);
     }
-
-    .blog-card {
-      background: rgba(10, 15, 35, 0.9);
-      border-radius: 1rem;
-      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6);
-      border: 1px solid rgba(255, 255, 255, 0.08);
-      backdrop-filter: blur(10px);
+    to{
+        transform:translateX(120%);
     }
+}
 
-    .blog-card h1,
-    .blog-card h2 {
-      color: #ffffff;
+header{
+    padding:80px 40px 30px;
+}
+
+.hero{
+    display:flex;
+    flex-wrap:wrap;
+    gap:40px;
+    align-items:center;
+}
+
+.title{
+    flex:1;
+    min-width:300px;
+}
+
+.title h1{
+    font-size:64px;
+    color:var(--green);
+    text-shadow:0 0 25px rgba(166,226,46,0.4);
+}
+
+.title h2{
+    color:var(--cyan);
+    margin-top:12px;
+    font-size:18px;
+    font-weight:400;
+}
+
+.signature{
+    margin-top:25px;
+    color:var(--orange);
+    font-size:15px;
+    animation:signaturePulse 3s infinite;
+}
+
+@keyframes signaturePulse{
+    0%,100%{opacity:0.5;}
+    50%{opacity:1;}
+}
+
+.svg-area{
+    flex:1;
+    min-width:320px;
+}
+
+main{
+    padding:20px 40px 100px;
+}
+
+/* TERMINAL */
+
+.terminal{
+    background:var(--panel);
+    border:1px solid #2b2b2b;
+    border-radius:18px;
+    overflow:hidden;
+    box-shadow:0 0 40px rgba(0,0,0,0.7);
+    margin-bottom:40px;
+}
+
+.term-top{
+    padding:12px 18px;
+    background:#111;
+    display:flex;
+    gap:10px;
+}
+
+.dot{
+    width:12px;
+    height:12px;
+    border-radius:50%;
+}
+
+.red{background:#ff5f56;}
+.yellow{background:#ffbd2e;}
+.green{background:#27c93f;}
+
+.term-body{
+    padding:24px;
+    height:460px;
+    overflow:hidden;
+    position:relative;
+}
+
+.term-line{
+    font-size:14px;
+    line-height:1.7;
+    color:var(--green);
+    opacity:0;
+    animation:appear 1s forwards;
+}
+
+.term-line:nth-child(odd){
+    color:var(--cyan);
+}
+
+@keyframes appear{
+    to{
+        opacity:1;
     }
+}
 
-    .blog-meta {
-      font-size: 0.9rem;
-      color: #adb5bd;
+/* PANELS */
+
+.grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(280px,1fr));
+    gap:24px;
+}
+
+.card{
+    background:rgba(25,25,25,0.92);
+    border:1px solid #2a2a2a;
+    border-radius:20px;
+    padding:24px;
+    transition:0.3s;
+    position:relative;
+    overflow:hidden;
+}
+
+.card:hover{
+    transform:translateY(-6px);
+    border-color:var(--green);
+}
+
+.card h3{
+    color:var(--orange);
+    margin-bottom:18px;
+    font-size:18px;
+}
+
+.tag{
+    display:inline-block;
+    padding:8px 12px;
+    margin:5px;
+    border-radius:999px;
+    background:#222;
+    color:var(--green);
+    border:1px solid #303030;
+    font-size:13px;
+}
+
+/* 12 UI ANIMATIONS */
+
+.ui-bars{
+    display:flex;
+    gap:6px;
+    align-items:flex-end;
+    height:70px;
+}
+
+.ui-bars span{
+    width:12px;
+    background:var(--green);
+    animation:bounce 1s infinite;
+}
+
+.ui-bars span:nth-child(2){animation-delay:0.2s;}
+.ui-bars span:nth-child(3){animation-delay:0.4s;}
+.ui-bars span:nth-child(4){animation-delay:0.6s;}
+.ui-bars span:nth-child(5){animation-delay:0.8s;}
+
+@keyframes bounce{
+    0%,100%{height:20px;}
+    50%{height:65px;}
+}
+
+.spinner{
+    width:60px;
+    height:60px;
+    border:4px solid #333;
+    border-top:4px solid var(--pink);
+    border-radius:50%;
+    animation:spin 2s linear infinite;
+}
+
+@keyframes spin{
+    to{transform:rotate(360deg);}
+}
+
+.wave{
+    display:flex;
+    gap:4px;
+}
+
+.wave span{
+    width:10px;
+    height:10px;
+    border-radius:50%;
+    background:var(--cyan);
+    animation:wave 1s infinite;
+}
+
+.wave span:nth-child(2){animation-delay:0.1s;}
+.wave span:nth-child(3){animation-delay:0.2s;}
+.wave span:nth-child(4){animation-delay:0.3s;}
+.wave span:nth-child(5){animation-delay:0.4s;}
+
+@keyframes wave{
+    0%,100%{
+        transform:translateY(0);
+        opacity:0.3;
     }
-
-    a.blog-link {
-      color: #61dafb;
-      text-decoration: none;
+    50%{
+        transform:translateY(-14px);
+        opacity:1;
     }
-    a.blog-link:hover {
-      text-decoration: underline;
-    }
-  </style>
-  
-  <body>
+}
 
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-      <div class="container">
+.glow-box{
+    width:100%;
+    height:70px;
+    border-radius:12px;
+    background:linear-gradient(90deg,var(--purple),var(--cyan));
+    animation:glow 3s infinite alternate;
+}
 
-  <div class="space-bg">
-    <div class="stars"></div>
-    <div class="astronaut"></div>
-    <div class="astronaut"></div>
-    <div class="astronaut"></div>
-    <div class="astronaut"></div>
-    <div class="astronaut"></div>
-  </div>
+@keyframes glow{
+    from{filter:blur(0px);}
+    to{filter:blur(4px);}
+}
 
-<div class="toast" role="alert" aria-live="assertive" aria-atomic="true">
-  <div class="toast-header">
-    <img src="..." class="rounded me-2" alt="...">
-    <strong class="me-auto">Psycho Theraphy ideas</strong>
-    <small>34 mins ago</small>
-    <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
-  </div>
-  <div class="toast-body">
- We Ensure Mental Health Wellbeing is Comming
-  </div>
+footer{
+    padding:50px;
+    text-align:center;
+    color:#888;
+    font-size:13px;
+}
+
+/* SCROLLBAR */
+
+::-webkit-scrollbar{
+    width:10px;
+}
+
+::-webkit-scrollbar-thumb{
+    background:#333;
+    border-radius:10px;
+}
+</style>
+</head>
+
+<body>
+
+<div class="bg-grid"></div>
+
+<!-- SVG FLYERS -->
+
+<svg class="flyer fly1" viewBox="0 0 200 80">
+<polygon points="0,40 80,10 180,40 80,70" fill="#66D9EF"/>
+</svg>
+
+<svg class="flyer fly2" viewBox="0 0 200 80">
+<polygon points="0,40 80,10 180,40 80,70" fill="#F92672"/>
+</svg>
+
+<svg class="flyer fly3" viewBox="0 0 200 80">
+<polygon points="0,40 80,10 180,40 80,70" fill="#A6E22E"/>
+</svg>
+
+<!-- STREAMS -->
+
+<div class="stream s1">
+systemctl start telemetry-engine --mesh satellite uplink packet relay neural gateway mqttnet local-llm
 </div>
 
-        
-      </div>
-    </nav>
+<div class="stream s2">
+packet.stream node.bootstrap live.logger thermal.sensor gateway.connect orbital.signal telemetry.sync
+</div>
 
-   
-        
+<div class="stream s3">
+prompt.render monokai.ui neural.flow svg.animation signal.mesh cloud.telemetry packet.exchange
+</div>
 
+<header>
 
+<div class="hero">
 
-        <br>
-        <br>
+<div class="title">
+<h1>OLE OLESSIALL</h1>
 
-        <br>
-        <br>
-<!-- KEEPING ONLY UNIQUE VIDEOS -->
+<h2>
+Lokal LLM • Monokai UI • Telemetry Streams • SVG Motion Engine
+</h2>
 
-<center>
-<iframe width="560" height="315"
-src="https://www.youtube.com/embed/c0o_vEfhJDE?si=m399alv10CdbEOik"
-title="YouTube video player" frameborder="0"
-allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
-</center>
+<div class="signature">
+[ developer.signature :: Ole_Olessiall ]
+</div>
+</div>
 
-<br><br>
+<div class="svg-area">
 
-<center>
-<!-- KEEPING ONLY UNIQUE VIDEOS -->
+<svg width="100%" height="300" viewBox="0 0 600 300">
 
-<center>
-<iframe width="560" height="315"
-src="https://www.youtube.com/embed/c0o_vEfhJDE?si=m399alv10CdbEOik"
-title="YouTube video player" frameborder="0"
-allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
-</center>
+<defs>
+<linearGradient id="grad1">
+<stop offset="0%" stop-color="#A6E22E"/>
+<stop offset="100%" stop-color="#66D9EF"/>
+</linearGradient>
+</defs>
 
-<br><br>
+<circle cx="300" cy="150" r="90"
+fill="none"
+stroke="url(#grad1)"
+stroke-width="4">
 
-<center>
-<iframe width="560" height="315"
-src="https://www.youtube.com/embed/JG0w1Ig3eyA?si=eqUiiUHIr1V2jxiL"
-title="YouTube video player" frameborder="0"
-allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
-</center>
+<animate attributeName="r"
+values="90;110;90"
+dur="5s"
+repeatCount="indefinite"/>
 
-<br><br>
+</circle>
 
-<center>
-<iframe width="560" height="315"
-src="https://www.youtube.com/embed/EEvKQjg4nOo?si=fKE84QanYlECJR57"
-title="YouTube video player" frameborder="0"
-allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
-</center>
+<circle cx="300" cy="150" r="140"
+fill="none"
+stroke="#F92672"
+stroke-opacity="0.2"
+stroke-width="2">
 
-<br><br>
+<animateTransform
+attributeName="transform"
+type="rotate"
+from="0 300 150"
+to="360 300 150"
+dur="20s"
+repeatCount="indefinite"/>
 
-<center>
-<iframe width="560" height="315"
-src="https://www.youtube.com/embed/WRRdSm4ZjX4?si=97X9s2dtGUmiQaCt"
-title="YouTube video player" frameborder="0"
-allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
-</center>
+</circle>
 
-<br><br>
+<path
+d="M120 150 Q300 30 480 150"
+stroke="#FD971F"
+stroke-width="3"
+fill="none">
 
-<center>
-<iframe width="560" height="315"
-src="https://www.youtube.com/embed/cqLb9hNWd8c?si=YMH0iZSXmYCAwfdo"
-title="YouTube video player" frameborder="0"
-allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
-</center>
+<animate
+attributeName="d"
+dur="4s"
+repeatCount="indefinite"
+values="
+M120 150 Q300 30 480 150;
+M120 150 Q300 250 480 150;
+M120 150 Q300 30 480 150
+"/>
 
-<br><br>
+</path>
 
-<center>
-<iframe width="560" height="315"
-src="https://www.youtube.com/embed/QX6_aUvUWUQ?si=MbULaL_0LIWSX2XH"
-title="YouTube video player" frameborder="0"
-allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
-</center>
+</svg>
 
-<br><br>
+</div>
+</div>
 
-<center>
-<iframe width="560" height="315"
-src="https://www.youtube.com/embed/e10YQeowkhc?si=GmYG98Xxx-DXsAX1"
-title="YouTube video player" frameborder="0"
-allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
-</center>
+</header>
 
-<br><br>
+<main>
 
-<center>
-<iframe width="560" height="315"
-src="https://www.youtube.com/embed/V3vhXQy48jo?si=kmrZsovzDzC--9U2"
-title="YouTube video player" frameborder="0"
-allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
-</center>
+<!-- TERMINAL -->
 
-<br><br>
+<section class="terminal">
 
-<center>
-<iframe width="560" height="315"
-src="https://www.youtube.com/embed/RFuYcIy6Vxc?si=0tqDBzfWG3E2Mlus"
-title="YouTube video player" frameborder="0"
-allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
-</center>
+<div class="term-top">
+<div class="dot red"></div>
+<div class="dot yellow"></div>
+<div class="dot green"></div>
+</div>
 
-<br><br>
+<div class="term-body" id="terminalBody"></div>
 
-</center>
+</section>
 
-<br><br>
+<!-- CARDS -->
 
-<center>
-<iframe width="560" height="315"
-src="https://www.youtube.com/embed/EEvKQjg4nOo?si=fKE84QanYlECJR57"
-title="YouTube video player" frameborder="0"
-allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
-</center>
+<div class="grid">
 
-<br><br>
+<div class="card">
+<h3>Prompt Libraries</h3>
 
-<center>
-<iframe width="560" height="315"
-src="https://www.youtube.com/embed/WRRdSm4ZjX4?si=97X9s2dtGUmiQaCt"
-title="YouTube video player" frameborder="0"
-allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
-</center>
+<div class="tag">LLM Prompt Forge</div>
+<div class="tag">Code Architect</div>
+<div class="tag">SVG Motion</div>
+<div class="tag">Telemetry Vision</div>
+<div class="tag">Node Mesh</div>
+<div class="tag">SystemCTL Flow</div>
+<div class="tag">Packet Rendering</div>
 
-<br><br>
+</div>
 
-<center>
-<iframe width="560" height="315"
-src="https://www.youtube.com/embed/cqLb9hNWd8c?si=YMH0iZSXmYCAwfdo"
-title="YouTube video player" frameborder="0"
-allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
-</center>
+<div class="card">
+<h3>Skills Board</h3>
 
-<br><br>
+<div class="tag">Node.js</div>
+<div class="tag">MQTT.Net</div>
+<div class="tag">Telemetry</div>
+<div class="tag">Network Streams</div>
+<div class="tag">Satellite Mesh</div>
+<div class="tag">Prompt Design</div>
+<div class="tag">Realtime Dashboards</div>
+<div class="tag">SVG Systems</div>
 
-<center>
-<iframe width="560" height="315"
-src="https://www.youtube.com/embed/QX6_aUvUWUQ?si=MbULaL_0LIWSX2XH"
-title="YouTube video player" frameborder="0"
-allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
-</center>
+</div>
 
-<br><br>
+<div class="card">
+<h3>UI Animation #1</h3>
 
-<center>
-<iframe width="560" height="315"
-src="https://www.youtube.com/embed/e10YQeowkhc?si=GmYG98Xxx-DXsAX1"
-title="YouTube video player" frameborder="0"
-allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
-</center>
+<div class="ui-bars">
+<span></span>
+<span></span>
+<span></span>
+<span></span>
+<span></span>
+</div>
 
-<br><br>
+</div>
 
-<center>
-<iframe width="560" height="315"
-src="https://www.youtube.com/embed/V3vhXQy48jo?si=kmrZsovzDzC--9U2"
-title="YouTube video player" frameborder="0"
-allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
-</center>
+<div class="card">
+<h3>UI Animation #2</h3>
 
-<br><br>
+<div class="spinner"></div>
 
-<center>
-<iframe width="560" height="315"
-src="https://www.youtube.com/embed/RFuYcIy6Vxc?si=0tqDBzfWG3E2Mlus"
-title="YouTube video player" frameborder="0"
-allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
-</center>
+</div>
 
-<br><br>
+<div class="card">
+<h3>UI Animation #3</h3>
 
+<div class="wave">
+<span></span>
+<span></span>
+<span></span>
+<span></span>
+<span></span>
+</div>
 
-        <br>
-        <br>
+</div>
 
-        <br>
-        <br>
+<div class="card">
+<h3>UI Animation #4</h3>
 
-        <br>
-        <br>
-        
+<div class="glow-box"></div>
 
+</div>
 
-     
-    </div>
+<div class="card">
+<h3>LLM Focus</h3>
 
-   
+<p style="line-height:1.8;color:#bbb;">
+Bygg lokale systemer.
+Arbeid i stillhet.
+Skap kode som lever alene.
+La terminalen være verkstedet.
+La hver commit være en signatur.
+</p>
 
-    <!-- Bootstrap 5 JS Bundle (includes Popper) -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</div>
 
-  </body>
+<div class="card">
+<h3>Design Streams</h3>
+
+<p style="line-height:1.8;color:#bbb;">
+Prompt animations • Neural overlays • Live packet motion • Mesh pulse engines • Thermal graphs • Satellite relays • Floating SVG carriers
+</p>
+
+</div>
+
+</div>
+
+</main>
+
+<footer>
+OLE OLESSIALL • MONOKAI SYSTEM INTERFACE • LOCAL LLM TERMINAL • SVG FLOW ENGINE
+</footer>
+
+<script>
+
+/* 150 TERMINAL COMMANDS */
+
+const commands = [];
+
+for(let i=1;i<=150;i++){
+
+commands.push(
+`[${i}] systemctl start neural-packet-${i} --telemetry --mesh --prompt-engine`
+);
+
+}
+
+const terminal = document.getElementById("terminalBody");
+
+commands.forEach((cmd,index)=>{
+
+const line = document.createElement("div");
+
+line.className = "term-line";
+
+line.style.animationDelay = `${index * 0.05}s`;
+
+line.innerHTML =
+`<span style="color:#FD971F;">ole@llm-core</span>:~$ ${cmd}`;
+
+terminal.appendChild(line);
+
+});
+
+/* AUTO SCROLL */
+
+setInterval(()=>{
+
+terminal.scrollTop += 2;
+
+if(
+terminal.scrollTop + terminal.clientHeight >=
+terminal.scrollHeight
+){
+terminal.scrollTop = 0;
+}
+
+},40);
+
+</script>
+
+</body>
 </html>
