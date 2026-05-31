@@ -1,0 +1,919 @@
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FBI Operational & Sentinel Technology Hub</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        fbiyellow: '#FFC80A',
+                        fbiyellowdark: '#D9A300',
+                        fbinavy: '#0A1128',
+                        fbinavycard: '#111E38',
+                        fbicyan: '#00F0FF',
+                    },
+                    animation: {
+                        'pulse-fast': 'pulse 1.5s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                        'scan-line': 'scan 3s linear infinite',
+                    },
+                    keyframes: {
+                        scan: {
+                            '0%': { transform: 'translateY(0%)' },
+                            '50%': { transform: 'translateY(100%)' },
+                            '100%': { transform: 'translateY(0%)' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;700;800&family=Public+Sans:wght@300;400;600;800&display=swap');
+        
+        body {
+            font-family: 'Public Sans', sans-serif;
+            background-color: #050A18;
+        }
+        
+        .mono {
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        /* Tactical scanline backdrop */
+        .hud-grid {
+            background-size: 40px 40px;
+            background-image: 
+                linear-gradient(to right, rgba(255, 200, 10, 0.03) 1px, transparent 1px),
+                linear-gradient(to bottom, rgba(255, 200, 10, 0.03) 1px, transparent 1px);
+        }
+
+        /* Custom scrollbar for tactical console look */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #0A1128;
+            border-left: 1px solid rgba(255, 200, 10, 0.2);
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #FFC80A;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #D9A300;
+        }
+    </style>
+</head>
+<body class="text-slate-100 min-h-screen relative p-3 md:p-6 hud-grid antialiased select-none">
+
+    <!-- PRIMARY TACTICAL YELLOW FRAME -->
+    <div class="fixed inset-0 border-[6px] md:border-[12px] border-fbiyellow pointer-events-none z-50 flex flex-col justify-between p-1 md:p-2">
+        <!-- Frame Corners / Technical Marks -->
+        <div class="flex justify-between w-full text-[8px] md:text-[10px] font-bold text-fbinavy mono bg-fbiyellow px-2 select-none uppercase tracking-widest">
+            <span>SECURE GATEWAY // ACCESS LEVEL: DEPUTY DIRECTOR</span>
+            <span class="hidden md:inline">SYSTEM: SENTINEL CLOUD v8.42</span>
+            <span id="system-time-stamp">2026-05-31 02:26:00 Z</span>
+        </div>
+        <div class="flex justify-between w-full text-[8px] md:text-[10px] font-bold text-fbinavy bg-fbiyellow px-2 select-none uppercase tracking-widest mt-auto">
+            <span>LAW ENFORCEMENT SENSITIVE // FOUO</span>
+            <span class="hidden md:inline">PORTABLE BIOMETRIC LINKED (QC-904)</span>
+            <span>DOMESTIC / INTERNATIONAL GRID</span>
+        </div>
+    </div>
+
+    <!-- MAIN APP CANVAS CONTAINER (Inside the Frame) -->
+    <div class="max-w-7xl mx-auto my-6 md:my-8 px-4 md:px-8 pb-16 relative">
+        
+        <!-- HEADER BRIEFING BANNER -->
+        <header class="border-b-4 border-fbiyellow pb-6 mb-8 mt-2">
+            <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                <div>
+                    <div class="flex items-center gap-3">
+                        <span class="bg-fbiyellow text-fbinavy text-xs font-black px-2 py-0.5 tracking-wider uppercase rounded">CLASSIFIED CLOUD</span>
+                        <div class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></div>
+                        <span class="mono text-emerald-400 text-xs tracking-widest uppercase">SENTINEL-ONLINE // ALL NODES OPERATIONAL</span>
+                    </div>
+                    <h1 class="text-3xl md:text-5xl font-extrabold text-white mt-2 tracking-tight">
+                        FBI TECHNOLOGY <span class="text-fbiyellow">&amp;</span> OPERATIONS PORTAL
+                    </h1>
+                    <p class="text-slate-400 text-sm md:text-base mt-1 max-w-2xl">
+                        A centralized public transparency system demonstrating the integration of <strong class="text-slate-200">Sentinel Case Management</strong>, <strong class="text-slate-200">Quick Capture Biometrics</strong>, and active global tactical operations.
+                    </p>
+                </div>
+                <!-- Mini Tech Summary Card -->
+                <div class="border border-fbiyellow/30 bg-fbinavycard/60 p-3 rounded text-xs mono space-y-1">
+                    <div class="text-fbiyellow font-bold">NODE TELEMETRY:</div>
+                    <div>• Active Captures: <span class="text-white font-bold" id="capture-counter">1,492</span></div>
+                    <div>• Case Load/Hr: <span class="text-white font-bold" id="caseload-counter">28,491</span></div>
+                    <div>• Biometric Handshakes: <span class="text-emerald-400 font-bold">STABLE</span></div>
+                </div>
+            </div>
+        </header>
+
+        <!-- MAIN GRID: Left Navigation Dashboard & Right Dynamic Console -->
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+            
+            <!-- LEFT CONTROL COLUMN (NAV & TELEMETRY CLOCK) -->
+            <div class="lg:col-span-4 space-y-6">
+                
+                <!-- TACTICAL BRIEFING NAVIGATION PANEL -->
+                <div class="border-2 border-fbiyellow bg-fbinavy p-4 rounded-lg relative overflow-hidden">
+                    <div class="absolute top-0 right-0 bg-fbiyellow text-fbinavy text-[10px] font-bold px-2 py-0.5 uppercase tracking-wider">
+                        PORTAL SECTIONS
+                    </div>
+                    <h2 class="text-xl font-extrabold text-fbiyellow mb-4 uppercase flex items-center gap-2">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
+                        Operational Blueprint
+                    </h2>
+                    
+                    <p class="text-xs text-slate-400 mb-4">Click any subsection below to jump directly to its digital breakdown, or interact with systems below.</p>
+                    
+                    <nav class="space-y-2">
+                        <a href="#section-1" class="flex items-center justify-between p-2.5 rounded border border-slate-800 bg-fbinavycard hover:border-fbiyellow transition duration-200 group">
+                            <div class="flex items-center gap-3">
+                                <span class="mono text-fbiyellow font-bold text-xs bg-fbiyellow/10 px-2 py-1 rounded">01</span>
+                                <span class="text-sm font-semibold text-slate-200 group-hover:text-fbiyellow">Operations Dashboard</span>
+                            </div>
+                            <svg class="w-4 h-4 text-slate-500 group-hover:text-fbiyellow" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+                        </a>
+                        <a href="#section-2" class="flex items-center justify-between p-2.5 rounded border border-slate-800 bg-fbinavycard hover:border-fbiyellow transition duration-200 group">
+                            <div class="flex items-center gap-3">
+                                <span class="mono text-fbiyellow font-bold text-xs bg-fbiyellow/10 px-2 py-1 rounded">02</span>
+                                <span class="text-sm font-semibold text-slate-200 group-hover:text-fbiyellow">Quick Capture Biometrics</span>
+                            </div>
+                            <svg class="w-4 h-4 text-slate-500 group-hover:text-fbiyellow" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+                        </a>
+                        <a href="#section-3" class="flex items-center justify-between p-2.5 rounded border border-slate-800 bg-fbinavycard hover:border-fbiyellow transition duration-200 group">
+                            <div class="flex items-center gap-3">
+                                <span class="mono text-fbiyellow font-bold text-xs bg-fbiyellow/10 px-2 py-1 rounded">03</span>
+                                <span class="text-sm font-semibold text-slate-200 group-hover:text-fbiyellow">Anatomy of Sentinel</span>
+                            </div>
+                            <svg class="w-4 h-4 text-slate-500 group-hover:text-fbiyellow" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+                        </a>
+                        <a href="#section-4" class="flex items-center justify-between p-2.5 rounded border border-slate-800 bg-fbinavycard hover:border-fbiyellow transition duration-200 group">
+                            <div class="flex items-center gap-3">
+                                <span class="mono text-fbiyellow font-bold text-xs bg-fbiyellow/10 px-2 py-1 rounded">04</span>
+                                <span class="text-sm font-semibold text-slate-200 group-hover:text-fbiyellow">Global Joint Task Forces</span>
+                            </div>
+                            <svg class="w-4 h-4 text-slate-500 group-hover:text-fbiyellow" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+                        </a>
+                        <a href="#section-5" class="flex items-center justify-between p-2.5 rounded border border-slate-800 bg-fbinavycard hover:border-fbiyellow transition duration-200 group">
+                            <div class="flex items-center gap-3">
+                                <span class="mono text-fbiyellow font-bold text-xs bg-fbiyellow/10 px-2 py-1 rounded">05</span>
+                                <span class="text-sm font-semibold text-slate-200 group-hover:text-fbiyellow">Technology Careers</span>
+                            </div>
+                            <svg class="w-4 h-4 text-slate-500 group-hover:text-fbiyellow" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+                        </a>
+                        <a href="#section-6" class="flex items-center justify-between p-2.5 rounded border border-slate-800 bg-fbinavycard hover:border-fbiyellow transition duration-200 group">
+                            <div class="flex items-center gap-3">
+                                <span class="mono text-fbiyellow font-bold text-xs bg-fbiyellow/10 px-2 py-1 rounded">06</span>
+                                <span class="text-sm font-semibold text-slate-200 group-hover:text-fbiyellow">Wanted Capture Engine</span>
+                            </div>
+                            <svg class="w-4 h-4 text-slate-500 group-hover:text-fbiyellow" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+                        </a>
+                        <a href="#section-7" class="flex items-center justify-between p-2.5 rounded border border-slate-800 bg-fbinavycard hover:border-fbiyellow transition duration-200 group">
+                            <div class="flex items-center gap-3">
+                                <span class="mono text-fbiyellow font-bold text-xs bg-fbiyellow/10 px-2 py-1 rounded">07</span>
+                                <span class="text-sm font-semibold text-slate-200 group-hover:text-fbiyellow">Data Privacy &amp; Audits</span>
+                            </div>
+                            <svg class="w-4 h-4 text-slate-500 group-hover:text-fbiyellow" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+                        </a>
+                    </nav>
+                </div>
+
+                <!-- LIVE CONSOLE & BIOMETRIC SIMULATION LINK -->
+                <div class="border-2 border-fbiyellow bg-slate-950 p-4 rounded-lg relative overflow-hidden">
+                    <div class="flex items-center justify-between border-b border-fbiyellow/30 pb-2 mb-3">
+                        <h3 class="mono text-xs font-black text-fbiyellow tracking-wider flex items-center gap-1.5">
+                            <span class="w-2 h-2 rounded-full bg-red-500 animate-pulse"></span>
+                            TACTICAL HARDWARE: QC-904
+                        </h3>
+                        <span class="text-[10px] text-slate-500 font-bold mono">BATTERY: 98%</span>
+                    </div>
+
+                    <!-- Interactive Biometrics Scan Simulator -->
+                    <div class="space-y-3">
+                        <p class="text-xs text-slate-300">
+                            Simulate field deployment of the <strong class="text-fbiyellow">Quick Capture</strong> fingerprint terminal scanning in a foreign combat zone.
+                        </p>
+                        
+                        <!-- Scanner Surface -->
+                        <div id="scanner-pad" class="relative h-44 bg-slate-900 border-2 border-slate-800 hover:border-fbiyellow/50 rounded-lg overflow-hidden flex flex-col items-center justify-center cursor-pointer transition group">
+                            <!-- Scanning Laser Bar -->
+                            <div id="scan-laser" class="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-transparent via-fbiyellow to-transparent shadow-[0_0_10px_#FFC80A] hidden"></div>
+                            
+                            <!-- Fingerprint SVG Icon -->
+                            <svg id="fingerprint-svg" class="w-20 h-20 text-slate-600 group-hover:text-fbiyellow/40 transition-colors" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15.93c-3.13-.41-5.59-3.09-5.93-6.25h1.9c.31 2.11 1.83 3.81 3.86 4.19l.17.06v2zm3.93-6.25c-.34 3.16-2.8 5.84-5.93 6.25v-2l.17-.06c2.03-.38 3.55-2.08 3.86-4.19h1.9zm-3.93-2.18V7.5c1.4-.2 2.5-1.3 2.5-2.5s-1.1-2.5-2.5-2.5S9.5 3.8 9.5 5s1.1 2.3 2.5 2.5v2c-2.8.2-5 2.5-5 5.3s2.2 5.1 5 5.3v-2.1c-1.7-.2-3-1.6-3-3.2s1.3-3 3-3.2V11c2.8-.2 5-2.5 5-5.3s-2.2-5.1-5-5.3v2.1c1.7.2 3 1.6 3 3.2s-1.3 3-3 3.2z"/>
+                            </svg>
+                            
+                            <span id="scan-prompt" class="mt-2 text-[11px] uppercase tracking-widest text-slate-400 font-bold mono group-hover:text-fbiyellow">
+                                Click to Initiate Print Scan
+                            </span>
+                        </div>
+
+                        <!-- Scan Status / Terminal Outputs -->
+                        <div id="scan-console" class="bg-slate-900 border border-slate-800 p-2.5 rounded text-xs mono space-y-1 select-text">
+                            <div class="text-slate-500">&gt;_ Terminal standby...</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- LIVE CONSOLE LOGS TICKER -->
+                <div class="border border-slate-800 bg-fbinavycard/40 p-4 rounded-lg">
+                    <div class="flex items-center justify-between mb-2">
+                        <span class="text-xs font-extrabold text-slate-400 tracking-wider uppercase">Live Sentinel Feed</span>
+                        <span class="text-[10px] text-slate-500 uppercase mono">Encrypted Stream</span>
+                    </div>
+                    <div id="live-log-container" class="space-y-1.5 h-40 overflow-y-auto text-[11px] mono text-slate-400 leading-snug">
+                        <!-- Instantiated by JS -->
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- RIGHT BRIEFING CONSOLE (THE 7 SECTIONS) -->
+            <div class="lg:col-span-8 space-y-12">
+                
+                <!-- SECTION 1: Operations Dashboard -->
+                <section id="section-1" class="border-2 border-fbiyellow rounded-lg overflow-hidden bg-fbinavy relative">
+                    <!-- Section Yellow Title Header -->
+                    <div class="bg-fbiyellow p-3 flex justify-between items-center text-fbinavy">
+                        <div class="flex items-center gap-2">
+                            <span class="text-xs font-black px-2 py-0.5 border-2 border-fbinavy uppercase mono">DEP-01</span>
+                            <h3 class="text-lg font-black uppercase tracking-wider">Operations Dashboard: Real-Time Field Impact</h3>
+                        </div>
+                        <span class="hidden md:inline text-xs font-extrabold mono">[ CLASSIFIED DECLASSIFIED ]</span>
+                    </div>
+                    
+                    <div class="p-6 space-y-6">
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <!-- Metric 1 -->
+                            <div class="border border-slate-700 bg-slate-950 p-4 rounded relative overflow-hidden group hover:border-fbiyellow/60 transition">
+                                <div class="text-[10px] text-slate-400 uppercase font-black tracking-wider mono">Violent Crime Arrests (YTD)</div>
+                                <div class="text-3xl font-extrabold text-fbiyellow mt-1 mono" id="arrests-metric">14,281</div>
+                                <div class="text-[10px] text-emerald-400 mt-1 flex items-center gap-1">
+                                    <span class="inline-block w-1.5 h-1.5 rounded-full bg-emerald-400"></span> 
+                                    Sentinel Sync: Live
+                                </div>
+                            </div>
+                            <!-- Metric 2 -->
+                            <div class="border border-slate-700 bg-slate-950 p-4 rounded relative overflow-hidden group hover:border-fbiyellow/60 transition">
+                                <div class="text-[10px] text-slate-400 uppercase font-black tracking-wider mono">Exploited Victims Rescued</div>
+                                <div class="text-3xl font-extrabold text-fbiyellow mt-1 mono" id="rescued-metric">1,894</div>
+                                <div class="text-[10px] text-emerald-400 mt-1 flex items-center gap-1">
+                                    <span class="inline-block w-1.5 h-1.5 rounded-full bg-emerald-400"></span> 
+                                    Immediate Safe Passage Logs
+                                </div>
+                            </div>
+                            <!-- Metric 3 -->
+                            <div class="border border-slate-700 bg-slate-950 p-4 rounded relative overflow-hidden group hover:border-fbiyellow/60 transition">
+                                <div class="text-[10px] text-slate-400 uppercase font-black tracking-wider mono">Fentanyl Intercepted (KG)</div>
+                                <div class="text-3xl font-extrabold text-fbiyellow mt-1 mono" id="fentanyl-metric">6,492.8</div>
+                                <div class="text-[10px] text-emerald-400 mt-1 flex items-center gap-1">
+                                    <span class="inline-block w-1.5 h-1.5 rounded-full bg-emerald-400"></span> 
+                                    Task Force Integration Active
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="space-y-4">
+                            <h4 class="text-base font-bold text-white border-b border-slate-800 pb-2">The Digital Connection</h4>
+                            <p class="text-slate-300 text-sm leading-relaxed">
+                                Field operations represent the physical execution of justice. When a regional FBI Safe Streets Task Force executes an arrest or makes a narcotics seizure, the action is cataloged onto the local unit's digital platform. Using state-of-the-art encryption protocols, this telemetry data integrates natively into <strong class="text-fbiyellow">Sentinel</strong>—the FBI’s core digital case file system. 
+                            </p>
+                            <p class="text-slate-300 text-sm leading-relaxed">
+                                This automated pipeline ensures headquarters possesses absolute, millisecond-accurate updates on tactical deployments, allowing the Director and regional Special Agents in Charge to strategically allocate resources where criminal threat profiles are most severe.
+                            </p>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- SECTION 2: Quick Capture: Biometrics on the Frontlines -->
+                <section id="section-2" class="border-2 border-fbiyellow rounded-lg overflow-hidden bg-fbinavy relative">
+                    <div class="bg-fbiyellow p-3 flex justify-between items-center text-fbinavy">
+                        <div class="flex items-center gap-2">
+                            <span class="text-xs font-black px-2 py-0.5 border-2 border-fbinavy uppercase mono">DEP-02</span>
+                            <h3 class="text-lg font-black uppercase tracking-wider">Quick Capture: Biometrics on the Frontlines</h3>
+                        </div>
+                        <span class="hidden md:inline text-xs font-extrabold mono">[ REMOTE ENCRYPT ]</span>
+                    </div>
+                    
+                    <div class="p-6 space-y-6">
+                        <div class="flex flex-col md:flex-row gap-6">
+                            <div class="flex-1 space-y-4">
+                                <h4 class="text-lg font-bold text-white">Rugged Tactical Biometric Identification</h4>
+                                <p class="text-slate-300 text-sm leading-relaxed">
+                                    Deploying agents into hostile, rural, or infrastructure-poor locations demands hardware that functions independently of municipal power or hardwired communications. The <strong class="text-fbiyellow">Quick Capture</strong> platform is a robust, 22-pound self-contained tactical system housed in an impact-resistant, weatherproof backpack.
+                                </p>
+                                <div class="bg-slate-950 p-4 border border-slate-800 rounded">
+                                    <h5 class="text-xs font-extrabold text-fbiyellow uppercase tracking-wider mb-2">Technical Hardware Array</h5>
+                                    <ul class="text-xs text-slate-400 space-y-1.5 list-disc pl-4 mono">
+                                        <li>High-Efficiency Multi-Spectral Fingerprint Scanner</li>
+                                        <li>Ruggedized, Sunlight-Readable Panasonic Toughbook Terminal</li>
+                                        <li>Military-Grade Dual-Orbiter Encrypted Satellite Antenna</li>
+                                        <li>LiFePO4 Tactical Battery Core (24-Hour Continuous Operation)</li>
+                                    </ul>
+                                </div>
+                            </div>
+                            
+                            <!-- System architecture visual -->
+                            <div class="w-full md:w-72 border border-slate-800 bg-slate-950 p-4 rounded flex flex-col justify-between">
+                                <div class="space-y-3">
+                                    <span class="text-[10px] text-fbiyellow uppercase font-black tracking-widest mono block">Capture Sequence Pipeline</span>
+                                    <div class="space-y-2 text-xs">
+                                        <div class="p-2 border border-slate-800 bg-slate-900 rounded flex items-center gap-2">
+                                            <span class="w-4 h-4 rounded-full bg-slate-800 flex items-center justify-center text-[10px] font-bold text-fbiyellow mono">1</span>
+                                            <span class="text-slate-300">Biometric Scan Complete</span>
+                                        </div>
+                                        <div class="p-2 border border-slate-800 bg-slate-900 rounded flex items-center gap-2">
+                                            <span class="w-4 h-4 rounded-full bg-slate-800 flex items-center justify-center text-[10px] font-bold text-fbiyellow mono">2</span>
+                                            <span class="text-slate-300">256-bit AES Encryption</span>
+                                        </div>
+                                        <div class="p-2 border border-slate-800 bg-slate-900 rounded flex items-center gap-2">
+                                            <span class="w-4 h-4 rounded-full bg-slate-800 flex items-center justify-center text-[10px] font-bold text-fbiyellow mono">3</span>
+                                            <span class="text-slate-300">Satellite Relay Up-link</span>
+                                        </div>
+                                        <div class="p-2 border border-slate-800 bg-slate-900 rounded flex items-center gap-2">
+                                            <span class="w-4 h-4 rounded-full bg-slate-800 flex items-center justify-center text-[10px] font-bold text-fbiyellow mono">4</span>
+                                            <span class="text-slate-300">Sentinel Match Result</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <button onclick="triggerQuickScan()" class="mt-4 bg-fbiyellow text-fbinavy hover:bg-fbiyellowdark text-xs font-extrabold py-2 px-4 rounded transition duration-200 uppercase tracking-wider mono w-full">
+                                    Run Demo Scan
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- SECTION 3: Anatomy of a Digital Investigation: Inside Sentinel -->
+                <section id="section-3" class="border-2 border-fbiyellow rounded-lg overflow-hidden bg-fbinavy relative">
+                    <div class="bg-fbiyellow p-3 flex justify-between items-center text-fbinavy">
+                        <div class="flex items-center gap-2">
+                            <span class="text-xs font-black px-2 py-0.5 border-2 border-fbinavy uppercase mono">DEP-03</span>
+                            <h3 class="text-lg font-black uppercase tracking-wider">Anatomy of a Digital Investigation: Inside Sentinel</h3>
+                        </div>
+                        <span class="hidden md:inline text-xs font-extrabold mono">[ DATA INTEGRITY ]</span>
+                    </div>
+                    
+                    <div class="p-6 space-y-6">
+                        <p class="text-slate-300 text-sm leading-relaxed">
+                            Historically, federal investigations suffered under mountains of physical paperwork and sluggish cross-office couriers. The transition to the <strong class="text-fbiyellow">Sentinel</strong> platform transformed the FBI into a modern, agile, digital-first threat intelligence organization. Sentinel orchestrates every segment of a federal case’s lifecycle inside one unified interface.
+                        </p>
+
+                        <!-- Step-by-Step Interactive Pipeline -->
+                        <div class="border border-slate-800 bg-slate-950 p-5 rounded-lg">
+                            <h4 class="text-xs font-extrabold text-fbiyellow uppercase tracking-widest mb-4 mono">Interactive Digital Investigation Map (Click Steps)</h4>
+                            
+                            <!-- Timeline UI -->
+                            <div class="grid grid-cols-1 md:grid-cols-4 gap-3 relative z-10">
+                                <!-- Step 1 -->
+                                <div onclick="selectWorkflowStep(1)" id="step-btn-1" class="workflow-card border-2 border-fbiyellow p-3 bg-fbinavycard/50 rounded cursor-pointer transition hover:border-fbiyellow/80">
+                                    <div class="text-[10px] text-slate-400 font-bold mono uppercase">Phase 01</div>
+                                    <div class="text-sm font-extrabold text-fbiyellow mt-1">Incident Intake</div>
+                                    <p class="text-[11px] text-slate-400 mt-1 line-clamp-2">Tips or digital forensics logged. Electronic initial report constructed.</p>
+                                </div>
+                                <!-- Step 2 -->
+                                <div onclick="selectWorkflowStep(2)" id="step-btn-2" class="workflow-card border-2 border-slate-800 p-3 bg-fbinavycard/20 rounded cursor-pointer transition hover:border-fbiyellow/80">
+                                    <div class="text-[10px] text-slate-400 font-bold mono uppercase">Phase 02</div>
+                                    <div class="text-sm font-extrabold text-slate-300 mt-1">Workbox Allocation</div>
+                                    <p class="text-[11px] text-slate-400 mt-1 line-clamp-2">Case routed to specialized regional squad workbox for swift human validation.</p>
+                                </div>
+                                <!-- Step 3 -->
+                                <div onclick="selectWorkflowStep(3)" id="step-btn-3" class="workflow-card border-2 border-slate-800 p-3 bg-fbinavycard/20 rounded cursor-pointer transition hover:border-fbiyellow/80">
+                                    <div class="text-[10px] text-slate-400 font-bold mono uppercase">Phase 03</div>
+                                    <div class="text-sm font-extrabold text-slate-300 mt-1">Federated Query</div>
+                                    <p class="text-[11px] text-slate-400 mt-1 line-clamp-2">Automated system cross-references IC databases, biometric lists, & active grids.</p>
+                                </div>
+                                <!-- Step 4 -->
+                                <div onclick="selectWorkflowStep(4)" id="step-btn-4" class="workflow-card border-2 border-slate-800 p-3 bg-fbinavycard/20 rounded cursor-pointer transition hover:border-fbiyellow/80">
+                                    <div class="text-[10px] text-slate-400 font-bold mono uppercase">Phase 04</div>
+                                    <div class="text-sm font-extrabold text-slate-300 mt-1">Prosecutorial Pack</div>
+                                    <p class="text-[11px] text-slate-400 mt-1 line-clamp-2">Evidence locked to blockchain-grade logs for DOJ federal prosecution.</p>
+                                </div>
+                            </div>
+
+                            <!-- Detail viewer box -->
+                            <div id="step-details-container" class="mt-4 p-4 border border-slate-800 bg-slate-900 rounded text-xs leading-relaxed text-slate-300">
+                                <strong class="text-fbiyellow font-bold block mb-1">Phase 01 Detail: Incident Intake</strong>
+                                Every federal file begins here. Digital crime scene data, anonymous secure Web Portal tips, or physical security leads are indexed directly into the system. High-performance optical character recognition and metadata tagging organize the record, standardizing content structure instantaneously so the raw evidence is preserved and searchable.
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- SECTION 4: Global Operations & Joint Task Forces Hub -->
+                <section id="section-4" class="border-2 border-fbiyellow rounded-lg overflow-hidden bg-fbinavy relative">
+                    <div class="bg-fbiyellow p-3 flex justify-between items-center text-fbinavy">
+                        <div class="flex items-center gap-2">
+                            <span class="text-xs font-black px-2 py-0.5 border-2 border-fbinavy uppercase mono">DEP-04</span>
+                            <h3 class="text-lg font-black uppercase tracking-wider">Global Operations &amp; Joint Task Forces Hub</h3>
+                        </div>
+                        <span class="hidden md:inline text-xs font-extrabold mono">[ INTER-AGENCY ]</span>
+                    </div>
+                    
+                    <div class="p-6 space-y-6">
+                        <p class="text-slate-300 text-sm leading-relaxed">
+                            No agency succeeds alone. Threats span municipal boundaries, state lines, and sovereign borders. The <strong class="text-fbiyellow">Global Joint Task Forces</strong> interface highlights the deep level of integration shared between the FBI and its thousands of external partners.
+                        </p>
+
+                        <!-- Collaborative Blueprint Map simulation -->
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div class="border border-slate-800 bg-slate-950 p-4 rounded space-y-3">
+                                <h4 class="text-sm font-bold text-white uppercase tracking-wider flex items-center gap-2">
+                                    <span class="w-2.5 h-2.5 rounded-full bg-blue-500"></span>
+                                    Critical Response Integration
+                                </h4>
+                                <p class="text-xs text-slate-400 leading-relaxed">
+                                    During crisis incidents (hostage extraction, active saboteur, extreme cyber infrastructure compromise), the FBI’s Critical Incident Response Group (CIRG) deploys specialized units. When CIRG operates, tactical logistics feed directly back to local law enforcement offices.
+                                </p>
+                            </div>
+                            <div class="border border-slate-800 bg-slate-950 p-4 rounded space-y-3">
+                                <h4 class="text-sm font-bold text-white uppercase tracking-wider flex items-center gap-2">
+                                    <span class="w-2.5 h-2.5 rounded-full bg-fbiyellow animate-pulse"></span>
+                                    Biometric Interoperability
+                                </h4>
+                                <p class="text-xs text-slate-400 leading-relaxed">
+                                    A suspect intercepted by a state highway patrolman can have their prints digitized. If that patrol unit utilizes FBI-certified biometric hardware, the query crosses both Sentinel and international databases (like Interpol Red Notices) within seconds, keeping dangerous fugitives off local streets.
+                                </p>
+                            </div>
+                        </div>
+
+                        <!-- Active Joint Operations Dropdown Simulation -->
+                        <div class="border border-slate-800 bg-slate-950 p-4 rounded-lg">
+                            <label class="block text-xs font-extrabold text-fbiyellow uppercase tracking-wider mb-2 mono">Simulate Regional Inter-Agency Sync</label>
+                            <div class="flex flex-col sm:flex-row gap-3">
+                                <select id="taskforce-selector" onchange="updateTaskforceInfo()" class="bg-slate-900 border border-slate-700 text-slate-200 text-xs rounded p-2 focus:ring-1 focus:ring-fbiyellow focus:outline-none flex-1 mono">
+                                    <option value="jttf">Joint Terrorism Task Force (JTTF)</option>
+                                    <option value="vicap">Violent Criminal Apprehension Program (ViCAP)</option>
+                                    <option value="cyber">National Cyber Joint Investigative Task Force (NCIJTF)</option>
+                                </select>
+                                <div id="tf-status-badge" class="bg-emerald-500/10 border border-emerald-500 text-emerald-400 px-3 py-2 rounded text-xs font-bold uppercase tracking-wider flex items-center justify-center gap-1.5 mono">
+                                    <span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
+                                    Sync Status: Active
+                                </div>
+                            </div>
+                            <!-- Live interactive info -->
+                            <div id="taskforce-info" class="mt-3 p-3 bg-slate-900 rounded text-xs text-slate-400">
+                                <strong>Joint Terrorism Task Force (JTTF):</strong> Operates as a broad-based, multi-agency team of specialists. Integrates intelligence analysts, military experts, and local police. All terminal outputs immediately sync into federal Sentinel master files.
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- SECTION 5: Technology Careers: Building the Bureau’s Infrastructure -->
+                <section id="section-5" class="border-2 border-fbiyellow rounded-lg overflow-hidden bg-fbinavy relative">
+                    <div class="bg-fbiyellow p-3 flex justify-between items-center text-fbinavy">
+                        <div class="flex items-center gap-2">
+                            <span class="text-xs font-black px-2 py-0.5 border-2 border-fbinavy uppercase mono">DEP-05</span>
+                            <h3 class="text-lg font-black uppercase tracking-wider">Technology Careers: Building Infrastructure</h3>
+                        </div>
+                        <span class="hidden md:inline text-xs font-extrabold mono">[ JOIN THE TEAM ]</span>
+                    </div>
+                    
+                    <div class="p-6 space-y-6">
+                        <div class="flex flex-col md:flex-row gap-6 items-center">
+                            <div class="flex-1 space-y-4">
+                                <h4 class="text-xl font-black text-white">"You don't need a badge to protect the nation."</h4>
+                                <p class="text-slate-300 text-sm leading-relaxed">
+                                    Modern warfare and global crime are increasingly fought over keyboard networks and database queries. The infrastructure that supports Sentinel, translates Quick Capture biometric streams, and keeps FBI operations secure is constructed, maintained, and hardened by thousands of non-tactical professional staff.
+                                </p>
+                                <p class="text-slate-300 text-sm leading-relaxed">
+                                    We recruit premier software engineers, database administrators, digital forensic examiners, and biometrics engineers who seek to apply their skills to tasks that directly preserve national security.
+                                </p>
+                            </div>
+                            <!-- Recruiter Card -->
+                            <div class="w-full md:w-64 bg-slate-950 border border-slate-800 rounded p-4 text-center space-y-3">
+                                <div class="w-16 h-16 rounded-full bg-fbiyellow/10 border-2 border-fbiyellow mx-auto flex items-center justify-center">
+                                    <svg class="w-8 h-8 text-fbiyellow" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>
+                                </div>
+                                <h5 class="font-bold text-sm text-white">Find Your Department</h5>
+                                <p class="text-[11px] text-slate-400">Match your real-world professional specialties to live national security technical pipelines.</p>
+                                <div class="flex flex-col gap-1.5">
+                                    <button onclick="matchCareer('dev')" class="bg-fbinavy border border-fbiyellow text-fbiyellow hover:bg-fbiyellow hover:text-fbinavy text-xs font-bold py-1.5 rounded transition duration-200 mono">Software Engineering</button>
+                                    <button onclick="matchCareer('biometrics')" class="bg-fbinavy border border-fbiyellow text-fbiyellow hover:bg-fbiyellow hover:text-fbinavy text-xs font-bold py-1.5 rounded transition duration-200 mono">Biometric Systems</button>
+                                    <button onclick="matchCareer('ops')" class="bg-fbinavy border border-fbiyellow text-fbiyellow hover:bg-fbiyellow hover:text-fbinavy text-xs font-bold py-1.5 rounded transition duration-200 mono">Infrastructure Security</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Match Display Screen -->
+                        <div id="career-match-screen" class="p-4 border border-slate-800 bg-slate-950 rounded text-xs hidden">
+                            <!-- Dynamic Content -->
+                        </div>
+                    </div>
+                </section>
+
+                <!-- SECTION 6: The "Ten Most Wanted" Tracking & Capture Engine -->
+                <section id="section-6" class="border-2 border-fbiyellow rounded-lg overflow-hidden bg-fbinavy relative">
+                    <div class="bg-fbiyellow p-3 flex justify-between items-center text-fbinavy">
+                        <div class="flex items-center gap-2">
+                            <span class="text-xs font-black px-2 py-0.5 border-2 border-fbinavy uppercase mono">DEP-06</span>
+                            <h3 class="text-lg font-black uppercase tracking-wider">The "Ten Most Wanted" Tracking &amp; Capture Engine</h3>
+                        </div>
+                        <span class="hidden md:inline text-xs font-extrabold mono">[ TRACKING TARGETS ]</span>
+                    </div>
+                    
+                    <div class="p-6 space-y-6">
+                        <p class="text-slate-300 text-sm leading-relaxed">
+                            Fugitives under federal pursuit are tracked continuously. The modern "Ten Most Wanted" system couples investigative operations with digital analytics to generate real-time alerts across jurisdictional systems. 
+                        </p>
+
+                        <!-- Mock Wanted Dossier Database Card -->
+                        <div class="border border-slate-800 bg-slate-950 p-4 rounded-lg">
+                            <div class="flex items-center justify-between border-b border-slate-800 pb-3 mb-4">
+                                <span class="text-xs font-black text-red-500 uppercase tracking-widest mono">ACTIVE WARRANT LOG // PRIORITY 1</span>
+                                <span class="text-[10px] text-slate-500 uppercase mono">Case ID: WD-2026-90</span>
+                            </div>
+
+                            <div class="flex flex-col md:flex-row gap-4 items-center">
+                                <!-- Mock Mugshot SVG -->
+                                <div class="w-28 h-28 border-2 border-slate-700 bg-slate-900 flex flex-col items-center justify-center text-center relative rounded overflow-hidden">
+                                    <svg class="w-16 h-16 text-slate-600" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd"></path></svg>
+                                    <div class="absolute bottom-0 inset-x-0 bg-red-600 text-[10px] text-white font-bold tracking-wider py-0.5">WANTED</div>
+                                </div>
+
+                                <div class="flex-1 space-y-2 text-xs">
+                                    <div><strong class="text-slate-300">Name / Alias:</strong> "The Digital Shadow" // Unknown Subject</div>
+                                    <div><strong class="text-slate-300">Charges:</strong> High-Yield Critical Infrastructure Ransomware, Cyber Extortion</div>
+                                    <div><strong class="text-slate-300">Biometric Vector:</strong> Index Finger Profile stored under SHA-256 system tag #9401-A</div>
+                                    <div><strong class="text-slate-300">Status:</strong> Active International Pursuit</div>
+                                </div>
+                            </div>
+
+                            <!-- Citizens Tips Form Simulation -->
+                            <div class="mt-4 border-t border-slate-800 pt-4 space-y-3">
+                                <h5 class="text-xs font-extrabold text-fbiyellow uppercase tracking-wider mono">Submit Cryptographic Citizen Tip</h5>
+                                <div class="flex gap-2">
+                                    <input type="text" id="tip-input" placeholder="Type suspicious sighting, transaction, or location info here..." class="bg-slate-900 border border-slate-700 text-xs rounded p-2 flex-1 focus:ring-1 focus:ring-fbiyellow focus:outline-none text-slate-200">
+                                    <button onclick="submitTip()" class="bg-fbiyellow text-fbinavy hover:bg-fbiyellowdark text-xs font-extrabold px-4 py-2 rounded transition duration-200 uppercase tracking-wider mono shrink-0">
+                                        Route to Sentinel
+                                    </button>
+                                </div>
+                                <div id="tip-alert-box" class="hidden text-[11px] bg-emerald-500/10 border border-emerald-500 text-emerald-400 p-2.5 rounded mono">
+                                    <!-- Tip routing result goes here -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- SECTION 7: Data Privacy & Systems Accountability -->
+                <section id="section-7" class="border-2 border-fbiyellow rounded-lg overflow-hidden bg-fbinavy relative">
+                    <div class="bg-fbiyellow p-3 flex justify-between items-center text-fbinavy">
+                        <div class="flex items-center gap-2">
+                            <span class="text-xs font-black px-2 py-0.5 border-2 border-fbinavy uppercase mono">DEP-07</span>
+                            <h3 class="text-lg font-black uppercase tracking-wider">Data Privacy &amp; Systems Accountability</h3>
+                        </div>
+                        <span class="hidden md:inline text-xs font-extrabold mono">[ AUDITED HUB ]</span>
+                    </div>
+                    
+                    <div class="p-6 space-y-6">
+                        <p class="text-slate-300 text-sm leading-relaxed">
+                            Protecting public safety cannot proceed at the cost of sacrificing constitutional rights. System accountability protocols dictate how the FBI archives data. <strong class="text-fbiyellow">Sentinel</strong> incorporates automated internal auditable logs designed to monitor database interactions, query histories, and data transfers.
+                        </p>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div class="border border-slate-800 bg-slate-950 p-4 rounded space-y-2">
+                                <h4 class="text-sm font-bold text-white uppercase tracking-wider">Privacy Impact Assessments (PIAs)</h4>
+                                <p class="text-xs text-slate-400 leading-relaxed">
+                                    Each tool utilized by our Special Agents undergoes meticulous analysis regarding privacy rights prior to deployment. Citizens possess the right to verify legal boundaries. Our detailed assessments are publicly accessible to maintain absolute structural integrity.
+                                </p>
+                                <button onclick="simulateDownload()" class="inline-block mt-2 text-xs font-bold text-fbiyellow hover:underline mono flex items-center gap-1.5">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
+                                    View Sentinel PIA Summary (Mock PDF)
+                                </button>
+                            </div>
+                            <div class="border border-slate-800 bg-slate-950 p-4 rounded space-y-2">
+                                <h4 class="text-sm font-bold text-white uppercase tracking-wider">Strict Query Audits</h4>
+                                <p class="text-xs text-slate-400 leading-relaxed">
+                                    No database search is anonymous. Whenever an operator performs a system search, the algorithm files an unmodifiable ledger entry including their credentials, reason for search, and authorization code. These ledgers are regularly inspected by independent oversight boards.
+                                </p>
+                            </div>
+                        </div>
+
+                        <!-- Audit Log Visual Demo -->
+                        <div class="border border-slate-800 bg-slate-950 p-4 rounded-lg space-y-2.5">
+                            <div class="flex items-center justify-between border-b border-slate-800 pb-2">
+                                <span class="text-xs font-black text-fbiyellow uppercase tracking-widest mono">Live System Auditing Ledger</span>
+                                <span class="text-[10px] text-emerald-400 uppercase mono">Oversight Confirmed</span>
+                            </div>
+                            <div class="space-y-1.5 text-[11px] mono text-slate-400">
+                                <div class="flex items-start justify-between gap-4">
+                                    <span>[02:20:12 Z] USERID_29401 initiated search query (Target: Alias "The Digital Shadow").</span>
+                                    <span class="text-emerald-400 font-bold">APPROVED (AUTH CODE: DOJ-94-B)</span>
+                                </div>
+                                <div class="flex items-start justify-between gap-4">
+                                    <span>[02:22:45 Z] Quick Capture system link QC-904 established communication handshakes.</span>
+                                    <span class="text-emerald-400 font-bold">DEVICE TRUSTED</span>
+                                </div>
+                                <div class="flex items-start justify-between gap-4">
+                                    <span>[02:25:01 Z] Metadata packet compression executed. SHA-256 hash locked.</span>
+                                    <span class="text-emerald-400 font-bold">COMPRESSED // SAFE</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+            </div>
+
+        </div>
+
+        <!-- FOOTER AGENCY FOOTNOTE -->
+        <footer class="mt-16 border-t border-fbiyellow/30 pt-8 pb-12 flex flex-col md:flex-row items-center justify-between text-slate-500 text-xs gap-4">
+            <div class="flex items-center gap-3">
+                <span class="font-extrabold text-slate-400 uppercase tracking-widest text-sm">FBI SECURITY GRID</span>
+                <span class="hidden md:inline">|</span>
+                <span>FOR EDUCATIONAL DEMONSTRATION ONLY</span>
+            </div>
+            <div>
+                &copy; 2026 Department of Justice // FBI Sentinel Operational Portals. All Rights Reserved.
+            </div>
+        </footer>
+
+    </div>
+
+    <!-- MAIN NOTIFICATION COMPONENT -->
+    <div id="system-notification" class="fixed bottom-6 right-6 z-50 transform translate-y-20 opacity-0 transition-all duration-300 max-w-sm w-full bg-slate-950 border-2 border-fbiyellow p-4 rounded-lg shadow-[0_10px_30px_rgba(0,0,0,0.5)] flex items-start gap-3">
+        <div class="w-2.5 h-2.5 rounded-full bg-fbiyellow mt-1.5 shrink-0 animate-ping"></div>
+        <div>
+            <h4 class="font-bold text-xs uppercase tracking-wider text-fbiyellow mono" id="notification-title">System Update</h4>
+            <p class="text-xs text-slate-300 mt-1" id="notification-body">Sentinel database has processed your simulation request.</p>
+        </div>
+    </div>
+
+    <!-- LOGIC SCRIPTS -->
+    <script>
+        // Update live counters dynamically to simulate active federal agency systems
+        let arrests = 14281;
+        let rescued = 1894;
+        let fentanyl = 6492.8;
+        let captures = 1492;
+        let caseload = 28491;
+
+        setInterval(() => {
+            if (Math.random() > 0.4) {
+                arrests += Math.floor(Math.random() * 2) + 1;
+                document.getElementById('arrests-metric').innerText = arrests.toLocaleString();
+                addLiveLog(`[SUCCESS] Field arrest registered to local case. Sentinel record updated.`);
+            }
+            if (Math.random() > 0.8) {
+                rescued += 1;
+                document.getElementById('rescued-metric').innerText = rescued.toLocaleString();
+                addLiveLog(`[SYSTEM] CIRG Safe Passage logs updated. Exploited victim relocated.`);
+            }
+            if (Math.random() > 0.6) {
+                fentanyl += parseFloat((Math.random() * 2.4).toFixed(1));
+                document.getElementById('fentanyl-metric').innerText = fentanyl.toLocaleString('en-US', {minimumFractionDigits: 1, maximumFractionDigits: 1});
+                addLiveLog(`[INTERCEPT] Border Tactical Team logged illicit chemical seizure.`);
+            }
+            if (Math.random() > 0.5) {
+                captures += 1;
+                document.getElementById('capture-counter').innerText = captures.toLocaleString();
+            }
+            caseload += Math.floor(Math.random() * 5) - 2;
+            document.getElementById('caseload-counter').innerText = caseload.toLocaleString();
+
+        }, 4000);
+
+        // Simulated Logs Stream
+        const logs = [
+            "Initializing Sentinel remote link...",
+            "Validating network connection layer...",
+            "All secure proxies validated. Status: STABLE.",
+            "Quick Capture unit QC-904: Heartbeat OK.",
+            "Joint Terrorism Task Force database sync completed successfully.",
+            "Secure audit check verified. Credentials verified under badge #8804.",
+            "Federal judicial system warrant lookup stream operational.",
+            "DOJ Secure Cloud connected."
+        ];
+
+        function initLogs() {
+            const container = document.getElementById('live-log-container');
+            logs.forEach(log => {
+                const item = document.createElement('div');
+                item.className = 'border-b border-slate-900 pb-1';
+                item.innerHTML = `<span class="text-slate-600">[${new Date().toISOString().substring(11, 19)} Z]</span> ${log}`;
+                container.appendChild(item);
+            });
+            container.scrollTop = container.scrollHeight;
+        }
+
+        function addLiveLog(message) {
+            const container = document.getElementById('live-log-container');
+            const item = document.createElement('div');
+            item.className = 'border-b border-slate-900 pb-1 text-fbiyellow';
+            item.innerHTML = `<span class="text-slate-600">[${new Date().toISOString().substring(11, 19)} Z]</span> ${message}`;
+            container.appendChild(item);
+            container.scrollTop = container.scrollHeight;
+        }
+
+        window.onload = function() {
+            initLogs();
+            // Clock telemetry updates
+            setInterval(() => {
+                document.getElementById('system-time-stamp').innerText = new Date().toISOString().replace('T', ' ').substring(0, 19) + ' Z';
+            }, 1000);
+        };
+
+        // Biometrics Quick Capture Simulation
+        function triggerQuickScan() {
+            const scannerPad = document.getElementById('scanner-pad');
+            const laser = document.getElementById('scan-laser');
+            const icon = document.getElementById('fingerprint-svg');
+            const text = document.getElementById('scan-prompt');
+            const consoleBox = document.getElementById('scan-console');
+
+            laser.classList.remove('hidden');
+            laser.classList.add('animate-scan-line');
+            icon.classList.remove('text-slate-600', 'group-hover:text-fbiyellow/40');
+            icon.classList.add('text-fbiyellow');
+            text.innerText = "SCANNING BIOMETRICS...";
+            text.classList.add('text-fbiyellow', 'animate-pulse');
+
+            consoleBox.innerHTML += `<div class="text-fbiyellow">[ACTIVE] Capturing high-yield prints...</div>`;
+
+            setTimeout(() => {
+                // Done scanning
+                laser.classList.add('hidden');
+                laser.classList.remove('animate-scan-line');
+                text.innerText = "VERIFYING DATA GRID...";
+                consoleBox.innerHTML += `<div class="text-slate-400">&gt; Biometrics compressed to 256-bit hash. Routing through secure satellite relay...</div>`;
+                
+                setTimeout(() => {
+                    text.innerText = "MATCH FOUND";
+                    icon.classList.remove('text-fbiyellow');
+                    icon.classList.add('text-emerald-400');
+                    text.classList.remove('text-fbiyellow', 'animate-pulse');
+                    text.classList.add('text-emerald-400');
+                    consoleBox.innerHTML += `<div class="text-emerald-400 font-bold">&gt; MATCH FOUND: INDEX MATCHES RECOGNIZED PROFILE (ID: FUGITIVE #9401-A)</div>`;
+                    
+                    showNotification("Quick Capture Successful", "Fugitive biometric match verified across global databases and logged into Sentinel.");
+                }, 1500);
+
+            }, 2500);
+        }
+
+        // Click scan pad event
+        document.getElementById('scanner-pad').addEventListener('click', triggerQuickScan);
+
+        // Anatomy Workflow step switcher
+        const steps = {
+            1: {
+                title: "Phase 01: Incident Intake",
+                desc: "Every federal file begins here. Digital crime scene data, anonymous secure Web Portal tips, or physical security leads are indexed directly into the system. High-performance optical character recognition and metadata tagging organize the record, standardizing content structure instantaneously so the raw evidence is preserved and searchable."
+            },
+            2: {
+                title: "Phase 02: Workbox Allocation",
+                desc: "Instead of sitting static on a desk, Sentinel channels cases into active digital 'Workboxes'. Regional Special Agents in Charge receive notifications matched to regional crime indices. If threats indicate domestic terror or international espionage, automated triggers flag joint agency resources for instant collaboration."
+            },
+            3: {
+                title: "Phase 03: Federated Query Integration",
+                desc: "Sentinel automatically initiates a secure search across parallel federal archives—linking records containing identical phone footprints, financial transaction signatures, or biometrics previously imported via Quick Capture. This paints a comprehensive web of the suspect's connections instantaneously."
+            },
+            4: {
+                title: "Phase 04: Closed-Loop DOJ Prosecutorial Pack",
+                desc: "Once evidence collection is finalized, Sentinel compiles a verified, chain-of-custody cryptographic package. This packet is pushed directly to the Department of Justice's federal prosecutors, ensuring that evidence is unassailable during federal court proceedings."
+            }
+        };
+
+        function selectWorkflowStep(stepNum) {
+            // Remove border highlighting from all step boxes
+            document.querySelectorAll('.workflow-card').forEach(el => {
+                el.classList.remove('border-fbiyellow');
+                el.classList.add('border-slate-800');
+                el.querySelector('div:nth-child(2)').classList.remove('text-fbiyellow');
+                el.querySelector('div:nth-child(2)').classList.add('text-slate-300');
+            });
+
+            // Highlight current clicked step box
+            const activeCard = document.getElementById(`step-btn-${stepNum}`);
+            activeCard.classList.remove('border-slate-800');
+            activeCard.classList.add('border-fbiyellow');
+            activeCard.querySelector('div:nth-child(2)').classList.add('text-fbiyellow');
+            activeCard.querySelector('div:nth-child(2)').classList.remove('text-slate-300');
+
+            // Render Detail Text
+            const container = document.getElementById('step-details-container');
+            container.innerHTML = `<strong class="text-fbiyellow font-bold block mb-1">${steps[stepNum].title}</strong>${steps[stepNum].desc}`;
+        }
+
+        // Active task forces selector info updating
+        const tfData = {
+            "jttf": "<strong>Joint Terrorism Task Force (JTTF):</strong> Operates as a broad-based, multi-agency team of specialists. Integrates intelligence analysts, military experts, and local police. All terminal outputs immediately sync into federal Sentinel master files.",
+            "vicap": "<strong>Violent Criminal Apprehension Program (ViCAP):</strong> Focused on tracking serial killers, repeat sexual predators, and missing persons. Links regional localized crime behaviors to uncover cross-state patterns through high-performance pattern recognition database algorithms.",
+            "cyber": "<strong>National Cyber Joint Investigative Task Force (NCIJTF):</strong> Leads the national security response to domestic and global threat actors executing digital sabotage. Coordinates 30+ co-located agencies representing intelligence and law enforcement under one command."
+        };
+
+        function updateTaskforceInfo() {
+            const val = document.getElementById('taskforce-selector').value;
+            document.getElementById('taskforce-info').innerHTML = tfData[val];
+            
+            // Momentary blinking sync indicator animation
+            const badge = document.getElementById('tf-status-badge');
+            badge.classList.remove('border-emerald-500', 'text-emerald-400');
+            badge.classList.add('border-fbiyellow', 'text-fbiyellow');
+            badge.innerHTML = `<span class="w-2 h-2 rounded-full bg-fbiyellow animate-ping"></span> SYNCING GRID...`;
+            
+            setTimeout(() => {
+                badge.classList.add('border-emerald-500', 'text-emerald-400');
+                badge.classList.remove('border-fbiyellow', 'text-fbiyellow');
+                badge.innerHTML = `<span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span> Sync Status: Active`;
+                showNotification("Inter-Agency Grid Synced", "Task force connection vectors have updated successfully.");
+            }, 1000);
+        }
+
+        // Tech careers matchmaking simulator logic
+        const careers = {
+            "dev": {
+                title: "Sentinel Platform Architect",
+                desc: "Oversee the core engineering and database schemas that keep 30,000+ national security terminals synced. Code inside highly secure microservices configurations, optimizing querying capabilities under extreme stress conditions."
+            },
+            "biometrics": {
+                title: "Biometrics Hardware Integration Engineer",
+                desc: "Develop and test hardware drivers and network payloads for portable field biometrics systems like Quick Capture. Ensure failproof, low-bandwidth communications from deep field zones back to high-security servers."
+            },
+            "ops": {
+                title: "Critical Infrastructure Security Lead",
+                desc: "Perform advanced defensive cyber operations, red-teaming internal tools, and auditing system queries. Secure high-level databases from elite hostile hacker organizations and advance national protective infrastructure."
+            }
+        };
+
+        function matchCareer(category) {
+            const screen = document.getElementById('career-match-screen');
+            screen.classList.remove('hidden');
+            screen.innerHTML = `
+                <div class="border-b border-slate-800 pb-2 mb-2 flex items-center justify-between">
+                    <span class="font-bold text-fbiyellow uppercase tracking-wide">MATCH IDENTIFIED</span>
+                    <span class="text-[10px] text-slate-500 font-bold uppercase mono">Direct Hiring Vector</span>
+                </div>
+                <h5 class="font-black text-sm text-white mb-1">${careers[category].title}</h5>
+                <p class="text-[11px] text-slate-300 mb-2 leading-relaxed">${careers[category].desc}</p>
+                <div class="flex items-center gap-2">
+                    <span class="inline-block bg-fbiyellow text-fbinavy font-bold px-1.5 py-0.5 rounded text-[10px] uppercase">Salary: GS-13/14 Equivalent</span>
+                    <span class="text-slate-400 text-[10px]">Must qualify for Top Secret // SCI Clearance</span>
+                </div>
+            `;
+            showNotification("Career Vector Linked", `Matched to the role of ${careers[category].title}.`);
+        }
+
+        // Citizen tips submission simulated logic
+        function submitTip() {
+            const inp = document.getElementById('tip-input');
+            const alertBox = document.getElementById('tip-alert-box');
+
+            if (inp.value.trim() === "") {
+                alertBox.classList.remove('hidden', 'bg-emerald-500/10', 'border-emerald-500', 'text-emerald-400');
+                alertBox.classList.add('bg-red-500/10', 'border-red-500', 'text-red-400');
+                alertBox.innerText = "Error: Input box cannot be empty.";
+                return;
+            }
+
+            const tipText = inp.value;
+            inp.value = ""; // clear
+
+            alertBox.classList.remove('hidden', 'bg-red-500/10', 'border-red-500', 'text-red-400');
+            alertBox.classList.add('bg-emerald-500/10', 'border-emerald-500', 'text-emerald-400');
+            alertBox.innerHTML = `<strong>TIP CRYPTO-PACK ROUTING...</strong><br>Status: Packet encrypted. Transmitted to Special Cyber Investigations Unit. Case ledger updated.`;
+            
+            addLiveLog(`[CITIZEN TIP] Cryptographic tip package received by Sentinel Intake Node.`);
+            showNotification("Secure Tip Transmitted", "Cryptographic routing successful. The database logged file.");
+        }
+
+        // Show toast notifications inside the page for interaction feedback
+        function showNotification(title, message) {
+            const toast = document.getElementById('system-notification');
+            const tTitle = document.getElementById('notification-title');
+            const tBody = document.getElementById('notification-body');
+
+            tTitle.innerText = title;
+            tBody.innerText = message;
+
+            toast.classList.remove('translate-y-20', 'opacity-0');
+            toast.classList.add('translate-y-0', 'opacity-100');
+
+            setTimeout(() => {
+                toast.classList.remove('translate-y-0', 'opacity-100');
+                toast.classList.add('translate-y-20', 'opacity-0');
+            }, 4000);
+        }
+
+        function simulateDownload() {
+            showNotification("Downloading Document", "MOCK FILE: fbi_sentinel_pia_summary_2026.pdf has been simulated in your system browser logs.");
+            addLiveLog(`[AUDIT] PIA Summary file downloaded by external viewer.`);
+        }
+    </script>
+</body>
+</html>
+
+```
