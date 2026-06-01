@@ -1,0 +1,695 @@
+<html>
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kinetic { Tracker</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        obsidian: '#09090b',
+                        cyberGreen: '#10b981',
+                        cyberPink: '#f43f5e',
+                        glassWhite: 'rgba(255, 255, 255, 0.03)',
+                        glassBorder: 'rgba(255, 255, 255, 0.08)'
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;800&family=JetBrains+Mono:wght@400;700&display=swap');
+
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: #09090b;
+            overflow-x: hidden;
+        }
+
+        .mono-font {
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        /* Glassmorphism Classes */
+        .glass-panel {
+            background: rgba(10, 10, 12, 0.45);
+            backdrop-filter: blur(16px) saturate(120%);
+            -webkit-backdrop-filter: blur(16px) saturate(120%);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            box-shadow: 0 12px 40px 0 rgba(0, 0, 0, 0.5);
+            transition: border-color 0.3s ease, box-shadow 0.3s ease, transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .glass-panel:hover {
+            border-color: rgba(255, 255, 255, 0.12);
+            box-shadow: 0 16px 48px 0 rgba(0, 0, 0, 0.7);
+        }
+
+        /* 3D Mobile Wrapper Transforms */
+        .perspective-container {
+            perspective: 1200px;
+        }
+
+        .device-wrapper {
+            transform-style: preserve-3d;
+            transform: rotateY(-8deg) rotateX(6deg) rotateZ(-1deg);
+            transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .device-wrapper:hover {
+            transform: rotateY(-2deg) rotateX(2deg) rotateZ(0deg);
+        }
+
+        /* Glowing Orbs Animation */
+        @keyframes drift {
+            0% { transform: translate(0px, 0px) scale(1); }
+            33% { transform: translate(40px, -50px) scale(1.15); }
+            66% { transform: translate(-30px, 30px) scale(0.9); }
+            100% { transform: translate(0px, 0px) scale(1); }
+        }
+
+        .orb-1 {
+            filter: blur(120px);
+            animation: drift 18s infinite alternate ease-in-out;
+        }
+        .orb-2 {
+            filter: blur(140px);
+            animation: drift 25s infinite alternate-reverse ease-in-out;
+        }
+        .orb-3 {
+            filter: blur(100px);
+            animation: drift 15s infinite alternate ease-in-out;
+        }
+
+        /* Heart Burst particles */
+        .heart-particle {
+            position: absolute;
+            pointer-events: none;
+            font-size: 20px;
+            animation: floatUp 1.2s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+            opacity: 1;
+        }
+
+        @keyframes floatUp {
+            0% {
+                transform: translate(-50%, -50%) scale(0.4) rotate(0deg);
+                opacity: 1;
+            }
+            100% {
+                transform: translate(calc(-50% + var(--tx)), calc(-50% + var(--ty))) scale(1.3) rotate(var(--rot));
+                opacity: 0;
+            }
+        }
+
+        /* Kinetic Typography Styles */
+        .kinetic-word {
+            display: inline-flex;
+            transition: gap 0.4s cubic-bezier(0.25, 1, 0.5, 1);
+            gap: 0em;
+        }
+
+        .kinetic-word:hover {
+            gap: 0.18em;
+        }
+
+        .kinetic-letter {
+            display: inline-block;
+            transition: transform 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275), color 0.3s;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        /* Hover Stretch Effect */
+        .kinetic-letter:hover {
+            transform: scaleY(1.55) scaleX(0.8) translateY(-8px);
+            color: #f43f5e;
+            text-shadow: 0 0 15px rgba(244, 63, 94, 0.5);
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: rgba(0,0,0,0.1);
+        }
+        ::-webkit-scrollbar-thumb {
+            background: rgba(255,255,255,0.1);
+            border-radius: 3px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(255,255,255,0.25);
+        }
+    </style>
+</head>
+<body class="text-zinc-100 min-h-screen relative flex flex-col justify-between selection:bg-rose-500 selection:text-white">
+
+    <!-- Fluid Gradient Background Canvas -->
+    <div class="fixed inset-0 overflow-hidden -z-20 pointer-events-none bg-obsidian">
+        <div class="absolute top-1/4 left-1/4 w-[450px] h-[450px] rounded-full bg-rose-500/10 orb-1"></div>
+        <div class="absolute bottom-1/4 right-1/4 w-[500px] h-[500px] rounded-full bg-emerald-500/8 orb-2"></div>
+        <div class="absolute top-1/2 left-2/3 w-[350px] h-[350px] rounded-full bg-violet-600/10 orb-3"></div>
+        <!-- Digital Grid overlay -->
+        <div class="absolute inset-0 bg-[linear-gradient(to_right,#8080800a_1px,transparent_1px),linear-gradient(to_bottom,#8080800a_1px,transparent_1px)] bg-[size:40px_40px]"></div>
+    </div>
+
+    <!-- Main Navigation Bar -->
+    <header class="w-full px-6 py-4 flex justify-between items-center z-10 border-b border-white/[0.04] bg-obsidian/30 backdrop-blur-md">
+        <div class="flex items-center gap-3">
+            <div class="relative w-8 h-8 rounded-full bg-gradient-to-tr from-rose-500 to-violet-500 flex items-center justify-center shadow-lg shadow-rose-500/20">
+                <span class="text-xs font-black text-white">K</span>
+                <span class="absolute inset-0 rounded-full animate-ping border border-rose-500/40 pointer-events-none" style="animation-duration: 2s;"></span>
+            </div>
+            <span class="font-extrabold tracking-tight text-lg text-transparent bg-clip-text bg-gradient-to-r from-zinc-100 to-zinc-400">KINETIC.LABS</span>
+        </div>
+        
+        <!-- Live System Badges -->
+        <div class="flex items-center gap-4">
+            <div class="flex items-center gap-2 px-3 py-1.5 rounded-full bg-zinc-900/60 border border-zinc-800/80 text-xs">
+                <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                <span class="text-zinc-400 mono-font">MQTT.BROKER: ONLINE</span>
+            </div>
+            <div class="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-full bg-zinc-900/60 border border-zinc-800/80 text-xs">
+                <span class="text-rose-400 mono-font">⚡ RESPONSIVE ACTIVE</span>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Workspace -->
+    <main class="w-full max-w-7xl mx-auto px-4 sm:px-6 py-8 flex-1 grid grid-cols-1 lg:grid-cols-12 gap-8 items-start relative">
+        
+        <!-- Left Side: Bento Dashboard Panel (Columns: 7) -->
+        <section class="lg:col-span-7 grid grid-cols-1 md:grid-cols-2 gap-6 w-full">
+            
+            <!-- Bento Box 1: Giant Kinetic Typo Canvas (Span 2) -->
+            <div class="md:col-span-2 glass-panel rounded-3xl p-6 sm:p-8 flex flex-col justify-between relative overflow-hidden group min-h-[300px]">
+                <div class="absolute top-4 right-4 text-xs font-semibold uppercase tracking-widest text-rose-500 bg-rose-500/10 px-2.5 py-1 rounded-full">
+                    Interact Block
+                </div>
+                <div>
+                    <h3 class="text-sm font-semibold text-zinc-400 tracking-wider uppercase mb-6 flex items-center gap-2">
+                        <svg class="w-4 h-4 text-rose-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 15l-2 5L9 9l11 4-5 2zm0 0l5 5M7.188 2.239l.777 2.897M5.136 7.965l-2.898-.777M13.95 4.05l-2.122 2.122m-5.657 5.656l-2.12 2.122"></path></svg>
+                        Kinetic Interaction Sandbox
+                    </h3>
+                    
+                    <!-- Dynamic interactive hero text -->
+                    <div id="kinetic-sandbox" class="space-y-4 my-8 select-none">
+                        <!-- Words dynamically generated by script for precision split animations -->
+                        <div class="text-4xl sm:text-6xl md:text-7xl font-extrabold tracking-tight block cursor-default" id="kinetic-line-1"></div>
+                        <div class="text-4xl sm:text-6xl md:text-7xl font-extrabold tracking-tight block text-rose-500/95" id="kinetic-line-2"></div>
+                    </div>
+                </div>
+
+                <div class="mt-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4 pt-4 border-t border-white/[0.04]">
+                    <p class="text-xs sm:text-sm text-zinc-400">
+                        <strong class="text-zinc-200">Tip:</strong> Hover to stretch and separate. Click/Tap characters to release <span class="text-rose-500 font-bold">♥</span> burst reactions.
+                    </p>
+                    <div class="flex gap-2">
+                        <button onclick="triggerExplosion()" class="px-3 py-1.5 rounded-lg bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 text-xs font-semibold border border-rose-500/20 transition">
+                            Trigger Heart Blast
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Bento Box 2: Network Sensor Visualization Map -->
+            <div class="glass-panel rounded-3xl p-6 flex flex-col justify-between h-[360px] relative overflow-hidden group">
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="text-sm font-semibold text-zinc-400 tracking-wider uppercase flex items-center gap-2">
+                        <span class="relative flex h-2 w-2">
+                            <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                            <span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+                        </span>
+                        Network Sensor Grid
+                    </h3>
+                    <span class="text-xs text-zinc-500 mono-font" id="sensors-speed">24Hz telemetry</span>
+                </div>
+
+                <!-- Live Coordinate Map Visualization Canvas -->
+                <div class="flex-1 relative bg-black/40 rounded-2xl border border-white/[0.05] overflow-hidden my-2">
+                    <canvas id="sensorMapCanvas" class="w-full h-full block"></canvas>
+                    <div class="absolute bottom-2 left-2 text-[10px] bg-black/70 px-2 py-0.5 rounded text-emerald-400 font-mono flex items-center gap-1.5">
+                        <span>WS ADDR: wss://broker.kinetic.labs/stream</span>
+                    </div>
+                </div>
+
+                <div class="flex justify-between items-center text-xs text-zinc-400 pt-2">
+                    <div class="flex gap-4">
+                        <span>Active Nodes: <strong class="text-emerald-400 font-mono" id="active-nodes-count">8</strong></span>
+                        <span>Avg Latency: <strong class="text-zinc-200 font-mono">14ms</strong></span>
+                    </div>
+                    <button id="add-node-btn" class="text-zinc-300 hover:text-emerald-400 transition flex items-center gap-1">
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v3m0 0v3m0-3h3m-3 0H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                        Inject Node
+                    </button>
+                </div>
+            </div>
+
+            <!-- Bento Box 3: Touch Reaction & Kinetic Explanation Module -->
+            <div class="glass-panel rounded-3xl p-6 flex flex-col justify-between h-[360px]">
+                <div>
+                    <h3 class="text-sm font-semibold text-zinc-400 tracking-wider uppercase mb-4 flex items-center gap-2">
+                        <svg class="w-4 h-4 text-rose-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                        Behind The Animation
+                    </h3>
+                    <div class="space-y-4 text-xs sm:text-sm text-zinc-300">
+                        <div class="flex gap-3">
+                            <div class="w-6 h-6 rounded-lg bg-rose-500/10 text-rose-400 flex items-center justify-center shrink-0 font-bold">1</div>
+                            <p><strong class="text-zinc-100">Elastic Stretching:</strong> Transform matrix handles physical scale variations based on cursors proximity & velocity values.</p>
+                        </div>
+                        <div class="flex gap-3">
+                            <div class="w-6 h-6 rounded-lg bg-purple-500/10 text-purple-400 flex items-center justify-center shrink-0 font-bold">2</div>
+                            <p><strong class="text-zinc-100">Touch/Tap Splitting:</strong> When targeted, inline elements stretch via dynamic margin scaling, causing seamless word expansion.</p>
+                        </div>
+                        <div class="flex gap-3">
+                            <div class="w-6 h-6 rounded-lg bg-emerald-500/10 text-emerald-400 flex items-center justify-center shrink-0 font-bold">3</div>
+                            <p><strong class="text-zinc-100">Physic Heart Particles:</strong> Custom JS generator registers client positions, throwing responsive SVGs into vector trajectories.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="border-t border-white/[0.04] pt-4 mt-2">
+                    <div class="flex justify-between items-center bg-zinc-950/40 p-2.5 rounded-xl border border-white/[0.03]">
+                        <span class="text-xs text-zinc-400">Interact with text above to test.</span>
+                        <span class="text-[10px] text-zinc-500 font-mono">Ver. 2.5-Stable</span>
+                    </div>
+                </div>
+            </div>
+
+        </section>
+
+        <!-- Right Side: 3D Mobile Dev CLI Wrapper (Columns: 5) -->
+        <section class="lg:col-span-5 perspective-container w-full h-full flex items-center justify-center pt-4 lg:pt-0">
+            
+            <!-- Isometric Phone Shell -->
+            <div class="device-wrapper w-full max-w-[420px] aspect-[9/18.5] glass-panel rounded-[50px] p-4 border-[6px] border-zinc-800 relative shadow-2xl flex flex-col justify-between">
+                
+                <!-- Internal UI Header / Notch -->
+                <div class="w-full flex justify-between items-center px-4 pt-2 pb-3 relative z-10">
+                    <div class="text-[10px] font-bold text-zinc-400 font-mono" id="phone-time">18:36</div>
+                    <!-- Isometric Notch -->
+                    <div class="w-24 h-5 rounded-full bg-black/60 border border-white/[0.06] flex justify-center items-center gap-1">
+                        <span class="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse"></span>
+                        <span class="w-3 h-1 rounded-full bg-zinc-700"></span>
+                    </div>
+                    <div class="flex items-center gap-1.5 text-[10px] text-zinc-400 font-mono">
+                        <span>5G</span>
+                        <svg class="w-3.5 h-3.5 text-emerald-400" fill="currentColor" viewBox="0 0 20 20"><path d="M2 11.5a.5.5 0 01.5-.5h11.5a.5.5 0 010 1H2.5a.5.5 0 01-.5-.5zm0-4a.5.5 0 01.5-.5h11.5a.5.5 0 010 1H2.5a.5.5 0 01-.5-.5zm0-4a.5.5 0 01.5-.5h11.5a.5.5 0 010 1H2.5a.5.5 0 01-.5-.5z"></path></svg>
+                    </div>
+                </div>
+
+                <!-- CLI Terminal Body Screen -->
+                <div class="flex-1 rounded-[32px] bg-black/90 p-4 border border-white/[0.08] overflow-hidden flex flex-col justify-between relative">
+                    
+                    <!-- Glow effect inner CLI -->
+                    <div class="absolute inset-0 bg-gradient-to-b from-rose-500/5 to-transparent pointer-events-none"></div>
+
+                    <!-- CLI Contents -->
+                    <div class="flex-1 flex flex-col justify-between relative z-10">
+                        
+                        <div>
+                            <!-- CLI Brand Header -->
+                            <div class="flex justify-between items-center border-b border-zinc-800/80 pb-2 mb-3">
+                                <div class="flex gap-1">
+                                    <span class="w-2.5 h-2.5 rounded-full bg-rose-500"></span>
+                                    <span class="w-2.5 h-2.5 rounded-full bg-yellow-500"></span>
+                                    <span class="w-2.5 h-2.5 rounded-full bg-emerald-500"></span>
+                                </div>
+                                <span class="text-[10px] text-zinc-500 font-mono">bash - devcli@kinetic</span>
+                            </div>
+
+                            <!-- Terminal Outputs (Live Sim) -->
+                            <div class="space-y-2 text-xs font-mono" id="cli-logs">
+                                <div class="text-zinc-500">Initializing CLI listener...</div>
+                                <div class="text-zinc-400">> npm run start:broker</div>
+                                <div class="text-emerald-400">[SUCCESS] MQTT client bound successfully.</div>
+                                <div class="text-zinc-300">> listening on topic "/sensors/#"</div>
+                                <!-- Live logs dynamically inserted here -->
+                            </div>
+                        </div>
+
+                        <!-- Active simulated connection dashboard -->
+                        <div class="mt-4 p-3 rounded-2xl bg-zinc-900/60 border border-white/[0.04] space-y-2">
+                            <span class="text-[10px] uppercase font-bold text-zinc-500 tracking-wider">MQTT Stream Info</span>
+                            <div class="grid grid-cols-2 gap-2 text-[10px] font-mono">
+                                <div class="bg-black/40 p-1.5 rounded">
+                                    <div class="text-zinc-500">BROKER:</div>
+                                    <div class="text-zinc-300 overflow-hidden text-ellipsis">broker.hivemq.com</div>
+                                </div>
+                                <div class="bg-black/40 p-1.5 rounded">
+                                    <div class="text-zinc-500">PORT:</div>
+                                    <div class="text-zinc-300">8000 / WebSockets</div>
+                                </div>
+                                <div class="bg-black/40 p-1.5 rounded col-span-2 flex justify-between items-center">
+                                    <div>
+                                        <div class="text-zinc-500">LAST PAYLOAD:</div>
+                                        <div class="text-emerald-400" id="last-payload-cli">{"sensor": 23.4, "status": "OK"}</div>
+                                    </div>
+                                    <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></span>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <!-- Custom Interactive Touch Controls Inside the CLI Viewport -->
+                    <div class="mt-4 pt-3 border-t border-zinc-800/80 flex flex-col gap-2 relative z-10">
+                        <div class="flex gap-2">
+                            <button id="cli-emit-btn" class="flex-1 py-2 rounded-xl bg-gradient-to-r from-rose-500 to-rose-600 hover:from-rose-600 hover:to-rose-700 text-white font-bold text-xs shadow-lg shadow-rose-500/20 active:scale-95 transition">
+                                Send Signal Burst
+                            </button>
+                            <button id="cli-clear-btn" class="px-3 py-2 rounded-xl bg-zinc-800 hover:bg-zinc-700 text-zinc-300 text-xs font-semibold transition">
+                                Clear
+                            </button>
+                        </div>
+                        <p class="text-[9px] text-zinc-500 text-center">Triggering standard WebSockets transmission on click.</p>
+                    </div>
+
+                </div>
+
+                <!-- Bottom Device Indicator Bar -->
+                <div class="w-full flex justify-center pb-1 pt-3">
+                    <div class="w-28 h-1 rounded-full bg-zinc-700"></div>
+                </div>
+
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Interactive Footer Section (With links & graphics) -->
+    <footer class="w-full mt-12 py-8 px-6 border-t border-white/[0.04] bg-obsidian/40 backdrop-blur-md relative z-10">
+        <div class="max-w-7xl mx-auto flex flex-col sm:flex-row justify-between items-center gap-6">
+            
+            <!-- Left Brand Footer -->
+            <div class="flex flex-col gap-1 items-center sm:items-start text-center sm:text-left">
+                <span class="font-extrabold text-sm tracking-widest text-zinc-300">KINETIC.LABS</span>
+                <span class="text-xs text-zinc-500">Experimental kinetic rendering engine & real-time broker simulation suite.</span>
+            </div>
+
+            <!-- Middle GitHub Sensor Link with Animated SVG -->
+            <a href="https://github.com" target="_blank" rel="noopener noreferrer" class="group flex items-center gap-3 px-4 py-2.5 rounded-2xl bg-zinc-900/60 hover:bg-zinc-800/60 border border-white/[0.04] hover:border-rose-500/30 transition-all duration-300">
+                <div class="relative">
+                    <!-- GitHub Animated SVG logo -->
+                    <svg class="w-6 h-6 text-zinc-300 group-hover:text-rose-500 transition-colors" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/>
+                    </svg>
+                    <!-- Glowing sensor node dot inside GitHub repo card -->
+                    <span class="absolute -top-1 -right-1 flex h-2 w-2">
+                        <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-rose-400 opacity-75"></span>
+                        <span class="relative inline-flex rounded-full h-2 w-2 bg-rose-500"></span>
+                    </span>
+                </div>
+                <div class="flex flex-col text-left">
+                    <span class="text-[10px] text-zinc-500 font-bold uppercase tracking-wider">Telemetry Repo</span>
+                    <span class="text-xs text-zinc-300 group-hover:text-white transition-colors">kinetic-sensor-mesh</span>
+                </div>
+            </a>
+
+            <!-- Right Vector Info and Copyright -->
+            <div class="flex gap-4 items-center">
+                <!-- SVG Vector Graphics showing Dynamic Stream lines -->
+                <svg class="w-16 h-8 text-rose-500/30" viewBox="0 0 100 30" fill="none" stroke="currentColor">
+                    <path d="M0,15 Q25,5 50,15 T100,15" stroke-width="2" class="animate-pulse"></path>
+                    <path d="M0,20 Q25,10 50,20 T100,20" stroke-width="1" class="opacity-50"></path>
+                </svg>
+                <div class="text-xs text-zinc-500 text-right font-mono">
+                    <span>© 2026 Kinetic Labs</span>
+                </div>
+            </div>
+
+        </div>
+    </footer>
+
+    <!-- Scripts Logic -->
+    <script>
+        // Kinetic typography configurations
+        const textLine1 = "KINETIC";
+        const textLine2 = "SYNAPSE";
+
+        function setupKineticTypography() {
+            const line1Container = document.getElementById('kinetic-line-1');
+            const line2Container = document.getElementById('kinetic-line-2');
+
+            // Break lines down into kinetic words and then characters
+            line1Container.innerHTML = buildKineticHTML(textLine1);
+            line2Container.innerHTML = buildKineticHTML(textLine2);
+
+            // Bind click handlers to dynamic elements
+            document.querySelectorAll('.kinetic-letter').forEach(letter => {
+                letter.addEventListener('click', (e) => {
+                    triggerHeartBurst(e.clientX, e.clientY);
+                    // Apply temporary intense elastic scale deformation
+                    letter.style.transform = "scaleY(2.2) scaleX(0.5) translateY(-20px)";
+                    setTimeout(() => {
+                        letter.style.transform = "";
+                    }, 500);
+                });
+
+                // Support mobile touchstart with similar reaction
+                letter.addEventListener('touchstart', (e) => {
+                    const touch = e.touches[0];
+                    triggerHeartBurst(touch.clientX, touch.clientY);
+                    letter.style.transform = "scaleY(2.2) scaleX(0.5) translateY(-20px)";
+                    setTimeout(() => {
+                        letter.style.transform = "";
+                    }, 500);
+                });
+            });
+        }
+
+        function buildKineticHTML(text) {
+            // Split by space if multi-word, currently single word strings
+            return `<span class="kinetic-word">` + 
+                text.split('').map(letter => {
+                    return `<span class="kinetic-letter">${letter}</span>`;
+                }).join('') + 
+            `</span>`;
+        }
+
+        // Heart Burst Particle physics Engine ("Love & Stretch")
+        function triggerHeartBurst(clientX, clientY) {
+            const particleCount = 6;
+            for (let i = 0; i < particleCount; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'heart-particle';
+                particle.innerHTML = ['❤️', '💖', '✨', '🌸'][Math.floor(Math.random() * 4)];
+                
+                // Random vector trajectories for physical bounce aesthetic
+                const angle = Math.random() * Math.PI * 2;
+                const distance = 40 + Math.random() * 80;
+                const tx = Math.cos(angle) * distance;
+                const ty = Math.sin(angle) * distance - 40; // Bias upward motion
+                const rotation = -45 + Math.random() * 90;
+
+                particle.style.setProperty('--tx', `${tx}px`);
+                particle.style.setProperty('--ty', `${ty}px`);
+                particle.style.setProperty('--rot', `${rotation}deg`);
+
+                particle.style.left = `${clientX}px`;
+                particle.style.top = `${clientY}px`;
+
+                document.body.appendChild(particle);
+
+                // Clean up DOM
+                setTimeout(() => {
+                    particle.remove();
+                }, 1200);
+            }
+        }
+
+        // Global manual explosion helper
+        function triggerExplosion() {
+            const rect = document.getElementById('kinetic-sandbox').getBoundingClientRect();
+            const x = rect.left + rect.width / 2;
+            const y = rect.top + rect.height / 2;
+            for (let i = 0; i < 4; i++) {
+                setTimeout(() => {
+                    triggerHeartBurst(x + (Math.random() - 0.5) * 150, y + (Math.random() - 0.5) * 60);
+                }, i * 150);
+            }
+        }
+
+        // Network / Sensor Canvas Visualizer Map
+        const canvas = document.getElementById('sensorMapCanvas');
+        const ctx = canvas.getContext('2d');
+        let nodes = [];
+
+        function resizeCanvas() {
+            const rect = canvas.parentNode.getBoundingClientRect();
+            canvas.width = rect.width;
+            canvas.height = rect.height;
+        }
+
+        function initNodes() {
+            nodes = [];
+            const count = 8;
+            for (let i = 0; i < count; i++) {
+                nodes.push({
+                    x: Math.random() * canvas.width,
+                    y: Math.random() * canvas.height,
+                    vx: (Math.random() - 0.5) * 1.2,
+                    vy: (Math.random() - 0.5) * 1.2,
+                    radius: 4 + Math.random() * 3,
+                    id: `node_0${i+1}`,
+                    pulse: Math.random() * Math.PI
+                });
+            }
+            document.getElementById('active-nodes-count').innerText = nodes.length;
+        }
+
+        function drawSensorGrid() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            // Draw link pathways
+            ctx.strokeStyle = 'rgba(16, 185, 129, 0.08)';
+            ctx.lineWidth = 1;
+            for (let i = 0; i < nodes.length; i++) {
+                for (let j = i + 1; j < nodes.length; j++) {
+                    const dist = Math.hypot(nodes[i].x - nodes[j].x, nodes[i].y - nodes[j].y);
+                    if (dist < 90) {
+                        ctx.beginPath();
+                        ctx.moveTo(nodes[i].x, nodes[i].y);
+                        ctx.lineTo(nodes[j].x, nodes[j].y);
+                        ctx.stroke();
+                    }
+                }
+            }
+
+            // Draw individual dynamic nodes
+            nodes.forEach(node => {
+                node.pulse += 0.05;
+                const currentPulseSize = node.radius + Math.sin(node.pulse) * 2;
+
+                // Physics movement
+                node.x += node.vx;
+                node.y += node.vy;
+
+                // Canvas boundaries bounce
+                if (node.x < 0 || node.x > canvas.width) node.vx *= -1;
+                if (node.y < 0 || node.y > canvas.height) node.vy *= -1;
+
+                // Neon active visual glow rings
+                ctx.fillStyle = 'rgba(16, 185, 129, 0.15)';
+                ctx.beginPath();
+                ctx.arc(node.x, node.y, currentPulseSize * 1.8, 0, Math.PI * 2);
+                ctx.fill();
+
+                ctx.fillStyle = '#10b981';
+                ctx.beginPath();
+                ctx.arc(node.x, node.y, node.radius, 0, Math.PI * 2);
+                ctx.fill();
+
+                // Small ID Tags
+                ctx.fillStyle = 'rgba(255, 255, 255, 0.4)';
+                ctx.font = '8px monospace';
+                ctx.fillText(node.id, node.x + 8, node.y + 3);
+            });
+
+            requestAnimationFrame(drawSensorGrid);
+        }
+
+        // Handle Add Node Trigger
+        document.getElementById('add-node-btn').addEventListener('click', () => {
+            if (nodes.length >= 15) return;
+            nodes.push({
+                x: Math.random() * canvas.width,
+                y: Math.random() * canvas.height,
+                vx: (Math.random() - 0.5) * 1.5,
+                vy: (Math.random() - 0.5) * 1.5,
+                radius: 4 + Math.random() * 3,
+                id: `node_0${nodes.length + 1}`,
+                pulse: Math.random() * Math.PI
+            });
+            document.getElementById('active-nodes-count').innerText = nodes.length;
+            appendCliLog(`[SUBSCRIBE] Dynamic sensor channel bound to NODE_0${nodes.length}`, 'text-emerald-400');
+        });
+
+        // 3D CLI Terminal Simulator Logger
+        const cliLogsContainer = document.getElementById('cli-logs');
+        const lastPayloadCli = document.getElementById('last-payload-cli');
+
+        function appendCliLog(text, cssClass = 'text-zinc-300') {
+            const time = new Date().toLocaleTimeString().split(' ')[0];
+            const logItem = document.createElement('div');
+            logItem.className = `font-mono text-[11px] leading-relaxed ${cssClass}`;
+            logItem.innerHTML = `<span class="text-zinc-600">[${time}]</span> ${text}`;
+            cliLogsContainer.appendChild(logItem);
+
+            // Cap logs scroll viewport height
+            if (cliLogsContainer.children.length > 7) {
+                cliLogsContainer.removeChild(cliLogsContainer.firstElementChild);
+            }
+        }
+
+        // Live Simulated WebSockets Sensor Telemetry Feed
+        const sensorMockTemplates = [
+            () => `MQTT: dev/core_grid payload="{"v": ${((Math.random() * 20) + 15).toFixed(2)}, "u": "C"}"`,
+            () => `MQTT: gateway/mesh_pulse latency=${Math.floor(Math.random() * 18)}ms`,
+            () => `WS STATS: packet size=${Math.floor(Math.random() * 256 + 128)}B checksum=OK`,
+            () => `BROKER: Ping feedback ACK received.`,
+        ];
+
+        function startTelemetryLoop() {
+            setInterval(() => {
+                const randomMsg = sensorMockTemplates[Math.floor(Math.random() * sensorMockTemplates.length)]();
+                const randomColor = Math.random() > 0.5 ? 'text-zinc-400' : 'text-emerald-400/90';
+                appendCliLog(randomMsg, randomColor);
+
+                // Update payload container card values
+                const randomVal = ((Math.random() * 5) + 21).toFixed(1);
+                lastPayloadCli.innerText = `{"sensor": ${randomVal}, "status": "SYS_OK"}`;
+            }, 3000);
+        }
+
+        // Manual user payload emission burst
+        document.getElementById('cli-emit-btn').addEventListener('click', (e) => {
+            appendCliLog(`WS EMIT: Manual force burst triggered on cluster.`, 'text-rose-400 font-bold');
+            triggerHeartBurst(e.clientX, e.clientY);
+            
+            // Temporary high feedback UI trigger
+            lastPayloadCli.innerText = `{"SIG_BURST": true, "auth": "USER_DEV"}`;
+            lastPayloadCli.className = "text-rose-400 font-bold";
+            setTimeout(() => {
+                lastPayloadCli.className = "text-emerald-400";
+            }, 1000);
+        });
+
+        document.getElementById('cli-clear-btn').addEventListener('click', () => {
+            cliLogsContainer.innerHTML = '';
+            appendCliLog(`CLI Console buffer purged. Ready...`, 'text-zinc-500');
+        });
+
+        // Current real clock timing
+        function updatePhoneClock() {
+            const clockEl = document.getElementById('phone-time');
+            const now = new Date();
+            const hrs = now.getHours().toString().padStart(2, '0');
+            const mins = now.getMinutes().toString().padStart(2, '0');
+            clockEl.textContent = `${hrs}:${mins}`;
+        }
+
+        // Initial setup routines
+        window.addEventListener('load', () => {
+            setupKineticTypography();
+            resizeCanvas();
+            initNodes();
+            drawSensorGrid();
+            startTelemetryLoop();
+            updatePhoneClock();
+            setInterval(updatePhoneClock, 60000);
+        });
+
+        window.addEventListener('resize', () => {
+            resizeCanvas();
+        });
+    </script>
+</body>
+</html>
+
